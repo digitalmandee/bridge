@@ -8,6 +8,9 @@
 
 	<title>@yield('title')</title>
 
+	<!-- Custom Css -->
+	<link rel="stylesheet" href="{{ asset('custom/custom.css') }}">
+
     <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
