@@ -3,3 +3,172 @@
     outline: none;
     border: 0;
 }
+
+.bar-item.active {
+    background-color: #FFCC16;
+    position: relative;
+}
+
+.bar-link.active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background-color: #FFCC16;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.create-booking {
+    color: #ffff;
+    border-radius: 8px;
+    height: 35px;
+    border: 0;
+    background-color: #FFCC16;
+}
+
+.card-button .btn-toggle {
+    background: transparent;
+    border: 0;
+    color: #667085;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.btn-toggle {
+    background-color: transparent;
+    color: #000;
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-toggle.active {
+    background-color: #F4ECFB;
+    color: #FFCC16;
+}
+
+.venn-diagram {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 20px 0;
+}
+
+.circle {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: white;
+}
+
+.yellow {
+    background-color: #FFC107;
+    width: 200px;
+    height: 200px;
+    top: 50px;
+}
+
+.teal {
+    background-color: #20C997;
+    width: 120px;
+    height: 120px;
+    left: 145px;
+    top: 75px;
+}
+
+.red {
+    background-color: #DC3545;
+    width: 80px;
+    height: 80px;
+    left: 145px;
+    top: 170px;
+}
+
+/* Legend styles */
+.legend {
+    margin-top: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.legend-item .circle-1 {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.legend-item .yellow {
+    background-color: #FFC107;
+}
+
+.legend-item .teal {
+    background-color: #20C997;
+}
+
+.legend-item .red {
+    background-color: #DC3545;
+}
+
+.income-amount h2{
+font-size: 20px;
+font-weight: 600;
+}
+
+/* Inner Cards Styling */
+.income-icon {
+    background-color: #f4f1fd;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.income-icon img {
+    width: 20px;
+    height: 20px;
+}
+.growth-percentage {
+    font-size: 14px;
+    color: #24a148;
+    font-weight: bold;
+}
+
+.growth-arrow {
+    font-size: 14px;
+}
+
+.manage-link {
+    font-size: 16px;
+    color: #5c6bc0;
+    text-decoration: none;
+}
+
+/* For WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 2px; /* Set the width of the scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #e9ecef; /* Set the color of the scrollbar thumb */
+    border-radius: 20px; /* Optional: make the scrollbar edges rounded */
+}
+
+::-webkit-scrollbar-track {
+    background-color: #e9ecef; /* Set the background of the scrollbar track */
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: thin; /* Set the scrollbar width to thin */
+    scrollbar-color: #e9ecef; /* Set the scrollbar color (thumb, track) */
+}
+
