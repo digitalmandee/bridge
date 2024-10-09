@@ -45,8 +45,11 @@
 .login_section {
     width: 100%;
     position: relative;
-    top: 125px;
     cursor: pointer;
+}
+
+.four_login_section a {
+    text-decoration: none;
 }
 
 .four_login_section {
@@ -69,9 +72,10 @@
 
 /* fist section ends from here */
 /* fist section starts from here */
-.second_section{
+.second_section {
     padding: 0px 30px;
 }
+
 .form {
     position: relative;
     width: 50%;
@@ -126,6 +130,10 @@
 .form p {
     cursor: pointer;
     margin-top: 30px;
+}
+
+.loginftr {
+    padding: 20px 0;
 }
 
 /* fist section starts from here */
