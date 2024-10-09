@@ -13,7 +13,7 @@
         <div class="second_section">
             <div class="logo">
                 <img src="{{ asset('images/welcome_page/Container.png') }}" alt="">
-                <h1 style="left: 8px;">Welcome To</h1>
+                <h1>Welcome To</h1>
             </div>
             <div class="form">
                 <h2>Log in</h2>
@@ -23,10 +23,10 @@
                     <input type="email" name="email" id="email" placeholder="Email">
                     <label for="password">Password*</label>
                     <input type="password" name="password" id="password" placeholder="Password">
-                    {{-- <h6>Forgot Password?</h6> --}}
+                    <h6 class="forgot">Forgot Password?</h6>
                     <button class="login">Log in</button>
                 </form>
-                {{-- <p href="#">Don't have an Account account? Sign up</p> --}}
+                <p href="#">Don't have an Account account? Sign up</p>
             </div>
         </div>
     </div>
