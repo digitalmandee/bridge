@@ -4,7 +4,7 @@
 <div class="page-content">
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h3 class="mb-3 mb-md-0">@yield('heading', __('Dashboard'))</h3>
+            <h3 class="mb-3 mb-md-0">Dashboard</h3>
         </div>
         <div>
             <button type="button" class="mb-3 mb-md-0 create-booking">Create Booking</button>

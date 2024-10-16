@@ -26,7 +26,7 @@
   --bs-gray-900: #060c17;
   --bs-primary: #6571ff;
   --bs-secondary: #7987a1;
-  --bs-success: #05a34a;
+  --bs-success: #FFCC16;
   --bs-info: #66d1d1;
   --bs-warning: #fbbc06;
   --bs-danger: #ff3366;
@@ -52,7 +52,7 @@
   --bs-body-font-weight: 400;
   --bs-body-line-height: 1.5;
   --bs-body-color: #000;
-  --bs-body-bg: #f9fafb;
+  --bs-body-bg: #f5f6fa;
   --bs-border-width: 1px;
   --bs-border-style: solid;
   --bs-border-color: #e9ecef;
@@ -23936,7 +23936,7 @@ div.tox .buy-now-wrapper .tox-button svg,
 .navbar .navbar-content .navbar-nav .nav-item .nav-link .indicator {
   position: absolute;
   top: 0px;
-  right: 2px;
+  right: 5px;
 }
 
 .navbar .navbar-content .navbar-nav .nav-item .nav-link .indicator .circle {

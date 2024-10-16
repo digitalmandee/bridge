@@ -137,3 +137,23 @@
 }
 
 /* fist section starts from here */
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem #5c4a074d !important;
+    border: solid 0.1px #ffcc164d !important;
+}
+
+.form-control {
+    outline: none;
+}
+
+.password-container {
+    position: relative;
+}
+
+.eye-icon {
+    position: absolute;
+    right: 75px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}

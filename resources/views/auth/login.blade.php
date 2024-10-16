@@ -1,14 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bridge</title>
     <link rel="stylesheet" href="{{ asset('custom/bridges.css') }}">
-</head>
-
-<body>
+    <!-- login-page -->
     <div class="container">
         <div class="second_section">
             <div class="logo">
@@ -20,16 +12,28 @@
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <label for="email">Email*</label>
-                    <input type="email" name="email" id="email" placeholder="Email">
+                    <input class="form-control" type="email" name="email" id="email" placeholder="Email" required>
                     <label for="password">Password*</label>
-                    <input type="password" name="password" id="password" placeholder="Password">
+                    <div class="password-container">
+                        <input class="form-control" type="password" name="password" id="password" placeholder="Password" required>
+                        <span id="toggle-password" class="eye-icon">👁️</span>
+                    </div>
                     <h6 class="forgot">Forgot Password?</h6>
-                    <button class="login">Log in</button>
+                    <button type="submit" class="login">Log in</button>
                 </form>
-                <p href="#">Don't have an Account account? Sign up</p>
+                <p>Don't have an Account? Sign up</p>
             </div>
         </div>
     </div>
-</body>
+    <!-- login-page -->
 
-</html>
+    <!-- password-show-hide -->
+    <script>
+        document.getElementById('toggle-password').addEventListener('click', function() {
+            const passwordField = document.getElementById('password');
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            this.textContent = type === 'password' ? '👁️' : '👁️‍🗨️'; // Change icon based on visibility
+        });
+    </script>
+    <!-- password-show-hide -->

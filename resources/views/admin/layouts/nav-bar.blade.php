@@ -5,10 +5,10 @@
     <div class="navbar-content">
         <form class="search-form">
             <div class="input-group">
-                <div class="input-group-text" style="background: transparent!important;">
+                <div class="input-group-text me-2" style="background: transparent!important;">
                     <i data-feather="search"></i>
                 </div>
-                <input type="text" class="form-control" id="navbarForm" placeholder="Search" style="background: transparent!important;">
+                <input type="text" class="form-srch" id="navbarForm" placeholder="Search">
             </div>
         </form>
         <ul class="navbar-nav">

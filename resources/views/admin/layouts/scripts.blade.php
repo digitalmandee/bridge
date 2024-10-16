@@ -17,14 +17,12 @@
 <!-- End custom js for this page -->
 
 <!-- sidebar-active-script -->
-{{-- <script>
-    $(document).on('click', '.nav-link, .btn-toggle', function() {
-        const isNavLink = $(this).hasClass('nav-link');
-        const selector = isNavLink ? '.nav-link' : '.btn-toggle';
-        $(selector).removeClass('active');
+<script>
+    $(document).on('click', '.btn-toggle', function() {
+        $('.btn-toggle').removeClass('active');
         $(this).addClass('active');
     });
-</script> --}}
+</script>
 <!-- sidebar-active-script -->
 
 <!-- chart-script-cdn -->
@@ -71,16 +69,16 @@
                 x: {
                     display: true,
                     grid: {
-                        display: false, 
+                        display: false,
                     },
                     ticks: {
-                        display: true, 
+                        display: true,
                     }
                 }
             },
             plugins: {
                 legend: {
-                    display: false, 
+                    display: false,
                 }
             },
             elements: {

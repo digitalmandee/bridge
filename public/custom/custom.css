@@ -4,6 +4,30 @@
     border: 0;
 }
 
+.btn-success {
+    color: var(--bs-white) !important;
+    background-color: var(--bs-success) !important;
+    border: none !important;
+    font-size: 16px !important;
+    padding: 5px 25px;
+    border-radius: 8px;
+
+}
+
+.btn-secondary {
+    color: var(--bs-black) !important;
+    background-color: var(--bs-white) !important;
+    border: 1px solid var(--bs-success) !important;
+    font-size: 16px !important;
+    padding: 5px 25px;
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem #ffcc164d !important;
+    border: solid 0.1px #ffcc164d !important;
+}
+
 .bar-item.active {
     background-color: #FFCC16;
     position: relative;
@@ -54,7 +78,6 @@
     position: relative;
     width: 300px;
     height: 300px;
-    margin: 20px 0;
 }
 
 .circle {
@@ -91,9 +114,6 @@
 }
 
 /* Legend styles */
-.legend {
-    margin-top: 20px;
-}
 
 .legend-item {
     display: flex;
@@ -120,9 +140,9 @@
     background-color: #DC3545;
 }
 
-.income-amount h2{
-font-size: 20px;
-font-weight: 600;
+.income-amount h2 {
+    font-size: 20px;
+    font-weight: 600;
 }
 
 /* Inner Cards Styling */
@@ -136,6 +156,7 @@ font-weight: 600;
     width: 20px;
     height: 20px;
 }
+
 .growth-percentage {
     font-size: 14px;
     color: #24a148;
@@ -152,23 +173,36 @@ font-weight: 600;
     text-decoration: none;
 }
 
+.form-srch {
+    width: 93%;
+    outline: none;
+    border: 0;
+    height: 42px;
+    background: transparent;
+}
+
 /* For WebKit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
-    width: 2px; /* Set the width of the scrollbar */
+    width: 2px;
+    /* Set the width of the scrollbar */
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #e9ecef; /* Set the color of the scrollbar thumb */
-    border-radius: 20px; /* Optional: make the scrollbar edges rounded */
+    background-color: #e9ecef;
+    /* Set the color of the scrollbar thumb */
+    border-radius: 20px;
+    /* Optional: make the scrollbar edges rounded */
 }
 
 ::-webkit-scrollbar-track {
-    background-color: #e9ecef; /* Set the background of the scrollbar track */
+    background-color: #e9ecef;
+    /* Set the background of the scrollbar track */
 }
 
 /* For Firefox */
 * {
-    scrollbar-width: thin; /* Set the scrollbar width to thin */
-    scrollbar-color: #e9ecef; /* Set the scrollbar color (thumb, track) */
+    scrollbar-width: thin;
+    /* Set the scrollbar width to thin */
+    scrollbar-color: #e9ecef;
+    /* Set the scrollbar color (thumb, track) */
 }
-
