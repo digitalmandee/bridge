@@ -17,14 +17,14 @@
 <!-- End custom js for this page -->
 
 <!-- sidebar-active-script -->
-<script>
+{{-- <script>
     $(document).on('click', '.nav-link, .btn-toggle', function() {
         const isNavLink = $(this).hasClass('nav-link');
         const selector = isNavLink ? '.nav-link' : '.btn-toggle';
         $(selector).removeClass('active');
         $(this).addClass('active');
     });
-</script>
+</script> --}}
 <!-- sidebar-active-script -->
 
 <!-- chart-script-cdn -->

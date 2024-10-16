@@ -12,9 +12,21 @@
     <div class="sidebar-body">
         <ul class="nav">
             <li class="nav-item bar-item">
-                <a href="#" class="nav-link bar-link active">
+                <a href="{{route('dashboard')}}" class="nav-link bar-link active">
                     <img  class="link-icon" src="{{ asset('icons/dashboard.svg') }}" alt="dashboard Icon">
                     <span class="link-title">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item bar-item">
+                <a href="{{ route('admin.branches') }}" class="nav-link bar-link">
+                    <img  class="link-icon" src="{{ asset('icons/dashboard.svg') }}" alt="dashboard Icon">
+                    <span class="link-title">Branches</span>
+                </a>
+            </li>
+            <li class="nav-item bar-item">
+                <a href="{{ route('admin.branch.manager') }}" class="nav-link bar-link">
+                    <img  class="link-icon" src="{{ asset('icons/dashboard.svg') }}" alt="dashboard Icon">
+                    <span class="link-title">Branch Manager</span>
                 </a>
             </li>
             <li class="nav-item">
