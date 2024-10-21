@@ -24336,7 +24336,6 @@ div.tox .buy-now-wrapper .tox-button svg,
   display: flex;
   align-items: center;
   padding: 0;
-  margin-left: 20px;
   height: 45px;
   white-space: nowrap;
   color: #000;
@@ -24405,13 +24404,15 @@ div.tox .buy-now-wrapper .tox-button svg,
   background-color: #FFCC16;
 }
 
-.sidebar .sidebar-body .nav .nav-item:hover .nav-link {
+/* .sidebar .sidebar-body .nav .nav-item:hover .nav-link {
   background-color: #ffcc164f;
-}
+  border-radius: 8px;
+  margin-left: 10px;
+} */
 
-.sidebar .sidebar-body .nav .nav-item.active .nav-link {
+/* .sidebar .sidebar-body .nav .nav-item.active .nav-link {
   color: #6571ff;
-}
+} */
 
 .sidebar .sidebar-body .nav .nav-item.active .nav-link::before {
   content: "";

@@ -12,7 +12,7 @@
     <div class="sidebar-body">
         <ul class="nav">
             <li class="nav-item bar-item">
-                <a href="{{route('dashboard')}}" class="nav-link bar-link">
+                <a href="{{route('dashboard')}}" class="nav-link bar-link active">
                     <img class="link-icon" src="{{ asset('icons/dashboard.svg') }}" alt="dashboard Icon">
                     <span class="link-title">Dashboard</span>
                 </a>
