@@ -31,9 +31,15 @@
 .bar-item.active {
     background-color: #FFCC16;
     position: relative;
+    border-radius: 8px;
+    margin-left: 10px;
 }
-
-.bar-link.active::before {
+.bar-item:hover {
+    background-color: #ffcc164f;
+    border-radius: 8px;
+    /* margin-left: 10px; */
+}
+.bar-item.active::before {
     content: "";
     position: absolute;
     left: 0;
@@ -42,6 +48,7 @@
     background-color: #FFCC16;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
+    margin-left: -10px;
 }
 
 .create-booking {
