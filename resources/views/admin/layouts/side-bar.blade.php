@@ -12,7 +12,7 @@
     <div class="sidebar-body">
         <ul class="nav">
             <li class="nav-item bar-item">
-                <a href="{{route('dashboard')}}" class="nav-link bar-link active">
+                <a href="{{route('dashboard')}}" class="nav-link bar-link">
                     <img class="link-icon" src="{{ asset('icons/dashboard.svg') }}" alt="dashboard Icon">
                     <span class="link-title">Dashboard</span>
                 </a>
@@ -36,19 +36,19 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link bar-link">
+                <a href="{{ route('admin.floor.plan') }}" class="nav-link bar-link">
                     <img class="link-icon" src="{{ asset('icons/floorplan.svg') }}" alt="Floor Icon">
                     <span class="link-title">Floor Plan</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link bar-link">
+                <a href="{{ route('admin.inventory.management') }}" class="nav-link bar-link">
                     <img class="link-icon" src="{{ asset('icons/inventory.svg') }}" alt="Inventory Icon">
                     <span class="link-title">Inventory Management</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link bar-link">
+                <a href="{{ route('admin.booking.calendar') }}" class="nav-link bar-link">
                     <img class="link-icon" src="{{ asset('icons/booking.svg') }}" alt="Booking Icon">
                     <span class="link-title">Booking Management</span>
                 </a>

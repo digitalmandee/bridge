@@ -181,6 +181,10 @@
     background: transparent;
 }
 
+.sidebar .sidebar-body .nav .nav-item.active .nav-link {
+    color: black !important;
+}
+
 /* For WebKit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
     width: 2px;

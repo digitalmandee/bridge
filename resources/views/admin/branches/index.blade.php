@@ -1,40 +1,53 @@
 @extends('admin.master')
 @section('title', __('Branches'))
 @section('content')
-<div class="page-content">
-    <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-        <div>
-            <h3 class="mb-3 mb-md-0">Branches</h3>
+    <div class="page-content">
+        <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
+            <div>
+                <h3 class="mb-3 mb-md-0">Branches</h3>
+            </div>
+            <a href="{{ route('admin.branches.create') }}" class="btn btn-info">Add Branch</a>
+        </div>
+        <div class="row col-md-12">
+            <table class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php($sl = 1)
+                    @forelse ($branches as $branch)
+                        <tr>
+                            <td>{{ $sl++ }}</td>
+                            <td>{{ $branch->name }}</td>
+                            <td>{{ $branch->location }}</td>
+                            <td>{{ $branch->status == 1 ? 'Active' : 'Inactive' }}</td>
+                            <td>
+                                <a href="{{ route('admin.branch.edit', $branch->id) }}">Edit</a>
+                                <a href="{{ route('admin.branch.delete', $branch->id) }}">Delete</a>
+                            </td>
+                        </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center">No records found</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="card shadow-sm mx-auto">
+            <!-- SweetAlert trigger -->
+            @if (session('success'))
+                <script>
+                    // Show the Toast
+                    showToast('success', '{{ session('success') }}', '#d4edda');
+                </script>
+            @endif
         </div>
     </div>
-    <div class="card shadow-sm mx-auto">
-        <form class="card-body row">
-            @csrf
-            <div class="col-6 col-md-12 col-xl-6 mb-2">
-                <label class="mb-1" for="name">Branch Name</label>
-                <div class="form-group">
-                    <input type="text" name="name" class="form-control" placeholder="Branch Name">
-                </div>
-            </div>
-
-            <div class="col-6 col-md-12 col-xl-6 mb-2">
-                <label class="mb-1" for="name">Branch Location</label>
-                <div class="form-group">
-                    <input type="text" name="Location" class="form-control" placeholder="Branch Location">
-                </div>
-            </div>
-            <div class="col-6 col-md-12 col-xl-6 mb-2 d-flex align-items-end gap-5">
-                <label for="name">Status</label>
-                <div class="form-group">
-                    <input type="radio" name="" placeholder="">
-                </div>
-            </div>
-            <!-- Submit and Cancel Buttons -->
-            <div class="d-flex justify-content-center mt-4">
-                <button type="button" class="btn-secondary me-2">Cancel</button>
-                <button type="submit" class="btn-success">Submit</button>
-            </div>
-    </div>
-    </form>
-</div>
 @endsection

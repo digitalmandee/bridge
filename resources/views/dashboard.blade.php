@@ -7,7 +7,7 @@
             <h3 class="mb-3 mb-md-0">Dashboard</h3>
         </div>
         <div>
-            <button type="button" class="mb-3 mb-md-0 create-booking">Create Booking</button>
+            <a href="{{ route('admin.booking.create') }}" class="btn btn-info mb-3 mb-md-0 create-booking">Create Booking</a>
         </div>
     </div>
     <div class="row">
