@@ -34,11 +34,13 @@
     border-radius: 8px;
     margin-left: 10px;
 }
+
 .bar-item:hover {
     background-color: #ffcc164f;
     border-radius: 8px;
     /* margin-left: 10px; */
 }
+
 .bar-item.active::before {
     content: "";
     position: absolute;
@@ -51,10 +53,10 @@
     margin-left: -10px;
 }
 
-.create-booking {
+.layout-btn {
     color: #ffff;
     border-radius: 8px;
-    height: 35px;
+    padding: 10px 20px;
     border: 0;
     background-color: #FFCC16;
 }
@@ -216,4 +218,43 @@
     /* Set the scrollbar width to thin */
     scrollbar-color: #e9ecef;
     /* Set the scrollbar color (thumb, track) */
+}
+
+.label-title {
+    background-color: #B6E9D1;
+    color: #0D824B;
+    padding: 3px 8px;
+    border-radius: 5px;
+}
+
+/* CSS */
+.floor-btn {
+    align-items: center;
+    background-color: transparent;
+    background-position: 0 0;
+    border: 1px solid #D5D5D5;
+    border-radius: 20px;
+    box-sizing: border-box;
+    color: #989FAD;
+    cursor: pointer;
+    display: flex;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    text-decoration: none;
+    text-shadow: none;
+    text-underline-offset: 1px;
+    transition: border .2s ease-in-out, box-shadow .2s ease-in-out;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    white-space: nowrap;
+    word-break: break-word;
+}
+
+.floor-btn:hover,
+.floor-btn:active {
+    background-color: #E8F1FD;
+    color: #1570EF;
+    border: 1px solid #1570EF;
 }
