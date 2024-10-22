@@ -1,12 +1,12 @@
 @extends('admin.master')
-@section('title', __('Branches'))
+@section('title', __('Permissions'))
 @section('content')
     <div class="page-content">
         <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
             <div>
-                <h3>Branches</h3>
+                <h3>Permissions</h3>
             </div>
-            <a href="{{ route('admin.branches.create') }}" class="layout-btn">Add Branch</a>
+            <a href="{{ route('admin.permissions.create') }}" class="layout-btn">Add Permission</a>
         </div>
         <div class="row card col-md-12">
             <table class="table table-responsive">
@@ -14,31 +14,27 @@
                     <tr>
                         <th>#</th>
                         <th>Name</th>
-                        <th>Location</th>
-                        <th>Status</th>
                         <th class="text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @php($sl = 1)
-                    @forelse ($branches as $branch)
+                    @forelse ($permissions as $permission)
                         <tr>
                             <td>{{ $sl++ }}</td>
-                            <td>{{ $branch->name }}</td>
-                            <td>{{ $branch->location }}</td>
-                            <td>{{ $branch->status == 1 ? 'Active' : 'Inactive' }}</td>
+                            <td>{{ $permission->name }}</td>
                             <td class="text-center">
                                 <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">
                                     <i class="fa fa-ellipsis-v"></i>
                                 </button>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="{{ route('admin.branch.edit', $branch->id) }}">
+                                    <a class="dropdown-item" href="{{ route('admin.permissions.edit', $permission->id) }}">
                                         <i class="fa fa-edit"></i>
                                     </a>
 
                                     <a class="dropdown-item text-danger"
-                                        href="{{ route('admin.branch.delete', $branch->id) }}">
+                                        href="{{ route('admin.permissions.delete', $permission->id) }}">
                                         <i class="fa fa-trash"></i>
                                     </a>
                                 </div>

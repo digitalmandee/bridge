@@ -6,6 +6,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FloorPlanController;
 use App\Http\Controllers\BranchManagerController;
+use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\BookingCalendarController;
 use App\Http\Controllers\InventoryManagementController;
 
@@ -52,6 +53,22 @@ Route::group(['middleware' => 'auth'], function () {
     // Floor Plan Section
     Route::get('/admin/floor-plan', [FloorPlanController::class, 'index'])->name('admin.floor.plan');
     // Floor Plan Section end
+    // Role Section
+    Route::get('/admin/roles', [RolePermissionController::class, 'index'])->name('admin.roles');
+    Route::get('/admin/roles/create', [RolePermissionController::class, 'roleCreate'])->name('admin.roles.create');
+    Route::post('/admin/roles/store', [RolePermissionController::class, 'roleStore'])->name('admin.roles.store');
+    Route::get('/admin/roles/edit/{id}', [RolePermissionController::class, 'roleEdit'])->name('admin.roles.edit');
+    Route::post('/admin/roles/update/{id}', [RolePermissionController::class, 'roleUpdate'])->name('admin.roles.update');
+    Route::get('/admin/roles/delete/{id}', [RolePermissionController::class, 'roleDestroy'])->name('admin.roles.delete');
+    // Role Section end
+    // Permission Section
+    Route::get('/admin/permissions', [RolePermissionController::class, 'permissionIndex'])->name('admin.permissions');
+    Route::get('/admin/permissions/create', [RolePermissionController::class, 'permissionCreate'])->name('admin.permissions.create');
+    Route::post('/admin/permissions/store', [RolePermissionController::class, 'permissionStore'])->name('admin.permissions.store');
+    Route::get('/admin/permissions/edit/{id}', [RolePermissionController::class, 'permissionEdit'])->name('admin.permissions.edit');
+    Route::post('/admin/permissions/update/{id}', [RolePermissionController::class, 'permissionUpdate'])->name('admin.permissions.update');
+    Route::get('/admin/permissions/delete/{id}', [RolePermissionController::class, 'permissionDestroy'])->name('admin.permissions.delete');
+    // Permission Section end
 });
 
 require __DIR__ . '/auth.php';
