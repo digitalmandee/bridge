@@ -120,14 +120,14 @@
         </div>
     </div>
     <div class="card col-md-12 col-xl-12">
-        <div class="mt-2  ms-2 me-2 d-flex justify-content-between align-items-center flex-wrap grid-margin">
+        <div class="mt-2  ms-2 me-2 d-flex justify-content-between align-items-center flex-wrap mb-2">
             <div class="d-flex gap-2">
                 <button class="floor-btn" role="button">Check in</button>
                 <button class="floor-btn" role="button">Check out</button>
             </div>
             <div class="d-flex gap-2">
                 <button class="floor-btn" role="button">
-                    <i class="fa fa-filter"></i> Filter
+                    <i class="fa fa-filter me-2"></i> Filter
                 </button>
                 <form class="search-form">
                     <div class="input-group flex-nowrap w-100">
@@ -143,7 +143,7 @@
             </div>
         </div>
         <table class="table table-responsive">
-            <thead>
+            <thead class="body-bg">
                 <tr>
                     <th>Reservation ID</th>
                     <th>Name</th>
@@ -155,7 +155,75 @@
                 </tr>
             </thead>
             <tbody>
-
+                <tr>
+                    <td class="fw-semibold">#5644</td>
+                    <td>Yasir</td>
+                    <td>B-37</td>
+                    <td>$124</td>
+                    <td>$555</td>
+                    <td>
+                        <span class="label label-pending">Pending</span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-ellipsis-v"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a class="dropdown-item text-danger" href="#">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold">#5644</td>
+                    <td>Yasir</td>
+                    <td>B-37</td>
+                    <td>$124</td>
+                    <td>$555</td>
+                    <td>
+                        <span class="label label-cancel">Cancel</span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-ellipsis-v"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a class="dropdown-item text-danger" href="#">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold">#5644</td>
+                    <td>Yasir</td>
+                    <td>B-37</td>
+                    <td>$124</td>
+                    <td>$555</td>
+                    <td>
+                        <span class="label label-book">Booked</span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-ellipsis-v"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a class="dropdown-item text-danger" href="#">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>

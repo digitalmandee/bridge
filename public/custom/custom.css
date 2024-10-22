@@ -238,7 +238,6 @@
     color: #989FAD;
     cursor: pointer;
     display: flex;
-    font-size: 1rem;
     font-weight: 600;
     padding: 5px 12px;
     text-decoration: none;
@@ -257,4 +256,143 @@
     background-color: #E8F1FD;
     color: #1570EF;
     border: 1px solid #1570EF;
+}
+
+.label {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 20px;
+}
+
+.label-pending {
+    background-color: #E8F1FD;
+    color: #448DF2;
+}
+
+.label-book {
+    background-color: #E7F8F0;
+    color: #41C588;
+}
+
+.label-cancel {
+    background-color: #FEECEB;
+    color: #F36960;
+}
+
+.body-bg {
+    background-color: #f9fafb;
+
+}
+
+.checkbox-wrapper-3 input[type="checkbox"] {
+    visibility: hidden;
+    display: none;
+}
+
+.checkbox-wrapper-3 .toggle {
+    position: relative;
+    display: block;
+    width: 40px;
+    height: 20px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transform: translate3d(0, 0, 0);
+}
+
+.checkbox-wrapper-3 .toggle:before {
+    content: "";
+    position: relative;
+    top: 3px;
+    left: 3px;
+    width: 34px;
+    height: 14px;
+    display: block;
+    background: #9A9999;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.checkbox-wrapper-3 .toggle span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    display: block;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(154, 153, 153, 0.5);
+    transition: all 0.2s ease;
+}
+
+.checkbox-wrapper-3 .toggle span:before {
+    content: "";
+    position: absolute;
+    display: block;
+    margin: -18px;
+    width: 56px;
+    height: 56px;
+    background: rgba(79, 46, 220, 0.5);
+    border-radius: 50%;
+    transform: scale(0);
+    opacity: 1;
+    pointer-events: none;
+}
+
+.checkbox-wrapper-3 #cbx-3:checked+.toggle:before {
+    background: #ffefb7;
+}
+
+.checkbox-wrapper-3 #cbx-3:checked+.toggle span {
+    background: #ffcc16;
+    transform: translateX(20px);
+    transition: all 0.2s cubic-bezier(0.8, 0.4, 0.3, 1.25), background 0.15s ease;
+    box-shadow: 0 3px 8px rgba(79, 46, 220, 0.2);
+}
+
+.checkbox-wrapper-3 #cbx-3:checked+.toggle span:before {
+    transform: scale(1);
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+.inventory-heading {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.inventory-value {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #3d4852;
+}
+
+.inventory-subtext {
+    font-size: 0.85rem;
+    color: #6c757d; 
+    margin-top: 4px;
+}
+
+.divider {
+    height: 60px;
+    width: 1px;
+    background-color: #dee2e6;
+}
+
+.inventory-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.inventory-column {
+    display: flex;
+    flex-direction: column;
 }
