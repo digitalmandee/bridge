@@ -2,7 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FloorPlanController;
 use App\Http\Controllers\BranchManagerController;
@@ -73,6 +76,30 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/admin/permissions/update/{id}', [RolePermissionController::class, 'permissionUpdate'])->name('admin.permissions.update');
     Route::get('/admin/permissions/delete/{id}', [RolePermissionController::class, 'permissionDestroy'])->name('admin.permissions.delete');
     // Permission Section end
+    // Members Section
+    Route::get('/admin/members', [MemberController::class, 'index'])->name('admin.members');
+    Route::get('/admin/members/create', [MemberController::class, 'memberCreate'])->name('admin.members.create');
+    Route::post('/admin/members/store', [MemberController::class, 'memberStore'])->name('admin.members.store');
+    Route::get('/admin/members/edit/{id}', [MemberController::class, 'memberEdit'])->name('admin.members.edit');
+    Route::post('/admin/members/update/{id}', [MemberController::class, 'memberUpdate'])->name('admin.members.update');
+    Route::get('/admin/members/delete/{id}', [MemberController::class, 'memberDestroy'])->name('admin.members.delete');
+    // Members Section end
+    // Invoice Section
+    Route::get('/admin/invoice', [InvoiceController::class, 'index'])->name('admin.invoice');
+    Route::get('/admin/invoice/create', [InvoiceController::class, 'invoiceCreate'])->name('admin.invoice.create');
+    Route::post('/admin/invoice/store', [InvoiceController::class, 'invoiceStore'])->name('admin.invoice.store');
+    Route::get('/admin/invoice/edit/{id}', [InvoiceController::class, 'invoiceEdit'])->name('admin.invoice.edit');
+    Route::post('/admin/invoice/update/{id}', [InvoiceController::class, 'invoiceUpdate'])->name('admin.invoice.update');
+    Route::get('/admin/invoice/delete/{id}', [InvoiceController::class, 'invoiceDestroy'])->name('admin.invoice.delete');
+    // Invoice Section end
+    // Resource Section
+    Route::get('/admin/resource', [ResourceController::class, 'index'])->name('admin.resource');
+    Route::get('/admin/resource/create', [ResourceController::class, 'resourceCreate'])->name('admin.resource.create');
+    Route::post('/admin/resource/store', [ResourceController::class, 'resourceStore'])->name('admin.resource.store');
+    Route::get('/admin/resource/edit/{id}', [ResourceController::class, 'resourceEdit'])->name('admin.resource.edit');
+    Route::post('/admin/resource/update/{id}', [ResourceController::class, 'resourceUpdate'])->name('admin.resource.update');
+    Route::get('/admin/resource/delete/{id}', [ResourceController::class, 'resourceDestroy'])->name('admin.resource.delete');
+    // Resource Section end
 });
 
 require __DIR__ . '/auth.php';

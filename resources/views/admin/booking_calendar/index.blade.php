@@ -6,7 +6,7 @@
             <div>
                 <h3 class="mb-3 mb-md-0">Booking Calendar</h3>
             </div>
-            <a href="{{ route('admin.booking.create') }}" class="layout-btn">New Booking</a>
+            <a href="{{ route('admin.booking.create') }}" class="layout-btn active">New Booking</a>
         </div>
     </div>
 @endsection

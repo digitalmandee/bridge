@@ -7,7 +7,7 @@
             <h3>Dashboard</h3>
         </div>
         <div>
-            <a href="{{ route('admin.booking.create') }}" class="layout-btn">Create Booking</a>
+            <a href="{{ route('admin.booking.create') }}" class="layout-btn active">Create Booking</a>
         </div>
     </div>
     <div class="row">
@@ -25,7 +25,7 @@
                             <div class="row">
                                 <div class="col-6 col-md-12 col-xl-12">
                                     <h3 class="mb-2">6,784</h3>
-                                    <a href="#" class="manage-link">Manage Members</a>
+                                    <a href="{{ route('admin.members') }}" class="manage-link">Manage Members</a>
                                 </div>
                             </div>
                         </div>
@@ -44,7 +44,7 @@
                             <div class="row">
                                 <div class="col-6 col-md-12 col-xl-12">
                                     <h3 class="mb-2">1,920</h3>
-                                    <a href="#" class="manage-link">Setup Invoice</a>
+                                    <a href="{{ route('admin.invoice') }}" class="manage-link">Setup Invoice</a>
                                 </div>
                             </div>
                         </div>

@@ -6,7 +6,7 @@
             <div>
                 <h3>Roles</h3>
             </div>
-            <a href="{{ route('admin.roles.create') }}" class="layout-btn">Add Role</a>
+            <a href="{{ route('admin.roles.create') }}" class="layout-btn active">Add Role</a>
         </div>
         <div class="row card col-md-12">
             <table class="table table-responsive">

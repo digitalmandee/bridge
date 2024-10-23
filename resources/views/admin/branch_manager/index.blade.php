@@ -6,7 +6,7 @@
             <div>
                 <h3>Branch Manager</h3>
             </div>
-            <a href="{{ route('admin.branch.manager.create') }}" class="layout-btn">Add Branch Manager</a>
+            <a href="{{ route('admin.branch.manager.create') }}" class="layout-btn active">Add Branch Manager</a>
         </div>
         <div class="row card col-md-12">
             <table class="table table-responsive">

@@ -6,7 +6,7 @@
             <div>
                 <h3>Branches</h3>
             </div>
-            <a href="{{ route('admin.branches.create') }}" class="layout-btn">Add Branch</a>
+            <a href="{{ route('admin.branches.create') }}" class="layout-btn active">Add Branch</a>
         </div>
         <div class="row card col-md-12">
             <table class="table table-responsive">
