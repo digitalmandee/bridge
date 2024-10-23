@@ -39,6 +39,10 @@ Route::group(['middleware' => 'auth'], function () {
     // Branch section
     Route::get('/admin/branch-manager', [BranchManagerController::class, 'index'])->name('admin.branch.manager');
     Route::get('/admin/branch-manager/create', [BranchManagerController::class, 'branchManagerCreate'])->name('admin.branch.manager.create');
+    Route::post('/admin/branch-manager/store', [BranchManagerController::class, 'branchManagerStore'])->name('admin.branch.manager.store');
+    Route::get('/admin/branch-manager/edit/{id}', [BranchManagerController::class, 'branchManagerEdit'])->name('admin.branch.manager.edit');
+    Route::post('/admin/branch-manager/update/{id}', [BranchManagerController::class, 'branchManagerUpdate'])->name('admin.branch.manager.update');
+    Route::get('/admin/branch-manager/delete/{id}', [BranchManagerController::class, 'branchManagerDestroy'])->name('admin.branch.manager.delete');
     // Branch section end
     // Booking Calendar section
     Route::get('/admin/booking-calendar', [BookingCalendarController::class, 'index'])->name('admin.booking.calendar');

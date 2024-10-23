@@ -21,8 +21,10 @@ class Branch extends Model
 
     public static function storeBranch($request)
     {
+        $formattedName = ucwords(strtolower($request->name));
+        
         $branch = new self();
-        $branch->name = $request->name;
+        $branch->name = $formattedName;
         $branch->location = $request->location;
         $branch->status = $request->status ?? 0;
         $branch->save();
@@ -35,8 +37,10 @@ class Branch extends Model
 
     public static function updateBranch($request, $id)
     {
+        $formattedName = ucwords(strtolower($request->name));
+
         $branch = self::find($id);
-        $branch->name = $request->name;
+        $branch->name = $formattedName;
         $branch->location = $request->location;
         $branch->status = $request->status ?? 0;
         $branch->save();

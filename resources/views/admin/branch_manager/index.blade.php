@@ -23,27 +23,36 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <td>1</td>
-                    <td>yasir</td>
-                    <td>yasir@gmail.com</td>
-                    <td>Johar Town</td>
-                    <td>Dadmasi</td>
-                    <td>Digital Mandee</td>
-                    <td>Free</td>
-                    <td class="text-center">
-                        <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
-                            aria-expanded="false">
-                            <i class="fa fa-ellipsis-v"></i>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#">
-                                <i class="fa fa-edit"></i>
-                            </a>
-                            <a class="dropdown-item text-danger" href="#">
-                                <i class="fa fa-trash"></i>
-                            </a>
-                        </div>
-                    </td>
+                    @php($sl = 1)
+                    @forelse ($branchManagers as $item)
+                        <tr>
+                            <td>{{ $sl++ }}</td>
+                            <td>{{ $item->name }}</td>
+                            <td>{{ $item->email }}</td>
+                            <td>{{ $item->address }}</td>
+                            <td>{{ ucwords(str_replace('_', ' ', $item->roles->pluck('name')->implode(', '))) }}</td>
+                            <td>{{ $item->branch->name }}</td>
+                            <td>{{ $item->status == 1 ? 'Active' : 'Inactive' }}</td>
+                            <td class="text-center">
+                                <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                    <i class="fa fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{{ route('admin.branch.manager.edit', $item->id) }}">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <a class="dropdown-item text-danger" href="{{ route('admin.branch.manager.delete', $item->id) }}">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center">No records found</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
