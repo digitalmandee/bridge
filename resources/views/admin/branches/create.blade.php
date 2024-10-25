@@ -3,7 +3,8 @@
 @section('content')
 <div class="page-content">
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-        <div>
+        <div class="d-flex align-items-baseline gap-2">
+            <a href="{{ route('admin.branches') }}"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
             <h3 class="mb-3 mb-md-0">Create Branch</h3>
         </div>
     </div>
@@ -38,8 +39,7 @@
         <!-- SweetAlert trigger -->
         @if (session('error'))
         <script>
-            showToast('error', '{{ session('
-                error ') }}', '#f8d7da');
+            showToast('error', '{{ session('error') }}', '#f8d7da');
         </script>
         @endif
     </div>

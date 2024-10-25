@@ -447,3 +447,8 @@
 .select {
     position: relative;
 }
+.fa-chevron-left{
+    font-size: 19px!important;
+    font-weight: 900!important;
+    color: #000!important;
+}
