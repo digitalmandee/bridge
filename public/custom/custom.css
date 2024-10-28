@@ -446,8 +446,20 @@
 .select {
     position: relative;
 }
-.fa-chevron-left{
-    font-size: 19px!important;
-    font-weight: 900!important;
-    color: #000!important;
+
+.fa-chevron-left {
+    font-size: 19px !important;
+    font-weight: 900 !important;
+    color: #000 !important;
+}
+
+#start-date-group,
+#end-date-group {
+    display: inline-block;
+    width: calc(50% - 1rem);
+    margin-right: 0.5rem;
+}
+
+#end-date-group {
+    margin-right: 0;
 }

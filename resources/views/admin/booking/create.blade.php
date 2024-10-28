@@ -26,33 +26,33 @@
                             </div>
                         </div>
                         <div class="col-6 col-md-12 col-xl-12 mb-2">
-                            <label class="mb-1" for="name">Email</label>
+                            <label class="mb-1" for="email">Email</label>
                             <div class="form-group">
-                                <input type="text" name="name" class="form-control">
+                                <input type="text" name="email" class="form-control">
                             </div>
                         </div>
                         <div class="col-6 col-md-12 col-xl-12 mb-2">
-                            <label class="mb-1" for="name">Phone No</label>
+                            <label class="mb-1" for="phone">Phone No</label>
                             <div class="form-group">
-                                <input type="text" name="name" class="form-control">
+                                <input type="text" name="phone" class="form-control">
                             </div>
                         </div>
                         <div class="col-6 col-md-12 col-xl-12 mb-2">
-                            <label class="mb-1" for="name">Product</label>
+                            <label class="mb-1" for="product">Product</label>
                             <div class="form-group select">
-                                <select name="name" class="form-control " id="">
-                                    <option value="">select Product</option>
-                                    <option value="">Meeting Rooms</option>
-                                    <option value="">Podcast Rooms</option>
-                                    <option value="">Visitor</option>
-                                    <option value="">Office</option>
+                                <select name="product" class="form-control">
+                                    <option value="">Select Product</option>
+                                    <option value="meeting_rooms">Meeting Rooms</option>
+                                    <option value="podcast_rooms">Podcast Rooms</option>
+                                    <option value="visitor">Visitor</option>
+                                    <option value="office">Office</option>
                                 </select>
                                 <span class="down-icon"><i class="fas fa-chevron-down"></i></span>
                             </div>
                         </div>
                         <div class="box-footer text-center">
-                            <button class="layout-btn">Cancel</button>
-                            <button class="layout-btn active">Submit</button>
+                            <button type="button" class="layout-btn">Cancel</button>
+                            <button type="submit" class="layout-btn active">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -78,30 +78,34 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-6 col-md-12 col-xl-12 mb-2">
                             <label class="mb-1" for="duration">Duration</label>
                             <div class="form-group select">
                                 <select name="duration" class="form-control" id="duration">
                                     <option value="">Select Duration</option>
-                                    <option value="">Daily</option>
-                                    <option value="">Weekly</option>
-                                    <option value="">Monthly</option>
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
                                 </select>
                                 <span class="down-icon"><i class="fas fa-chevron-down"></i></span>
                             </div>
                         </div>
-                        <div class="col-6 col-md-12 col-xl-12 mb-2">
-                            <div class="d-flex gap-2">
-                                <div class="form-group w-50">
-                                    <label class="mb-1" for="start-date">Start Date</label>
-                                    <input class="form-control" type="date" id="start-date" name="start-date" value="2024-05-04">
-                                </div>
-                                <div class="form-group w-50">
-                                    <label class="mb-1" for="end-date">End Date</label>
-                                    <input class="form-control" type="date" id="end-date" name="end-date" value="2024-05-04">
-                                </div>
+
+                        <div class="col-6 col-md-12 col-xl-12 mb-2" id="start-date-group" style="display: none;">
+                            <div class="form-group">
+                                <label class="mb-1" id="start-date-label" for="start-date">Start Date</label>
+                                <input class="form-control" type="date" id="start-date" name="start-date">
                             </div>
                         </div>
+
+                        <div class="col-6 col-md-12 col-xl-12 mb-2" id="end-date-group" style="display: none;">
+                            <div class="form-group">
+                                <label class="mb-1" for="end-date">End Date</label>
+                                <input class="form-control" type="date" id="end-date" name="end-date">
+                            </div>
+                        </div>
+
                         <div class="col-6 col-md-12 col-xl-12 mb-2">
                             <div class="form-group">
                                 <label class="mb-1" for="seat">Seat/Room</label>
@@ -113,20 +117,23 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-6 col-md-12 col-xl-12 mb-2">
                             <label class="mb-1" for="purpose">Purpose of Booking</label>
                             <div class="form-group">
                                 <input class="form-control" type="text" id="purpose" name="purpose" placeholder="Purpose of Booking">
                             </div>
                         </div>
+
                         <div class="box-footer text-center">
-                            <button class="layout-btn">Cancel</button>
-                            <button class="layout-btn active">Submit</button>
+                            <button type="button" class="layout-btn">Cancel</button>
+                            <button type="submit" class="layout-btn active">Submit</button>
                         </div>
+                    </form>
                 </div>
-                </form>
             </div>
         </div>
     </div>
 </div>
+
 @endsection

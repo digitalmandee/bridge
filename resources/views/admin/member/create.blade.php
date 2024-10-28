@@ -101,8 +101,7 @@
     <!-- SweetAlert trigger -->
     @if (session('error'))
     <script>
-        showToast('error', '{{ session('
-            error ') }}', '#f8d7da');
+        showToast('error', '{{ session('error') }}', '#f8d7da');
     </script>
     @endif
 </div>

@@ -104,3 +104,28 @@
         })
     );
 </script>
+
+<script>
+    $(function() {
+        const $startGroup = $('#start-date-group'),
+            $endGroup = $('#end-date-group'),
+            $duration = $('#duration'),
+            $startLabel = $('#start-date-label'),
+            $endLabel = $endGroup.find('.form-group label');
+
+        function toggleDateFields() {
+            const selectedDuration = $duration.val();
+            const showStart = ['daily', 'weekly', 'monthly'].includes(selectedDuration);
+            const showEnd = ['weekly', 'monthly'].includes(selectedDuration);
+
+            $startGroup.toggle(showStart).toggleClass('show', showStart);
+            $endGroup.toggle(showEnd).toggleClass('show', showEnd);
+            $startLabel.text(showStart ? (selectedDuration === 'daily' ? 'Select Date' : 'Start Date') : '');
+            if (showStart) $endLabel.text('End Date');
+        }
+
+        toggleDateFields();
+        $duration.change(toggleDateFields);
+        $('.tab').click(() => $duration.val('').change());
+    });
+</script>

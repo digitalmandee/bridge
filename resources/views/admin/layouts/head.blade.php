@@ -60,4 +60,5 @@
     <!-- End layout styles -->
 
     <link rel="shortcut icon" href="{{ asset('adminPanel/images/favicon.png') }}" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
