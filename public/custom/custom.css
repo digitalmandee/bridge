@@ -62,7 +62,7 @@
 
 .main-btn {
     padding: 6px 15px;
-    background-color: #ffff;
+    background-color: #FFF7DB;
     border: 1.5px solid #FFCC16;
     cursor: pointer;
     border-radius: 20px;
@@ -71,14 +71,13 @@
 .main-btn:hover,
 .layout-btn:hover {
     background-color: #FFCC16;
-    color: #FFF;
     transition: background-color 0.3s, color 0.3s;
 }
 
 .main-btn.active,
 .layout-btn.active {
     background-color: #FFCC16;
-    color: #FFF !important;
+    color: #000;
 }
 
 .card-button .btn-toggle {
