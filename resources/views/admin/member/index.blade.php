@@ -44,6 +44,7 @@
                     <th>Price</th>
                     <th>Payment Method</th>
                     <th class="text-center">Status</th>
+                    <th class="text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,6 +59,19 @@
                     <td class="text-center">
                         <span class="label label-book">Confirmed</span>
                     </td>
+                    <td class="text-center">
+                        <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-ellipsis-v"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a class="dropdown-item text-danger" href="#">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>
@@ -68,7 +82,20 @@
                     <td>0.00 USD</td>
                     <td>Paypall</td>
                     <td class="text-center">
-                        <span class="label label-cancel">Confirmed</span>
+                        <span class="label label-cancel">Cancel</span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-ellipsis-v"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a class="dropdown-item text-danger" href="#">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        </div>
                     </td>
                 </tr>
                 <tr>
@@ -80,7 +107,20 @@
                     <td>0.00 USD</td>
                     <td>Paypall</td>
                     <td class="text-center">
-                        <span class="label label-pending">Confirmed</span>
+                        <span class="label label-pending">Pending</span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-ellipsis-v"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a class="dropdown-item text-danger" href="#">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -91,7 +131,7 @@
         @if (session('success'))
         <script>
             // Show the Toast
-            showToast('success', '{{ session('success ') }}', '#d4edda');
+            showToast('success', '{{ session('success') }}', '#d4edda');
         </script>
         @endif
     </div>
