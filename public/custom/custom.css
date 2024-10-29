@@ -77,7 +77,7 @@
 .main-btn.active,
 .layout-btn.active {
     background-color: #FFCC16;
-    color: #000;
+    color: #ffffff;
 }
 
 .card-button .btn-toggle {
@@ -463,3 +463,23 @@
 #end-date-group {
     margin-right: 0;
 }
+  .round {
+    background-color: rgb(102, 187, 106);
+    border: 1px solid rgb(102, 187, 106);
+    border-radius: 50%;
+    cursor: pointer;
+    height: 22px;
+    width: 22px;
+    display: block;
+  }
+
+ 
+.round-1{
+    background-color: #cd2525;
+    border: 1px solid #cd2525;
+    border-radius: 50%;
+    cursor: pointer;
+    height: 22px;
+    width: 22px;
+    display: block;
+  }

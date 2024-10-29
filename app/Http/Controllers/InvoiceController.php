@@ -21,6 +21,11 @@ class InvoiceController extends Controller
 
     }
 
+    public function invoiceShow()
+    {
+        return view('admin.invoice.show');
+    }
+
     public function invoiceEdit($id)
     {
 
