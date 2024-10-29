@@ -129,3 +129,12 @@
         $('.tab').click(() => $duration.val('').change());
     });
 </script>
+
+{{-- to validate number input --}}
+<script>
+    function validateTotalMembers(input) {
+        if (input.value < 1) {
+            input.value = '';
+        }
+    }
+</script>

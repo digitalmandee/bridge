@@ -5,7 +5,6 @@
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
             <div class="d-flex align-items-baseline gap-2">
-                <a href="#"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
                 <h3>Members</h3>
             </div>
         </div>
