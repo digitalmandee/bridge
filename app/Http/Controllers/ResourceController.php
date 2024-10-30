@@ -13,7 +13,7 @@ class ResourceController extends Controller
 
     public function resourceCreate()
     {
-
+        return view('admin.resource.create');
     }
 
     public function resourceStore(Request $request)

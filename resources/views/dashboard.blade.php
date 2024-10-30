@@ -62,7 +62,7 @@
                             <div class="row">
                                 <div class="col-6 col-md-12 col-xl-12">
                                     <h3 class="mb-2">$4,920</h3>
-                                    <a href="#" class="manage-link">Add Resources</a>
+                                    <a href="{{ route('admin.resource.create') }}" class="manage-link">Add Resources</a>
                                 </div>
                             </div>
                         </div>

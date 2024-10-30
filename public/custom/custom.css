@@ -463,7 +463,8 @@
 #end-date-group {
     margin-right: 0;
 }
-  .round {
+
+.round {
     background-color: rgb(102, 187, 106);
     border: 1px solid rgb(102, 187, 106);
     border-radius: 50%;
@@ -471,10 +472,10 @@
     height: 22px;
     width: 22px;
     display: block;
-  }
+}
 
- 
-.round-1{
+
+.round-1 {
     background-color: #cd2525;
     border: 1px solid #cd2525;
     border-radius: 50%;
@@ -482,7 +483,27 @@
     height: 22px;
     width: 22px;
     display: block;
-  }
-  .ammount-card{
-    background: #FFCC16!important;
-  }
+}
+
+.ammount-card {
+    background: #FFCC16 !important;
+}
+
+.upload-container {
+    border: 2px dashed #d3d3d3;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.input-box input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1 !important;
+}
+
+.input-box input {
+    width: 50px !important;
+    outline: none;
+    border: 0 !important;
+}
