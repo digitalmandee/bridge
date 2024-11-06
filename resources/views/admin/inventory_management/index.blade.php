@@ -10,58 +10,45 @@
     <div class="row grid-margin">
         <div class="col-12">
             <div class="card p-4">
-                <div class="mb-3">
-                    <h4>Overall Inventory</h4>
-                </div>
                 <div class="d-flex justify-content-between align-items-center">
                     <!-- Categories -->
                     <div class="inventory-item">
                         <h6 class="inventory-heading text-primary">Categories</h6>
                         <h2 class="inventory-value">14</h2>
-                        <small class="inventory-subtext">Last 7 days</small>
                     </div>
                     <div class="divider"></div>
                     <!-- Total Products -->
                     <div class="inventory-item">
-                        <h6 class="inventory-heading text-warning">Total Products</h6>
+                        <h6 class="inventory-heading text-warning">Total Inventory</h6>
                         <div class="inventory-content">
                             <div class="inventory-column">
                                 <h2 class="inventory-value">868</h2>
-                                <small class="inventory-subtext">Last 7 days</small>
                             </div>
                             <div class="inventory-column">
                                 <h2 class="inventory-value">₹25000</h2>
-                                <small class="inventory-subtext">Revenue</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="divider"></div>
-                    <!-- Top Selling -->
-                    <div class="inventory-item">
-                        <h6 class="inventory-heading text-success">Top Selling</h6>
-                        <div class="inventory-content">
-                            <div class="inventory-column">
-                                <h2 class="inventory-value">868</h2>
-                                <small class="inventory-subtext">Last 7 days</small>
-                            </div>
-                            <div class="inventory-column">
-                                <h2 class="inventory-value">₹25000</h2>
-                                <small class="inventory-subtext">Cost</small>
                             </div>
                         </div>
                     </div>
                     <div class="divider"></div>
                     <!-- Low Stocks -->
                     <div class="inventory-item">
-                        <h6 class="inventory-heading text-danger">Low Stocks</h6>
+                        <h6 class="inventory-heading text-danger">Stocks</h6>
                         <div class="inventory-content">
+                            <div class="inventory-column">
+                                <h2 class="inventory-value">8</h2>
+                                <small class="inventory-subtext">In stock</small>
+                            </div>
                             <div class="inventory-column">
                                 <h2 class="inventory-value">8</h2>
                                 <small class="inventory-subtext">Ordered</small>
                             </div>
                             <div class="inventory-column">
                                 <h2 class="inventory-value">2</h2>
-                                <small class="inventory-subtext">Not in stock</small>
+                                <small class="inventory-subtext">Out of stock</small>
+                            </div>
+                            <div class="inventory-column">
+                                <h2 class="inventory-value">2</h2>
+                                <small class="inventory-subtext">Damaged</small>
                             </div>
                         </div>
                     </div>
@@ -76,7 +63,7 @@
                 <h4>Product</h4>
             </div>
             <div class="d-flex gap-2">
-                <button class="floor-btn" role="button">Add Product</button>
+                <button class="floor-btn" role="button">Add Inventory</button>
                 <button class="floor-btn" role="button">
                     <i class="fa fa-filter me-2"></i> Filter
                 </button>
@@ -90,7 +77,6 @@
                     <th>Product Name</th>
                     <th>Quantity</th>
                     <th>Location</th>
-                    <th>Amount</th>
                     <th class="text-center">Status</th>
                 </tr>
             </thead>
@@ -100,7 +86,6 @@
                     <td>Printer</td>
                     <td>37</td>
                     <td>Floor 3, Room1</td>
-                    <td>$555</td>
                     <td class="text-center">
                         <span class="label label-book">Working</span>
                     </td>
@@ -110,7 +95,6 @@
                     <td>Printer</td>
                     <td>37</td>
                     <td>Floor 3, Room1</td>
-                    <td>$555</td>
                     <td class="text-center">
                         <span class="label label-cancel">Out Of stock</span>
                     </td>
@@ -120,7 +104,6 @@
                     <td>Printer</td>
                     <td>37</td>
                     <td>Floor 3, Room1</td>
-                    <td>$555</td>
                     <td class="text-center">
                         <span class="label label-cancel">Damaged</span>
                     </td>

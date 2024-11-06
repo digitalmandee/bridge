@@ -25,7 +25,10 @@
                             <div class="row">
                                 <div class="col-6 col-md-12 col-xl-12">
                                     <h3 class="mb-2">6,784</h3>
-                                    <a href="{{ route('admin.members') }}" class="manage-link">Manage Members</a>
+                                    <a href="{{ route('admin.members') }}" class="manage-link">
+                                        Manage Members
+                                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -44,7 +47,9 @@
                             <div class="row">
                                 <div class="col-6 col-md-12 col-xl-12">
                                     <h3 class="mb-2">1,920</h3>
-                                    <a href="{{ route('admin.invoice') }}" class="manage-link">Setup Invoice</a>
+                                    <a href="{{ route('admin.invoice') }}" class="manage-link">Setup Invoice
+                                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -62,7 +67,9 @@
                             <div class="row">
                                 <div class="col-6 col-md-12 col-xl-12">
                                     <h3 class="mb-2">$4,920</h3>
-                                    <a href="{{ route('admin.resource.create') }}" class="manage-link">Add Resources</a>
+                                    <a href="{{ route('admin.resource.create') }}" class="manage-link">Add Resources
+                                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -80,7 +87,9 @@
                             <div class="row">
                                 <div class="col-6 col-md-12 col-xl-12">
                                     <h3 class="mb-2">320</h3>
-                                    <a href="#" class="manage-link">Create Guide</a>
+                                    <a href="#" class="manage-link">Create Guide
+                                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
