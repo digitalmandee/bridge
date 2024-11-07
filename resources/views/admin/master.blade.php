@@ -1,3 +1,4 @@
+@can('master-layout')
 <!DOCTYPE html>
 <html lang="en">
     <!-- head -->
@@ -28,3 +29,4 @@
     <!-- /Script -->
   </body>
 </html>
+@endcan

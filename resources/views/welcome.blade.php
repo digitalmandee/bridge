@@ -30,20 +30,17 @@
                     </a>
                 </div>
                 <div class="four_login_section">
-                    <a href="">
+                    <a href="{{ route('login') }}">
                     <img src="{{ asset('images/welcome_page/SuperAdmin.png') }}" alt="SuperAdmin">
                     <h5>Super Admin</h5>
                     </a>
                 </div>
                 <div class="four_login_section">
-                    <a href="">
+                    <a href="#">
                     <img src="{{ asset('images/welcome_page/user.png') }}" alt="user">
                     <h5>User</h5>
                     </a>
                 </div>
-            </div>
-            <div class="loginftr">
-            <a href="{{ route('login') }}">Already have an Admin account? Login</a>
             </div>
         </div>
     </div>
