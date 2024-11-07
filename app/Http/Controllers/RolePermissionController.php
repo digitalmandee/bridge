@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class RolePermissionController extends Controller
 {
@@ -155,10 +156,18 @@ class RolePermissionController extends Controller
 
     public function permissionDestroy($id)
     {
+        DB::beginTransaction();
         try {
-            Permission::find($id)->delete();
+            $permission = Permission::find($id);
+
+            $permission->roles()->detach();
+
+            $permission->delete();
+
+            DB::commit();
             return redirect()->route('admin.permissions')->with('success', 'Permission deleted successfully');
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->route('admin.permissions')->with('error', 'There was an error deleted the permission. Please try again.');
         }
     }

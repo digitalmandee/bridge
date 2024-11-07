@@ -93,14 +93,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/admin/invoice/update/{id}', [InvoiceController::class, 'invoiceUpdate'])->name('admin.invoice.update');
     Route::get('/admin/invoice/delete/{id}', [InvoiceController::class, 'invoiceDestroy'])->name('admin.invoice.delete');
     // Invoice Section end
-    // Resource Section
-    Route::get('/admin/resource', [ResourceController::class, 'index'])->name('admin.resource');
-    Route::get('/admin/resource/create', [ResourceController::class, 'resourceCreate'])->name('admin.resource.create');
-    Route::post('/admin/resource/store', [ResourceController::class, 'resourceStore'])->name('admin.resource.store');
-    Route::get('/admin/resource/edit/{id}', [ResourceController::class, 'resourceEdit'])->name('admin.resource.edit');
-    Route::post('/admin/resource/update/{id}', [ResourceController::class, 'resourceUpdate'])->name('admin.resource.update');
-    Route::get('/admin/resource/delete/{id}', [ResourceController::class, 'resourceDestroy'])->name('admin.resource.delete');
-    // Resource Section end
 });
 
 require __DIR__ . '/auth.php';

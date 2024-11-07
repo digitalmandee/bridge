@@ -91,30 +91,6 @@
                 </a>
             </li>
             @endcan
-            @can('calendar')
-            <li class="nav-item bar-item mb-1">
-                <a href="#" class="nav-link bar-link">
-                    <img class="link-icon" src="{{ asset('icons/booking.svg') }}" alt="Calender Icon">
-                    <span class="link-title">Calender</span>
-                </a>
-            </li>
-            @endcan
-            @can('contact')
-            <li class="nav-item bar-item mb-1">
-                <a href="#" class="nav-link bar-link">
-                    <img class="link-icon" src="{{ asset('icons/contact.svg') }}" alt="Contact Icon">
-                    <span class="link-title">Contact</span>
-                </a>
-            </li>
-            @endcan
-            @can('settings')
-            <li class="nav-item bar-item mb-1">
-                <a href="#" class="nav-link bar-link">
-                    <img class="link-icon" src="{{ asset('icons/setting.svg') }}" alt="Settings Icon">
-                    <span class="link-title">Settings</span>
-                </a>
-            </li>
-            @endcan
             @can('roles')
             <li class="nav-item bar-item mb-1">
                 <a href="{{ route('admin.roles') }}" class="nav-link bar-link">

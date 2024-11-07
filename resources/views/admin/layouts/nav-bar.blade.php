@@ -3,14 +3,6 @@
         <i data-feather="menu"></i>
     </a>
     <div class="navbar-content">
-        <form class="search-form">
-            <div class="input-group">
-                <div class="input-group-text me-2" style="background: transparent!important;">
-                    <i data-feather="search"></i>
-                </div>
-                <input type="text" class="form-srch" id="navbarForm" placeholder="Search">
-            </div>
-        </form>
         <ul class="navbar-nav">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
