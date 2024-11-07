@@ -4322,7 +4322,7 @@ div.tox .btn-group-sm>.tox-button,
 .tt-menu .tt-suggestion:active {
   color: var(--bs-dropdown-link-active-color);
   text-decoration: none;
-  background-color: var(--bs-dropdown-link-active-bg);
+  background-color: #ffcc16;
 }
 
 .dropdown-item.disabled,
@@ -25924,7 +25924,7 @@ div.tox .btn-group-lg>.btn-icon-text.tox-button .btn-icon-append,
 
 .dropdown-item:not(.dropdown-item:active, .dropdown-item.active):hover,
 .tt-menu .tt-suggestion:not(.dropdown-item:active, .dropdown-item.active):hover {
-  background-color: rgba(101, 113, 255, 0.1);
+  background-color: rgb(255 239 183);
 }
 
 .dropdown-item:not(.dropdown-item:active, .dropdown-item.active):hover,

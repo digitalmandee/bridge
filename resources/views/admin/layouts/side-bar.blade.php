@@ -94,7 +94,7 @@
             @can('roles')
             <li class="nav-item bar-item mb-1">
                 <a href="{{ route('admin.roles') }}" class="nav-link bar-link">
-                    <img class="link-icon" src="{{ asset('icons/setting.svg') }}" alt="Settings Icon">
+                    <img class="link-icon" src="{{ asset('icons/Role.svg') }}" alt="Settings Icon">
                     <span class="link-title">Roles</span>
                 </a>
             </li>
@@ -102,7 +102,7 @@
             @can('permissions')
             <li class="nav-item bar-item mb-1">
                 <a href="{{ route('admin.permissions') }}" class="nav-link bar-link">
-                    <img class="link-icon" src="{{ asset('icons/setting.svg') }}" alt="Settings Icon">
+                    <img class="link-icon" src="{{ asset('icons/permission.svg') }}" alt="Settings Icon">
                     <span class="link-title">Permissions</span>
                 </a>
             </li>
