@@ -2,25 +2,22 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use App\Models\Branch;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class BranchManager extends Model
 {
-    use HasFactory, SoftDeletes, HasRoles;
-
-    protected $guard_name = 'web';
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'branch_id',
         'name',
-        'email',
-        'password',
         'address',
         'status',
         'deleted_at'
@@ -31,6 +28,11 @@ class BranchManager extends Model
     {
         return $this->belongsTo(Branch::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
     // Relation Section end
 
     public static function getBranchManagers()
@@ -38,8 +40,8 @@ class BranchManager extends Model
         return self::with(['branch' => function ($query) {
             $query->select('id', 'name');
         },
-        'roles' => function ($query) {
-            $query->select('id', 'name');
+        'user' => function ($query) {
+            $query->select('id', 'name', 'email');
         }])
         ->get();
     }
@@ -48,10 +50,15 @@ class BranchManager extends Model
     {
         $formattedName = ucwords(strtolower($request->name));
 
+        $user = new User();
+        $user->name = $formattedName;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->save();
+
         $branchManager = new self();
+        $branchManager->user_id = $user->id;
         $branchManager->name = $formattedName;
-        $branchManager->email = $request->email;
-        $branchManager->password = Hash::make($request->password);
         $branchManager->address = $request->address;
         $branchManager->branch_id = $request->branch_id;
         $branchManager->status = $request->status;
@@ -60,7 +67,7 @@ class BranchManager extends Model
         if ($request->role_id) {
             $role = Role::findById($request->role_id);
             if ($role) {
-                $branchManager->assignRole($role->name);
+                $user->syncRoles([$role->name]);
             }
         }
     }
@@ -70,8 +77,8 @@ class BranchManager extends Model
         $bm = self::with(['branch' => function ($query) {
             $query->select('id', 'name');
         },
-        'roles' => function ($query) {
-            $query->select('id', 'name');
+        'user' => function ($query) {
+            $query->select('id', 'name', 'email');
         }])
         ->find($id);
 
@@ -88,10 +95,14 @@ class BranchManager extends Model
     public static function updateBranchManager($request, $id)
     {
         $formattedName = ucwords(strtolower($request->name));
-
         $branchManager = self::find($id);
+        $user = User::find($branchManager->user_id);
+        $user->name = $formattedName;
+        $user->email = $request->email;
+        $user->save();
+
+        $branchManager->user_id = $user->id;
         $branchManager->name = $formattedName;
-        $branchManager->email = $request->email;
         $branchManager->address = $request->address;
         $branchManager->branch_id = $request->branch_id;
         $branchManager->status = $request->status;
@@ -100,7 +111,7 @@ class BranchManager extends Model
         if ($request->role_id) {
             $role = Role::findById($request->role_id);
             if ($role) {
-                $branchManager->syncRoles([$role->name]);
+                $user->syncRoles([$role->name]);
             }
         }
     }
@@ -108,11 +119,13 @@ class BranchManager extends Model
     public static function deleteBranchManager($id)
     {
         $branchManager = self::find($id);
+        $user = User::find($branchManager->user_id);
 
         if (!$branchManager) {
             return redirect()->route('admin.branch.manager')->with('error', 'There was an error deleting the branch manager. Please try again.');
         }
-        $branchManager->roles()->detach();
+        $user->roles()->detach();
         $branchManager->delete();
+        $user->delete();
     }
 }

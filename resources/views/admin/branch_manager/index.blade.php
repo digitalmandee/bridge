@@ -28,9 +28,9 @@
                         <tr>
                             <td>{{ $sl++ }}</td>
                             <td>{{ $item->name }}</td>
-                            <td>{{ $item->email }}</td>
+                            <td>{{ $item->user->email }}</td>
                             <td>{{ $item->address }}</td>
-                            <td>{{ ucwords(str_replace('_', ' ', $item->roles->pluck('name')->implode(', '))) }}</td>
+                            <td>{{ ucwords(str_replace('_', ' ', $item->user->roles->pluck('name')->implode(', '))) }}</td>
                             <td>{{ $item->branch->name }}</td>
                             <td>{{ $item->status == 1 ? 'Active' : 'Inactive' }}</td>
                             <td class="text-center">

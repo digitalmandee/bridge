@@ -21,7 +21,7 @@
             <div class="col-6 col-md-12 col-xl-6 mb-2">
                 <label class="mb-1" for="name">Email</label>
                 <div class="form-group">
-                    <input type="text" name="email" value="{{ $branchManager->email }}" class="form-control">
+                    <input type="text" name="email" value="{{ $branchManager->user->email }}" class="form-control">
                 </div>
             </div>
 
@@ -39,7 +39,7 @@
                         <option selected disabled>Select role</option>
                         @forelse ($roles as $role)
                         <option value="{{ $role->id }}"
-                            {{$branchManager->roles->pluck('id')->implode(', ') == $role->id ? 'selected' : ''}}>
+                            {{$branchManager->user->roles->pluck('id')->implode(', ') == $role->id ? 'selected' : ''}}>
                             {{ ucwords(str_replace('_', ' ', $role->name)) }}
                         </option>
                         @empty

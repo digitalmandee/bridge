@@ -28,8 +28,8 @@ Route::get('/', function () {
 });
 
 Route::group(['middleware' => 'auth'], function () {
+    Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
     Route::group(['prefix' => '/admin'], function () {
-        Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
         // Branch section
         Route::get('branches', [BranchController::class, 'index'])->name('admin.branches');
         Route::get('branches/create', [BranchController::class, 'branchCreate'])->name('admin.branches.create');
