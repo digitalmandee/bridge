@@ -34,6 +34,12 @@
     border-radius: 8px;
     margin-left: 10px;
 }
+.non-active {
+    background-color: transparent !important;
+}
+.non-active::before {
+    background-color: transparent !important;
+}
 
 .bar-item:hover {
     background-color: #ffcc164f;

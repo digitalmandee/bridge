@@ -12,7 +12,7 @@
     <div class="sidebar-body">
         <ul class="nav">
             @can('dashboard')
-            <li class="nav-item bar-item mb-1">
+            <li class="nav-item bar-item mb-1 {{ Request::routeIs('dashboard') ? 'active' : 'non-active' }}">
                 <a href="{{ route('dashboard') }}" class="nav-link bar-link">
                     <img class="link-icon" src="{{ asset('icons/dashboard.svg') }}" alt="dashboard Icon">
                     <span class="link-title">Dashboard</span>
@@ -20,7 +20,7 @@
             </li>
             @endcan()
             @can('branches')
-            <li class="nav-item bar-item mb-1">
+            <li class="nav-item bar-item mb-1 {{ Request::routeIs('admin.branches', 'admin.branches.create', 'admin.branch.edit') ? 'active' : 'non-active' }}">
                 <a href="{{ route('admin.branches') }}" class="nav-link bar-link">
                     <img class="link-icon" src="{{ asset('icons/branches.svg') }}" alt="Branches Icon">
                     <span class="link-title">Branches</span>
@@ -28,7 +28,7 @@
             </li>
             @endcan
             @can('branch-manager')
-            <li class="nav-item bar-item mb-1">
+            <li class="nav-item bar-item mb-1 {{ Request::routeIs('admin.branch.manager', 'admin.branch.manager.create', 'admin.branch.manager.edit') ? 'active' : 'non-active' }}">
                 <a href="{{ route('admin.branch.manager') }}" class="nav-link bar-link">
                     <img class="link-icon" src="{{ asset('icons/branch-manager.svg') }}" alt="Branch-Manager Icon">
                     <span class="link-title">Branch Manager</span>
@@ -44,7 +44,7 @@
             </li>
             @endcan
             @can('floor-plan')
-            <li class="nav-item bar-item mb-1">
+            <li class="nav-item bar-item mb-1 {{ Request::routeIs('admin.floor.plan') ? 'active' : 'non-active' }}">
                 <a href="{{ route('admin.floor.plan') }}" class="nav-link bar-link">
                     <img class="link-icon" src="{{ asset('icons/floorplan.svg') }}" alt="Floor Icon">
                     <span class="link-title">Floor Plan</span>
@@ -52,7 +52,7 @@
             </li>
             @endcan
             @can('inventory-management')
-            <li class="nav-item bar-item mb-1">
+            <li class="nav-item bar-item mb-1 {{ Request::routeIs('admin.inventory.management') ? 'active' : 'non-active' }}">
                 <a href="{{ route('admin.inventory.management') }}" class="nav-link bar-link">
                     <img class="link-icon" src="{{ asset('icons/inventory.svg') }}" alt="Inventory Icon">
                     <span class="link-title">Inventory Management</span>
@@ -60,7 +60,7 @@
             </li>
             @endcan
             @can('booking-management')
-            <li class="nav-item bar-item mb-1">
+            <li class="nav-item bar-item mb-1 {{ Request::routeIs('admin.booking.calendar', 'admin.booking.create') ? 'active' : 'non-active' }}">
                 <a href="{{ route('admin.booking.calendar') }}" class="nav-link bar-link">
                     <img class="link-icon" src="{{ asset('icons/booking.svg') }}" alt="Booking Icon">
                     <span class="link-title">Booking Management</span>
@@ -92,7 +92,7 @@
             </li>
             @endcan
             @can('roles')
-            <li class="nav-item bar-item mb-1">
+            <li class="nav-item bar-item mb-1 {{ Request::routeIs('admin.roles', 'admin.roles.create', 'admin.roles.edit') ? 'active' : 'non-active' }}">
                 <a href="{{ route('admin.roles') }}" class="nav-link bar-link">
                     <img class="link-icon" src="{{ asset('icons/Role.svg') }}" alt="Settings Icon">
                     <span class="link-title">Roles</span>
@@ -100,7 +100,7 @@
             </li>
             @endcan
             @can('permissions')
-            <li class="nav-item bar-item mb-1">
+            <li class="nav-item bar-item mb-1 {{ Request::routeIs('admin.permissions', 'admin.permissions.create', 'admin.permissions.edit') ? 'active' : 'non-active' }}">
                 <a href="{{ route('admin.permissions') }}" class="nav-link bar-link">
                     <img class="link-icon" src="{{ asset('icons/permission.svg') }}" alt="Settings Icon">
                     <span class="link-title">Permissions</span>
