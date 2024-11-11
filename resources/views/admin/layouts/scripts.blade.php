@@ -138,50 +138,39 @@
         }
     }
 </script>
+<!-- jQuery Script -->
 <script>
-
-    // Show Floors after selecting Branch
-    function showFloors(element) {
-        setActive(element, 'flat');
-        document.getElementById('floors').style.display = 'block';
-        document.getElementById('rooms').style.display = 'none';
-        document.getElementById('tables').style.display = 'none';
-        document.getElementById('chairs').style.display = 'none';
-    }
-
-    // Show Rooms after selecting Floor
-    function showRooms(element) {
-        setActive(element, 'floor');
-        document.getElementById('rooms').style.display = 'block';
-        document.getElementById('tables').style.display = 'none';
-        document.getElementById('chairs').style.display = 'none';
-    }
-
-    // Show Tables after selecting Room
-    function showTables(element) {
-        setActive(element, 'room');
-        document.getElementById('tables').style.display = 'block';
-        document.getElementById('chairs').style.display = 'none';
-    }
-
-    // Show Chairs after selecting Table
-    function showChairs(element) {
-        setActive(element, 'table');
-        document.getElementById('chairs').style.display = 'block';
-    }
-
-    // Book Chair and display notification
-    function bookChair(chair) {
-        if (chair.classList.contains('available')) {
-            chair.classList.remove('available');
-            chair.classList.add('booked');
-            document.getElementById('notification').style.display = 'block';
-
-            setTimeout(function() {
-                document.getElementById('notification').style.display = 'none';
-            }, 2000); // Hide after 2 seconds
+    $(document).ready(function() {
+        // Function definitions
+        function showFloors() {
+            $('#floors').show();
+            $('#rooms, #tables, #chairs').hide();
         }
-    }
-    // Initial display of flats
-    document.getElementById('flats').style.display = 'block';
+        function showRooms() {
+            $('#rooms').show();
+            $('#tables, #chairs').hide();
+        }
+        function showTables() {
+            $('#tables').show();
+            $('#chairs').hide();
+        }
+        function showChairs() {
+            $('#chairs').show();
+        }
+        function bookChair(chair) {
+            if ($(chair).hasClass('available')) {
+                $(chair).removeClass('available').addClass('booked');
+                $('#notification').show().delay(2000).fadeOut();
+            }
+        }
+        // Event delegation to handle button clicks
+        $('#flats').on('click', '[data-action="showFloors"]', showFloors);
+        $('#floors').on('click', '[data-action="showRooms"]', showRooms);
+        $('#rooms').on('click', '[data-action="showTables"]', showTables);
+        $('#tables').on('click', '[data-action="showChairs"]', showChairs);
+        // Chair booking event
+        $('#chairs').on('click', '[data-action="bookChair"]', function() {
+            bookChair(this);
+        });
+    });
 </script>
