@@ -507,3 +507,66 @@ input[type="number"]::-webkit-outer-spin-button {
     outline: none;
     border: 0 !important;
 }
+
+/* Container Styling */
+#floors,
+#rooms,
+#tables,
+#chairs {
+    display: none;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Element Styling */
+.flat,
+.floor,
+.room,
+.tabl,
+.chair {
+    padding: 6px 15px;
+    border: 1px solid #FFCC16;
+    margin: 10px;
+    cursor: pointer;
+    display: inline-block;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+}
+
+
+/* Chair Status Colors */
+.chair.available {
+    background-color: green;
+    color: white;
+}
+
+.chair.booked {
+    background-color: red;
+    color: white;
+}
+
+.chair.damaged {
+    background-color: gray;
+    color: white;
+}
+
+/* Button Style for Chairs */
+.chair.available:hover {
+    background-color: darkgreen;
+}
+
+.chair.booked,
+.chair.damaged {
+    cursor: not-allowed;
+}
+
+/* Notification Styling */
+#notification {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid green;
+    color: green;
+    border-radius: 5px;
+    display: none;
+    text-align: center;
+}

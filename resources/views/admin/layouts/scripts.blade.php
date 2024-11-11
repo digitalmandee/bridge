@@ -138,3 +138,50 @@
         }
     }
 </script>
+<script>
+
+    // Show Floors after selecting Branch
+    function showFloors(element) {
+        setActive(element, 'flat');
+        document.getElementById('floors').style.display = 'block';
+        document.getElementById('rooms').style.display = 'none';
+        document.getElementById('tables').style.display = 'none';
+        document.getElementById('chairs').style.display = 'none';
+    }
+
+    // Show Rooms after selecting Floor
+    function showRooms(element) {
+        setActive(element, 'floor');
+        document.getElementById('rooms').style.display = 'block';
+        document.getElementById('tables').style.display = 'none';
+        document.getElementById('chairs').style.display = 'none';
+    }
+
+    // Show Tables after selecting Room
+    function showTables(element) {
+        setActive(element, 'room');
+        document.getElementById('tables').style.display = 'block';
+        document.getElementById('chairs').style.display = 'none';
+    }
+
+    // Show Chairs after selecting Table
+    function showChairs(element) {
+        setActive(element, 'table');
+        document.getElementById('chairs').style.display = 'block';
+    }
+
+    // Book Chair and display notification
+    function bookChair(chair) {
+        if (chair.classList.contains('available')) {
+            chair.classList.remove('available');
+            chair.classList.add('booked');
+            document.getElementById('notification').style.display = 'block';
+
+            setTimeout(function() {
+                document.getElementById('notification').style.display = 'none';
+            }, 2000); // Hide after 2 seconds
+        }
+    }
+    // Initial display of flats
+    document.getElementById('flats').style.display = 'block';
+</script>

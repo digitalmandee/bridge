@@ -51,8 +51,7 @@
                             </div>
                         </div>
                         <div class="box-footer text-center">
-                            <button type="button" class="layout-btn">Cancel</button>
-                            <button type="submit" class="layout-btn active">Submit</button>
+                            <button type="submit" class="layout-btn active">Next</button>
                         </div>
                     </form>
                 </div>
@@ -65,7 +64,7 @@
                     <div class="d-flex justify-content-center mb-2">
                         <h3>Booking Details</h3>
                     </div>
-                    <form action="">
+                    <form action="#">
                         <div class="col-6 col-md-12 col-xl-12 mb-2">
                             <div class="d-flex gap-2">
                                 <div class="form-group w-50">
@@ -108,12 +107,9 @@
 
                         <div class="col-6 col-md-12 col-xl-12 mb-2">
                             <div class="form-group">
-                                <label class="mb-1" for="seat">Seat/Room</label>
-                                <div class="form-group select">
-                                    <select name="" class="form-control" id="">
-                                        <option value="">Select Seat/Room</option>
-                                    </select>
-                                    <span class="down-icon"><i class="fas fa-chevron-down"></i></span>
+                                <label class="mb-1" for="seat">Branch</label>
+                                <div class="form-group">
+                                    <input type="button" class="form-control" value="Select Branch" data-toggle="modal" data-target="#branchModal">
                                 </div>
                             </div>
                         </div>
@@ -132,8 +128,11 @@
                     </form>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
 
+        </div>
+
+    </div>
+    <!-- Modal Section -->
+    @include('admin.booking.modal.branch_detail')
+</div>
 @endsection
