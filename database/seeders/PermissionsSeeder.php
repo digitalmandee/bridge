@@ -27,11 +27,12 @@ class PermissionsSeeder extends Seeder
             'expense-management',
             'financial-report',
             'revenue-check',
-            'calendar',
-            'contact',
-            'settings',
             'roles',
             'permissions',
+            'manage-members',
+            'setup-invoice',
+            'master-layout',
+            'investor',
         ];
 
         foreach ($permissions as $permission) {
