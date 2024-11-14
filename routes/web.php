@@ -5,6 +5,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\InvestorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FloorPlanController;
 use App\Http\Controllers\BranchManagerController;
@@ -38,14 +39,22 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('branch/update/{id}', [BranchController::class, 'branchUpdate'])->name('admin.branch.update');
         Route::get('branch/delete/{id}', [BranchController::class, 'branchDestroy'])->name('admin.branch.delete');
         // Branch section end
-        // Branch section
+        // Branch Manager section
         Route::get('branch-manager', [BranchManagerController::class, 'index'])->name('admin.branch.manager');
         Route::get('branch-manager/create', [BranchManagerController::class, 'branchManagerCreate'])->name('admin.branch.manager.create');
         Route::post('branch-manager/store', [BranchManagerController::class, 'branchManagerStore'])->name('admin.branch.manager.store');
         Route::get('branch-manager/edit/{id}', [BranchManagerController::class, 'branchManagerEdit'])->name('admin.branch.manager.edit');
         Route::post('branch-manager/update/{id}', [BranchManagerController::class, 'branchManagerUpdate'])->name('admin.branch.manager.update');
         Route::get('branch-manager/delete/{id}', [BranchManagerController::class, 'branchManagerDestroy'])->name('admin.branch.manager.delete');
-        // Branch section end
+        // Branch Manager section end
+        // Investor section
+        Route::get('investor', [InvestorController::class, 'index'])->name('admin.investor');
+        Route::get('investor/create', [InvestorController::class, 'investorCreate'])->name('admin.investor.create');
+        Route::post('investor/store', [InvestorController::class, 'investorStore'])->name('admin.investor.store');
+        Route::get('investor/edit/{id}', [InvestorController::class, 'investorEdit'])->name('admin.investor.edit');
+        Route::post('investor/update/{id}', [InvestorController::class, 'investorUpdate'])->name('admin.investor.update');
+        Route::get('investor/delete/{id}', [InvestorController::class, 'investorDestroy'])->name('admin.investor.delete');
+        // Investor section end
         // Booking Calendar section
         Route::get('booking-calendar', [BookingCalendarController::class, 'index'])->name('admin.booking.calendar');
         // Booking Calendar section end

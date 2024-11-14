@@ -35,6 +35,14 @@
                 </a>
             </li>
             @endcan
+            @can('investor')
+            <li class="nav-item bar-item mb-1 {{ Request::routeIs('admin.investor', 'admin.investor.create', 'admin.investor.edit') ? 'active' : 'non-active' }}">
+                <a href="{{ route('admin.investor') }}" class="nav-link bar-item bar-link">
+                    <img class="link-icon" src="{{ asset('icons/branch-manager.svg') }}" alt="Branch-Manager Icon">
+                    <span class="link-title">Investor</span>
+                </a>
+            </li>
+            @endcan
             @can('products')
             <li class="nav-item bar-item mb-1">
                 <a href="#" class="nav-link bar-item bar-link">

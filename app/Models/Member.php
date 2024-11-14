@@ -93,7 +93,7 @@ class Member extends Model
         $user->email = $request->email;
         $user->save();
 
-        $member = self::find($id);
+        $member->user_id = $user->id;
         $member->created_by = auth()->user()->id;
         $member->name = $formattedName;
         $member->company = $request->company;
