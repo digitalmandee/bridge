@@ -9,6 +9,7 @@ use App\Http\Controllers\InvestorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FloorPlanController;
 use App\Http\Controllers\BranchManagerController;
+use App\Http\Controllers\BranchSettingController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\BookingCalendarController;
 use App\Http\Controllers\InventoryManagementController;
@@ -38,6 +39,39 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('branch/edit/{id}', [BranchController::class, 'branchEdit'])->name('admin.branch.edit');
         Route::post('branch/update/{id}', [BranchController::class, 'branchUpdate'])->name('admin.branch.update');
         Route::get('branch/delete/{id}', [BranchController::class, 'branchDestroy'])->name('admin.branch.delete');
+
+        // Branch Floor
+        Route::get('branch/floor', [BranchSettingController::class, 'floorIndex'])->name('admin.branch.floor');
+        Route::get('branch/floor/create', [BranchSettingController::class, 'floorCreate'])->name('admin.branch.floor.create');
+        Route::post('branch/floor/store', [BranchSettingController::class, 'floorStore'])->name('admin.branch.floor.store');
+        Route::get('branch/floor/edit/{id}', [BranchSettingController::class, 'floorEdit'])->name('admin.branch.floor.edit');
+        Route::post('branch/floor/update/{id}', [BranchSettingController::class, 'floorUpdate'])->name('admin.branch.floor.update');
+        Route::get('branch/floor/delete/{id}', [BranchSettingController::class, 'floorDestroy'])->name('admin.branch.floor.delete');
+        // Branch Floor End
+        // Branch Rooms
+        Route::get('branch/room', [BranchSettingController::class, 'roomIndex'])->name('admin.branch.room');
+        Route::get('branch/room/create', [BranchSettingController::class, 'roomCreate'])->name('admin.branch.room.create');
+        Route::post('branch/room/store', [BranchSettingController::class, 'roomStore'])->name('admin.branch.room.store');
+        Route::get('branch/room/edit/{id}', [BranchSettingController::class, 'roomEdit'])->name('admin.branch.room.edit');
+        Route::post('branch/room/update/{id}', [BranchSettingController::class, 'roomUpdate'])->name('admin.branch.room.update');
+        Route::get('branch/room/delete/{id}', [BranchSettingController::class, 'roomDestroy'])->name('admin.branch.room.delete');
+        // Branch Rooms End
+        // Branch tables
+        Route::get('branch/table', [BranchSettingController::class, 'tableIndex'])->name('admin.branch.table');
+        Route::get('branch/table/create', [BranchSettingController::class, 'tableCreate'])->name('admin.branch.table.create');
+        Route::post('branch/table/store', [BranchSettingController::class, 'tableStore'])->name('admin.branch.table.store');
+        Route::get('branch/table/edit/{id}', [BranchSettingController::class, 'tableEdit'])->name('admin.branch.table.edit');
+        Route::post('branch/table/update/{id}', [BranchSettingController::class, 'tableUpdate'])->name('admin.branch.table.update');
+        Route::get('branch/table/delete/{id}', [BranchSettingController::class, 'tableDestroy'])->name('admin.branch.table.delete');
+        // Branch tables End
+        // Branch chairs
+        Route::get('branch/chair', [BranchSettingController::class, 'chairIndex'])->name('admin.branch.chair');
+        Route::get('branch/chair/create', [BranchSettingController::class, 'chairCreate'])->name('admin.branch.chair.create');
+        Route::post('branch/chair/store', [BranchSettingController::class, 'chairStore'])->name('admin.branch.chair.store');
+        Route::get('branch/chair/edit/{id}', [BranchSettingController::class, 'chairEdit'])->name('admin.branch.chair.edit');
+        Route::post('branch/chair/update/{id}', [BranchSettingController::class, 'chairUpdate'])->name('admin.branch.chair.update');
+        Route::get('branch/chair/delete/{id}', [BranchSettingController::class, 'chairDestroy'])->name('admin.branch.chair.delete');
+        // Branch chairs End
         // Branch section end
         // Branch Manager section
         Route::get('branch-manager', [BranchManagerController::class, 'index'])->name('admin.branch.manager');
