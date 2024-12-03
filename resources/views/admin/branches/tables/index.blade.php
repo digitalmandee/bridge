@@ -13,8 +13,11 @@
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Branch Name</th>
+                    <th>Floor Name</th>
                     <th>Room Name</th>
-                    <th>Name</th>
+                    <th>Room Type</th>
+                    <th>Table Name</th>
                     <th class="text-center">Actions</th>
                 </tr>
             </thead>
@@ -22,7 +25,10 @@
                 @forelse($tables as $table)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
+                    <td>{{ $table->room->floor->branch->name }}</td>
+                    <td>{{ $table->room->floor->name }}</td>
                     <td>{{ $table->room->name }}</td>
+                    <td>{{ $table->room->type }}</td>
                     <td>{{ $table->name }}</td>
                     <td class="text-center">
                         <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"

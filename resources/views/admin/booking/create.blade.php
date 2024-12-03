@@ -3,8 +3,11 @@
 @section('content')
 <div class="page-content">
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-        <div>
-            <h3>New Booking</h3>
+        <div class="d-flex align-items-baseline gap-2">
+            <a href="{{ route('admin.booking.calendar') }}">
+                <i class="fa fa-chevron-left" aria-hidden="true"></i>
+            </a>
+            <h3 class="mb-3 mb-md-0">New Booking</h3>
         </div>
     </div>
     <div class="row justify-content-center">
@@ -18,7 +21,7 @@
                     <div class="d-flex justify-content-center mb-2">
                         <h3>User Details</h3>
                     </div>
-                    <form action="">
+                    <form action="#">
                         <div class="col-6 col-md-12 col-xl-12 mb-2">
                             <label class="mb-1" for="name">Name</label>
                             <div class="form-group">
@@ -130,7 +133,12 @@
             </div>
 
         </div>
-
+        <!-- SweetAlert trigger -->
+        @if (session('error'))
+            <script>
+                showToast('error', '{{ session('error') }}', '#f8d7da');
+            </script>
+        @endif
     </div>
     <!-- Modal Section -->
     @include('admin.booking.modal.branch_detail')

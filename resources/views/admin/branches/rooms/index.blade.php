@@ -15,8 +15,8 @@
                     <th>#</th>
                     <th>Branch Name</th>
                     <th>Floor Name</th>
-                    <th>Name</th>
-                    <th>Type</th>
+                    <th>Room Name</th>
+                    <th>Room Type</th>
                     <th class="text-center">Actions</th>
                 </tr>
             </thead>

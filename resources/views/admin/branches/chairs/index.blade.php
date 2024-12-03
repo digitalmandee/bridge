@@ -13,8 +13,11 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>Branch Name</th>
+                        <th>Floor Name</th>
+                        <th>Room Name</th>
                         <th>Table Name</th>
-                        <th>Name</th>
+                        <th>Chair Name</th>
                         <th class="text-center">Actions</th>
                     </tr>
                 </thead>
@@ -22,6 +25,9 @@
                 @forelse($chairs as $chair)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
+                    <td>{{ $chair->table->room->floor->branch->name }}</td>
+                    <td>{{ $chair->table->room->floor->name }}</td>
+                    <td>{{ $chair->table->room->name }}</td>
                     <td>{{ $chair->table->name }}</td>
                     <td>{{ $chair->name }}</td>
                     <td class="text-center">
