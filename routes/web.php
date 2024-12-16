@@ -98,6 +98,7 @@ Route::group(['middleware' => 'auth'], function () {
         // Booking section end
         // Inventory Management section
         Route::get('inventory-management', [InventoryManagementController::class, 'index'])->name('admin.inventory.management');
+        Route::get('inventory-management/create', [InventoryManagementController::class, 'inventoryCreate'])->name('admin.inventory.create');
         // Inventory Management section end
         // Floor Plan Section
         Route::get('floor-plan', [FloorPlanController::class, 'index'])->name('admin.floor.plan');
@@ -135,6 +136,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('invoice/update/{id}', [InvoiceController::class, 'invoiceUpdate'])->name('admin.invoice.update');
         Route::get('invoice/delete/{id}', [InvoiceController::class, 'invoiceDestroy'])->name('admin.invoice.delete');
         // Invoice Section end
+        // Seat Allocation
+        Route::get('/seat-allocation', [DashboardController::class, 'seatAllocation'])->name('admin.seat.allocation');
+        Route::get('/payment', [DashboardController::class, 'payment'])->name('admin.payment');
 
     });
 });

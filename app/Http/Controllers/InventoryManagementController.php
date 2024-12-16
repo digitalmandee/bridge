@@ -10,4 +10,9 @@ class InventoryManagementController extends Controller
     {
         return view('admin.inventory_management.index');
     }
+
+    public function inventoryCreate()
+    {
+        return view('admin.inventory_management.create');
+    }
 }

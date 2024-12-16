@@ -10,4 +10,14 @@ class DashboardController extends Controller
     {
         return view('dashboard');
     }
+
+    public function seatAllocation()
+    {
+        return view('admin.seat_allocation.index');
+    }
+
+    public function payment()
+    {
+        return view('admin.payment.index');
+    }
 }
