@@ -14,7 +14,73 @@
                     <div class="card seat-card">
                         <div class="card-header text-center">
                             <div class="seat-icon">
-                                <i class="fa fa-chair"></i>
+                                <img src="{{ asset('icons/chair1.svg') }}" alt="Income Icon" width="50px">
+                            </div>
+                        </div>
+                        <div class="card-body text-center">
+                            <h6 class="seat-number">Seat #F1R3t6</h6>
+                            <p class="branch-name">Guldberg Branch Lahore</p>
+                            <div class="details">
+                                <div class="detail-item">
+                                    <h5>8</h5>
+                                    <p>Occupancy</p>
+                                </div>
+                                <div class="detail-item">
+                                    <h5>Available</h5>
+                                    <p>Status</p>
+                                </div>
+                                <div class="detail-item">
+                                    <h5>Window</h5>
+                                    <p>Location</p>
+                                </div>
+                                <div class="detail-item">
+                                    <h5>Ground</h5>
+                                    <p>Floor</p>
+                                </div>
+                            </div>
+                            <button class="allocate-btn">Allocate</button>
+                        </div>
+                    </div>
+                </div>
+                <!--  -->
+                <div class="col-md-3 grid-margin stretch-card">
+                    <div class="card seat-card">
+                        <div class="card-header text-center">
+                        <div class="seat-icon">
+                                <img src="{{ asset('icons/chair-office.svg') }}" alt="Income Icon" width="50px">
+                            </div>
+                        </div>
+                        <div class="card-body text-center">
+                            <h6 class="seat-number">Seat #F1R3t6</h6>
+                            <p class="branch-name">Guldberg Branch Lahore</p>
+                            <div class="details">
+                                <div class="detail-item">
+                                    <h5>8</h5>
+                                    <p>Occupancy</p>
+                                </div>
+                                <div class="detail-item">
+                                    <h5>Available</h5>
+                                    <p>Status</p>
+                                </div>
+                                <div class="detail-item">
+                                    <h5>Window</h5>
+                                    <p>Location</p>
+                                </div>
+                                <div class="detail-item">
+                                    <h5>Ground</h5>
+                                    <p>Floor</p>
+                                </div>
+                            </div>
+                            <button class="allocate-btn">Allocate</button>
+                        </div>
+                    </div>
+                </div>
+                <!--  -->
+                <div class="col-md-3 grid-margin stretch-card">
+                    <div class="card seat-card">
+                        <div class="card-header text-center">
+                        <div class="seat-icon">
+                                <img src="{{ asset('icons/desk-chair.svg') }}" alt="Income Icon" width="50px">
                             </div>
                         </div>
                         <div class="card-body text-center">
@@ -71,73 +137,7 @@
                                     <p>Floor</p>
                                 </div>
                             </div>
-                            <button class="allocate-btn">Allocate</button>
-                        </div>
-                    </div>
-                </div>
-                <!--  -->
-                <div class="col-md-3 grid-margin stretch-card">
-                    <div class="card seat-card">
-                        <div class="card-header text-center">
-                            <div class="seat-icon">
-                                <i class="fa fa-chair"></i>
-                            </div>
-                        </div>
-                        <div class="card-body text-center">
-                            <h6 class="seat-number">Seat #F1R3t6</h6>
-                            <p class="branch-name">Guldberg Branch Lahore</p>
-                            <div class="details">
-                                <div class="detail-item">
-                                    <h5>8</h5>
-                                    <p>Occupancy</p>
-                                </div>
-                                <div class="detail-item">
-                                    <h5>Available</h5>
-                                    <p>Status</p>
-                                </div>
-                                <div class="detail-item">
-                                    <h5>Window</h5>
-                                    <p>Location</p>
-                                </div>
-                                <div class="detail-item">
-                                    <h5>Ground</h5>
-                                    <p>Floor</p>
-                                </div>
-                            </div>
-                            <button class="allocate-btn">Allocate</button>
-                        </div>
-                    </div>
-                </div>
-                <!--  -->
-                <div class="col-md-3 grid-margin stretch-card">
-                    <div class="card seat-card">
-                        <div class="card-header text-center">
-                            <div class="seat-icon">
-                                <i class="fa fa-chair"></i>
-                            </div>
-                        </div>
-                        <div class="card-body text-center">
-                            <h6 class="seat-number">Seat #F1R3t6</h6>
-                            <p class="branch-name">Guldberg Branch Lahore</p>
-                            <div class="details">
-                                <div class="detail-item">
-                                    <h5>8</h5>
-                                    <p>Occupancy</p>
-                                </div>
-                                <div class="detail-item">
-                                    <h5>Available</h5>
-                                    <p>Status</p>
-                                </div>
-                                <div class="detail-item">
-                                    <h5>Window</h5>
-                                    <p>Location</p>
-                                </div>
-                                <div class="detail-item">
-                                    <h5>Ground</h5>
-                                    <p>Floor</p>
-                                </div>
-                            </div>
-                            <button class="allocate-btn">Allocate</button>
+                            <button class=" allocate-btn">Allocate</button>
                         </div>
                     </div>
                 </div>
