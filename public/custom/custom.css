@@ -1,0 +1,593 @@
+.side-logout {
+    background: transparent;
+    outline: none;
+    border: 0;
+}
+
+.btn-success {
+    color: var(--bs-white) !important;
+    background-color: var(--bs-success) !important;
+    border: none !important;
+    font-size: 16px !important;
+    padding: 5px 25px;
+    border-radius: 8px;
+
+}
+
+.btn-secondary {
+    color: var(--bs-black) !important;
+    background-color: var(--bs-white) !important;
+    border: 1px solid var(--bs-success) !important;
+    font-size: 16px !important;
+    padding: 5px 25px;
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem #ffcc164d !important;
+    border: solid 0.1px #ffcc164d !important;
+}
+
+.bar-item.active {
+    background-color: #FFCC16;
+    position: relative;
+    border-radius: 8px;
+    margin-left: 10px;
+}
+
+.non-active {
+    background-color: transparent !important;
+}
+
+.non-active::before {
+    background-color: transparent !important;
+}
+
+.bar-item:hover {
+    background-color: #ffcc164f;
+    border-radius: 8px;
+    /* margin-left: 10px; */
+}
+
+.bar-item.active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background-color: #FFCC16;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    margin-left: -10px;
+}
+
+.layout-btn {
+    border-radius: 8px;
+    padding: 6px 15px;
+    background-color: #ffff;
+    border: 1.5px solid #FFCC16;
+}
+
+.main-btn {
+    padding: 6px 15px;
+    background-color: #FFF7DB;
+    border: 1.5px solid #FFCC16;
+    cursor: pointer;
+    border-radius: 20px;
+}
+
+.main-btn:hover,
+.layout-btn:hover {
+    background-color: #FFCC16;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.main-btn.active,
+.layout-btn.active {
+    background-color: #FFCC16;
+    color: #ffffff;
+}
+
+.card-button .btn-toggle {
+    background: transparent;
+    border: 0;
+    color: #667085;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.btn-toggle {
+    background-color: transparent;
+    color: #000;
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-toggle.active {
+    background-color: #F4ECFB;
+    color: #FFCC16;
+}
+
+.venn-diagram {
+    position: relative;
+    width: 300px;
+    height: 300px;
+}
+
+.circle {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: white;
+}
+
+.yellow {
+    background-color: #FFC107;
+    width: 200px;
+    height: 200px;
+    top: 50px;
+}
+
+.teal {
+    background-color: #20C997;
+    width: 120px;
+    height: 120px;
+    left: 145px;
+    top: 75px;
+}
+
+.red {
+    background-color: #DC3545;
+    width: 80px;
+    height: 80px;
+    left: 145px;
+    top: 170px;
+}
+
+/* Legend styles */
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.legend-item .circle-1 {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.legend-item .yellow {
+    background-color: #FFC107;
+}
+
+.legend-item .teal {
+    background-color: #20C997;
+}
+
+.legend-item .red {
+    background-color: #DC3545;
+}
+
+.income-amount h2 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+/* Inner Cards Styling */
+.income-icon {
+    background-color: #f4f1fd;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.income-icon img {
+    width: 20px;
+    height: 20px;
+}
+
+.growth-percentage {
+    font-size: 14px;
+    color: #24a148;
+    font-weight: bold;
+}
+
+.growth-arrow {
+    font-size: 14px;
+}
+
+.manage-link {
+    font-size: 16px;
+    color: #5c6bc0;
+    text-decoration: none;
+}
+
+.form-srch {
+    width: 93%;
+    outline: none;
+    border: 0;
+    height: 42px;
+    background: transparent;
+}
+
+.sidebar .sidebar-body .nav .nav-item.active .nav-link {
+    color: black !important;
+}
+
+/* For WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 2px;
+    /* Set the width of the scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #e9ecef;
+    /* Set the color of the scrollbar thumb */
+    border-radius: 20px;
+    /* Optional: make the scrollbar edges rounded */
+}
+
+::-webkit-scrollbar-track {
+    background-color: #e9ecef;
+    /* Set the background of the scrollbar track */
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: thin;
+    /* Set the scrollbar width to thin */
+    scrollbar-color: #e9ecef;
+    /* Set the scrollbar color (thumb, track) */
+}
+
+.label-title {
+    background-color: #B6E9D1;
+    color: #0D824B;
+    padding: 3px 8px;
+    border-radius: 5px;
+}
+
+/* CSS */
+.floor-btn {
+    align-items: center;
+    background-color: transparent;
+    background-position: 0 0;
+    border: 1px solid #D5D5D5;
+    border-radius: 20px;
+    box-sizing: border-box;
+    color: #989FAD;
+    cursor: pointer;
+    display: flex;
+    font-weight: 600;
+    padding: 5px 12px;
+    text-decoration: none;
+    text-shadow: none;
+    text-underline-offset: 1px;
+    transition: border .2s ease-in-out, box-shadow .2s ease-in-out;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    white-space: nowrap;
+    word-break: break-word;
+}
+
+.floor-btn:hover,
+.floor-btn:active {
+    background-color: #E8F1FD;
+    color: #1570EF;
+    border: 1px solid #1570EF;
+}
+
+.label {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 20px;
+}
+
+.label-pending {
+    background-color: #E8F1FD;
+    color: #448DF2;
+}
+
+.label-book {
+    background-color: #E7F8F0;
+    color: #41C588;
+}
+
+.label-cancel {
+    background-color: #FEECEB;
+    color: #F36960;
+}
+
+.body-bg {
+    background-color: #f9fafb;
+
+}
+
+.checkbox-wrapper-3 input[type="checkbox"] {
+    visibility: hidden;
+    display: none;
+}
+
+.checkbox-wrapper-3 .toggle {
+    position: relative;
+    display: block;
+    width: 40px;
+    height: 20px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transform: translate3d(0, 0, 0);
+}
+
+.checkbox-wrapper-3 .toggle:before {
+    content: "";
+    position: relative;
+    top: 3px;
+    left: 3px;
+    width: 34px;
+    height: 14px;
+    display: block;
+    background: #9A9999;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.checkbox-wrapper-3 .toggle span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    display: block;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(154, 153, 153, 0.5);
+    transition: all 0.2s ease;
+}
+
+.checkbox-wrapper-3 .toggle span:before {
+    content: "";
+    position: absolute;
+    display: block;
+    margin: -18px;
+    width: 56px;
+    height: 56px;
+    background: rgba(79, 46, 220, 0.5);
+    border-radius: 50%;
+    transform: scale(0);
+    opacity: 1;
+    pointer-events: none;
+}
+
+.checkbox-wrapper-3 #cbx-3:checked+.toggle:before {
+    background: #ffefb7;
+}
+
+.checkbox-wrapper-3 #cbx-3:checked+.toggle span {
+    background: #ffcc16;
+    transform: translateX(20px);
+    transition: all 0.2s cubic-bezier(0.8, 0.4, 0.3, 1.25), background 0.15s ease;
+    box-shadow: 0 3px 8px rgba(79, 46, 220, 0.2);
+}
+
+.checkbox-wrapper-3 #cbx-3:checked+.toggle span:before {
+    transform: scale(1);
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+.inventory-heading {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.inventory-value {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #3d4852;
+}
+
+.inventory-subtext {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+.divider {
+    height: 60px;
+    width: 1px;
+    background-color: #dee2e6;
+}
+
+.inventory-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.inventory-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 5px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+
+}
+
+.down-icon {
+    position: absolute;
+    right: 1.5em;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #333;
+    font-size: 0.8em;
+}
+
+.select {
+    position: relative;
+}
+
+.fa-chevron-left {
+    font-size: 19px !important;
+    font-weight: 900 !important;
+    color: #000 !important;
+}
+
+#start-date-group,
+#end-date-group {
+    display: inline-block;
+    width: calc(50% - 1rem);
+    margin-right: 0.5rem;
+}
+
+#end-date-group {
+    margin-right: 0;
+}
+
+.round {
+    background-color: rgb(102, 187, 106);
+    border: 1px solid rgb(102, 187, 106);
+    border-radius: 50%;
+    cursor: pointer;
+    height: 22px;
+    width: 22px;
+    display: block;
+}
+
+
+.round-1 {
+    background-color: #cd2525;
+    border: 1px solid #cd2525;
+    border-radius: 50%;
+    cursor: pointer;
+    height: 22px;
+    width: 22px;
+    display: block;
+}
+
+.ammount-card {
+    background: #FFCC16 !important;
+}
+
+.upload-container {
+    border: 2px dashed #d3d3d3;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.input-box input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1 !important;
+}
+
+.input-box input {
+    width: 50px !important;
+    outline: none;
+    border: 0 !important;
+}
+
+/* Container Styling */
+#floors,
+#rooms,
+#tables,
+#chairs {
+    display: none;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Element Styling */
+.flat,
+.floor,
+.room,
+.tabl,
+.chair {
+    padding: 6px 15px;
+    border: 1px solid #FFCC16;
+    margin: 10px;
+    cursor: pointer;
+    display: inline-block;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+}
+
+
+/* Chair Status Colors */
+.chair.available {
+    background-color: green;
+    color: white;
+}
+
+.chair.booked {
+    background-color: red;
+    color: white;
+}
+
+.chair.damaged {
+    background-color: gray;
+    color: white;
+}
+
+/* Button Style for Chairs */
+.chair.available:hover {
+    background-color: darkgreen;
+}
+
+.chair.booked,
+.chair.damaged {
+    cursor: not-allowed;
+}
+
+/* Notification Styling */
+#notification {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid green;
+    color: green;
+    border-radius: 5px;
+    display: none;
+    text-align: center;
+}
+
+.table-chair-pair {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.table-chair-pair input {
+    flex: 0 1 45%;
+    max-width: 45%
+}
