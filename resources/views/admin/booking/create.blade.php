@@ -247,8 +247,9 @@
     </div>
 </div>
 
+
 <script>
-$(document).ready(function() {
+   $(document).ready(function() {
     let selectedInfo = {
         branch: '',
         floor: '',
@@ -293,38 +294,29 @@ $(document).ready(function() {
         }
     });
 
-    // Chair selection with status toggle
+    // Chair selection with toggle logic
     $('.chair').on('click', function() {
         const $chair = $(this);
         const chairId = $chair.data('chair-id');
         const chairName = $chair.data('chair-name');
         const currentStatus = $chair.data('status');
 
-        // Toggle status between 0 and 1
-        const newStatus = currentStatus == 0 ? 1 : 0;
-        $chair.data('status', newStatus);
-
-        // Update visual appearance
-        if (newStatus == 0) {
-            $chair.removeClass('reserved').addClass('available');
-        } else {
+        // Toggle logic
+        if (currentStatus === 0) {
+            // Chair is available, select it
+            $chair.data('status', 1); // Mark as selected
             $chair.removeClass('available').addClass('reserved');
-        }
-
-        // Update selected chairs array
-        const chairIndex = selectedChairIds.indexOf(chairId);
-        if (chairIndex === -1) {
             selectedChairIds.push(chairId);
-            selectedInfo.chairs.push({
-                id: chairId,
-                name: chairName
-            });
-        } else {
-            selectedChairIds.splice(chairIndex, 1);
+            selectedInfo.chairs.push({ id: chairId, name: chairName });
+        } else if (currentStatus === 1) {
+            // Chair is already selected, deselect it
+            $chair.data('status', 0); // Mark as available
+            $chair.removeClass('reserved').addClass('available');
+            selectedChairIds = selectedChairIds.filter(id => id !== chairId);
             selectedInfo.chairs = selectedInfo.chairs.filter(chair => chair.id !== chairId);
         }
 
-        // Update hidden input
+        // Update hidden input for chair IDs
         $('#selectedChairIds').val(selectedChairIds.join(','));
 
         // Enable/disable confirm button
@@ -350,7 +342,7 @@ $(document).ready(function() {
         }
     });
 
-    // Form submission
+    // Form submission to backend
     $('#bookingForm').on('submit', function(e) {
         e.preventDefault();
 
@@ -366,7 +358,7 @@ $(document).ready(function() {
             method: 'POST',
             data: formData + '&_token=' + $('meta[name="csrf-token"]').attr('content'), // Add CSRF token
             success: function(response) {
-                showNotification('Booking successful!', 'success');
+                showNotification('Booking created successfully!', 'success');
                 setTimeout(() => {
                     window.location.href = '{{ route("admin.booking.calendar") }}';
                 }, 2000);
@@ -380,11 +372,12 @@ $(document).ready(function() {
 
     function showNotification(message, type) {
         const notification = $('#notification');
-        notification.removeClass('success error').addClass(type);
+        notification.removeClass('success error info').addClass(type);
         notification.text(message).fadeIn();
         setTimeout(() => notification.fadeOut(), 3000);
     }
 });
 </script>
+
 
 @endsection

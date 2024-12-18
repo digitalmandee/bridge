@@ -578,7 +578,7 @@ class BookingController extends Controller
     // }
     public function storeUserDetails(Request $request)
     {
-        // dd($request->all());
+         //dd($request->all());
         try {
             // Validate the input
             $validated = $request->validate([
