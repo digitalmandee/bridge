@@ -363,7 +363,6 @@ $(document).ready(function() {
 
         $.ajax({
             url: $(this).attr('action'),
-            
             method: 'POST',
             data: formData + '&_token=' + $('meta[name="csrf-token"]').attr('content'), // Add CSRF token
             success: function(response) {
