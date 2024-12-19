@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bridge</title>
     <link rel="stylesheet" href="{{ asset('custom/bridges.css') }}">
 </head>
-
 <body>
     <div class="container">
         <div class="first_section">
@@ -24,7 +22,7 @@
                     </a>
                 </div>
                 <div class="four_login_section">
-                <a href="#">
+                <a href="{{ route('login') }}">
                     <img src="{{ asset('images/welcome_page/Investigation.png') }}" alt="Investigation">
                     <h5>Investor Login</h5>
                     </a>
@@ -45,5 +43,4 @@
         </div>
     </div>
 </body>
-
 </html>

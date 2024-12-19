@@ -19,7 +19,6 @@ class Chair extends Model
         return $this->belongsTo(Table::class);
     }
 
-
     public static function getChairs()
     {
         return self::with('table')->get();

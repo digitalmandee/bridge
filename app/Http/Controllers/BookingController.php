@@ -696,4 +696,12 @@ class BookingController extends Controller
     // {
     //     return view('stripe');
     // }
+    public function BookingCreate()
+    {
+       // return view('admin.booking.create');
+       $branches = Branch::with('floors.rooms.tables.chairs')->get();
+        //$branches = Branch::all();
+       // dd($branches);
+        return view('admin.booking.create', compact('branches'));
+    }
 }
