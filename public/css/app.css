@@ -1658,7 +1658,7 @@ video {
                         .text-white {
                             --tw-text-opacity: 1;
                             color: rgb(255 255 255 / var(--tw-text-opacity, 1));
-                            >>>>>>>yasir
+
                         }
 
                         .underline {
@@ -1710,13 +1710,13 @@ video {
 
                         .ring-black {
                             --tw-ring-opacity: 1;
-                            <<<<<<< HEAD --tw-ring-color: rgb(0 0 0 / var(--tw-ring-opacity));
+                            --tw-ring-color: rgb(0 0 0 / var(--tw-ring-opacity));
                         }
 
                         .ring-gray-300 {
                             --tw-ring-opacity: 1;
                             --tw-ring-color: rgb(209 213 219 / var(--tw-ring-opacity));
-                            =======--tw-ring-color: rgb(0 0 0 / var(--tw-ring-opacity, 1));
+                            --tw-ring-color: rgb(0 0 0 / var(--tw-ring-opacity, 1));
                         }
 
                         .ring-gray-300 {
