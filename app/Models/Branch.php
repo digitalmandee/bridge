@@ -22,7 +22,7 @@ class Branch extends Model
     public static function storeBranch($request)
     {
         $formattedName = ucwords(strtolower($request->name));
-        
+
         $branch = new self();
         $branch->name = $formattedName;
         $branch->location = $request->location;
@@ -49,5 +49,9 @@ class Branch extends Model
     public static function destroyBranch($id)
     {
        return self::find($id)->delete();
+    }
+    public function floors()
+    {
+        return $this->hasMany(Floor::class);
     }
 }

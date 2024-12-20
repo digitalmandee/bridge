@@ -11,7 +11,7 @@ class Chair extends Model
     use HasFactory;
 
     protected $fillable = [
-        'table_id', 'name'
+        'table_id', 'name', 'status',
     ];
 
     public function table()

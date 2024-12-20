@@ -94,6 +94,24 @@ Route::group(['middleware' => 'auth'], function () {
         // Booking Calendar section end
         // Booking section
         Route::get('booking', [BookingController::class, 'index'])->name('admin.booking');
+        Route::get('booking/create', [BookingController::class, 'Create'])->name('admin.booking.create');
+        Route::post('booking/user-details', [BookingController::class, 'storeUserDetails'])->name('booking.storeUserDetails');
+        Route::post('booking/booking-details', [BookingController::class, 'storeBookingDetails'])->name('booking.storeBookingDetails');
+        //
+        Route::post('/chairs/toggle-status', [BookingController::class, 'toggleStatus'])->name('chairs.toggleStatus');
+
+        Route::get('/payment/stripe', [BookingController::class, 'stripe'])->name('booking.stripe');
+        //
+        Route::get('floors/{branch}', [BookingController::class, 'getFloors']);
+        Route::get('rooms/{floor}', [BookingController::class, 'getRooms']);
+        Route::get('tables/{room}', [BookingController::class, 'getTables']);
+        Route::get('chairs/{table}', [BookingController::class, 'getChairs']);
+        Route::post('/book-chair', [BookingController::class, 'bookChair']);
+
+
+        // Booking section end
+        // Inventory Management section
+        Route::get('inventory-management', [InventoryManagementController::class, 'index'])->name('admin.inventory.management');
         Route::get('booking/create', [BookingController::class, 'BookingCreate'])->name('admin.booking.create');
         // Booking section end
         // Inventory Management section

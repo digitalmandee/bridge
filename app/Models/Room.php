@@ -31,6 +31,12 @@ class Room extends Model
         return Floor::all();
     }
 
+
+    public function tables()
+    {
+        return $this->hasMany(Table::class);
+    }
+
     public static function storeRoom($request)
     {
         foreach ($request->floor_id as $key => $floor_id) {

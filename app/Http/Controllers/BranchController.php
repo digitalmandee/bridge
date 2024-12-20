@@ -27,7 +27,7 @@ class BranchController extends Controller
             return redirect()->route('admin.branches')->with('success', 'Branch created successfully');
         } catch (\Exception $e) {
             return redirect()->route('admin.branches.create')->with('error', 'There was an error creating the branch. Please try again.');
-        }        
+        }
     }
 
     public function branchEdit($id)
@@ -45,7 +45,7 @@ class BranchController extends Controller
             return redirect()->route('admin.branches')->with('success', 'Branch Updated successfully');
         } catch (\Exception $e) {
             return redirect()->route('admin.branch.edit')->with('error', 'There was an error updating the branch. Please try again.');
-        } 
+        }
     }
 
     public function branchDestroy($id)

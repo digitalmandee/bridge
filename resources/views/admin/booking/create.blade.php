@@ -1,146 +1,392 @@
 @extends('admin.master')
 @section('title', __('Booking Create'))
 @section('content')
+
+<style>
+    .btn-toggle {
+        padding: 8px 16px;
+        margin: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-toggle:hover {
+        background-color: #f0f0f0;
+    }
+
+    .chair {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 5px;
+        border-radius: 4px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .available {
+        background-color: green;
+        color: white;
+    }
+
+    .reserved {
+        background-color: red;
+        color: white;
+    }
+
+    .selection-area {
+        margin: 15px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    #notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px;
+        border-radius: 4px;
+        display: none;
+        z-index: 1000;
+    }
+
+    .success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+</style>
+
 <div class="page-content">
-    <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-        <div class="d-flex align-items-baseline gap-2">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-2">
             <a href="{{ route('admin.booking.calendar') }}">
-                <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                <i class="fa fa-chevron-left"></i>
             </a>
-            <h3 class="mb-3 mb-md-0">New Booking</h3>
+            <h3 class="m-0">New Booking</h3>
         </div>
     </div>
-    <div class="row justify-content-center">
-        <div class="tab-list mb-3 col-md-8">
-            <button class="main-btn tab active" data-tab="tab1">User Details</button>
-            <button class="main-btn tab" data-tab="tab2">Booking Details</button>
-        </div>
-        <div class="col-md-8 tab-content active" id="tab1">
-            <div class="card">
-                <div class="card-body px-5">
-                    <div class="d-flex justify-content-center mb-2">
-                        <h3>User Details</h3>
+
+    <div id="notification"></div>
+
+    <div class="">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form action="{{ route('booking.storeUserDetails') }}" method="POST" id="bookingForm">
+                    @csrf
+                    <!-- User Details Section -->
+                    <div class="card mb-4">
+                        <div class="card-body p-4">
+                            <div class="mb-4">
+                                <h4>User Details</h4>
+                                <div class="mb-3">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" name="name" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="email" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Phone</label>
+                                    <input type="text" name="phone" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Product</label>
+                                    <select name="product" class="form-control" required>
+                                        <option value="">Select Product</option>
+                                        <option value="meeting_rooms">Meeting Rooms</option>
+                                        <option value="podcast_rooms">Podcast Rooms</option>
+                                        <option value="visitor">Visitor</option>
+                                        <option value="office">Office</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Branch Selection Button -->
+                            <div class="mb-4">
+                                <h4>Location Selection</h4>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#branchModal">
+                                    Select Location
+                                </button>
+                                <div id="selectedLocationInfo" class="mt-2 text-muted"></div>
+                            </div>
+
+                            <!-- Hidden Fields -->
+                            <input type="hidden" name="branch_id" id="selectedBranchId">
+                            <input type="hidden" name="floor_id" id="selectedFloorId">
+                            <input type="hidden" name="room_id" id="selectedRoomId">
+                            <input type="hidden" name="table_id" id="selectedTableId">
+                            <input type="hidden" name="chair_ids" id="selectedChairIds">
+
+                            <!-- Booking Details -->
+                            <div class="mb-4">
+                                <h4>Booking Details</h4>
+                                <div class="mb-3">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" name="date" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Time</label>
+                                    <input type="time" name="time" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Duration</label>
+                                    <select name="duration" class="form-control" required>
+                                        <option value="">Select Duration</option>
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Submit Booking</button>
+                        </div>
                     </div>
-                    <form action="#">
-                        <div class="col-6 col-md-12 col-xl-12 mb-2">
-                            <label class="mb-1" for="name">Name</label>
-                            <div class="form-group">
-                                <input type="text" name="name" class="form-control">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Branch Selection Modal -->
+    <div class="modal fade" id="branchModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select Location</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Selection Areas -->
+                    <div class="selection-area" id="branchSelect">
+                        <h6>Select Branch</h6>
+                        @foreach($branches as $branch)
+                            <div class="btn-toggle" data-action="showFloors" data-branch-id="{{ $branch->id }}" data-branch-name="{{ $branch->name }}">
+                                {{ $branch->name }}
                             </div>
-                        </div>
-                        <div class="col-6 col-md-12 col-xl-12 mb-2">
-                            <label class="mb-1" for="email">Email</label>
-                            <div class="form-group">
-                                <input type="text" name="email" class="form-control">
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-12 col-xl-12 mb-2">
-                            <label class="mb-1" for="phone">Phone No</label>
-                            <div class="form-group">
-                                <input type="text" name="phone" class="form-control">
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-12 col-xl-12 mb-2">
-                            <label class="mb-1" for="product">Product</label>
-                            <div class="form-group select">
-                                <select name="product" class="form-control">
-                                    <option value="">Select Product</option>
-                                    <option value="meeting_rooms">Meeting Rooms</option>
-                                    <option value="podcast_rooms">Podcast Rooms</option>
-                                    <option value="visitor">Visitor</option>
-                                    <option value="office">Office</option>
-                                </select>
-                                <span class="down-icon"><i class="fas fa-chevron-down"></i></span>
-                            </div>
-                        </div>
-                        <div class="box-footer text-center">
-                            <button type="submit" class="layout-btn active">Next</button>
-                        </div>
-                    </form>
+                        @endforeach
+                    </div>
+
+                    <div class="selection-area" id="floors" style="display: none;">
+                        <h6>Select Floor</h6>
+                        @foreach($branches as $branch)
+                            @foreach($branch->floors as $floor)
+                                <div class="btn-toggle" data-action="showRooms" data-branch-id="{{ $branch->id }}" data-floor-id="{{ $floor->id }}" data-floor-name="{{ $floor->name }}">
+                                    {{ $floor->name }}
+                                </div>
+                            @endforeach
+                        @endforeach
+                    </div>
+
+                    <div class="selection-area" id="rooms" style="display: none;">
+                        <h6>Select Room</h6>
+                        @foreach($branches as $branch)
+                            @foreach($branch->floors as $floor)
+                                @foreach($floor->rooms as $room)
+                                    <div class="btn-toggle" data-action="showTables" data-floor-id="{{ $floor->id }}" data-room-id="{{ $room->id }}" data-room-name="{{ $room->name }}">
+                                        {{ $room->name }}
+                                    </div>
+                                @endforeach
+                            @endforeach
+                        @endforeach
+                    </div>
+
+                    <div class="selection-area" id="tables" style="display: none;">
+                        <h6>Select Table</h6>
+                        @foreach($branches as $branch)
+                            @foreach($branch->floors as $floor)
+                                @foreach($floor->rooms as $room)
+                                    @foreach($room->tables as $table)
+                                        <div class="btn-toggle" data-action="showChairs" data-room-id="{{ $room->id }}" data-table-id="{{ $table->id }}" data-table-name="{{ $table->name }}">
+                                            {{ $table->name }}
+                                        </div>
+                                    @endforeach
+                                @endforeach
+                            @endforeach
+                        @endforeach
+                    </div>
+
+                    <div class="selection-area" id="chairs" style="display: none;">
+                        <h6>Select Chair</h6>
+                        @foreach($branches as $branch)
+                            @foreach($branch->floors as $floor)
+                                @foreach($floor->rooms as $room)
+                                    @foreach($room->tables as $table)
+                                        @foreach($table->chairs as $chair)
+                                            <div class="chair {{ $chair->status == 0 ? 'available' : 'reserved' }}"
+                                                 data-table-id="{{ $table->id }}"
+                                                 data-chair-id="{{ $chair->id }}"
+                                                 data-chair-name="{{ $chair->name }}"
+                                                 data-status="{{ $chair->status }}">
+                                                {{ $chair->name }}
+                                            </div>
+                                        @endforeach
+                                    @endforeach
+                                @endforeach
+                            @endforeach
+                        @endforeach
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmChairSelection" style="display: none;">
+                        Confirm Selection
+                    </button>
                 </div>
             </div>
         </div>
-        <!-- 2 -->
-        <div class="col-md-8 tab-content" id="tab2">
-            <div class="card">
-                <div class="card-body px-5">
-                    <div class="d-flex justify-content-center mb-2">
-                        <h3>Booking Details</h3>
-                    </div>
-                    <form action="#">
-                        <div class="col-6 col-md-12 col-xl-12 mb-2">
-                            <div class="d-flex gap-2">
-                                <div class="form-group w-50">
-                                    <label class="mb-1" for="date">Date</label>
-                                    <input class="form-control" type="date" id="date" name="date" value="2024-05-04">
-                                </div>
-                                <div class="form-group w-50">
-                                    <label class="mb-1" for="time">Time</label>
-                                    <input class="form-control" type="time" id="time" name="time" value="12:00">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-12 col-xl-12 mb-2">
-                            <label class="mb-1" for="duration">Duration</label>
-                            <div class="form-group select">
-                                <select name="duration" class="form-control" id="duration">
-                                    <option value="">Select Duration</option>
-                                    <option value="daily">Daily</option>
-                                    <option value="weekly">Weekly</option>
-                                    <option value="monthly">Monthly</option>
-                                </select>
-                                <span class="down-icon"><i class="fas fa-chevron-down"></i></span>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-12 col-xl-12 mb-2" id="start-date-group" style="display: none;">
-                            <div class="form-group">
-                                <label class="mb-1" id="start-date-label" for="start-date">Start Date</label>
-                                <input class="form-control" type="date" id="start-date" name="start-date">
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-12 col-xl-12 mb-2" id="end-date-group" style="display: none;">
-                            <div class="form-group">
-                                <label class="mb-1" for="end-date">End Date</label>
-                                <input class="form-control" type="date" id="end-date" name="end-date">
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-12 col-xl-12 mb-2">
-                            <div class="form-group">
-                                <label class="mb-1" for="seat">Branch</label>
-                                <div class="form-group">
-                                    <input type="button" class="form-control" value="Select Branch" data-toggle="modal" data-target="#branchModal">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-12 col-xl-12 mb-2">
-                            <label class="mb-1" for="purpose">Purpose of Booking</label>
-                            <div class="form-group">
-                                <input class="form-control" type="text" id="purpose" name="purpose" placeholder="Purpose of Booking">
-                            </div>
-                        </div>
-
-                        <div class="box-footer text-center">
-                            <button type="button" class="layout-btn">Cancel</button>
-                            <button type="submit" class="layout-btn active">Submit</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-        </div>
-        <!-- SweetAlert trigger -->
-        @if (session('error'))
-            <script>
-                showToast('error', '{{ session('error') }}', '#f8d7da');
-            </script>
-        @endif
     </div>
-    <!-- Modal Section -->
-    @include('admin.booking.modal.branch_detail')
 </div>
+
+
+<script>
+$(document).ready(function() {
+    let selectedInfo = {
+        branch: '',
+        floor: '',
+        room: '',
+        table: '',
+        chairs: []
+    };
+
+    let selectedChairIds = [];
+
+    // Navigation between sections
+    $('.btn-toggle').on('click', function() {
+        const action = $(this).data('action');
+        const currentElement = $(this);
+
+        switch(action) {
+            case 'showFloors':
+                selectedInfo.branch = currentElement.data('branch-name');
+                $('#selectedBranchId').val(currentElement.data('branch-id'));
+                $('#branchSelect').hide();
+                $('#floors').show();
+                break;
+            case 'showRooms':
+                selectedInfo.floor = currentElement.data('floor-name');
+                $('#selectedFloorId').val(currentElement.data('floor-id'));
+                $('#floors').hide();
+                $('#rooms').show();
+                break;
+            case 'showTables':
+                selectedInfo.room = currentElement.data('room-name');
+                $('#selectedRoomId').val(currentElement.data('room-id'));
+                $('#rooms').hide();
+                $('#tables').show();
+                break;
+            case 'showChairs':
+                selectedInfo.table = currentElement.data('table-name');
+                $('#selectedTableId').val(currentElement.data('table-id'));
+                $('#tables').hide();
+                $('#chairs').show();
+                $('#confirmChairSelection').show();
+                break;
+        }
+    });
+
+    // Chair selection with status toggle
+    $('.chair').on('click', function() {
+        const $chair = $(this);
+        const chairId = $chair.data('chair-id');
+        const chairName = $chair.data('chair-name');
+        const currentStatus = $chair.data('status');
+
+        // Toggle status between 0 and 1
+        const newStatus = currentStatus == 0 ? 1 : 0;
+        $chair.data('status', newStatus);
+
+        // Update visual appearance
+        if (newStatus == 0) {
+            $chair.removeClass('reserved').addClass('available');
+        } else {
+            $chair.removeClass('available').addClass('reserved');
+        }
+
+        // Update selected chairs array
+        const chairIndex = selectedChairIds.indexOf(chairId);
+        if (chairIndex === -1) {
+            selectedChairIds.push(chairId);
+            selectedInfo.chairs.push({
+                id: chairId,
+                name: chairName
+            });
+        } else {
+            selectedChairIds.splice(chairIndex, 1);
+            selectedInfo.chairs = selectedInfo.chairs.filter(chair => chair.id !== chairId);
+        }
+
+        // Update hidden input
+        $('#selectedChairIds').val(selectedChairIds.join(','));
+
+        // Enable/disable confirm button
+        $('#confirmChairSelection').prop('disabled', selectedChairIds.length === 0);
+    });
+
+    // Confirm selection
+    $('#confirmChairSelection').on('click', function() {
+        if (selectedChairIds.length > 0) {
+            const chairNames = selectedInfo.chairs.map(chair => chair.name).join(', ');
+            const selectionSummary = `
+                Branch: ${selectedInfo.branch},
+                Floor: ${selectedInfo.floor},
+                Room: ${selectedInfo.room},
+                Table: ${selectedInfo.table},
+                Chairs: ${chairNames}
+            `;
+            $('#selectedLocationInfo').text(selectionSummary);
+            $('#branchModal').modal('hide');
+            $('.selection-area').hide();
+            $('#branchSelect').show();
+            $('#confirmChairSelection').hide();
+        }
+    });
+
+    // Form submission
+    $('#bookingForm').on('submit', function(e) {
+        e.preventDefault();
+
+        if (selectedChairIds.length === 0) {
+            showNotification('Please select at least one chair', 'error');
+            return;
+        }
+
+        const formData = $(this).serialize() + '&chair_id=' + selectedChairIds.join(',');
+
+        $.ajax({
+            url: $(this).attr('action'),
+
+            method: 'POST',
+            data: formData + '&_token=' + $('meta[name="csrf-token"]').attr('content'), // Add CSRF token
+            success: function(response) {
+                showNotification('Booking successful!', 'success');
+                setTimeout(() => {
+                    window.location.href = '{{ route("admin.booking.calendar") }}';
+                }, 2000);
+            },
+            error: function(xhr) {
+                showNotification('Booking failed. Please try again.', 'error');
+                console.error(xhr.responseText);
+            }
+        });
+    });
+
+    function showNotification(message, type) {
+        const notification = $('#notification');
+        notification.removeClass('success error').addClass(type);
+        notification.text(message).fadeIn();
+        setTimeout(() => notification.fadeOut(), 3000);
+    }
+});
+</script>
+
 @endsection

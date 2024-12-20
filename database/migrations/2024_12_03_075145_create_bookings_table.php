@@ -20,7 +20,7 @@ class CreateBookingsTable extends Migration
             $table->unsignedBigInteger('floor_id')->nullable();
             $table->unsignedBigInteger('room_id')->nullable();
             $table->unsignedBigInteger('table_id')->nullable();
-            $table->unsignedBigInteger('chair_id')->nullable();
+            $table->json('chair_id')->nullable(); // JSON column to store multiple chair IDs
             $table->string('name')->nullable();
             $table->string('email')->nullable();
             $table->string('phone_num')->nullable();
@@ -37,8 +37,8 @@ class CreateBookingsTable extends Migration
             $table->foreign('floor_id')->references('id')->on('floors')->onDelete('cascade');
             $table->foreign('room_id')->references('id')->on('rooms')->onDelete('cascade');
             $table->foreign('table_id')->references('id')->on('tables')->onDelete('cascade');
-            $table->foreign('chair_id')->references('id')->on('chairs')->onDelete('cascade');
         });
+
     }
 
     /**

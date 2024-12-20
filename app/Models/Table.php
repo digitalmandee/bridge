@@ -24,6 +24,11 @@ class Table extends Model
         return self::with('room')->get();
     }
 
+    public function chairs()
+    {
+        return $this->hasMany(Chair::class);
+    }
+
     public static function storeTables($request)
     {
         foreach ($request->room_id as $key => $room_id) {

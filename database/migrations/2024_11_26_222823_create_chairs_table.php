@@ -17,6 +17,7 @@ class CreateChairsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('table_id')->nullable();
             $table->string('name')->nullable();
+            $table->integer('status')->default(0);// status by default
             $table->timestamps();
 
             $table->foreign('table_id')->references('id')->on('tables')->onDelete('cascade');
