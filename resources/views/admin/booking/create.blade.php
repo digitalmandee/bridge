@@ -77,7 +77,7 @@
 
     <div id="notification"></div>
 
-
+    <div class="">
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <form action="{{ route('booking.storeUserDetails') }}" method="POST" id="bookingForm">
@@ -155,7 +155,7 @@
                 </form>
             </div>
         </div>
-
+    </div>
 
     <!-- Branch Selection Modal -->
     <div class="modal fade" id="branchModal" tabindex="-1">
@@ -246,6 +246,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
 $(document).ready(function() {
@@ -388,3 +389,4 @@ $(document).ready(function() {
 });
 </script>
 
+@endsection
