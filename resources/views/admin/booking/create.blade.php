@@ -129,25 +129,29 @@
 
                             <!-- Booking Details -->
                             <div class="mb-4">
-                                <h4>Booking Details</h4>
-                                <div class="mb-3">
-                                    <label class="form-label">Date</label>
-                                    <input type="date" name="date" class="form-control" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Time</label>
-                                    <input type="time" name="time" class="form-control" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Duration</label>
-                                    <select name="duration" class="form-control" required>
-                                        <option value="">Select Duration</option>
-                                        <option value="daily">Daily</option>
-                                        <option value="weekly">Weekly</option>
-                                        <option value="monthly">Monthly</option>
-                                    </select>
-                                </div>
+                            <h4>Booking Details</h4>
+                            <div class="mb-3">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" name="start_date" class="form-control" required>
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label">End Date</label>
+                                <input type="date" name="end_date" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Time</label>
+                                <input type="time" name="time" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Duration</label>
+                                <select name="duration" class="form-control" required>
+                                    <option value="">Select Duration</option>
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+
 
                             <button type="submit" class="btn btn-primary">Submit Booking</button>
                         </div>
