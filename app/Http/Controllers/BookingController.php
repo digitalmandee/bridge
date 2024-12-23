@@ -32,7 +32,6 @@ class BookingController extends Controller
 
     public function storeUserDetails(Request $request)
     {
-         //dd($request->all());
         try {
             // Validate the input
             $validated = $request->validate([
@@ -42,7 +41,7 @@ class BookingController extends Controller
                 'product' => 'required|string',
                 'duration' => 'required|string',
                 'start_date' => 'required|date',
-                 'end_date' => 'required|date',
+                'end_date' => 'required|date',
                 'time' => 'required',
                 'branch_id' => 'required|numeric',
                 'floor_id' => 'required|numeric',
@@ -52,10 +51,11 @@ class BookingController extends Controller
             ]);
 
             $chairIds = explode(',', $validated['chair_id']);
-            //dd($chairIds);
+            $userId = Auth::id();
 
             // Create the booking
             $booking = Booking::create([
+                'user_id' => $userId, 
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'],
