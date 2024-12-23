@@ -9,6 +9,8 @@ use App\Models\Room;
 use App\Models\Table;
 use App\Models\Chair;
 use App\Models\Booking;
+use Session;
+use Stripe;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -55,7 +57,7 @@ class BookingController extends Controller
 
             // Create the booking
             $booking = Booking::create([
-                'user_id' => $userId, 
+                'user_id' => $userId,
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'],
@@ -101,5 +103,10 @@ class BookingController extends Controller
         //$branches = Branch::all();
        // dd($branches);
         return view('admin.booking.create', compact('branches'));
+    }
+
+    public function stripe()
+    {
+        return view('stripe');
     }
 }

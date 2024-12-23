@@ -299,7 +299,7 @@
                 success: function(response) {
                     showNotification('Booking successful!', 'success');
                     setTimeout(() => {
-                        window.location.href = '{{ route("admin.booking.calendar") }}';
+                        window.location.href = '{{ route("booking.stripe") }}';
                     }, 2000);
                 },
                 error: function(xhr) {
