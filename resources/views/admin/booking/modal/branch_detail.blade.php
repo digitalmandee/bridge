@@ -89,6 +89,34 @@
 </div>
 
 
+                <div class="selection-area" id="chairs" style="display: none;">
+                    <h6>Select Chair</h6>
+                    @foreach($branches as $branch)
+                        @foreach($branch->floors as $floor)
+                            @foreach($floor->rooms as $room)
+                                @foreach($room->tables as $table)
+                                    @foreach($table->chairs as $chair)
+                                        <div class="chair {{ $chair->status == 0 ? 'available' : 'reserved' }}"
+                                            data-table-id="{{ $table->id }}" data-chair-id="{{ $chair->id }}"
+                                            data-chair-name="{{ $chair->name }}" data-status="{{ $chair->status }}">
+                                            {{ $chair->name }}
+                                        </div>
+                                    @endforeach
+                                @endforeach
+                            @endforeach
+                        @endforeach
+                    @endforeach
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="layout-btn" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="layout-btn active" id="confirmChairSelection" style="display: none;">
+                    Confirm Selection
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
 $(document).ready(function() {
     let selectedInfo = {
@@ -219,6 +247,99 @@ $(document).ready(function() {
                 console.error(xhr.responseText);
             }
         });
+
+        // Chair selection with status toggle
+        $('.chair').on('click', function () {
+            const $chair = $(this);
+            const chairId = $chair.data('chair-id');
+            const chairName = $chair.data('chair-name');
+            const currentStatus = $chair.data('status');
+
+            // Toggle status between 0 and 1
+            const newStatus = currentStatus == 0 ? 1 : 0;
+            $chair.data('status', newStatus);
+
+            // Update visual appearance
+            if (newStatus == 0) {
+                $chair.removeClass('reserved').addClass('available');
+            } else {
+                $chair.removeClass('available').addClass('reserved');
+            }
+
+            // Update selected chairs array
+            const chairIndex = selectedChairIds.indexOf(chairId);
+            if (chairIndex === -1) {
+                selectedChairIds.push(chairId);
+                selectedInfo.chairs.push({
+                    id: chairId,
+                    name: chairName
+                });
+            } else {
+                selectedChairIds.splice(chairIndex, 1);
+                selectedInfo.chairs = selectedInfo.chairs.filter(chair => chair.id !== chairId);
+            }
+
+            // Update hidden input
+            $('#selectedChairIds').val(selectedChairIds.join(','));
+
+            // Enable/disable confirm button
+            $('#confirmChairSelection').prop('disabled', selectedChairIds.length === 0);
+        });
+
+        // Confirm selection
+        $('#confirmChairSelection').on('click', function () {
+            if (selectedChairIds.length > 0) {
+                const chairNames = selectedInfo.chairs.map(chair => chair.name).join(', ');
+                const selectionSummary = `
+                Branch: ${selectedInfo.branch},
+                Floor: ${selectedInfo.floor},
+                Room: ${selectedInfo.room},
+                Table: ${selectedInfo.table},
+                Chairs: ${chairNames}
+            `;
+                $('#selectedLocationInfo').text(selectionSummary);
+                $('#branchModal').modal('hide');
+                $('.selection-area').hide();
+                $('#branchSelect').show();
+                $('#confirmChairSelection').hide();
+            }
+        });
+
+        // Form submission
+        $('#bookingForm').on('submit', function (e) {
+            e.preventDefault();
+
+            if (selectedChairIds.length === 0) {
+                showNotification('Please select at least one chair', 'error');
+                return;
+            }
+
+            const formData = $(this).serialize() + '&chair_id=' + selectedChairIds.join(',');
+
+            $.ajax({
+                url: $(this).attr('action'),
+
+                method: 'POST',
+                data: formData + '&_token=' + $('meta[name="csrf-token"]').attr('content'), // Add CSRF token
+                success: function (response) {
+                    showNotification('Booking successful!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '{{ route("admin.booking.calendar") }}';
+                    }, 2000);
+                },
+                error: function (xhr) {
+                    showNotification('Booking failed. Please try again.', 'error');
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+
+        function showNotification(message, type) {
+            const notification = $('#notification');
+            notification.removeClass('success error').addClass(type);
+            notification.text(message).fadeIn();
+            setTimeout(() => notification.fadeOut(), 3000);
+        }
     });
 
     function showNotification(message, type) {

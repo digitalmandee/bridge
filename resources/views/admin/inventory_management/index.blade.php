@@ -63,11 +63,7 @@
                 <h4>Product</h4>
             </div>
             <div class="d-flex gap-2">
-<<<<<<< HEAD
-                <button class="floor-btn" role="button">Add Inventory</button>
-=======
                 <a href="{{ route('admin.inventory.create') }}" class="floor-btn" role="button">Add Inventory</a>
->>>>>>> yasir
                 <button class="floor-btn" role="button">
                     <i class="fa fa-filter me-2"></i> Filter
                 </button>
