@@ -1,4 +1,3 @@
-model updated
 @extends('admin.master')
 @section('title', __('Booking Create'))
 @section('content')
