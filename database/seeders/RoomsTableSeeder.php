@@ -12,9 +12,8 @@ class RoomsTableSeeder extends Seeder
     {
         $floors = Floor::all();
         foreach ($floors as $floor) {
-            Room::create(['floor_id' => $floor->id, 'name' => 'Room 101', 'type' => 'Standard']);
-            Room::create(['floor_id' => $floor->id, 'name' => 'Room 102', 'type' => 'Deluxe']);
-            Room::create(['floor_id' => $floor->id, 'name' => 'Room 103', 'type' => 'Suite']);
+            Room::create(['floor_id' => $floor->id, 'name' => 'Room 1', 'type' => 'Standard']);
+            Room::create(['floor_id' => $floor->id, 'name' => 'Room 2', 'type' => 'Deluxe']);
         }
     }
 }

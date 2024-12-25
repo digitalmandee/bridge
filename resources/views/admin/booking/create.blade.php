@@ -1,47 +1,45 @@
 @extends('admin.master')
-@section('title', __('Booking Create'))
-@section('content')
 
+@section('title', __('Booking Create'))
+
+@section('content')
 <style>
     .btn-toggle {
-        padding: 8px 16px;
+        padding: 10px 15px;
         margin: 5px;
         border: 1px solid #ddd;
         border-radius: 4px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: background-color 0.3s;
+        display: inline-block;
+        text-align: center;
     }
-
     .btn-toggle:hover {
         background-color: #f0f0f0;
     }
-
     .chair {
         display: inline-block;
-        padding: 10px 20px;
-        margin: 5px;
-        border-radius: 4px;
-        text-align: center;
+        width: 60px; /* Fixed width for circular shape */
+        height: 60px; /* Fixed height for circular shape */
+        margin: 10px;
+        border-radius: 50%; /* Fully rounded */
         cursor: pointer;
+        text-align: center;
+        background-color: green; /* Default color for available */
+        color: white;
+        line-height: 60px; /* Center text vertically */
+        border: 2px solid transparent; /* For visual separation */
     }
-
     .available {
         background-color: green;
-        color: white;
     }
-
     .reserved {
         background-color: red;
-        color: white;
+        pointer-events: none; /* Disable pointer events */
     }
-
-    .selection-area {
-        margin: 15px 0;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+    .disabled {
+        opacity: 0.5; /* Visual indication for disabled chairs */
     }
-
     #notification {
         position: fixed;
         top: 20px;
@@ -51,342 +49,330 @@
         display: none;
         z-index: 1000;
     }
-
     .success {
         background-color: #d4edda;
         color: #155724;
         border: 1px solid #c3e6cb;
     }
-
     .error {
         background-color: #f8d7da;
         color: #721c24;
         border: 1px solid #f5c6cb;
     }
+    .selection-section {
+        margin-bottom: 20px;
+    }
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* Adjusted min size for chairs */
+        gap: 10px;
+    }
+    .chair-container {
+        border: 2px solid #ddd; /* Border for the rectangular area */
+        padding: 20px; /* Padding inside the border */
+        border-radius: 10px; /* Rounded corners for the rectangular area */
+        margin-top: 20px; /* Space above the chair selection */
+    }
 </style>
 
 <div class="page-content">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('admin.booking.calendar') }}">
-                <i class="fa fa-chevron-left"></i>
-            </a>
-            <h3 class="m-0">New Booking</h3>
-        </div>
+        <h3 class="m-0">New Booking</h3>
     </div>
 
     <div id="notification"></div>
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <form action="{{ route('booking.storeUserDetails') }}" method="POST" id="bookingForm">
-                    @csrf
-                    <!-- User Details Section -->
-                    <div class="card mb-4">
-                        <div class="card-body p-4">
-                            <div class="mb-4">
-                                <h4>User Details</h4>
-                                <div class="mb-3">
-                                    <label class="form-label">Name</label>
-                                    <input type="text" name="name" class="form-control" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" name="email" class="form-control" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Phone</label>
-                                    <input type="text" name="phone" class="form-control" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Product</label>
-                                    <select name="product" class="form-control" required>
-                                        <option value="">Select Product</option>
-                                        <option value="meeting_rooms">Meeting Rooms</option>
-                                        <option value="podcast_rooms">Podcast Rooms</option>
-                                        <option value="visitor">Visitor</option>
-                                        <option value="office">Office</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Branch Selection Button -->
-                            <div class="mb-4">
-                                <h4>Location Selection</h4>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#branchModal">
-                                    Select Location
-                                </button>
-                                <div id="selectedLocationInfo" class="mt-2 text-muted"></div>
-                            </div>
-
-                            <!-- Hidden Fields -->
-                            <input type="hidden" name="branch_id" id="selectedBranchId">
-                            <input type="hidden" name="floor_id" id="selectedFloorId">
-                            <input type="hidden" name="room_id" id="selectedRoomId">
-                            <input type="hidden" name="table_id" id="selectedTableId">
-                            <input type="hidden" name="chair_ids" id="selectedChairIds">
-
-                            <!-- Booking Details -->
-                            <div class="mb-4">
-                                <h4>Booking Details</h4>
-                                <div class="mb-3">
-                                    <label class="form-label">Date</label>
-                                    <input type="date" name="date" class="form-control" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Time</label>
-                                    <input type="time" name="time" class="form-control" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Duration</label>
-                                    <select name="duration" class="form-control" required>
-                                        <option value="">Select Duration</option>
-                                        <option value="daily">Daily</option>
-                                        <option value="weekly">Weekly</option>
-                                        <option value="monthly">Monthly</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">Submit Booking</button>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form action="{{ route('booking.storeUserDetails') }}" method="POST" id="bookingForm">
+                @csrf
+                <div class="card mb-4">
+                    <div class="card-body p-4">
+                        <h4>User Details</h4>
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" name="name" class="form-control" required>
                         </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" name="phone" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Product</label>
+                            <select name="product" class="form-control" required>
+                                <option value="">Select Product</option>
+                                <option value="meeting_rooms">Meeting Rooms</option>
+                                <option value="podcast_rooms">Podcast Rooms</option>
+                                <option value="visitor">Visitor</option>
+                                <option value="office">Office</option>
+                            </select>
+                        </div>
 
-    <!-- Branch Selection Modal -->
-    <div class="modal fade" id="branchModal" tabindex="-1">
+                        <h4>Location Selection</h4>
+                        <select id="branchSelect" class="form-control" required>
+                            <option value="">Select Branch</option>
+                            @foreach($branches as $branch)
+                                <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                            @endforeach
+                        </select>
+
+                        <!-- Hidden fields for selected IDs -->
+                        <input type="hidden" name="branch_id" id="selectedBranchId">
+                        <input type="hidden" name="floor_id" id="selectedFloorId">
+                        <input type="hidden" name="room_id" id="selectedRoomId">
+                        <input type="hidden" name="chair_id" id="selectedChairIds">
+
+                        <h4>Booking Details</h4>
+                        <div class="mb-3">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" name="start_date" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">End Date</label>
+                            <input type="date" name="end_date" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Time</label>
+                            <input type="time" name="time" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Duration</label>
+                            <select name="duration" class="form-control" required>
+                                <option value="">Select Duration</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary">Submit Booking</button>
+                    </div> <!-- End of card body -->
+                </div> <!-- End of card -->
+            </form> <!-- End of form -->
+        </div> <!-- End of column -->
+    </div> <!-- End of row -->
+
+    <!-- Selection Modal -->
+    <div class="modal fade" id="selectionModal" tabindex="-1" aria-labelledby="selectionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Select Location</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="selectionModalLabel">Select Your Location</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss='modal' aria-label='Close'></button>
                 </div>
-                <div class="modal-body">
-                    <!-- Selection Areas -->
-                    <div class="selection-area" id="branchSelect">
-                        <h6>Select Branch</h6>
-                        @foreach($branches as $branch)
-                            <div class="btn-toggle" data-action="showFloors" data-branch-id="{{ $branch->id }}" data-branch-name="{{ $branch->name }}">
-                                {{ $branch->name }}
+
+                <div class='modal-body'>
+                    <div id='locationSelection'>
+                        <div class='selection-section'>
+                            <h6>Select Floor</h6>
+                            <div id='floorButtons' class='grid-container'></div>
+                        </div>
+                        <div class='selection-section'>
+                            <h6>Select Room</h6>
+                            <div id='roomButtons' class='grid-container'></div>
+                        </div>
+                        <div class='selection-section'>
+                            <h6>Select Chair</h6>
+                            <div class='chair-container'>
+                                <div id='chairButtons' class='grid-container'></div>
                             </div>
-                        @endforeach
+                        </div>
                     </div>
-
-                    <div class="selection-area" id="floors" style="display: none;">
-                        <h6>Select Floor</h6>
-                        @foreach($branches as $branch)
-                            @foreach($branch->floors as $floor)
-                                <div class="btn-toggle" data-action="showRooms" data-branch-id="{{ $branch->id }}" data-floor-id="{{ $floor->id }}" data-floor-name="{{ $floor->name }}">
-                                    {{ $floor->name }}
-                                </div>
-                            @endforeach
-                        @endforeach
-                    </div>
-
-                    <div class="selection-area" id="rooms" style="display: none;">
-                        <h6>Select Room</h6>
-                        @foreach($branches as $branch)
-                            @foreach($branch->floors as $floor)
-                                @foreach($floor->rooms as $room)
-                                    <div class="btn-toggle" data-action="showTables" data-floor-id="{{ $floor->id }}" data-room-id="{{ $room->id }}" data-room-name="{{ $room->name }}">
-                                        {{ $room->name }}
-                                    </div>
-                                @endforeach
-                            @endforeach
-                        @endforeach
-                    </div>
-
-                    <div class="selection-area" id="tables" style="display: none;">
-                        <h6>Select Table</h6>
-                        @foreach($branches as $branch)
-                            @foreach($branch->floors as $floor)
-                                @foreach($floor->rooms as $room)
-                                    @foreach($room->tables as $table)
-                                        <div class="btn-toggle" data-action="showChairs" data-room-id="{{ $room->id }}" data-table-id="{{ $table->id }}" data-table-name="{{ $table->name }}">
-                                            {{ $table->name }}
-                                        </div>
-                                    @endforeach
-                                @endforeach
-                            @endforeach
-                        @endforeach
-                    </div>
-
-                    <div class="selection-area" id="chairs" style="display: none;">
-                        <h6>Select Chair</h6>
-                        @foreach($branches as $branch)
-                            @foreach($branch->floors as $floor)
-                                @foreach($floor->rooms as $room)
-                                    @foreach($room->tables as $table)
-                                        @foreach($table->chairs as $chair)
-                                            <div class="chair {{ $chair->status == 0 ? 'available' : 'reserved' }}"
-                                                 data-table-id="{{ $table->id }}"
-                                                 data-chair-id="{{ $chair->id }}"
-                                                 data-chair-name="{{ $chair->name }}"
-                                                 data-status="{{ $chair->status }}">
-                                                {{ $chair->name }}
-                                            </div>
-                                        @endforeach
-                                    @endforeach
-                                @endforeach
-                            @endforeach
-                        @endforeach
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="confirmChairSelection" style="display: none;">
-                        Confirm Selection
-                    </button>
+                    <button id='submitChairs' class='btn btn-primary mt-3' style='display:none;'>Submit Chairs</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
+<script src='https://code.jquery.com/jquery-3.6.0.min.js'></script>
+<script src='https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js'></script>
 
 <script>
-$(document).ready(function() {
-    let selectedInfo = {
-        branch: '',
-        floor: '',
-        room: '',
-        table: '',
-        chairs: []
-    };
+    // JavaScript Code
+    $(document).ready(function() {
+        let selectedChairIds = [];  // Store selected chair IDs
 
-    let selectedChairIds = [];
+        // Handle branch selection change
+        $('#branchSelect').on('change', function() {
+            const selectedBranchId = $(this).val();
+            $('#selectedBranchId').val(selectedBranchId);
+            loadFloors(selectedBranchId);
+            $('#selectionModal').modal('show');
+        });
 
-    // Navigation between sections
-    $('.btn-toggle').on('click', function() {
-        const action = $(this).data('action');
-        const currentElement = $(this);
+        // Load floors based on selected branch
+        function loadFloors(branchId) {
+            $('#floorButtons').empty();
+            $('#roomButtons').empty();
+            $('#chairButtons').empty();
+            $('#submitChairs').hide();
 
-        switch(action) {
-            case 'showFloors':
-                selectedInfo.branch = currentElement.data('branch-name');
-                $('#selectedBranchId').val(currentElement.data('branch-id'));
-                $('#branchSelect').hide();
-                $('#floors').show();
-                break;
-            case 'showRooms':
-                selectedInfo.floor = currentElement.data('floor-name');
-                $('#selectedFloorId').val(currentElement.data('floor-id'));
-                $('#floors').hide();
-                $('#rooms').show();
-                break;
-            case 'showTables':
-                selectedInfo.room = currentElement.data('room-name');
-                $('#selectedRoomId').val(currentElement.data('room-id'));
-                $('#rooms').hide();
-                $('#tables').show();
-                break;
-            case 'showChairs':
-                selectedInfo.table = currentElement.data('table-name');
-                $('#selectedTableId').val(currentElement.data('table-id'));
-                $('#tables').hide();
-                $('#chairs').show();
-                $('#confirmChairSelection').show();
-                break;
-        }
-    });
-
-    // Chair selection with status toggle
-    $('.chair').on('click', function() {
-        const $chair = $(this);
-        const chairId = $chair.data('chair-id');
-        const chairName = $chair.data('chair-name');
-        const currentStatus = $chair.data('status');
-
-        // Toggle status between 0 and 1
-        const newStatus = currentStatus == 0 ? 1 : 0;
-        $chair.data('status', newStatus);
-
-        // Update visual appearance
-        if (newStatus == 0) {
-            $chair.removeClass('reserved').addClass('available');
-        } else {
-            $chair.removeClass('available').addClass('reserved');
+            @foreach($branches as $branch)
+                if (branchId == "{{ $branch->id }}") {
+                    @foreach($branch->floors as $floor)
+                        $('#floorButtons').append(`
+                            <div class="btn-toggle" data-floor-id="{{ $floor->id }}">
+                                {{ $floor->name }}
+                            </div>
+                        `);
+                    @endforeach
+                }
+            @endforeach
         }
 
-        // Update selected chairs array
-        const chairIndex = selectedChairIds.indexOf(chairId);
-        if (chairIndex === -1) {
-            selectedChairIds.push(chairId);
-            selectedInfo.chairs.push({
-                id: chairId,
-                name: chairName
-            });
-        } else {
-            selectedChairIds.splice(chairIndex, 1);
-            selectedInfo.chairs = selectedInfo.chairs.filter(chair => chair.id !== chairId);
+        // Load rooms based on selected floor
+        $(document).on('click', '.btn-toggle[data-floor-id]', function() {
+            const floorId = $(this).data('floor-id');
+            $('#selectedFloorId').val(floorId);
+            loadRooms(floorId);
+        });
+
+        // Load rooms based on selected floor
+        function loadRooms(floorId) {
+            $('#roomButtons').empty();
+            $('#chairButtons').empty();
+            $('#submitChairs').hide();
+
+            @foreach($branches as $branch)
+                @foreach($branch->floors as $floor)
+                    if (floorId == "{{ $floor->id }}") {
+                        @foreach($floor->rooms as $room)
+                            $('#roomButtons').append(`
+                                <div class="btn-toggle" data-room-id="{{ $room->id }}">
+                                    {{ $room->name }}
+                                </div>
+                            `);
+                        @endforeach
+                    }
+                @endforeach
+            @endforeach
         }
 
-        // Update hidden input
-        $('#selectedChairIds').val(selectedChairIds.join(','));
+        // Load chairs based on selected room
+        $(document).on('click', '.btn-toggle[data-room-id]', function() {
+            const roomId = $(this).data('room-id');
+            $('#selectedRoomId').val(roomId);
+            loadChairs(roomId);
+        });
 
-        // Enable/disable confirm button
-        $('#confirmChairSelection').prop('disabled', selectedChairIds.length === 0);
-    });
+        // Load chairs based on selected room
+        function loadChairs(roomId) {
+            $('#chairButtons').empty();
+            $('#submitChairs').show();
 
-    // Confirm selection
-    $('#confirmChairSelection').on('click', function() {
-        if (selectedChairIds.length > 0) {
-            const chairNames = selectedInfo.chairs.map(chair => chair.name).join(', ');
-            const selectionSummary = `
-                Branch: ${selectedInfo.branch},
-                Floor: ${selectedInfo.floor},
-                Room: ${selectedInfo.room},
-                Table: ${selectedInfo.table},
-                Chairs: ${chairNames}
-            `;
-            $('#selectedLocationInfo').text(selectionSummary);
-            $('#branchModal').modal('hide');
-            $('.selection-area').hide();
-            $('#branchSelect').show();
-            $('#confirmChairSelection').hide();
+            let reservedCount = 0; // Count reserved chairs
+
+            @foreach($branches as $branch)
+                @foreach($branch->floors as $floor)
+                    @foreach($floor->rooms as $room)
+                        if (roomId == "{{ $room->id }}") {
+                            @foreach($room->chairs as $chair)
+                                if ("{{ $chair->status }}" == 1) reservedCount++;
+                                $('#chairButtons').append(`
+                                    <div class="chair {{ $chair->status == 0 ? 'available' : 'reserved' }}"
+                                        data-chair-id="{{ $chair->id }}"
+                                        data-status="{{ $chair->status }}">
+                                        {{ $chair->name }}
+                                    </div>
+                                `);
+                            @endforeach
+                        }
+                    @endforeach
+                @endforeach
+            @endforeach
+
+            // If room is fully booked
+            if (reservedCount >= 10) {
+                showNotification('This room is fully booked!', 'error');
+                $('#chairButtons').find('.chair').addClass('disabled'); // Disable further interaction
+            }
         }
-    });
 
-    // Form submission
-    $('#bookingForm').on('submit', function(e) {
-        e.preventDefault();
+        // Handle chair selection
+        $(document).on('click', '.chair', function() {
+            const chairId = $(this).data('chair-id');
+            const currentStatus = $(this).data('status');
 
-        if (selectedChairIds.length === 0) {
-            showNotification('Please select at least one chair', 'error');
-            return;
-        }
+            if (currentStatus === 1) { // Reserved
+                showNotification('This chair is already reserved!', 'error');
+                return; // Prevent selection
+            }
 
-        const formData = $(this).serialize() + '&chair_id=' + selectedChairIds.join(',');
+            // Check if already selected
+            if (selectedChairIds.length >= 10) {
+                showNotification('You can only select up to 10 chairs for this room!', 'error');
+                return; // Prevent selection
+            }
 
-        $.ajax({
-            url: $(this).attr('action'),
+            // Toggle chair status
+            $(this).removeClass('available').addClass('reserved');
+            selectedChairIds.push(chairId);  // Add chair to selection
+            $(this).data('status', 1); // Mark as reserved
 
-            method: 'POST',
-            data: formData + '&_token=' + $('meta[name="csrf-token"]').attr('content'), // Add CSRF token
-            success: function(response) {
-                showNotification('Booking successful!', 'success');
-                setTimeout(() => {
-                    window.location.href = '{{ route("admin.booking.calendar") }}';
-                }, 2000);
-            },
-            error: function(xhr) {
-                showNotification('Booking failed. Please try again.', 'error');
-                console.error(xhr.responseText);
+            // Notify when maximum chairs are selected
+            if (selectedChairIds.length === 10) {
+                showNotification('You have selected the maximum of 10 chairs!', 'info');
             }
         });
-    });
 
-    function showNotification(message, type) {
-        const notification = $('#notification');
-        notification.removeClass('success error').addClass(type);
-        notification.text(message).fadeIn();
-        setTimeout(() => notification.fadeOut(), 3000);
-    }
-});
+        // Submit selected chairs
+        $('#submitChairs').on('click', function() {
+            $('#selectedChairIds').val(selectedChairIds.join(','));
+            $('#selectionModal').modal('hide');
+            showNotification('Chairs selected successfully!', 'success');
+        });
+
+        // Handle booking form submission
+        $('#bookingForm').on('submit', function(e) {
+            e.preventDefault();
+
+            if (selectedChairIds.length === 0) {
+                showNotification('Please select at least one chair', 'error');
+                return;
+            }
+
+            const formData = $(this).serialize() + '&chair_ids=' + selectedChairIds.join(',');
+
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: formData + '&_token=' + $('meta[name="csrf-token"]').attr('content'),
+                success: function(response) {
+                    if (response.success) {
+                        showNotification('Booking successful!', 'success');
+                        setTimeout(() => {
+                            window.location.href = '{{ route("admin.booking.calendar") }}';
+                        }, 2000);
+                    } else {
+                        displayValidationErrors(response.message);
+                    }
+                },
+                error: function(xhr) {
+                    showNotification('Booking failed. Please try again.', 'error');
+                }
+            });
+        });
+
+        // Display error messages
+        function displayValidationErrors(errors) {
+            let errorMessage = '';
+            if (errors.chair_id) errorMessage += errors.chair_id.join('<br>');
+            if (errorMessage) showNotification(errorMessage, 'error');
+        }
+
+        // Show notification messages
+        function showNotification(message, type) {
+            const notification = $('#notification');
+            notification.removeClass('success error info').addClass(type);
+            notification.html(message).fadeIn();
+            setTimeout(() => notification.fadeOut(), 3000);
+        }
+    });
 </script>
 
 @endsection

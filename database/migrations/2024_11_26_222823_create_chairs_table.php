@@ -15,12 +15,12 @@ class CreateChairsTable extends Migration
     {
         Schema::create('chairs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('table_id')->nullable();
+            $table->unsignedBigInteger('room_id')->nullable();
             $table->string('name')->nullable();
             $table->integer('status')->default(0);// status by default
             $table->timestamps();
 
-            $table->foreign('table_id')->references('id')->on('tables')->onDelete('cascade');
+            $table->foreign('room_id')->references('id')->on('rooms')->onDelete('cascade');
         });
     }
 

@@ -14,7 +14,6 @@ class FloorsTableSeeder extends Seeder
         foreach ($branches as $branch) {
             Floor::create(['branch_id' => $branch->id, 'name' => 'Floor 1']);
             Floor::create(['branch_id' => $branch->id, 'name' => 'Floor 2']);
-            Floor::create(['branch_id' => $branch->id, 'name' => 'Floor 3']);
         }
     }
 }

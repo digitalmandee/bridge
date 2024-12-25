@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
             BranchesTableSeeder::class,
             FloorsTableSeeder::class,
             RoomsTableSeeder::class,
-            TablesTableSeeder ::class,
             ChairsTableSeeder::class,
         ]);
     }

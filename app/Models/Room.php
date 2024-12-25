@@ -20,6 +20,10 @@ class Room extends Model
     {
         return $this->belongsTo(Floor::class);
     }
+    public function chairs()
+    {
+        return $this->hasMany(Chair::class);
+    }
 
     public static function getRooms()
     {
@@ -31,11 +35,6 @@ class Room extends Model
         return Floor::all();
     }
 
-
-    public function tables()
-    {
-        return $this->hasMany(Table::class);
-    }
 
     public static function storeRoom($request)
     {
