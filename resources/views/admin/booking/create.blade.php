@@ -42,17 +42,19 @@
                                 </select>
                             </div>
                             <!-- Branch Selection Dropdown -->
-                            <h4>Location Selection</h4>
-                            <select id="branchSelect" class="form-control" required>
-                                <option value="">Select Branch</option>
-                                @foreach($branches as $branch)
-                                    <option value="{{ $branch->id }}" data-branch-name="{{ $branch->name }}">
-                                        {{ $branch->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <div class="mb-3">
+                                <label class="form-label">Location Selection</label>
+                                <select id="branchSelect" class="form-control" required>
+                                    <option value="">Select Branch</option>
+                                    @foreach($branches as $branch)
+                                        <option value="{{ $branch->id }}" data-branch-name="{{ $branch->name }}">
+                                            {{ $branch->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <!-- Booking Details -->
-                            <h4>Booking Details</h4>
+                            <h4 class="mb-2">Booking Details</h4>
                             <div class="mb-3">
                                 <label class="form-label">Start Date</label>
                                 <input type="date" name="start_date" class="form-control" required>
@@ -62,9 +64,9 @@
                                 <input type="date" name="end_date" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                    <label class="form-label">Time</label>
-                                    <input type="time" name="time" class="form-control" required>
-                                </div>
+                                <label class="form-label">Time</label>
+                                <input type="time" name="time" class="form-control" required>
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label">Duration</label>
                                 <select name="duration" class="form-control" required>
@@ -74,7 +76,9 @@
                                     <option value="monthly">Monthly</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-primary">Submit Booking</button>
+                            <div class="footer text-center">
+                                <button type="submit" class="layout-btn active">Submit Booking</button>
+                            </div>
                         </div>
                     </div>
                 </form>
