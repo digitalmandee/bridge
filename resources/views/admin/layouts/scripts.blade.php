@@ -18,7 +18,7 @@
 
 <!-- sidebar-active-script -->
 <script>
-    $(document).on('click', '.btn-toggle', function() {
+    $(document).on('click', '.btn-toggle', function () {
         $('.btn-toggle').removeClass('active');
         $(this).addClass('active');
     });
@@ -42,23 +42,23 @@
         data: {
             labels: months,
             datasets: [{
-                    data: expenses1,
-                    backgroundColor: '#FFCC16',
-                    borderWidth: 1,
-                    borderRadius: 10,
-                },
-                {
-                    data: expenses2,
-                    backgroundColor: '#F98550',
-                    borderWidth: 1,
-                    borderRadius: 10,
-                },
-                {
-                    data: expenses3,
-                    backgroundColor: '#2BB2FE',
-                    borderWidth: 1,
-                    borderRadius: 10,
-                }
+                data: expenses1,
+                backgroundColor: '#FFCC16',
+                borderWidth: 1,
+                borderRadius: 10,
+            },
+            {
+                data: expenses2,
+                backgroundColor: '#F98550',
+                borderWidth: 1,
+                borderRadius: 10,
+            },
+            {
+                data: expenses3,
+                backgroundColor: '#2BB2FE',
+                borderWidth: 1,
+                borderRadius: 10,
+            }
             ]
         },
         options: {
@@ -106,7 +106,7 @@
 </script>
 
 <script>
-    $(function() {
+    $(function () {
         const $startGroup = $('#start-date-group'),
             $endGroup = $('#end-date-group'),
             $duration = $('#duration'),
@@ -140,7 +140,7 @@
 </script>
 <!-- jQuery Script -->
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Function definitions
         function showFloors() {
             $('#floors').show();
@@ -169,8 +169,39 @@
         $('#rooms').on('click', '[data-action="showTables"]', showTables);
         $('#tables').on('click', '[data-action="showChairs"]', showChairs);
         // Chair booking event
-        $('#chairs').on('click', '[data-action="bookChair"]', function() {
+        $('#chairs').on('click', '[data-action="bookChair"]', function () {
             bookChair(this);
         });
+    });
+</script>
+<!-- seatBooking -->
+<script>
+    function toggleBooking(chair) {
+        chair.querySelector('img').src = '{{ asset('icons/booked.png') }}';
+        showPopup();
+    }
+
+    function showPopup() {
+        const popup = document.getElementById("bookingPopup");
+        popup.classList.add("show");
+        setTimeout(() => popup.classList.remove("show"), 1000);
+    }
+
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab, .tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            tab.classList.add('active');
+            document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+        });
+    });
+
+    document.getElementById('branchSelect')?.addEventListener('change', function () {
+        const branchName = this.options[this.selectedIndex]?.getAttribute('data-branch-name');
+        if (branchName) {
+            document.getElementById('selectedBranchName').innerText = `You selected: ${branchName}`;
+            new bootstrap.Modal(document.getElementById('branchModal')).show();
+        }
     });
 </script>

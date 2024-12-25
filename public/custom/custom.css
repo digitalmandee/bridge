@@ -1316,3 +1316,164 @@ h2 {
     margin-top: 15px;
     line-height: 1.5;
 }
+ /* Enhanced Table Styling */
+ .table-container {
+    position: relative;
+    height: 150px;
+    width: 360px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #712929;
+}
+
+.table-inner {
+    width: 80%;
+    height: 40%;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #4f2626;
+    box-shadow: inset 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* branch-chair Styling */
+.branch-chair {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.branch-chair img {
+    width: 120px;
+}
+
+/* branch-chair Positions */
+.chair-top-1 {
+    top: -80px;
+    left: 30px;
+    rotate: 180deg;
+}
+
+.chair-top-2 {
+    top: -80px;
+    left: 120px;
+    rotate: 180deg;
+}
+
+.chair-top-3 {
+    top: -80px;
+    left: 210px;
+    rotate: 180deg;
+}
+
+.chair-top-4 {
+    top: -80px;
+    right: 210px;
+    rotate: 180deg;
+}
+
+.chair-top-5 {
+    top: -80px;
+    right: 120px;
+    rotate: 180deg;
+}
+
+.chair-top-6 {
+    top: -80px;
+    right: 30px;
+    rotate: 180deg;
+}
+
+.chair-bottom-1 {
+    bottom: -80px;
+    left: 30px;
+}
+
+.chair-bottom-2 {
+    bottom: -80px;
+    left: 120px;
+}
+
+.chair-bottom-3 {
+    bottom: -80px;
+    left: 210px;
+}
+
+.chair-bottom-4 {
+    bottom: -80px;
+    right: 210px;
+}
+
+.chair-bottom-5 {
+    bottom: -80px;
+    right: 120px;
+}
+
+.chair-bottom-6 {
+    bottom: -80px;
+    right: 30px;
+}
+
+/* Popup Styling */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #333;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1rem;
+    display: none;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.popup.show {
+    display: block;
+    opacity: 1;
+}
+
+.tab-list {
+    list-style: none;
+    margin-bottom: 5rem;
+    padding: 0;
+    display: flex;
+}
+
+.tab {
+    border-radius: 8px;
+    padding: 6px 15px;
+    background-color: #ffff;
+    border: 1.5px solid #FFCC16;
+    cursor: pointer;
+}
+
+.tab.active {
+    background-color: #ccc;
+    color: #FFF !important;
+    background-color: #FFCC16 !important;
+}
+
+.tab-content-container {
+
+    padding: 10px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+
+}
