@@ -62,6 +62,10 @@
                                 <input type="date" name="end_date" class="form-control" required>
                             </div>
                             <div class="mb-3">
+                                    <label class="form-label">Time</label>
+                                    <input type="time" name="time" class="form-control" required>
+                                </div>
+                            <div class="mb-3">
                                 <label class="form-label">Duration</label>
                                 <select name="duration" class="form-control" required>
                                     <option value="">Select Duration</option>
