@@ -67,32 +67,7 @@
                             </div>
                         </div>
                         <div id="tab2" class="tab-content">
-                            <div class="d-flex gap-2">
-                                <!-- Branch Selection -->
-                                <div class="table-container">
-                                    <div class="table-inner"></div>
-                                    <!-- Top Chairs -->
-                                    <div class="branch-chair chair-top-1" onclick="toggleBooking(this)">
-                                        <img src="{{ asset('icons/free.png') }}" alt="Chair">
-                                    </div>
-                                    <div class="branch-chair chair-top-2" onclick="toggleBooking(this)">
-                                        <img src="{{ asset('icons/free.png') }}" alt="Chair">
-                                    </div>
-                                    <div class="branch-chair chair-top-3" onclick="toggleBooking(this)">
-                                        <img src="{{ asset('icons/free.png') }}" alt="Chair">
-                                    </div>
-                                    <!-- Bottom Chairs -->
-                                    <div class="branch-chair chair-bottom-1" onclick="toggleBooking(this)">
-                                        <img src="{{ asset('icons/free.png') }}" alt="Chair">
-                                    </div>
-                                    <div class="branch-chair chair-bottom-2" onclick="toggleBooking(this)">
-                                        <img src="{{ asset('icons/free.png') }}" alt="Chair">
-                                    </div>
-                                    <div class="branch-chair chair-bottom-3" onclick="toggleBooking(this)">
-                                        <img src="{{ asset('icons/free.png') }}" alt="Chair">
-                                    </div>
-                                </div>
-                            </div>
+                          <h1>yasir</h1>
                         </div>
                     </div>
                 </div>
