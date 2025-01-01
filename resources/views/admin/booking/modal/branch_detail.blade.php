@@ -74,7 +74,6 @@
                 <div id="bookingPopup" class="popup">booked Successfully!</div>
             </div>
             <div class="modal-footer mt-5">
-                <h1>yasir</h1>
                 <button type="button" class="layout-btn" data-bs-dismiss="modal">Submit</button>
             </div>
         </div>
