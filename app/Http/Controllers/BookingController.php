@@ -50,10 +50,15 @@ class BookingController extends Controller
                 'room_id' => 'required|numeric',
                 'table_id' => 'required|numeric',
                 'chair_id' => 'required',
+                'transaction_type' => 'required|string',
+                'transaction_image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+
             ]);
 
             $chairIds = explode(',', $validated['chair_id']);
             $userId = Auth::id();
+
+            $image_path = $validated['transaction_image'];
 
             // Create the booking
             $booking = Booking::create([
@@ -70,6 +75,8 @@ class BookingController extends Controller
                 'floor_id' => $validated['floor_id'],
                 'room_id' => $validated['room_id'],
                 'table_id' => $validated['table_id'],
+                'transaction_image' => $image_path,
+                'transaction_type' => $validated['transaction_type'],
                 'chair_id' => json_encode($chairIds),
             ]);
 

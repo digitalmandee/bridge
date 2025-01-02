@@ -77,7 +77,7 @@
                                 </select>
                             </div>
                             <div class="footer text-center">
-                                <button type="submit" class="layout-btn active">Submit Booking</button>
+                                <a  href="http://127.0.0.1:8000/admin/payment" type="submit" class="layout-btn active">Next For Payment</a>
                             </div>
                         </div>
                     </div>
