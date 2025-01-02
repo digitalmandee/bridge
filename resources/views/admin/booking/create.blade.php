@@ -77,7 +77,7 @@
                                 </select>
                             </div>
                             <div class="footer text-center">
-                                <button type="submit" class="layout-btn active">Submit Booking</button>
+                                <a href="" class="layout-btn active">Submit Booking</a>
                             </div>
                         </div>
                     </div>
