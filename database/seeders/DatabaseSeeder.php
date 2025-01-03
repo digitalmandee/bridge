@@ -19,8 +19,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             BranchesTableSeeder::class,
             FloorsTableSeeder::class,
-            RoomsTableSeeder::class,
-            TablesTableSeeder ::class,
             ChairsTableSeeder::class,
         ]);
     }

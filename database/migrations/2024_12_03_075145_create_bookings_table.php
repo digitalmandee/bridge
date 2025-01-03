@@ -20,7 +20,7 @@ class CreateBookingsTable extends Migration
             $table->unsignedBigInteger('floor_id')->nullable();
             $table->unsignedBigInteger('room_id')->nullable();
             $table->unsignedBigInteger('table_id')->nullable();
-            $table->json('chair_id')->nullable(); // JSON column to store multiple chair IDs
+            $table->json('chair_id')->nullable();
             $table->string('name')->nullable();
             $table->string('email')->nullable();
             $table->string('phone_num')->nullable();
@@ -29,14 +29,21 @@ class CreateBookingsTable extends Migration
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->text('booking_purpose')->nullable();
+            //
+            // New columns for payment details
+            $table->string('payment_method')->nullable();
+            $table->string('card_number')->nullable();
+            $table->string('expiration_date')->nullable();
+            $table->string('cvv')->nullable();
+            $table->string('receipt')->nullable();
+            $table->boolean('save_card_details')->default(false);
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->foreign('floor_id')->references('id')->on('floors')->onDelete('cascade');
-            $table->foreign('room_id')->references('id')->on('rooms')->onDelete('cascade');
-            $table->foreign('table_id')->references('id')->on('tables')->onDelete('cascade');
+
         });
 
     }

@@ -1,3 +1,5 @@
+model
+of branch details
 <style>
     .branch-chair {
         margin: 10px; /* Spacing between chairs */
@@ -28,21 +30,9 @@
         margin: 20px;
         padding: 10px;
     }
-
-    /* Toast Notification Styles */
-    .toast {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background-color: #f44336; /* Red background */
-        color: white;
-        padding: 15px;
-        border-radius: 5px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        display: none; /* Hidden by default */
-        z-index: 1000; /* Ensure it appears above other content */
-    }
 </style>
+<!-- Modal -->
+<!-- Chair Selection Modal -->
 <div class="modal fade bd-example-modal-lg" id="branchModal" tabindex="-1" aria-labelledby="branchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -53,11 +43,11 @@
             <div class="modal-body">
                 <div class="tab-container">
                     <ul class="tab-list">
-                        <li class="tab active" data-tab="tab1" onclick="checkFloorStatus(1)">Ground Floor</li>
-                        <li class="tab" data-tab="tab2" onclick="checkFloorStatus(2)">First Floor</li>
+                        <li class="tab active" data-tab="tab1">Ground Floor</li>
+                        <li class="tab" data-tab="tab2">First Floor</li>
                     </ul>
                     <div class="tab-content-container">
-                        <div id="tab1" class="tab-content active" onclick="checkFloorStatus(1)">
+                        <div id="tab1" class="tab-content active">
                             <div class="d-flex gap-2">
                                 <!-- Ground Floor -->
                                 @foreach(array_chunk($chairs->where('floor_id', 1)->all(), 6) as $tableChairs)
@@ -67,7 +57,7 @@
                                             @foreach($tableChairs as $chair)
                                                 @if($chair->position == 'top')
                                                     <div class="branch-chair chair-top-{{ $loop->index + 1 }}"
-                                                         onclick="selectChair({{ $chair->id }}, 1, {{ $chair->status }})">
+                                                         onclick="selectChair({{ $chair->id }}, 1)">
                                                         <img src="{{ asset($chair->status == 0 ? 'icons/free.png' : 'icons/booked.png') }}" alt="Chair">
                                                     </div>
                                                 @endif
@@ -77,7 +67,7 @@
                                             @foreach($tableChairs as $chair)
                                                 @if($chair->position == 'bottom')
                                                     <div class="branch-chair chair-bottom-{{ $loop->index + 1 }}"
-                                                         onclick="selectChair({{ $chair->id }}, 1, {{ $chair->status }})">
+                                                         onclick="selectChair({{ $chair->id }}, 1)">
                                                         <img src="{{ asset($chair->status == 0 ? 'icons/free.png' : 'icons/booked.png') }}" alt="Chair">
                                                     </div>
                                                 @endif
@@ -97,7 +87,7 @@
                                             @foreach($tableChairs as $chair)
                                                 @if($chair->position == 'top')
                                                     <div class="branch-chair chair-top-{{ $loop->index + 1 }}"
-                                                         onclick="selectChair({{ $chair->id }},  2, {{ $chair->status }})">
+                                                         onclick="selectChair({{ $chair->id }}, 2)">
                                                         <img src="{{ asset($chair->status == 0 ? 'icons/free.png' : 'icons/booked.png') }}" alt="Chair">
                                                     </div>
                                                 @endif
@@ -107,7 +97,7 @@
                                             @foreach($tableChairs as $chair)
                                                 @if($chair->position == 'bottom')
                                                     <div class="branch-chair chair-bottom-{{ $loop->index + 1 }}"
-                                                         onclick="selectChair({{ $chair->id }}, 2, {{ $chair->status }})">
+                                                         onclick="selectChair({{ $chair->id }}, 2)">
                                                         <img src="{{ asset($chair->status == 0 ? 'icons/free.png' : 'icons/booked.png') }}" alt="Chair">
                                                     </div>
                                                 @endif
@@ -119,7 +109,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="bookingPopup" class="toast">This chair is already booked and cannot be selected.</div>
+                <div id="bookingPopup" class="popup">Booked Successfully!</div>
             </div>
             <div class="modal-footer mt-5">
                 <button type="button" class="layout-btn" data-bs-dismiss="modal">Submit</button>
@@ -127,3 +117,4 @@
         </div>
     </div>
 </div>
+

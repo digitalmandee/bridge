@@ -36,16 +36,6 @@
                                     <label class="form-label">Phone</label>
                                     <input type="text" name="phone" class="form-control" required>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Product</label>
-                                    <select name="product" class="form-control" required>
-                                        <option value="">Select Product</option>
-                                        <option value="meeting_rooms">Meeting Rooms</option>
-                                        <option value="podcast_rooms">Podcast Rooms</option>
-                                        <option value="visitor">Visitor</option>
-                                        <option value="office">Office</option>
-                                    </select>
-                                </div>
                             </div>
 
                             <!-- Branch Selection Button -->
@@ -60,8 +50,6 @@
                             <!-- Hidden Fields for Selection -->
                             <input type="hidden" name="branch_id" id="selectedBranchId">
                             <input type="hidden" name="floor_id" id="selectedFloorId">
-                            <input type="hidden" name="room_id" id="selectedRoomId">
-                            <input type="hidden" name="table_id" id="selectedTableId">
                             <input type="hidden" name="chair_id" id="selectedChairId">
 
                             <!-- Booking Details -->
@@ -75,18 +63,8 @@
                                     <label class="form-label">Time</label>
                                     <input type="time" name="time" class="form-control" required>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Duration</label>
-                                    <select name="duration" class="form-control" required>
-                                        <option value="">Select Duration</option>
-                                        <option value="daily">Daily</option>
-                                        <option value="weekly">Weekly</option>
-                                        <option value="monthly">Monthly</option>
-                                    </select>
-                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Booking</button>
                             </div>
-
-                            <button type="submit" class="btn btn-primary">Submit Booking</button>
                         </div>
                     </div>
                 </form>
@@ -95,6 +73,111 @@
     </div>
 
     <!-- Branch Selection Modal -->
-@include('admin.booking.modal.branch_detail')
+    <div class="modal fade" id="branchModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select Location</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Branch Selection -->
+                    <h6>Select Branch</h6>
+                    @foreach($branches as $branch)
+                        <button type='button'
+                                class='btn btn-toggle'
+                                data-branch-id="{{ $branch->id }}"
+                                data-branch-name="{{ $branch->name }}">
+                            {{ $branch->name }}
+                        </button>
+                    @endforeach
+
+                    <!-- Floor Selection -->
+                    <h6>Select Floor</h6>
+                    @foreach($branches as $branch)
+                        @foreach($branch->floors as $floor)
+                            <button type='button'
+                                    class='btn btn-toggle'
+                                    data-floor-id="{{ $floor->id }}"
+                                    data-floor-name="{{ $floor->name }}">
+                                {{ $floor->name }}
+                            </button>
+                        @endforeach
+                    @endforeach
+
+                    <!-- Chair Selection -->
+                    <h6>Select Chair</h6>
+                    @foreach($branches as $branch)
+                        @foreach($branch->floors as $floor)
+                            @foreach($floor->chairs as $chair)
+                                <div
+                                    class='chair {{ $chair->status == 0 ? 'available' : 'reserved' }}'
+                                    data-chair-id="{{ $chair->id }}"
+                                    data-chair-name="{{ $chair->name }}">
+                                    {{ $chair->name }}
+                                </div>
+                            @endforeach
+                        @endforeach
+                    @endforeach
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type='button'
+                            id='confirmChairSelection'
+                            style='display: none;'
+                            data-bs-dismiss='modal'>
+                        Confirm Selection
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Styles -->
+    <style>
+        .btn-toggle { padding: 8px 16px; margin: 5px; }
+        .chair { display: inline-block; padding: 10px 20px; margin: 5px; border-radius: 4px; text-align: center; }
+        .available { background-color: green; color: white; cursor: pointer; }
+        .reserved { background-color: red; color: white; cursor: not-allowed; }
+    </style>
+
+    <!-- Scripts -->
+    <script src="//code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Ensure jQuery is included -->
+    <script>
+        $(document).ready(function() {
+            let selectedChairIds = [];
+
+            // Handle chair selection
+            $('.chair').on('click', function() {
+                const chairId = $(this).data('chair-id');
+                const chairName = $(this).data('chair-name');
+
+                if ($(this).hasClass('available')) {
+                    $(this).toggleClass('selected');
+
+                    if ($(this).hasClass('selected')) {
+                        selectedChairIds.push(chairId);
+                        $(this).addClass('permanently-selected');
+                    } else {
+                        selectedChairIds = selectedChairIds.filter(id => id !== chairId);
+                        $(this).removeClass('permanently-selected');
+                    }
+
+                    $('#selectedChairId').val(selectedChairIds.join(','));
+                } else {
+                    alert('This chair is already reserved.');
+                }
+            });
+
+            // Confirm selection button logic
+            $('#confirmChairSelection').on('click', function() {
+                const selectedChairs = selectedChairIds.map(id => $('.chair[data-chair-id="' + id + '"]').data('chair-name')).join(', ');
+                $('#selectedLocationInfo').text(`Selected Chairs: ${selectedChairs}`);
+            });
+        });
+    </script>
+
+</div>
 
 @endsection

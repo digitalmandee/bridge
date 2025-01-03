@@ -25,6 +25,14 @@ class Booking extends Model
         'start_date',
         'end_date',
         'booking_purpose',
+        'payment_method',
+        'expiration_date',
+        'cvv' ,
+        'card_number',
+        'receipt',
+        'save_card_details'
+
+
     ];
     protected $casts = [
         'chair_id' => 'array',

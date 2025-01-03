@@ -11,8 +11,5 @@ class BranchesTableSeeder extends Seeder
     {
         Branch::create(['name' => 'Johar Town']);
         Branch::create(['name' => 'Model Town']);
-        Branch::create(['name' => 'Gulberg']);
-        Branch::create(['name' => 'DHA']);
-        Branch::create(['name' => 'Bahria Town']);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Table;
+use App\Models\Floor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -11,17 +11,18 @@ class Chair extends Model
     use HasFactory;
 
     protected $fillable = [
-        'table_id', 'name', 'status',
+        'floor_id', 'status','position'
     ];
 
-    public function table()
+    public function floor()
     {
-        return $this->belongsTo(Table::class);
+        return $this->belongsTo(Floor::class);
     }
+
 
     public static function getChairs()
     {
-        return self::with('table')->get();
+        return self::with('floor')->get();
     }
 
     public static function storeChair($request)

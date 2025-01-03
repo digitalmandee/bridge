@@ -9,12 +9,9 @@ use App\Models\Room;
 use App\Models\Table;
 use App\Models\Chair;
 use App\Models\Booking;
-use Session;
-use Stripe;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-
-
-
 
 class BookingController extends Controller
 {
@@ -23,90 +20,69 @@ class BookingController extends Controller
         return view('admin.booking.index');
     }
 
-
-    public function create()
-    {
-        $branches = Branch::with('floors.rooms.tables.chairs')->get();
-        //$branches = Branch::all();
-       // dd($branches);
-        return view('admin.booking.create', compact('branches'));
-    }
-
     public function storeUserDetails(Request $request)
     {
-        try {
-            // Validate the input
-            $validated = $request->validate([
-                'name' => 'required|string',
-                'email' => 'required|email',
-                'phone' => 'required|string',
-                'product' => 'required|string',
-                'duration' => 'required|string',
-                'start_date' => 'required|date',
-                'end_date' => 'required|date',
-                'time' => 'required',
-                'branch_id' => 'required|numeric',
-                'floor_id' => 'required|numeric',
-                'room_id' => 'required|numeric',
-                'table_id' => 'required|numeric',
-                'chair_id' => 'required',
-            ]);
 
-            $chairIds = explode(',', $validated['chair_id']);
-            $userId = Auth::id();
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required',
+            'product' => 'required|string',
+            'branch_id' => 'required|integer',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'time' => 'required|date_format:H:i',
+            'duration' => 'required|string',
+            'chair_id' => 'required',
+            'floor_id' => 'required|integer',
+            'card_number' => 'required|string',
+            'expiration_date' => 'required|string',
+            'cvv' => 'required|string',
+            'save_card_details' => 'required|boolean',
+            'receipt' => 'required|file|mimes:pdf,jpg,jpeg,png',
+        ]);
 
-            // Create the booking
-            $booking = Booking::create([
-                'user_id' => $userId,
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'phone' => $validated['phone'],
-                'product' => $validated['product'],
-                'duration' => $validated['duration'],
-                'start_date' => $validated['start_date'],
-                'end_date' => $validated['end_date'],
-                'time' => $validated['time'],
-                'branch_id' => $validated['branch_id'],
-                'floor_id' => $validated['floor_id'],
-                'room_id' => $validated['room_id'],
-                'table_id' => $validated['table_id'],
-                'chair_id' => json_encode($chairIds),
-            ]);
 
-            // Update chair statuses
-            Chair::whereIn('id', $chairIds)->update(['status' => 1]);
+        $chairIds = is_array($request->chair_id)
+            ? $request->chair_id
+            : (array) $request->chair_id;
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Booking created successfully!',
-                'data' => $booking,
-            ]);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->validator->errors(),
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
+        $filePath = null;
+        if ($request->hasFile('receipt')) {
+            $filePath = $request->file('receipt')->store('receipts', 'public');
         }
-    }
+        $userId = Auth::id();
 
+        $booking = Booking::create([
+            'user_id' => $userId,
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'product' => $request->product,
+            'branch_id' => $request->branch_id,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'time' => $request->time,
+            'duration' => $request->duration,
+            'chair_id' => json_encode($chairIds),
+            'floor_id' => $request->floor_id,
+            'card_number' => $request->card_number,
+            'expiration_date' => $request->expiration_date,
+            'cvv' => $request->cvv,
+            'save_card_details' => $request->save_card_details,
+            'receipt' => $filePath,
+        ]);
+
+        Chair::whereIn('id', $chairIds)->update(['status' => 1]);
+
+        return redirect()->route('admin.booking.calendar')->with('success', 'Booking created successfully!');
+    }
 
     public function BookingCreate()
     {
-       // return view('admin.booking.create');
-       $branches = Branch::with('floors.rooms.tables.chairs')->get();
-        //$branches = Branch::all();
-       // dd($branches);
-        return view('admin.booking.create', compact('branches'));
+       $branches = Branch::with('floors.chairs')->get();
+        $chairs = Chair::all();
+        return view('admin.booking.create', compact('branches','chairs'));
     }
 
-    public function stripe()
-    {
-        return view('stripe');
-    }
 }

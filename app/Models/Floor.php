@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Branch;
+use App\Models\Room; // Import Room model
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -19,9 +20,15 @@ class Floor extends Model
     {
         return $this->belongsTo(Branch::class);
     }
-    public function rooms()
+
+    public function chairs()
     {
-        return $this->hasMany(Room::class);
+        return $this->hasMany(Chair::class);  // This defines that a floor has many chairs
+    }
+
+    public function rooms() // Define the rooms relationship
+    {
+        return $this->hasMany(Room::class);  // This defines that a floor has many rooms
     }
 
     public static function getFloors()
@@ -29,7 +36,7 @@ class Floor extends Model
         return self::with(['branch' => function ($query) {
             $query->where('status', 1);
         }])
-            ->get();
+        ->get();
     }
 
     public static function storeFloor($request)

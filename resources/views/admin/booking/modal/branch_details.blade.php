@@ -1,30 +1,30 @@
 <style>
     .branch-chair {
-        margin: 10px; /* Spacing between chairs */
-        background-color: transparent; /* Removes background color */
+        margin: 10px; 
+        background-color: transparent;
         border: none;
     }
 
     .branch-chair img {
-        width: 70px; /* Increased size of the chair */
+        width: 70px;
         height: 70px;
     }
 
     .table-container {
         display: flex;
-        flex-direction: column; /* Arrange chairs in rows */
-        align-items: center; /* Center-align rows */
-        gap: 20px; /* Space between top and bottom rows */
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
     }
 
     .top-row, .bottom-row {
-        display: flex; /* Align chairs horizontally in each row */
-        justify-content: center; /* Center chairs within the row */
-        gap: 20px; /* Equal spacing between chairs in the row */
+        display: flex;
+        justify-content: center;
+        gap: 20px;
     }
 
     .table-inner {
-        border: 1px solid #ccc; /* Optional: Table boundary */
+        border: 1px solid #ccc;
         margin: 20px;
         padding: 10px;
     }
@@ -34,14 +34,78 @@
         position: fixed;
         top: 20px;
         right: 20px;
-        background-color: #f44336; /* Red background */
+        background-color: #f44336;
         color: white;
         padding: 15px;
         border-radius: 5px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        display: none; /* Hidden by default */
-        z-index: 1000; /* Ensure it appears above other content */
+        display: none;
+        z-index: 1000;
     }
+    #step3 {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   flex-direction: column;
+   padding: 20px;
+   }
+   .card-body h4 {
+   margin-bottom: 15px;
+   }
+   .payment-container {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: flex-start;
+   padding: 10px;
+   }
+   .payment-options {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   margin-top: 20px;
+   }
+   .option {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   text-align: center;
+   cursor: pointer;
+   transition: transform 0.3s ease;
+   padding: 10px;
+   border: 1px solid #ccc;
+   border-radius: 10px;
+   background-color: #f9f9f9;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+   width: 120px;
+   height: 100px;
+   justify-content: center;
+   }
+   .option img {
+   margin-bottom: 5px;
+   width: 40px;
+   height: auto;
+   }
+   .option:hover {
+   transform: scale(1.05);
+   }
+   .payment-fields {
+   width: 100%;
+   margin-top: 20px;
+   }
+   .upload-details {
+   margin-top: 15px;
+   }
+   .footer {
+   margin-top: 25px;
+   text-align: center;
+   }
+   .card {
+   background: #fff;
+   border-radius: 10px;
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+   }
 </style>
 <div class="modal fade bd-example-modal-lg" id="branchModal" tabindex="-1" aria-labelledby="branchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
