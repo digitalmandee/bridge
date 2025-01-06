@@ -41,38 +41,4 @@
         </div>
     </div>
 </div>
-<style>
-    .options button.active {
-        background-color: #FFCC16;
-        color: #fff;
-    }
-
-    .actions .cancel {
-        color: white;
-        display: none;
-        /* Initially hidden */
-    }
-</style>
-<script>
-    function activateOption(optionId) {
-        document.getElementById('cash').classList.remove('active');
-        document.getElementById('bank').classList.remove('active');
-        document.getElementById(optionId).classList.add('active');
-    }
-
-    function showFileInfo(event) {
-        const file = event.target.files[0];
-        if (file) {
-            document.getElementById('fileInfo').textContent = `File: ${file.name}`;
-            document.getElementById('cancelButton').style.display = 'inline-block'; // Show cancel button
-        }
-    }
-
-    function cancelFile() {
-        const fileInput = document.getElementById('fileUpload');
-        fileInput.value = ''; // Reset the file input
-        document.getElementById('fileInfo').textContent = ''; // Clear file info
-        document.getElementById('cancelButton').style.display = 'none'; // Hide cancel button
-    }
-</script>
 @endsection

@@ -1108,30 +1108,15 @@ input[type="number"]::-webkit-outer-spin-button {
     width: 400px;
 }
 
-h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
 .payment-options {
     display: flex;
     justify-content: center;
     margin: 20px 0;
 }
 
-.option {
-    text-align: center;
-    cursor: pointer;
-    background: #fff;
-    border: 1px solid #ffd700;
-    border-radius: 10px;
-    padding: 20px;
-    width: 45%;
-    transition: all 0.3s ease;
-}
-
-.option:hover {
-    background: #fff4cc;
+.options button.active {
+    background-color: #FFCC16;
+    color: #fff;
 }
 
 .option-img {
@@ -1141,16 +1126,17 @@ h2 {
     border-radius: 10px;
 }
 
-.option p {
-    margin-top: 10px;
-    font-weight: bold;
-}
-
 .upload-deatils {
     border: 2px dashed #d3d3d3;
     border-radius: 15px;
     margin-bottom: 10px;
 
+}
+
+.actions .cancel {
+    color: white;
+    display: none;
+    /* Initially hidden */
 }
 
 .upload-deatils input {
@@ -1161,7 +1147,6 @@ h2 {
     display: flex;
     flex-direction: row-reverse;
     cursor: pointer;
-    display: flex;
     align-items: center;
     background: #f2f2f2;
     padding: 10px 15px;
