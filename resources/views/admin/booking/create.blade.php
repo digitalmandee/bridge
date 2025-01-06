@@ -44,7 +44,7 @@
                             <!-- Branch Selection Dropdown -->
                             <div class="mb-3">
                                 <label class="form-label">Location Selection</label>
-                                <select id="branchSelect" class="form-control" required>
+                                <select id="branchSelect" name="branch" class="form-control" required>
                                     <option value="">Select Branch</option>
                                     @foreach($branches as $branch)
                                         <option value="{{ $branch->id }}" data-branch-name="{{ $branch->name }}">
@@ -77,7 +77,7 @@
                                 </select>
                             </div>
                             <div class="footer text-center">
-                                <a  href="http://127.0.0.1:8000/admin/payment" type="submit" class="layout-btn active">Next For Payment</a>
+                                <a href="#" id="nextForPayment" class="layout-btn active">Next For Payment</a>
                             </div>
                         </div>
                     </div>

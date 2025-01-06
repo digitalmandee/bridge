@@ -205,3 +205,20 @@
         }
     });
 </script>
+<!-- Validation -->
+<script>
+    document.getElementById('nextForPayment').addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent default navigation
+
+        const form = document.getElementById('bookingForm');
+
+        // Check if form is valid
+        if (!form.checkValidity()) {
+            alert('Please fill required fields.');
+            return;
+        }
+        // If form is valid, navigate to the payment route
+        window.location.href = "{{ route('admin.payment') }}";
+    });
+</script>
+<!-- Validation -->

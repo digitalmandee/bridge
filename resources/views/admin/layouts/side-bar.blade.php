@@ -92,12 +92,6 @@
                     <span class="link-title">Seat Allocation</span>
                 </a>
             </li>
-            <li class="nav-item bar-item mb-1">
-                <a href="{{ route('admin.payment') }}" class="nav-link bar-item bar-link">
-                    <img class="link-icon" src="{{ asset('icons/permission.svg') }}" alt="Settings Icon">
-                    <span class="link-title">Payment</span>
-                </a>
-            </li>
             @can('expense-management')
                 <li class="nav-item bar-item mb-1">
                     <a href="#" class="nav-link bar-item bar-link">
