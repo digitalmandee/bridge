@@ -1030,6 +1030,19 @@ input[type="number"]::-webkit-outer-spin-button {
     font-weight: 500;
 }
 
+.icon-shape {
+    background-color: #FFCC16;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.icon-shape img {
+    width: 30px;
+    height: 30px;
+}
+.card-body-2{
+    padding: 10px 15px;
+}
 .add-event-body {
     width: 100%;
     height: 100%;
