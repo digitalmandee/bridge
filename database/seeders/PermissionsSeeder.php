@@ -16,6 +16,10 @@ class PermissionsSeeder extends Seeder
      */
     public function run()
     {
+        // Define the guard name for Sanctum
+        $guardName = 'sanctum';
+
+        // List of permissions
         $permissions = [
             'dashboard',
             'branches',
@@ -35,17 +39,25 @@ class PermissionsSeeder extends Seeder
             'investor',
         ];
 
+        // Create permissions for the Sanctum guard
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(
+                ['name' => $permission, 'guard_name' => $guardName]
+            );
         }
 
-        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin']);
+        // Create or fetch the super admin role for the Sanctum guard
+        $superAdminRole = Role::firstOrCreate(
+            ['name' => 'super_admin', 'guard_name' => $guardName]
+        );
 
+        // Assign all permissions to the super admin role
         $superAdminRole->syncPermissions($permissions);
 
-        $user = User::find(1);
+        // Assign the super admin role to the first user
+        $user = User::find(1); // Adjust the user ID as needed
         if ($user) {
-            $user->assignRole('super_admin');
+            $user->role_id = 1;
         }
     }
 }

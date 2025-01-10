@@ -28,6 +28,8 @@ class Branch extends Model
         $branch->location = $request->location;
         $branch->status = $request->status ?? 0;
         $branch->save();
+
+        return $branch;
     }
 
     public static function editBranch($id)
@@ -44,6 +46,8 @@ class Branch extends Model
         $branch->location = $request->location;
         $branch->status = $request->status ?? 0;
         $branch->save();
+
+        return $branch;
     }
 
     public static function destroyBranch($id)

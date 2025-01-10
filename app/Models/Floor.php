@@ -55,6 +55,8 @@ class Floor extends Model
         $floor->branch_id = $request->branch_id;
         $floor->name = $formattedName;
         $floor->save();
+
+        return $floor;
     }
 
     public static function destroyFloor($id)

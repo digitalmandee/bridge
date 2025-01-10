@@ -16,12 +16,12 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(AdminSeeder::class);
         $this->call([PermissionsSeeder::class]);
-        $this->call([
-            BranchesTableSeeder::class,
-            FloorsTableSeeder::class,
-            RoomsTableSeeder::class,
-            TablesTableSeeder ::class,
-            ChairsTableSeeder::class,
-        ]);
+        // $this->call([
+        //     BranchesTableSeeder::class,
+        //     FloorsTableSeeder::class,
+        //     RoomsTableSeeder::class,
+        //     TablesTableSeeder ::class,
+        //     ChairsTableSeeder::class,
+        // ]);
     }
 }

@@ -53,6 +53,8 @@ class BranchManager extends Model
         $user = new User();
         $user->name = $formattedName;
         $user->email = $request->email;
+        $user->role_id = $request->role_id;
+
         $user->password = Hash::make($request->password);
         $user->save();
 
@@ -64,12 +66,15 @@ class BranchManager extends Model
         $branchManager->status = $request->status;
         $branchManager->save();
 
-        if ($request->role_id) {
-            $role = Role::findById($request->role_id);
-            if ($role) {
-                $user->syncRoles([$role->name]);
-            }
-        }
+
+        // if ($request->role_id) {
+        //     $role = Role::findById($request->role_id);
+        //     if ($role) {
+        //         $user->syncRoles([$role->name]);
+        //     }
+        // }
+
+        return $branchManager;
     }
 
     public static function editBranchManager($id)
@@ -99,6 +104,7 @@ class BranchManager extends Model
         $user = User::find($branchManager->user_id);
         $user->name = $formattedName;
         $user->email = $request->email;
+        $user->role_id = $request->role_id;
         $user->save();
 
         $branchManager->user_id = $user->id;
@@ -108,23 +114,28 @@ class BranchManager extends Model
         $branchManager->status = $request->status;
         $branchManager->save();
 
-        if ($request->role_id) {
-            $role = Role::findById($request->role_id);
-            if ($role) {
-                $user->syncRoles([$role->name]);
-            }
-        }
+        // if ($request->role_id) {
+        //     $role = Role::findById($request->role_id);
+        //     if ($role) {
+        //         $user->syncRoles([$role->name]);
+        //     }
+        // }
+
+        return $branchManager;
     }
 
     public static function deleteBranchManager($id)
     {
         $branchManager = self::find($id);
-        $user = User::find($branchManager->user_id);
-
+        
         if (!$branchManager) {
-            return redirect()->route('admin.branch.manager')->with('error', 'There was an error deleting the branch manager. Please try again.');
+            return response()->json([
+                'success' => false,
+                'message' => 'BranchManger Not Found With Given Id',
+            ], 200);
         }
-        $user->roles()->detach();
+        $user = User::find($branchManager->user_id);
+        
         $branchManager->delete();
         $user->delete();
     }

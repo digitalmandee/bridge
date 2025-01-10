@@ -26,14 +26,60 @@ class BookingController extends Controller
 
     public function create()
     {
-        $branches = Branch::with('floors.rooms.tables.chairs')->get();
-        //$branches = Branch::all();
-       // dd($branches);
+
+        $branches = Branch::with('floors.rooms.tables.chairs')->where('status',1)->get();
+        // $branches = Branch::all();
+    //    dd($branches);
         return view('admin.booking.create', compact('branches'));
     }
 
+    public function getBranchDetails(Request $request)
+    {
+        $branchId = $request->input('branch_id');
+        $branch = Branch::with('floors.rooms.tables.chairs')->find($branchId);
+        // dd($branch);
+
+        if (!$branch) {
+            return response()->json(['error' => 'Branch not found'], 404);
+        } 
+
+        return response()->json($branch);
+    }
+
+    public function getFloorDetails(Request $request)
+    {
+        $floor = Floor::with(['rooms.tables.chairs' => function ($query) {
+            $query->select('id', 'table_id', 'status')
+                  ->where('status', 0); // Only available chairs
+        }])->find($request->floor_id);
+    
+        if (!$floor) {
+            return response()->json(['error' => 'Floor not found'], 404);
+        }
+    
+        $chairs = $floor->rooms->flatMap(function ($room) {
+            return $room->tables->flatMap(function ($table) {
+                return $table->chairs->map(function ($chair) {
+                    return [
+                        'id' => $chair->id,
+                        'table_id' => $chair->table_id,
+                        'is_available' => $chair->status === 0
+                    ];
+                });
+            });
+        });
+    
+        return response()->json([
+            'floor' => $floor,
+            'chairs' => $chairs->toArray()
+        ]);
+    }
+    
+
+
     public function storeUserDetails(Request $request)
     {
+        dd($request);
         try {
             // Validate the input
             $validated = $request->validate([
@@ -106,9 +152,8 @@ class BookingController extends Controller
     public function BookingCreate()
     {
        // return view('admin.booking.create');
-       $branches = Branch::with('floors.rooms.tables.chairs')->get();
+       $branches = Branch::with('floors.rooms.tables.chairs')->where('status',1)->get();
         //$branches = Branch::all();
-       // dd($branches);
         return view('admin.booking.create', compact('branches'));
     }
 
