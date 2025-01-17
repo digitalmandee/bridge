@@ -74,6 +74,21 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('room/get/{id}', [RoomController::class, 'show']);
         Route::get('room/delete/{id}', [RoomController::class, 'delete']);
 
+        // table Management Module
+        Route::post('table/store', [RoomController::class, 'store']);
+        Route::get('tables', [RoomController::class, 'index']);
+        Route::post('table/update/{id}', [RoomController::class, 'update']);
+        Route::get('table/get/{id}', [RoomController::class, 'show']);
+        Route::get('table/delete/{id}', [RoomController::class, 'delete']);
+
+        // Chairs Management Module
+        Route::post('Chair/store', [RoomController::class, 'store']);
+        Route::get('Chairs', [RoomController::class, 'index']);
+        Route::get('avail-Chairs', [RoomController::class, 'AvailableChairs']);
+        Route::post('Chair/update/{id}', [RoomController::class, 'update']);
+        Route::get('Chair/get/{id}', [RoomController::class, 'show']);
+        Route::get('Chair/delete/{id}', [RoomController::class, 'delete']);
+
 
 
 
