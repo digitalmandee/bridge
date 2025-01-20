@@ -16,8 +16,8 @@ class PermissionsSeeder extends Seeder
      */
     public function run()
     {
-        // Define the guard name for Sanctum
-        $guardName = 'sanctum';
+        // Define the guard name
+        $guardName = 'web'; // Change to your desired guard name
 
         // List of permissions
         $permissions = [
@@ -39,25 +39,31 @@ class PermissionsSeeder extends Seeder
             'investor',
         ];
 
-        // Create permissions for the Sanctum guard
+        // Create permissions for the specified guard
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(
                 ['name' => $permission, 'guard_name' => $guardName]
             );
         }
 
-        // Create or fetch the super admin role for the Sanctum guard
+        // Create or fetch the super admin role for the specified guard
         $superAdminRole = Role::firstOrCreate(
             ['name' => 'super_admin', 'guard_name' => $guardName]
         );
 
         // Assign all permissions to the super admin role
-        $superAdminRole->syncPermissions($permissions);
+        $superAdminRole->syncPermissions(
+            Permission::where('guard_name', $guardName)->pluck('name')->toArray()
+        );
+
+
 
         // Assign the super admin role to the first user
         $user = User::find(1); // Adjust the user ID as needed
+
         if ($user) {
-            $user->role_id = 1;
+            // $user->role_id = $superAdminRole->id;
+            $user->assignRole($superAdminRole); // Ensure the role uses the same guard as the user
         }
     }
 }
