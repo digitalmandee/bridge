@@ -17,7 +17,7 @@ class PermissionsSeeder extends Seeder
     public function run()
     {
         // Define the guard name for Sanctum
-        $guardName = 'web';
+        $guardName = 'sanctum';
 
         // List of permissions
         $permissions = [
@@ -48,11 +48,16 @@ class PermissionsSeeder extends Seeder
 
         // Create or fetch the super admin role for the Sanctum guard
         $superAdminRole = Role::firstOrCreate(
-            ['name' => 'super_admin', 'guard_name' => $guardName]
+            ['name' => 'admin', 'guard_name' => $guardName]
         );
 
-        // Assign all permissions to the super admin role
-        $superAdminRole->syncPermissions($permissions);
+        // Assign all permissions to the super admin role, except 'manage-members'
+        $superAdminRole->syncPermissions(
+            array_filter(
+                $permissions,
+                fn($permission) => $permission !== 'branch-manager'
+            )
+        );
 
         // Assign the super admin role to the first user
         $user = User::find(1); // Adjust the user ID as needed
