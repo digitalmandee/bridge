@@ -124,18 +124,18 @@ Route::group(['middleware' => 'auth'], function () {
         // Role Section
         Route::get('roles', [RolePermissionController::class, 'index'])->name('admin.roles');
         Route::get('roles/create', [RolePermissionController::class, 'roleCreate'])->name('admin.roles.create');
-        Route::post('roles/store', [RolePermissionController::class, 'roleStore'])->name('admin.roles.store');
+        // Route::post('roles/store', [RolePermissionController::class, 'roleStore'])->name('admin.roles.store');
         Route::get('roles/edit/{id}', [RolePermissionController::class, 'roleEdit'])->name('admin.roles.edit');
-        Route::post('roles/update/{id}', [RolePermissionController::class, 'roleUpdate'])->name('admin.roles.update');
-        Route::get('roles/delete/{id}', [RolePermissionController::class, 'roleDestroy'])->name('admin.roles.delete');
+        // Route::post('roles/update/{id}', [RolePermissionController::class, 'roleUpdate'])->name('admin.roles.update');
+        // Route::get('roles/delete/{id}', [RolePermissionController::class, 'roleDestroy'])->name('admin.roles.delete');
         // Role Section end
         // Permission Section
-        Route::get('permissions', [RolePermissionController::class, 'permissionIndex'])->name('admin.permissions');
+        // Route::get('permissions', [RolePermissionController::class, 'permissionIndex'])->name('admin.permissions');
         Route::get('permissions/create', [RolePermissionController::class, 'permissionCreate'])->name('admin.permissions.create');
-        Route::post('permissions/store', [RolePermissionController::class, 'permissionStore'])->name('admin.permissions.store');
+        // Route::post('permissions/store', [RolePermissionController::class, 'permissionStore'])->name('admin.permissions.store');
         Route::get('permissions/edit/{id}', [RolePermissionController::class, 'permissionEdit'])->name('admin.permissions.edit');
-        Route::post('permissions/update/{id}', [RolePermissionController::class, 'permissionUpdate'])->name('admin.permissions.update');
-        Route::get('permissions/delete/{id}', [RolePermissionController::class, 'permissionDestroy'])->name('admin.permissions.delete');
+        // Route::post('permissions/update/{id}', [RolePermissionController::class, 'permissionUpdate'])->name('admin.permissions.update');
+        // Route::get('permissions/delete/{id}', [RolePermissionController::class, 'permissionDestroy'])->name('admin.permissions.delete');
         // Permission Section end
         // Members Section
         Route::get('members', [MemberController::class, 'index'])->name('admin.members');
@@ -157,7 +157,6 @@ Route::group(['middleware' => 'auth'], function () {
         // Seat Allocation
         Route::get('/seat-allocation', [DashboardController::class, 'seatAllocation'])->name('admin.seat.allocation');
         Route::get('/payment', [DashboardController::class, 'payment'])->name('admin.payment');
-
     });
 });
 
