@@ -46,9 +46,7 @@ class BranchController extends Controller
                 'success' => true,
                 'message' => 'Branch created successfully!',
                 'data' => $branch,
-            ],201);
-
-        
+            ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -60,8 +58,7 @@ class BranchController extends Controller
 
     public function show($id)
     {
-        try
-        {
+        try {
             $branch = Branch::findOrFail($id);
             return response()->json([
                 'success' => true,
@@ -77,7 +74,7 @@ class BranchController extends Controller
         }
     }
 
-    
+
 
     public function update(Request $request, $id)
     {
@@ -88,9 +85,7 @@ class BranchController extends Controller
                 'success' => true,
                 'message' => 'Branch Updated successfully!',
                 'data' => $branch,
-            ],201);
-
-        
+            ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -108,9 +103,7 @@ class BranchController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Branch Deleted successfully!',
-            ],201);
-
-        
+            ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
