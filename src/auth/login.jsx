@@ -1,6 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    // Perform any login logic here (e.g., authentication)
+    // After successful login, navigate to the home screen
+    navigate("/dashboard");
+  };
+
   const styles = {
     container: {
       display: "flex",
@@ -81,7 +90,7 @@ const LoginPage = () => {
             Forgot password?
           </a>
         </p>
-        <button style={styles.button}>Log In</button>
+        <button style={styles.button} onClick={()=>{handleLogin()}}>Log In</button>
         <p>
           Don't have an account?{" "}
           <a href="/signup" style={styles.link}>

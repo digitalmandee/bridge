@@ -2,10 +2,18 @@ import React from "react";
 import admin from "../assets/admin.png"
 import branch from "../assets/branch.png"
 import invester from "../assets/invester.png"
-import user from "../assets/user.png"
+import user from "../assets/user.PNG"
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 const Welcome = () => {
+
+  const navigate = useNavigate();
+
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+
   const styles = {
     container: {
       textAlign: "center",
@@ -62,12 +70,15 @@ const Welcome = () => {
       <p style={styles.subHeading}>Choose Account Type</p>
       <div style={styles.accountTypeContainer}>
         {[
-          { name: "Super Admin", img: admin },
-          { name: "Branch Login", img: branch },
-          { name: "Investor Login", img: invester },
-          { name: "User", img: user },
+          { name: "Super Admin", img: admin, path: "/admin-dashboard" },
+          { name: "Branch Login", img: branch, path: "/branch-dashboard" },
+          { name: "Investor Login", img: invester, path: "/investor-dashboard" },
+          { name: "User", img: user, path: "/user-dashboard" },
         ].map((account, index) => (
-          <div key={index} style={styles.accountType}>
+          <div key={index} 
+          style={styles.accountType}
+          onClick={() => handleNavigation(account.path)} 
+          >
             <img
               src={account.img}
               alt={account.name}

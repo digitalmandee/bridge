@@ -1,57 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 import Welcome from './auth/welcome';
+import SplashScreen from './auth/splash';
 import LoginPage from './auth/login';
+import Home from './home';
+import Booking from './booking';
+import UserDashboard from './Dashboard/userdashboard';
+import AdminDashboard from './Dashboard/AdminDashboard';
+import BookingCalender from './calender';
+import './App.css';
 // import TopNavbar from './topNavbar/page';
 function App() {
   const [showSplash, setShowSplash] = useState(true);
 
-  useEffect(() => {
-    // Set a timer to hide the splash screen after 3 seconds
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 1000);
-
-    // Clean up the timer
-    return () => clearTimeout(timer);
-  }, []);
   return (
+    <>
+        <title>
+          BRIDGE
+        </title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      
     <div>
+      
       {showSplash ? (
-        <div style={styles.splashContainer}>
-          <h1 style={styles.splashText}>
-            Welcome to <span style={styles.highlight}>Bridge</span>
-          </h1>
-        </div>
+        <SplashScreen onComplete={() => setShowSplash(false)} />
       ) : (
         <Routes>
           {/* Define your routes */}
           <Route path="/" element={<Welcome />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/user-dashboard" element={<UserDashboard />} />
+          <Route path="/booking" element={<Booking />} />
+          <Route path="/floorplan" element={<Home />} />
+          <Route path="/booking-calender" element={<BookingCalender />} />
         </Routes>
       )}
-      {/* <TopNavbar /> */}
     </div>
+    </>
   );
-};
-
-const styles = {
-  splashContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100vh",
-    backgroundColor: "#fff",
-  },
-  splashText: {
-    fontSize: "2rem",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  highlight: {
-    color: "#FFD700",
-    textDecoration: "underline",
-  },
 };
 
 export default App;
