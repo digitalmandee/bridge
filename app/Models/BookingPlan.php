@@ -9,7 +9,7 @@ class BookingPlan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['plan_name', 'plan_price'];
+    protected $fillable = ['name', 'type', 'price', 'location'];
 
     protected $primaryKey = 'plan_id';
 }

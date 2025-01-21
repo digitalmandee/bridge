@@ -15,9 +15,10 @@ class BookingPlanSeeder extends Seeder
     public function run()
     {
         $plans = [
-            ['plan_name' => 'Monthly', 'plan_price' => 300],
-            ['plan_name' => 'Weekly', 'plan_price' => 100],
-            ['plan_name' => 'Daily', 'plan_price' => 20],
+            ['name' => 'Meating Room1', 'type' => 'Basic', 'price' => 446.61, 'location' => 'Lahore'],
+            ['name' => 'Meeting room2', 'type' => 'Premium', 'price' => 406.27, 'location' => 'Lahore'],
+            ['name' => 'Meeting room3', 'type' => 'Premium', 'price' => 475.22, 'location' => 'Lahore'],
+            ['name' => 'Meeting room4', 'type' => 'Basic', 'price' => 105.55, 'location' => 'Lahore'],
         ];
 
         foreach ($plans as $plan) {

@@ -37,8 +37,10 @@ class BookingPlanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'plan_name' => 'required|string',
-            'plan_price' => 'required|numeric',
+            'name' => 'required|string',
+            'type' => 'required|string',
+            'price' => 'required|numeric',
+            'location' => 'required|string',
         ]);
         try {
             // Create a new booking plan
@@ -60,8 +62,10 @@ class BookingPlanController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'plan_name' => 'required|string',
-            'plan_price' => 'required|numeric',
+            'name' => 'required|string',
+            'type' => 'required|string',
+            'price' => 'required|numeric',
+            'location' => 'required|string',
         ]);
 
         try {

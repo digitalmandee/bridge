@@ -14,9 +14,11 @@ class CreateBookingPlansTable extends Migration
     public function up()
     {
         Schema::create('booking_plans', function (Blueprint $table) {
-            $table->id('plan_id');
-            $table->string('plan_name')->nullable();
-            $table->integer('plan_price')->default(0);
+            $table->id();
+            $table->string('name');
+            $table->string('type');
+            $table->decimal('price', 10, 2)->default(0.00);
+            $table->string('location');
             $table->timestamps();
         });
     }
