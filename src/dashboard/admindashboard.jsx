@@ -114,8 +114,8 @@ const AdminDashboard = () => {
                 </div>
                 <div className='content'>
                     <div className='right-content'>
-                        <Box sx={{ p: 5 }}>
-                            <Box sx={{ p: 3, bgcolor: '#fff' }}>
+                        <Box>
+                            <Box sx={{ bgcolor: 'transparent' }}>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                                     <Typography variant="h4" sx={{ fontWeight: 'medium', fontSize: '24px' }}>
                                         Dashboard

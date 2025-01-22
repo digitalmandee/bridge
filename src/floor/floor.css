@@ -1,10 +1,10 @@
 .floor {
-    width: 70%;
-    height: 80vh;
+    width: 900px;
+    height: 2000px;
     margin:0;
     padding: 0;
     position: relative; /* Ensures child elements are positioned relative to this div */
-    background-image: url("../assets/floor.jpg");
+    background-image: url("../assets/newfloor.png");
     background-size: contain; /* Ensures proportional scaling */
     background-repeat: no-repeat;
     background-position: 'flex-center';
