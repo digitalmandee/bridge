@@ -1,6 +1,11 @@
 import React from 'react'
+import { useNavigate } from "react-router-dom";
 
-const Modal = ({handleClose}) => {
+const Modal = ({ handleClose }) => {
+    const navigate = useNavigate();
+    const handleContinue = () => {
+        navigate("/seatsAllocation"); // Navigate to the seatsAllocation screen
+    };
     return (
         <>
             <div
@@ -50,7 +55,7 @@ const Modal = ({handleClose}) => {
                     <h2 style={{ marginTop: "20px", fontSize: "18px" }}>SUCCESS!</h2>
                     <p>Your Booking was completed</p>
                     <button
-                        onClick={handleClose} // Close modal on click
+                        onClick={handleContinue} // Close modal on click
                         style={{
                             backgroundColor: "#f0c040",
                             color: "white",

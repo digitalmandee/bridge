@@ -94,7 +94,7 @@ const FloorPlan = () => {
       ],
     },
     {
-      id: "E",
+      id: "H",
       chairs: [
         { id: 1, position: { x: 63.6, y: 72 }, rotation: 90, color: "gray" },
         { id: 2, position: { x: 63.6, y: 78 }, rotation: 90, color: "gray" },

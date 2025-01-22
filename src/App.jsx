@@ -9,6 +9,7 @@ import Booking from './booking';
 import UserDashboard from './Dashboard/userdashboard';
 import AdminDashboard from './Dashboard/AdminDashboard';
 import BookingCalender from './calender';
+import SeatsAllocation from './booking/seatsallocation';
 import './App.css';
 // import TopNavbar from './topNavbar/page';
 function App() {
@@ -35,6 +36,7 @@ function App() {
           <Route path="/booking" element={<Booking />} />
           <Route path="/floorplan" element={<Home />} />
           <Route path="/booking-calender" element={<BookingCalender />} />
+          <Route path="/seatsAllocation" element={<SeatsAllocation />} />
         </Routes>
       )}
     </div>
