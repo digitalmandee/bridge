@@ -1,0 +1,226 @@
+* {
+  margin: 0px;
+  padding: 0px
+}
+
+body {
+  background: #ebe9e9;
+}
+
+.main .sidebarWrapper {
+  max-width: 20%;
+  flex: 0 0 20%;
+  height: 100%;
+  transition: all 0.3s ease-in-out;
+  /* background: #000; */
+}
+
+/* .main .sidebarWrapper:hover .sidebar::-webkit-scrollbar {
+    opacity: 1;
+} */
+
+.main .content {
+  max-width: 80%;
+  flex: 0 0 80%;
+  background: transparent;
+  margin-top: 5rem;
+  margin-bottom: 1rem;
+  margin-right: 1rem;
+  margin-left: 20%;
+}
+
+.right-content {
+  padding: 10px;
+  display: flex;
+  width: '100%';
+  /* flex-direction: row; */
+  justify-content: space-between;
+  align-items: center;
+  background-color: transparent;
+}
+
+.title {
+  font: Nunito Sans;
+  font-size: 30px;
+  color: #202224;
+  /* Text color */
+  font-weight: 700;
+}
+
+.create-booking-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #202224;
+  border: none;
+  /* Removes border */
+  border-radius: 5px;
+  /* Rounded button */
+  padding: 8px 16px;
+
+  font: Nunito Sans;
+  /* Adds padding to the button */
+  font-size: 22px;
+  font-weight: 600;
+  /* Text size */
+  cursor: pointer;
+  /* Pointer cursor on hover */
+}
+
+.create-booking-btn .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  /* Space between text and icon */
+  font-size: 20px;
+  /* Adjust icon size */
+  width: 21px;
+  height: 21px;
+}
+
+.create-booking-btn:hover {
+  background-color: #FFCC16;
+  /* Slightly darker yellow on hover */
+}
+
+.dashboard-section {
+  background-color: transparent;
+  padding: 10px;
+  width: 70%;
+  /* margin-left: 1rem; */
+  margin-bottom: 0.5rem;
+  /* margin: 2 auto; */
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  /* justify-content: center; */
+  /* text-align: center; */
+}
+
+/* .btn-yellow {
+    background-color: #FFCC16;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 40px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: capitalize;
+    height: 10%;
+  } */
+
+/* .btn-yellow:hover {
+    background-color: #FFCC16;
+  }
+  
+  .select-floor {
+    text-align: right;
+  } */
+
+/* .floor-label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+  } */
+
+/* .floor-dropdown {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    width: 120px;
+  } */
+
+/* .info-cards {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .card {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  } */
+
+/* .card-content p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .card-content h2 {
+    margin: 5px 0 0 0;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #FFCC16;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 20px;
+  } */
+
+/* .icon-available-seats::before {
+    content: '\f233'; /* Replace with the actual icon code */
+/* font-family: 'Font Awesome 5 Free'; */
+/* font-weight: 900; */
+
+/* .icon-occupied-seats::before {
+    content: '\f0c0'; /* Replace with the actual icon code */
+/* font-family: 'Font Awesome 5 Free'; */
+/* font-weight: 900;  */
+
+
+/* Loader */
+.custom-loader {
+  border: 8px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 8px solid #FFCC16;
+  width: 80px;
+  height: 80px;
+  -webkit-animation: spin 1s linear infinite;
+  /* Safari */
+  animation: spin 1s linear infinite;
+}
+.loader-backdrop.isselected{
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.loader-backdrop{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
