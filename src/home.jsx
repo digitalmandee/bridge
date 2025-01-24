@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TopNavbar from './topNavbar';
 import Sidebar from './leftSideBar';
-import FloorPlan from './floor/floor';
+import FloorPlan from './floor/Gfloor/floor';
+import FirstfPlan from './floor/Ffloor/firstfloor'
 import { IoIosArrowDropright } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 import Booking from './booking';
 import { height } from '@mui/system';
+import Aseat from './assets/A-seat.png'
+import Oseat from './assets/O-seat.png'
+import datab from './assets/datab.png'
 
 const Home = () => {
   const navigate = useNavigate();
@@ -13,6 +17,20 @@ const Home = () => {
   const handleNextClick = () => {
     navigate('/booking'); // Navigate to the Booking screen
   };
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedFloor, setSelectedFloor] = useState("G Floor"); // Default is Ground Floor
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleFloorSelection = (floor) => {
+    console.log("Selected floor:", floor);
+    setSelectedFloor(floor); // Update the selected floor
+    setIsDropdownOpen(false); // Close the dropdown
+  };
+
   return (
     <>
       <TopNavbar />
@@ -131,9 +149,10 @@ const Home = () => {
                     color: 'white',
                   }}
                 >
-                  <span role="img" aria-label="seat">
+                  <img src={Aseat} alt="" />
+                  {/* <span role="img" aria-label="seat">
                     🪑
-                  </span>
+                  </span> */}
                 </div>
               </div>
 
@@ -169,49 +188,107 @@ const Home = () => {
                     color: 'white',
                   }}
                 >
-                  <span role="img" aria-label="group">
-                    👥
-                  </span>
+                  <img src={Oseat} alt="" />
                 </div>
               </div>
 
               {/* Floor Selector */}
               <div
                 style={{
-                  maxWidth: '20%',
-                  height: '20%',
+                  width: '20.5%',
+                  // height: '10%',
                   backgroundColor: 'white',
                   borderRadius: '10px',
                   padding: '20px',
-                  flex: '1',
-                  // width:'25%',
+                  // flex: '1',
                   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                   textAlign: 'center',
+                  position: 'relative',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-start',
+                  height: '110px',
+                  // overflow:'hidden'
                 }}
               >
+                {/* Image Section */}
+                <img src={datab} alt="Floor image" style={{
+                  alignSelf: 'center',
+                  marginBottom: 'auto'
+                  // height:'45px',
+                  // width:'45px'
+                }} />
 
+                {/* Button Section */}
                 <button
+                  onClick={toggleDropdown} // Toggle dropdown on button click
                   style={{
-                    backgroundColor: '#ffcc00',
-                    // width:'20%',
-                    color: 'white',
+                    backgroundColor: 'transparent',
+                    width: '100%',
+                    // marginTop: '15px', // Add margin between image and button
+                    color: '#000',
                     border: 'none',
+                    marginTop: '15px',
                     borderRadius: '10px',
-                    padding: '10px 20px',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
+                    fontSize: '16px',
+                    fontWeight: '400',
                     cursor: 'pointer',
-                    display: 'inline-flex',
+                    display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    justifyContent: 'space-between', // Add space between text and icon
+                    // padding: '10px 15px', // Add padding for better look
                   }}
                 >
-                  Floor 1 <span style={{ marginLeft: '10px', fontSize: '16px' }}>▼</span>
+                  {selectedFloor} <span style={{ fontSize: '16px' }}>▼</span>
                 </button>
+
+                {/* Dropdown Section */}
+                {isDropdownOpen && (
+                  <div
+                    style={{
+                      marginTop: '10px',
+                      backgroundColor: 'white',
+                      border: '1px solid #ddd',
+                      borderRadius: '5px',
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                      padding: '5px',
+                      textAlign: 'left',
+                      position: 'absolute',
+                      zIndex: 1,
+                      top: '100%',
+                      left: '0',
+                      width: '100%'
+                    }}
+                  >
+                    <div
+                      onClick={() => handleFloorSelection("G Floor")} // Handle ground floor selection
+                      style={{
+                        padding: '8px 10px',
+                        cursor: 'pointer',
+                        borderBottom: '1px solid #eee',
+                      }}
+                    >
+                      G Floor
+                    </div>
+                    <div
+                      onClick={() => handleFloorSelection("1st Floor")} // Handle first floor selection
+                      style={{
+                        padding: '8px 10px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      1st Floor
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
-          <FloorPlan />
+          {selectedFloor === "G Floor" ? (
+            <FloorPlan />
+          ) : (
+            <FirstfPlan />
+          )}
         </div>
       </div>
     </>

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import TopNavbar from '../topNavbar/index'
 import Sidebar from '../leftSideBar'
 import MemberDetail from './memberdetail'
-import BookingDetail from './bookingdetail'
+import BookingDetail from './BookingDetail/bookingdetail'
 import Payment from './payment'
 // import './style.css';
 const Booking = () => {
