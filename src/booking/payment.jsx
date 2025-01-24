@@ -6,26 +6,25 @@ import { FloorPlanContext } from "../contexts/floorplan.context";
 import axios from "axios";
 
 const Payment = () => {
-  const { selectedChairs, bookingPlans, bookingdetails } =
-    useContext(FloorPlanContext);
+  const { selectedChairs, bookingPlans, bookingdetails } = useContext(FloorPlanContext);
   const [showModal, setShowModal] = useState(false);
   const handleConfirm = async () => {
     try {
-        const response = await axios.post(process.env.REACT_APP_BASE_API +'booking/create',{
-            ...bookingdetails,
-            selectedPlan: bookingPlans[bookingdetails.selectedPlan],
-            selectedChairs
-        });
-        console.log(response.data);
-        setShowModal(true); // Show the modal
+      const response = await axios.post(process.env.REACT_APP_BASE_API + "booking/create", {
+        branch_id: 1,
+        floor_id: 1,
+        ...bookingdetails,
+        selectedPlan: bookingPlans[bookingdetails.selectedPlan],
+        selectedChairs,
+      });
+      console.log(response.data);
+      setShowModal(true); // Show the modal
     } catch (error) {
-        console.log(error);
-        
+      console.log(error);
     }
   };
 
   const handleClose = async () => {
-
     try {
       setShowModal(false);
     } catch (error) {
@@ -83,11 +82,7 @@ const Payment = () => {
               }}
               // onClick={() => setPaymentMethod("Cash")}
             >
-              <img
-                src={cash}
-                alt="Cash"
-                style={{ width: "50px", marginBottom: "10px" }}
-              />
+              <img src={cash} alt="Cash" style={{ width: "50px", marginBottom: "10px" }} />
               <p
                 style={{
                   font: "Nunito Sans",
@@ -109,11 +104,7 @@ const Payment = () => {
               }}
               // onClick={() => setPaymentMethod("Bank Transfer")}
             >
-              <img
-                src={payment}
-                alt="Bank Transfer"
-                style={{ width: "50px", marginBottom: "10px" }}
-              />
+              <img src={payment} alt="Bank Transfer" style={{ width: "50px", marginBottom: "10px" }} />
               <p
                 style={{
                   font: "Nunito Sans",
@@ -171,14 +162,7 @@ const Payment = () => {
         <div style={{ backgroundColor: "white", padding: "10px" }}>
           <span style={{ fontSize: "18px", fontWeight: 600 }}>
             Plan name: {bookingPlans[bookingdetails.selectedPlan].name} <br />
-            Plan price: $
-            {Object.values(selectedChairs).reduce(
-              (total, chairs) =>
-                total +
-                chairs.length *
-                  (bookingPlans[bookingdetails.selectedPlan]?.price || 0),
-              0
-            ).toFixed(2)}
+            Plan price: ${bookingdetails.total_price}
           </span>
           {/* Display Selected Chairs */}
           {Object.entries(selectedChairs).length > 0 && (

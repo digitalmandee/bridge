@@ -3,7 +3,7 @@ import { FloorPlanContext } from "../contexts/floorplan.context";
 import axios from "axios";
 
 const BookingDetail = ({ handlePrevious, handleNext }) => {
-  const { bookingdetails, setBookingDetails, formErrors, bookingPlans, setBookingPlans, validateBookingDetails, checkAvailability } = useContext(FloorPlanContext);
+  const { bookingdetails, setBookingDetails, formErrors, bookingPlans, setBookingPlans, validateBookingDetails, checkAvailability, selectedChairs } = useContext(FloorPlanContext);
 
   useEffect(() => {
     const fetchBookingPlanData = async () => {
@@ -32,6 +32,17 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 
   const handleSubmit = () => {
     if (validateBookingDetails()) {
+      const totalPrice = Object.values(selectedChairs).flat().reduce((total, chair) => {
+          const planPrice = bookingPlans.find((plan) => plan.id == Number(bookingdetails.selectedPlan) + 1)?.price || 0;
+          console.log(bookingPlans);
+          return Number(total) + Number(planPrice);
+        }, 0).toFixed(2);
+
+      setBookingDetails((prevDetails) => ({
+        ...prevDetails,
+        total_price: totalPrice,
+      }));
+
       handleNext();
     }
   };
@@ -66,8 +77,8 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
           <label style={{ display: "block", marginBottom: "5px" }}>Date</label>
           <input
             type="date"
-            name="date"
-            value={bookingdetails.date}
+            name="start_date"
+            value={bookingdetails.start_date}
             readOnly // Make the date field read-only so the user cannot change it
             style={{
               width: "100%",
@@ -83,8 +94,8 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
           <label style={{ display: "block", marginBottom: "5px" }}>Time</label>
           <input
             type="text"
-            name="time"
-            value={bookingdetails.time}
+            name="start_time"
+            value={bookingdetails.start_time}
             readOnly // Make the time field read-only so the user cannot change it
             style={{
               width: "100%",
@@ -131,7 +142,7 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
           }}
         >
           <option value="">-- Select a Plan --</option>
-          {bookingPlans.map((plan, index) => (
+          {bookingPlans.map((plan,index) => (
             <option key={plan.id} value={index}>
               {plan.name}
             </option>

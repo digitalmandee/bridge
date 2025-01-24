@@ -13,11 +13,12 @@ export const FloorPlanProvider = ({ children }) => {
     name: "",
     email: "",
     phone_no: "",
-    selectabout: "individual",
-    date: '',
-    time: '',
+    type: "individual",
+    start_date: '',
+    start_time: '',
     duration: 12,
     selectedPlan: "",
+    total_price: 0,
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -34,8 +35,8 @@ export const FloorPlanProvider = ({ children }) => {
   };
   const validateBookingDetails = () => {
     const errors = {};
-    if (!bookingdetails.date) errors.date = "Date is required.";
-    if (!bookingdetails.time) errors.time = "Time is required.";
+    if (!bookingdetails.start_date) errors.start_date = "Date is required.";
+    if (!bookingdetails.start_time) errors.start_time = "Time is required.";
     if (!bookingdetails.selectedPlan) errors.selectedPlan = "Plan selection is required.";
 
     setFormErrors(errors);

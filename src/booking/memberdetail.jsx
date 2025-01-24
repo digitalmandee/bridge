@@ -17,6 +17,7 @@ const MemberDetail = ({ handleNext }) => {
 
   const handleSubmit = async () => {
     const allChairs = Object.values(selectedChairs).flat();
+    
     if (validateMemeberDetails()) {
       try {
         setIsLoading(true);
@@ -47,8 +48,8 @@ const MemberDetail = ({ handleNext }) => {
     // Set the duration options based on available_durations
     setBookingDetails((prevDetails) => ({
       ...prevDetails,
-      date: date, // Set the extracted date
-      time: formatTimeForDuration(time, available_durations), // Set the extracted time with AM/PM logic
+      start_date: date, // Set the extracted date
+      start_time: formatTimeForDuration(time, available_durations), // Set the extracted time with AM/PM logic
       duration: available_durations.length > 0 ? available_durations[0] : "day", // Default to day if no options available
     }));
   };
@@ -159,8 +160,8 @@ const MemberDetail = ({ handleNext }) => {
           {/* Individual/Company Dropdown */}
           <label style={{ display: "block", marginBottom: "5px" }}>Individual/Company</label>
           <select
-            name="selectabout"
-            value={bookingdetails.selectabout}
+            name="type"
+            value={bookingdetails.type}
             onChange={handleChange}
             style={{
               width: "100%",

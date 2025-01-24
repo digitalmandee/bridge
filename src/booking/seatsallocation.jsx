@@ -7,14 +7,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert"; // Three-dot icon
 import { Menu, MenuItem, IconButton, Box } from "@mui/material";
 import axios from "axios";
 
-const SeatCard = ({
-  seatNumber,
-  branchName,
-  occupancy,
-  status,
-  location,
-  floor,
-}) => {
+const SeatCard = ({ seatNumber, userName, planName, status, location, floor }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   // Handle opening the menu
@@ -31,7 +24,7 @@ const SeatCard = ({
     <div className="col-md-3 mb-4">
       <div className="card" style={{ position: "relative" }}>
         {/* Three-dot Menu Button */}
-        <IconButton
+        {/* <IconButton
           onClick={handleMenuOpen}
           aria-label="menu"
           style={{
@@ -42,8 +35,8 @@ const SeatCard = ({
           }}
         >
           <MoreVertIcon />
-        </IconButton>
-        <Menu
+        </IconButton> */}
+        {/* <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
@@ -55,7 +48,7 @@ const SeatCard = ({
         >
           <MenuItem onClick={() => alert("Edit clicked!")}>Edit</MenuItem>
           <MenuItem onClick={() => alert("Delete clicked!")}>Delete</MenuItem>
-        </Menu>
+        </Menu> */}
 
         {/* Chair Icon Section */}
         <Box
@@ -99,10 +92,10 @@ const SeatCard = ({
             borderTop: "2px dotted #D8D8D8",
           }}
         >
-          <h6 className="card-title">{branchName}</h6>
+          <h6 className="card-title">{userName}</h6>
           <div className="row text-center">
             <div className="col-6">
-              <h6>{occupancy}</h6>
+              <h6>{planName}</h6>
               <p className="mb-0 text-muted">Plan</p>
             </div>
             <div className="col-6">
@@ -114,7 +107,7 @@ const SeatCard = ({
               <p className="mb-0 text-muted">Location</p>
             </div>
             <div className="col-6">
-              <h6>Ground Floor</h6>
+              <h6>{floor}</h6>
               <p className="mb-0 text-muted">Floor</p>
             </div>
           </div>
@@ -133,13 +126,11 @@ const SeatsAllocation = () => {
       setIsLoading(true);
       try {
         const branchId = 1; // Use the actual branch ID here
-        const response = await axios.get(
-          process.env.REACT_APP_BASE_API +
-            `seat-allocations?branch_id=${branchId}`
-        );
+        const response = await axios.get(process.env.REACT_APP_BASE_API + `seat-allocations?branch_id=${branchId}`);
+        console.log(response.data.seats);
 
-        if (response.data) {
-          setSeatData2(response.data.chairs);
+        if (response.data.success) {
+          setSeatData2(response.data.seats);
         }
       } catch (error) {
         console.error("Error fetching floor plan data", error);
@@ -165,20 +156,18 @@ const SeatsAllocation = () => {
             </div>
             <div className="row">
               {seatData2.length > 0 &&
-                seatData2.map((branch, index) =>
-                  Object.entries(branch.chairs).map(([chairType, chairs]) =>
-                    chairs.map((chair) => (
-                      <SeatCard
-                        key={chair.id}
-                        seatNumber={`${chairType}-${chair.id}`}
-                        branchName={branch.name}
-                        occupancy={branch.payment.type}
-                        status={chair.booked ? "Booked" : "Available"}
-                        location={branch.payment.location}
-                        floor="1" // Customize as needed
-                      />
-                    ))
-                  )
+                seatData2.map((seat) =>
+                  seat.chairs.map((chair) => (
+                    <SeatCard
+                      key={chair.id}
+                      seatNumber={`${chair.room.name}-${chair.table_name}${chair.id}`} // Use table_name for prefixing
+                      userName={seat.name}
+                      planName={seat.plan.name}
+                      status={chair.booked ? "Booked" : "Available"}
+                      location={seat.branch.location}
+                      floor={seat.floor.name}
+                    />
+                  ))
                 )}
             </div>
           </div>
