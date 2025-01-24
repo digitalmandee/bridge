@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
-use App\Models\BookingPlan;
-use App\Models\Branch;
 use App\Models\Chair;
 use App\Models\Floor;
 use App\Models\Room;
@@ -28,7 +26,7 @@ class FloorPlanController extends Controller
             }
 
             // Fetch bookings with related data
-            $bookings = Booking::where('branch_id', $branchId)->with(['branch', 'floor'])->get();
+            $bookings = Booking::where('branch_id', $branchId)->with(['branch', 'floor','user'])->get();
 
             // Fetch all rooms once to avoid multiple queries
             $rooms = Room::all()->keyBy('id'); // Key rooms by 'id' for easy lookup
@@ -60,6 +58,7 @@ class FloorPlanController extends Controller
                     'booked' => $booking->booked,
                     'branch' => $booking->branch,
                     'floor' => $booking->floor,
+                    'user' => $booking->user,
                     'chairs' => $flattenedChairs,
                 ];
             });

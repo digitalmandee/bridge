@@ -23,6 +23,7 @@ class CreateChairsTable extends Migration
             $table->bigInteger('positiony')->nullable();
             $table->bigInteger('rotation')->nullable();
             $table->string('color')->nullable();
+            $table->string('activeColor')->nullable();
             $table->string('booking_startdate')->nullable();
             $table->string('booking_enddate')->nullable();
             $table->tinyInteger('booked')->nullable();

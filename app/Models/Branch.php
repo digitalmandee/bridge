@@ -17,6 +17,12 @@ class Branch extends Model
         'deleted_at'
     ];
 
+    public function floors()
+    {
+        return $this->hasMany(Floor::class);
+    }
+
+
     // public static function branches()
     // {
     //     return self::where('status', 1)->get();

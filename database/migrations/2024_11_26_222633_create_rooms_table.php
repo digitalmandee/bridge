@@ -17,6 +17,9 @@ class CreateRoomsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('floor_id')->nullable();
             $table->string('name')->nullable();
+            $table->string('schedule_start_date')->nullable();
+            $table->string('schedule_end_date')->nullable();
+            // $table->string('is_blocked')->nullable();
             $table->timestamps();
 
             $table->foreign('floor_id')->references('id')->on('floors')->onDelete('cascade');

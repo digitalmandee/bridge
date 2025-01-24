@@ -17,6 +17,7 @@ class VerifyCsrfToken extends Middleware
         'api/booking-plans', // Add your API route here
         'api/booking/create',
         'api/seat-allocations',
+        'api/bookings/update',
         //
     ];
 }

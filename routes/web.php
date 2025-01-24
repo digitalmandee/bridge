@@ -14,6 +14,8 @@ use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\BookingCalendarController;
 use App\Http\Controllers\BookingPlanController;
 use App\Http\Controllers\InventoryManagementController;
+use App\Http\Controllers\UserController;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,12 +31,6 @@ use App\Http\Controllers\InventoryManagementController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::post('api/check-chair-availability', [FloorPlanController::class, 'checkChairAvailability']);
-Route::get('api/floor-plan', [FloorPlanController::class, 'getFloorPlan']);
-Route::get('api/seat-allocations', [FloorPlanController::class, 'getSeatAllocations']);
-Route::post('api/booking/create', [BookingPlanController::class, 'createBooking']);
-// Booking Plans
-Route::resource('api/booking-plans', BookingPlanController::class)->except(['create', 'show', 'edit']);
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');

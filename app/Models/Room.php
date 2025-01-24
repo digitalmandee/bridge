@@ -14,7 +14,19 @@ class Room extends Model
     protected $fillable = [
         'floor_id',
         'name',
+        'schedule_start_date',
+        'schedule_end_date',
+        // 'is_booked',
     ];
+
+    public function bookingSchedules()
+    {
+        return $this->hasMany(BookingSchedule::class);
+    }
+    public function floor()
+    {
+        return $this->belongsTo(Floor::class);
+    }
 
     /**
      * Get the floor that owns the room.

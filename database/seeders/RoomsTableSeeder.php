@@ -23,7 +23,7 @@ class RoomsTableSeeder extends Seeder
                         "id" => "A",
                         "name" => "Table A",
                         "chairs" => [
-                            ["id" => 1, "positionx" => 12, "positiony" => 3, "rotation" => 0, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 1, "duration" => 'day'],
+                            ["id" => 1, "positionx" => 12, "positiony" => 3, "rotation" => 0, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 0, "duration" => ''],
                             ["id" => 2, "positionx" => 15, "positiony" => 3, "rotation" => 0, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                             ["id" => 3, "positionx" => 18, "positiony" => 3, "rotation" => 0, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                             ["id" => 4, "positionx" => 12, "positiony" => 13, "rotation" => 180, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
@@ -40,7 +40,7 @@ class RoomsTableSeeder extends Seeder
                         "id" => "B",
                         "name" => "Table B",
                         "chairs" => [
-                            ["id" => 1, "positionx" => 14, "positiony" => 22.5, "rotation" => 0, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 1, "duration" => 24],
+                            ["id" => 1, "positionx" => 14, "positiony" => 22.5, "rotation" => 0, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 0, "duration" => ''],
                             ["id" => 2, "positionx" => 17, "positiony" => 22.5, "rotation" => 0, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                             ["id" => 3, "positionx" => 20, "positiony" => 22.5, "rotation" => 0, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                             ["id" => 4, "positionx" => 14, "positiony" => 32.5, "rotation" => 180, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
@@ -57,7 +57,7 @@ class RoomsTableSeeder extends Seeder
                         "id" => "C",
                         "name" => "Table C",
                         "chairs" => [
-                            ["id" => 1, "positionx" => 54.5, "positiony" => 3, "rotation" => 0, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 0, "duration" => 'day'],
+                            ["id" => 1, "positionx" => 54.5, "positiony" => 3, "rotation" => 0, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 0, "duration" => ''],
                             ["id" => 2, "positionx" => 50, "positiony" => 10, "rotation" => 270, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                             ["id" => 3, "positionx" => 59.2, "positiony" => 10, "rotation" => 90, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                             ["id" => 4, "positionx" => 54.5, "positiony" => 17, "rotation" => 180, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
@@ -100,7 +100,7 @@ class RoomsTableSeeder extends Seeder
                             "id" => "E",
                             "name" => "Table E",
                             "chairs" => [
-                                ["id" => 1, "positionx" => 19, "positiony" => 72, "rotation" => 90, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 0, "duration" => 'day'],
+                                ["id" => 1, "positionx" => 19, "positiony" => 72, "rotation" => 90, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 0, "duration" => ''],
                                 ["id" => 2, "positionx" => 19, "positiony" => 78, "rotation" => 90, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                                 ["id" => 3, "positionx" => 19, "positiony" => 84, "rotation" => 90, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                             ]
@@ -109,7 +109,7 @@ class RoomsTableSeeder extends Seeder
                             "id" => "F",
                             "name" => "Table F",
                             "chairs" => [
-                                ["id" => 1, "positionx" => 31.5, "positiony" => 59, "rotation" => 0, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 0, "duration" => 'day'],
+                                ["id" => 1, "positionx" => 31.5, "positiony" => 59, "rotation" => 0, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 0, "duration" => ''],
                                 ["id" => 2, "positionx" => 36.2, "positiony" => 66, "rotation" => 90, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                                 ["id" => 3, "positionx" => 27, "positiony" => 66, "rotation" => 270, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                                 ["id" => 4, "positionx" => 31.5, "positiony" => 72.5, "rotation" => 180, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null]
@@ -135,7 +135,7 @@ class RoomsTableSeeder extends Seeder
                             "id" => "H",
                             "name" => "Table H",
                             "chairs" => [
-                                ["id" => 1, "positionx" => 63.6, "positiony" => 72, "rotation" => 90, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 1, "duration" => 'night'],
+                                ["id" => 1, "positionx" => 63.6, "positiony" => 72, "rotation" => 90, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 0, "duration" => 'night'],
                                 ["id" => 2, "positionx" => 63.6, "positiony" => 78, "rotation" => 90, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                                 ["id" => 3, "positionx" => 63.6, "positiony" => 84, "rotation" => 90, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null]
                             ]
@@ -154,7 +154,7 @@ class RoomsTableSeeder extends Seeder
                             "id" => "J",
                             "name" => "Table J",
                             "chairs" => [
-                                ["id" => 1, "positionx" => 76, "positiony" => 80, "rotation" => 0, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 0, "duration" => 'day'],
+                                ["id" => 1, "positionx" => 76, "positiony" => 80, "rotation" => 0, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 0, "duration" => ''],
                                 ["id" => 2, "positionx" => 80.7, "positiony" => 87, "rotation" => 90, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                                 ["id" => 3, "positionx" => 71.7, "positiony" => 87, "rotation" => 270, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                                 ["id" => 4, "positionx" => 76.5, "positiony" => 93.5, "rotation" => 180, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null]

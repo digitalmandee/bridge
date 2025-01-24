@@ -32,9 +32,8 @@ class Booking extends Model
         'cvv',
         'card_number',
         'receipt',
-        'save_card_details'
-
-
+        'save_card_details',
+        'status',
     ];
     protected $casts = [
         'chairs' => 'array',
@@ -49,5 +48,9 @@ class Booking extends Model
     public function floor()
     {
         return $this->belongsTo(Floor::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
