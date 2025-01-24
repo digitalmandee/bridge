@@ -6,31 +6,51 @@ import { FloorPlanContext } from "../contexts/floorplan.context";
 import axios from "axios";
 
 const Payment = () => {
-  const { selectedChairs, bookingPlans, bookingdetails } = useContext(FloorPlanContext);
+  const { selectedChairs, bookingPlans, bookingdetails, setBookingDetails } = useContext(FloorPlanContext);
   const [showModal, setShowModal] = useState(false);
+  const [receiptFile, setReceiptFile] = useState(null); // State to store the uploaded file
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    setReceiptFile(file);
+
+    // Save file name in bookingdetails.receipt
+    setBookingDetails((prevDetails) => ({
+      ...prevDetails,
+      receipt: file.name, // Update receipt field
+    }));
+  };
+
   const handleConfirm = async () => {
+    
     try {
-      const response = await axios.post(process.env.REACT_APP_BASE_API + "booking/create", {
-        branch_id: 1,
-        floor_id: 1,
-        ...bookingdetails,
-        selectedPlan: bookingPlans[bookingdetails.selectedPlan],
-        selectedChairs,
+      // Create a FormData object to send the image and other data
+      const formData = new FormData();
+      formData.append("branch_id", 1);
+      formData.append("floor_id", 1);
+      formData.append("profile_image", bookingdetails.profile_image); // Add the receipt file
+      formData.append("receipt", receiptFile); // Add the receipt file
+      formData.append("bookingdetails", JSON.stringify(bookingdetails));
+      formData.append("selectedPlan", JSON.stringify(bookingPlans[bookingdetails.selectedPlan]));
+      formData.append("selectedChairs", JSON.stringify(selectedChairs));
+
+      const response = await axios.post(process.env.REACT_APP_BASE_API + "booking/create", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
+
       console.log(response.data);
       setShowModal(true); // Show the modal
     } catch (error) {
-      console.log(error);
+      console.error("Error while creating booking:", error);
     }
   };
 
   const handleClose = async () => {
-    try {
-      setShowModal(false);
-    } catch (error) {
-      console.log(error);
-    }
+    setShowModal(false);
   };
+
   return (
     <>
       <div
@@ -45,7 +65,6 @@ const Payment = () => {
             backgroundColor: "transparent",
             padding: "20px",
             borderRadius: "10px",
-            // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             width: "80%",
             maxWidth: "500px",
             margin: "0 auto",
@@ -65,7 +84,6 @@ const Payment = () => {
           <div
             style={{
               display: "flex",
-              // backgroundColor:'black',
               justifyContent: "space-between",
               gap: "2rem",
               marginBottom: "20px",
@@ -80,7 +98,6 @@ const Payment = () => {
                 cursor: "pointer",
                 backgroundColor: "#FFFFFF",
               }}
-              // onClick={() => setPaymentMethod("Cash")}
             >
               <img src={cash} alt="Cash" style={{ width: "50px", marginBottom: "10px" }} />
               <p
@@ -102,7 +119,6 @@ const Payment = () => {
                 cursor: "pointer",
                 backgroundColor: "#FFFFFF",
               }}
-              // onClick={() => setPaymentMethod("Bank Transfer")}
             >
               <img src={payment} alt="Bank Transfer" style={{ width: "50px", marginBottom: "10px" }} />
               <p
@@ -130,16 +146,8 @@ const Payment = () => {
             >
               Upload Receipt
             </label>
-            <input
-              type="file"
-              id="receipt-upload"
-              accept="image/*"
-              // onChange={handleFileUpload}
-              style={{ display: "none" }}
-            />
-            {/* <p style={{ marginTop: "10px" }}>
-                                    {receipt ? `Uploaded: ${receipt}` : "No receipt uploaded"}
-                                </p> */}
+            <input type="file" id="receipt-upload" accept="image/*" onChange={handleFileUpload} style={{ display: "none" }} />
+            {receiptFile && <p style={{ marginTop: "10px" }}>Uploaded: {receiptFile.name}</p>}
           </div>
           <button
             style={{
@@ -162,7 +170,7 @@ const Payment = () => {
         <div style={{ backgroundColor: "white", padding: "10px" }}>
           <span style={{ fontSize: "18px", fontWeight: 600 }}>
             Plan name: {bookingPlans[bookingdetails.selectedPlan].name} <br />
-            Plan price: ${bookingdetails.total_price}
+            Plan price: Rs. {bookingdetails.total_price}
           </span>
           {/* Display Selected Chairs */}
           {Object.entries(selectedChairs).length > 0 && (

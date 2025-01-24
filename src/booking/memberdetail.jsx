@@ -6,6 +6,8 @@ import Loader from "../components/Loader";
 const MemberDetail = ({ handleNext }) => {
   const { bookingdetails, setBookingDetails, formErrors, validateMemeberDetails, selectedChairs, setCheckAvailability } = useContext(FloorPlanContext);
   const [isLoading, setIsLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null); // State to store image preview
+  const [imageFile, setImageFile] = useState(null); // State to store the image file
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,9 +17,27 @@ const MemberDetail = ({ handleNext }) => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Set the image file and generate a preview
+      setImageFile(file);
+      setBookingDetails((prevDetails) => ({
+        ...prevDetails,
+        profile_image: file, // Save image URL to profile_image
+      }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result); // Set preview URL
+        // Store the image URL in bookingDetails.profile_image
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async () => {
     const allChairs = Object.values(selectedChairs).flat();
-    
+
     if (validateMemeberDetails()) {
       try {
         setIsLoading(true);
@@ -42,46 +62,24 @@ const MemberDetail = ({ handleNext }) => {
   const updateTimeAndDuration = (availabilityData) => {
     const { available_durations, available_time } = availabilityData;
 
-    // Extract date and time from available_time (2025-01-23 10:04:45)
     const { date, time } = extractDateAndTime(available_time);
 
-    // Set the duration options based on available_durations
     setBookingDetails((prevDetails) => ({
       ...prevDetails,
-      start_date: date, // Set the extracted date
-      start_time: formatTimeForDuration(time, available_durations), // Set the extracted time with AM/PM logic
-      duration: available_durations.length > 0 ? available_durations[0] : "day", // Default to day if no options available
+      start_date: date,
+      start_time: formatTimeForInput(time),
+      duration: available_durations.length > 0 ? available_durations[0] : "day",
     }));
   };
 
   const extractDateAndTime = (availableTime) => {
-    const [date, time] = availableTime.split(" "); // Split into date and time
-    return { date, time }; // Return both separately
+    const [date, time] = availableTime.split(" ");
+    return { date, time };
   };
 
-  const formatTimeForDuration = (time, durations) => {
-    let formattedTime = time;
-
-    // Apply AM/PM logic based on the duration
-    if (durations.includes("day")) {
-      formattedTime = convertToAMPM(time, "AM"); // Set AM for day
-    } else if (durations.includes("night")) {
-      formattedTime = convertToAMPM(time, "PM"); // Set PM for night
-    }
-
-    return formattedTime;
-  };
-
-  const convertToAMPM = (time) => {
-    const timeObj = new Date("1970-01-01T" + time + "Z");
-    let hours = timeObj.getHours();
-    let minutes = timeObj.getMinutes();
-    let suffix = hours >= 12 ? "PM" : "AM";
-
-    if (hours > 12) hours -= 12;
-    if (hours === 0) hours = 12;
-
-    return `${hours}:${minutes < 10 ? "0" : ""}${minutes} ${suffix}`;
+  const formatTimeForInput = (time) => {
+    const [hours, minutes] = time.split(":");
+    return `${hours}:${minutes}`;
   };
 
   return (
@@ -174,6 +172,28 @@ const MemberDetail = ({ handleNext }) => {
             <option value="individual">Individual</option>
             <option value="company">Company</option>
           </select>
+
+          {/* Image Upload Field */}
+          <label style={{ display: "block", marginBottom: "5px" }}>Upload Image (Optional)</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            style={{
+              width: "100%",
+              padding: "10px",
+              marginBottom: "15px",
+              borderRadius: "5px",
+              border: "1px solid #ccc",
+            }}
+          />
+
+          {/* Image Preview */}
+          {imagePreview && (
+            <div style={{ textAlign: "left", marginTop: "4px" }}>
+              <img src={imagePreview} alt="Preview" style={{ width: "100px", height: "100px", objectFit: "cover",borderRadius:'50%' }} />
+            </div>
+          )}
 
           <div style={{ textAlign: "right", marginTop: "20px" }}>
             <button

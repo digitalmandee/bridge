@@ -93,7 +93,7 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
         <div style={{ marginBottom: "15px" }}>
           <label style={{ display: "block", marginBottom: "5px" }}>Time</label>
           <input
-            type="text"
+            type="time"
             name="start_time"
             value={bookingdetails.start_time}
             readOnly // Make the time field read-only so the user cannot change it
@@ -144,7 +144,7 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
           <option value="">-- Select a Plan --</option>
           {bookingPlans.map((plan,index) => (
             <option key={plan.id} value={index}>
-              {plan.name}
+              {plan.name} - ${plan.price}
             </option>
           ))}
         </select>

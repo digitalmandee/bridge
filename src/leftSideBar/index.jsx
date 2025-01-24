@@ -56,13 +56,13 @@ const Sidebar = () => {
                   <Link to="/floorplan">Floor Plan</Link>
                 </li>
                 <li>
-                  <Link to="">Booking Request</Link>
+                  <Link to="/booking/plans">Price Plan</Link>
+                </li>
+                <li>
+                  <Link to="/booking/requests">Booking Request</Link>
                 </li>
                 <li>
                   <Link to="/seatsAllocation">Seat Card</Link>
-                </li>
-                <li>
-                  <Link to="/booking/plans">Price Plan</Link>
                 </li>
               </ul>
             )}

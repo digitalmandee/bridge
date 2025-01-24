@@ -7,7 +7,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert"; // Three-dot icon
 import { Menu, MenuItem, IconButton, Box } from "@mui/material";
 import axios from "axios";
 
-const SeatCard = ({ seatNumber, userName, planName, status, location, floor }) => {
+const SeatCard = ({ seatNumber, userName, planName, status, location, floor,profile_image }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   // Handle opening the menu
@@ -58,22 +58,26 @@ const SeatCard = ({ seatNumber, userName, planName, status, location, floor }) =
             marginTop: "40px",
           }}
         >
-          <Box
-            className="chair-icon"
-            sx={{
-              backgroundColor: "#fbc02d",
-              padding: "15px",
-              borderRadius: "10px",
-              display: "inline-block",
-            }}
-          >
-            <ChairIcon
+          {profile_image ? (
+            <img src={process.env.REACT_APP_ASSET_API + profile_image} alt="image" />
+          ) : (
+            <Box
+              className="chair-icon"
               sx={{
-                fontSize: 50,
-                color: "black",
+                backgroundColor: "#fbc02d",
+                padding: "15px",
+                borderRadius: "10px",
+                display: "inline-block",
               }}
-            />
-          </Box>
+            >
+              <ChairIcon
+                sx={{
+                  fontSize: 50,
+                  color: "black",
+                }}
+              />
+            </Box>
+          )}
           <div
             className="chair-label"
             style={{
@@ -85,7 +89,6 @@ const SeatCard = ({ seatNumber, userName, planName, status, location, floor }) =
             {seatNumber}
           </div>
         </Box>
-
         <div
           className="card-body text-center"
           style={{
@@ -166,6 +169,7 @@ const SeatsAllocation = () => {
                       status={chair.booked ? "Booked" : "Available"}
                       location={seat.branch.location}
                       floor={seat.floor.name}
+                      profile_image={seat.user.profile_image}
                     />
                   ))
                 )}

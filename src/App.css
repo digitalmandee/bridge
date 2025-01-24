@@ -186,6 +186,37 @@ body {
 /* font-family: 'Font Awesome 5 Free'; */
 /* font-weight: 900;  */
 
+/* Status */
+.status {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status.pending {
+  background: #E8F1FD;
+  color: #448DF2;
+}
+
+.status.accepted {
+  background: #E7F8F0;
+  color: #41C588;
+}
+
+.status.rejected {
+  background-color: #fcdcd9;
+  color: #f44336;
+}
+#select-status+input+svg+fieldset legend{
+  line-height: 8px;
+  max-width: 100% !important;
+}
+#select-status+input+svg+fieldset span{
+  opacity: 1 !important;
+  font-weight: 700;
+}
 
 /* Loader */
 .custom-loader {
@@ -198,12 +229,14 @@ body {
   /* Safari */
   animation: spin 1s linear infinite;
 }
-.loader-backdrop.isselected{
+
+.loader-backdrop.isselected {
   position: absolute;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.4);
 }
-.loader-backdrop{
+
+.loader-backdrop {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -216,11 +249,18 @@ body {
   0% {
     -webkit-transform: rotate(0deg);
   }
+
   100% {
     -webkit-transform: rotate(360deg);
   }
 }
+
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }

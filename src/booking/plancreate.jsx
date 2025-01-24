@@ -42,7 +42,7 @@ const PlanCreate = () => {
         setSnackbarOpen(true);
       }
     } catch (error) {
-      console.error("Error fetching booking plan data", error);
+      // console.error("Error fetching booking plan data", error);
       setSnackbarMessage("An error occurred.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);

@@ -10,12 +10,13 @@ export const FloorPlanProvider = ({ children }) => {
   const [floorSize, setFloorSize] = useState({ width: 0, height: 0 });
   const [checkAvailability, setCheckAvailability] = useState({});
   const [bookingdetails, setBookingDetails] = useState({
+    profile_image: "",
     name: "",
     email: "",
     phone_no: "",
     type: "individual",
-    start_date: '',
-    start_time: '',
+    start_date: "",
+    start_time: "",
     duration: 12,
     selectedPlan: "",
     total_price: 0,
@@ -42,8 +43,6 @@ export const FloorPlanProvider = ({ children }) => {
     setFormErrors(errors);
     return Object.keys(errors).length === 0; // Return true if no errors
   };
-
-  
 
   return (
     <FloorPlanContext.Provider

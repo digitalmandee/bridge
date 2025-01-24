@@ -7,6 +7,7 @@ import Loader from "../components/Loader";
 
 const FloorPlan = () => {
   const floorRef = useRef(null); // Reference for the floor container
+  const [prevChairDuration, setPrevChairDuration] = useState("");
   // Define tables with chairs
 
   const { isLoading, tables, selectedChairs, floorSize, setIsLoading, setTables, setSelectedChairs, setFloorSize } = useContext(FloorPlanContext);
@@ -59,7 +60,7 @@ const FloorPlan = () => {
   }, []);
 
   // Toggle chair and selection
-  const toggleChairColor = ( tableId, chairId) => {
+  const toggleChairColor = (tableId, chairId) => {
     // Find the selected table and chair
     const chairData = tables.find((table) => table.id === tableId)?.chairs.find((chair) => chair.id === chairId);
 
@@ -94,12 +95,11 @@ const FloorPlan = () => {
       if (table.id === tableId) {
         table.chairs.forEach((chair) => {
           if (chair.id === chairId) {
-            chair.color = chair.color === "gray" ? "#ffb700" : "gray";
+            chair.activeColor = chair.activeColor ? "" : "#ffb700";
           }
         });
       }
     });
-    console.log(selectedChairs);
   };
 
   return (
@@ -118,15 +118,15 @@ const FloorPlan = () => {
                       className="chair"
                       key={`${table.id}${chair.id}`}
                       sx={{
-                        color: chair.color,
+                        color: chair.activeColor ? chair.activeColor : chair.color,
                         position: "absolute",
                         top: `${(chair.position.y / 100) * floorSize.height}px`,
                         left: `${(chair.position.x / 100) * floorSize.width}px`,
                         transform: `rotate(${chair.rotation}deg)`,
-                        cursor: "pointer",
+                        cursor: chair.duration === "24" ? "not-allowed" : "pointer",
                         fontSize: "30px",
                       }}
-                      onClick={() => toggleChairColor(table.id, chair.id)}
+                      onClick={() => chair.duration != "24" && toggleChairColor(table.id, chair.id)}
                     />
                   ))
               )}

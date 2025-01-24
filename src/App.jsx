@@ -6,6 +6,7 @@ import SplashScreen from "./auth/splash";
 import LoginPage from "./auth/login";
 import Home from "./home";
 import BookingPlans from "./booking/plans";
+import BookingRequests from "./booking/requests";
 import BookingPlanCreate from "./booking/plancreate";
 import Booking from "./booking";
 import UserDashboard from "./dashboard/userdashboard";
@@ -35,6 +36,7 @@ function App() {
             <Route path="/user-dashboard" element={<UserDashboard />} />
             <Route path="/booking" element={<Booking />} />
             <Route path="/floorplan" element={<Home />} />
+            <Route path="/booking/requests" element={<BookingRequests />} />
             <Route path="/booking/plans" element={<BookingPlans />} />
             <Route path="/booking/plans/create" element={<BookingPlanCreate />} />
             <Route path="/booking-calender" element={<BookingCalender />} />
