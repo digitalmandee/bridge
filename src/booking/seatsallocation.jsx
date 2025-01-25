@@ -55,11 +55,11 @@ const SeatCard = ({ seatNumber, userName, planName, status, location, floor,prof
           className="chair-container mb-2"
           sx={{
             textAlign: "center",
-            marginTop: "40px",
+            marginTop: "20px",
           }}
         >
           {profile_image ? (
-            <img src={process.env.REACT_APP_ASSET_API + profile_image} alt="image" />
+            <img src={process.env.REACT_APP_ASSET_API + profile_image} alt="image" style={{ width: "80px", height: "80px", borderRadius: "10px" }} />
           ) : (
             <Box
               className="chair-icon"
@@ -166,7 +166,7 @@ const SeatsAllocation = () => {
                       seatNumber={`${chair.room.name}-${chair.table_name}${chair.id}`} // Use table_name for prefixing
                       userName={seat.name}
                       planName={seat.plan.name}
-                      status={chair.booked ? "Booked" : "Available"}
+                      status={"Booked"}
                       location={seat.branch.location}
                       floor={seat.floor.name}
                       profile_image={seat.user.profile_image}

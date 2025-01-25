@@ -186,6 +186,22 @@ body {
 /* font-family: 'Font Awesome 5 Free'; */
 /* font-weight: 900;  */
 
+/*  */
+.selected-booking-chair{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 0;
+}
+.selected-booking-chair li {
+  list-style: none;
+  border-radius: 8px;
+  background-color: #FFCC16;
+  padding: 4px;
+  color: white;
+  font-weight: 500;
+}
+
 /* Status */
 .status {
   padding: 3px 10px;
@@ -209,11 +225,13 @@ body {
   background-color: #fcdcd9;
   color: #f44336;
 }
-#select-status+input+svg+fieldset legend{
+
+#select-status+input+svg+fieldset legend {
   line-height: 8px;
   max-width: 100% !important;
 }
-#select-status+input+svg+fieldset span{
+
+#select-status+input+svg+fieldset span {
   opacity: 1 !important;
   font-weight: 700;
 }
@@ -228,6 +246,13 @@ body {
   -webkit-animation: spin 1s linear infinite;
   /* Safari */
   animation: spin 1s linear infinite;
+}
+
+.loader-backdrop.issmall .custom-loader {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #FFCC16;
 }
 
 .loader-backdrop.isselected {
