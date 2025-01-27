@@ -71,7 +71,7 @@ class RoomsTableSeeder extends Seeder
                         "id" => "D",
                         "name" => "Table D",
                         "chairs" => [
-                            ["id" => 1, "positionx" => 77.5, "positiony" => 3, "rotation" => 0, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 0, "duration" => 24],
+                            ["id" => 1, "positionx" => 77.5, "positiony" => 3, "rotation" => 0, "color" => 'gray', "booking_startdate" => Carbon::now(), "booking_enddate" => "", "booked" => 0, "duration" => ''],
                             ["id" => 2, "positionx" => 81.2, "positiony" => 8.5, "rotation" => 90, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                             ["id" => 3, "positionx" => 81.2, "positiony" => 14, "rotation" => 90, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],
                             ["id" => 4, "positionx" => 81.2, "positiony" => 19.5, "rotation" => 90, "color" => 'gray', "booking_startdate" => "", "booking_enddate" => "", "booked" => 0, "duration" => null],

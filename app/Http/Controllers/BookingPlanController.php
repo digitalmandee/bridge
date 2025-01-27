@@ -174,22 +174,23 @@ class BookingPlanController extends Controller
                     // Update chair details based on the booking status
                     if ($booking->status === 'accepted') {
                         $chair->update([
-                            'booking_startdate' => $booking->start_date,
-                            'booking_enddate' => $booking->end_date,
+                            'booking_startdate' => $booking->start_date . ' ' . $booking->start_time,
+                            'booking_enddate' => $booking->end_date . ' ' . $booking->end_time,
                             'booked' => true,
                             'duration' => $booking->duration,
                             'color' => $color, // Set the color based on duration
                         ]);
-                    } else {
-                        // Clear booking details if status is pending or rejected
-                        $chair->update([
-                            'booking_startdate' => null,
-                            'booking_enddate' => null,
-                            'booked' => false,
-                            'duration' => null,
-                            'color' => 'gray', // Reset color when not booked
-                        ]);
                     }
+                    // else {
+                    //     // Clear booking details if status is pending or rejected
+                    //     $chair->update([
+                    //         'booking_startdate' => null,
+                    //         'booking_enddate' => null,
+                    //         'booked' => false,
+                    //         'duration' => null,
+                    //         'color' => 'gray', // Reset color when not booked
+                    //     ]);
+                    // }
                     // // Update the chair data within the grouped array (C, D, etc.)
                     // $chairData['booking_startdate'] = $request->status === 'accepted' ? $request->start_date : null;
                     // $chairData['booking_enddate'] = $request->status === 'accepted' ? $request->end_date : null;
@@ -231,7 +232,7 @@ class BookingPlanController extends Controller
 
             if (!$branchId) return response()->json(['message' => 'Branch ID parameter is required'], 400);
 
-            $bookingPlans = BookingPlan::where('branch_id', $branchId)->get();
+            $bookingPlans = BookingPlan::where('branch_id', $branchId)->with('branch')->get();
 
             return response()->json([
                 'success' => true,
@@ -280,14 +281,15 @@ class BookingPlanController extends Controller
             'name' => 'required|string',
             'type' => 'required|string',
             'price' => 'required|numeric',
-            'location' => 'required|string',
         ]);
 
         try {
             $bookingPlan = BookingPlan::findOrFail($id);
             $bookingPlan->update($validated);
 
-            return response()->json(['success' => true, 'message' => 'Booking Plan updated successfully'], 200);
+            $bookingPlan->load('branch');
+
+            return response()->json(['success' => true, 'message' => 'Booking Plan updated successfully', 'data' => $bookingPlan], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }

@@ -10,4 +10,9 @@ class BookingPlan extends Model
     use HasFactory;
 
     protected $fillable = ['branch_id', 'name', 'type', 'price'];
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 }

@@ -31,6 +31,7 @@ Route::get('seat-allocations', [FloorPlanController::class, 'getSeatAllocations'
 Route::get('bookings', [BookingPlanController::class, 'getBookings']);
 Route::post('booking/create', [BookingPlanController::class, 'createBooking']);
 Route::post('bookings/update', [BookingPlanController::class, 'updateBooking']);
+
 // Booking Plans
 Route::resource('booking-plans', BookingPlanController::class)->except(['create', 'show', 'edit']);
 
