@@ -43,7 +43,7 @@ const chartData = {
     datasets: [{
         label: 'Total Sale',
         data: [35000, 28000, 32000, 30000, 35000, 28000, 38000, 25000],
-        backgroundColor: '#FFB800',
+        backgroundColor: '#0D2B4E',
         barThickness: 20,
         borderRadius: 4
     }]
@@ -90,7 +90,7 @@ const floorPlanData = {
     labels: ['Available', 'Occupied'],
     datasets: [{
         data: [32, 14],
-        backgroundColor: ['#4285F4', '#34A853'],
+        backgroundColor: ['#0D2B4E', '#34A853'],
         borderWidth: 0
     }]
 };
@@ -136,7 +136,7 @@ const AdminDashboard = () => {
                                         <Button
                                             variant="contained"
                                             sx={{
-                                                bgcolor: '#FFB800',
+                                                bgcolor: '#0D2B4E',
                                                 '&:hover': { bgcolor: '#F0AD00' }
                                             }}
                                         >
@@ -147,10 +147,10 @@ const AdminDashboard = () => {
                                 <Grid container>
                                     <Grid container spacing={2} >
                                         {[
-                                            { title: 'Total Members', value: '350', icon: PeopleIcon, color: '#FFB800' },
-                                            { title: 'Available Space', value: '43', icon: SpaceBarIcon, color: '#FFB800' },
-                                            { title: 'Total Revenue', value: '35,0000', icon: AttachMoneyIcon, color: '#FFB800' },
-                                            { title: 'P&L', value: '329', icon: BarChartIcon, color: '#FFB800' },
+                                            { title: 'Total Members', value: '350', icon: PeopleIcon, color: '#0D2B4E' },
+                                            { title: 'Available Space', value: '43', icon: SpaceBarIcon, color: '#0D2B4E' },
+                                            { title: 'Total Revenue', value: '35,0000', icon: AttachMoneyIcon, color: '#0D2B4E' },
+                                            { title: 'P&L', value: '329', icon: BarChartIcon, color: '#0D2B4E' },
                                         ].map((item, index) => (
                                             <Grid item xs={12} sm={6} md={3} key={index}>
                                                 <Card sx={{

@@ -95,7 +95,7 @@ const Payment = () => {
                         htmlFor="receipt-upload"
                         style={{
                             display: "inline-block",
-                            backgroundColor: "#f0c040",
+                            backgroundColor: "#0D2B4E",
                             color: "white",
                             padding: "10px 20px",
                             borderRadius: "5px",
@@ -119,7 +119,7 @@ const Payment = () => {
                     style={{
                         display: "block",
                         margin: "0 auto",
-                        backgroundColor: "#f0c040",
+                        backgroundColor: "#0D2B4E",
                         color: "white",
                         padding: "10px 20px",
                         border: "none",

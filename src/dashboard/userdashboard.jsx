@@ -101,7 +101,7 @@ const UserDashboard = () => {
                                         size="small"
                                         sx={{
                                             minWidth: 120,
-                                            bgcolor: '#FFB800',
+                                            bgcolor: '#0D2B4E',
                                             color: 'white',
                                             '.MuiOutlinedInput-notchedOutline': { border: 'none' },
                                             '&:hover .MuiOutlinedInput-notchedOutline': { border: 'none' },
@@ -116,10 +116,10 @@ const UserDashboard = () => {
                             {/* Metric Cards */}
                             <Grid container spacing={3} sx={{ mb: 3 }}>
                                 {[
-                                    { title: 'Available Booking', value: '60', icon: DirectionsCarIcon, color: '#FFB800' },
-                                    { title: 'Remaing Booking', value: '45', icon: GroupsIcon, color: '#FFB800' },
-                                    { title: 'Total Amount', value: '120,000', icon: AccountBalanceWalletIcon, color: '#FFB800' },
-                                    { title: 'Over Due Amount', value: '60,000', icon: PaymentsIcon, color: '#FFB800' },
+                                    { title: 'Available Booking', value: '60', icon: DirectionsCarIcon, color: '#0D2B4E' },
+                                    { title: 'Remaing Booking', value: '45', icon: GroupsIcon, color: '#0D2B4E' },
+                                    { title: 'Total Amount', value: '120,000', icon: AccountBalanceWalletIcon, color: '#0D2B4E' },
+                                    { title: 'Over Due Amount', value: '60,000', icon: PaymentsIcon, color: '#0D2B4E' },
                                 ].map((item, index) => (
                                     <Grid item xs={12} sm={6} md={3} key={index}>
                                         <Card sx={{
@@ -162,7 +162,7 @@ const UserDashboard = () => {
                                         borderColor: 'divider',
                                     }}>
                                         <Table>
-                                            <TableHead sx={{ bgcolor: '#FFB800' }}>
+                                            <TableHead sx={{ bgcolor: '#0D2B4E' }}>
                                                 <TableRow>
                                                     <TableCell sx={{ color: 'white' }}>Booking ID</TableCell>
                                                     <TableCell sx={{ color: 'white' }}>Floor</TableCell>

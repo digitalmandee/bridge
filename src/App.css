@@ -77,7 +77,8 @@ body {
 }
 
 .create-booking-btn:hover {
-    background-color: #FFCC16;
+    background-color: #0D2B4E;
+    color: white;
     /* Slightly darker yellow on hover */
 }
 

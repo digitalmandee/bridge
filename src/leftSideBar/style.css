@@ -61,11 +61,12 @@
 }
 
 .sidebar ul li button:hover {
-    background-color: #FFCC16;
+    background-color: #0D2B4E;
+    color: white;
 }
 
 .sidebar ul li button.active-button {
-    background-color: #FFCC16;
+    background-color: #0D2B4E;
     color: #fff;
     /* Optional: Change text color */
 }
@@ -113,5 +114,5 @@
 }
 
 .submenu li a:hover {
-    color: #FFCC16;
+    color: #0D2B4E;
 }

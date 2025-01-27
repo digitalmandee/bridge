@@ -133,7 +133,7 @@ const BookingCalender = () => {
                                 <h1 className="mb-0">Booking Calendar</h1>
                             </div>
                             <div className="col-auto">
-                                <Button variant="contained" sx={{ backgroundColor: "#ffc107", color: "black" }}>
+                                <Button variant="contained" sx={{ backgroundColor: "#0D2B4E", color: "white" }}>
                                     Room/Event Booking
                                 </Button>
                             </div>
@@ -143,7 +143,9 @@ const BookingCalender = () => {
                             <div className="col">
                                 <div className="d-flex gap-3">
                                     <div className="badge bg-secondary">Reserved {reservedPercentage}%</div>
-                                    <div className="badge bg-warning text-dark">Available {availablePercentage}%</div>
+                                    <div className="badge bg-warning text-white">
+                                        Available {availablePercentage}%
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -218,7 +220,7 @@ const BookingCalender = () => {
                                         <div className="d-flex justify-content-between align-items-center mb-4">
                                             <Typography variant="h5">{selectedDate.toLocaleDateString()}</Typography>
                                             <div className="btn-group gap-2">
-                                                <Button variant="contained" sx={{ backgroundColor: "#ffc107", color: "black" }}>
+                                                <Button variant="contained" sx={{ backgroundColor: "#0D2B4E", color: "white" }}>
                                                     Day
                                                 </Button>
                                                 <Button variant="outlined">Week</Button>
@@ -331,7 +333,7 @@ const BookingCalender = () => {
                                     >
                                         Cancel
                                     </Button>
-                                    <Button variant="contained" sx={{ backgroundColor: "#ffc107", color: "black" }} onClick={handleSaveEvent}>
+                                    <Button variant="contained" sx={{ backgroundColor: "#0D2B4E", color: "white" }} onClick={handleSaveEvent}>
                                         Save Event
                                     </Button>
                                 </div>
@@ -388,6 +390,10 @@ const BookingCalender = () => {
           grid-template-columns: repeat(7, 1fr);
           gap: 4px;
         }
+        .badge.bg-warning.text-white {
+    background-color: #0D2B4E !important;
+    color: white; !important /* Adjust text color */
+}
         .calendar-header {
           text-align: center;
           padding: 8px;
@@ -403,8 +409,8 @@ const BookingCalender = () => {
           background-color: #f0f0f0;
         }
         .calendar-day.selected {
-          background-color: #ffc107;
-          color: black;
+          background-color: #0D2B4E;
+          color: white;
         }
         .time-slots {
           display: flex;
@@ -423,7 +429,8 @@ const BookingCalender = () => {
           background-color: #f0f0f0;
         }
         .time-slot.booked {
-    background-color: #ffc107; /* Highlight booked slots */
+    background-color: #0D2B4E; /* Highlight booked slots */
+    color:white;
     cursor: pointer; /* Indicate clickability */
 }
         .time {
@@ -434,10 +441,10 @@ const BookingCalender = () => {
           flex-grow: 1;
         }
         .event-card {
-          background-color: #ffc107;
+          background-color: #0D2B4E;
           padding: 8px;
           border-radius: 4px;
-          color: black;
+          color: white;
         }
 
 .time-slot:not(.booked) {

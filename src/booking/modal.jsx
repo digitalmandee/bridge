@@ -57,7 +57,7 @@ const Modal = ({ handleClose }) => {
                     <button
                         onClick={handleContinue} // Close modal on click
                         style={{
-                            backgroundColor: "#f0c040",
+                            backgroundColor: "#0D2B4E",
                             color: "white",
                             padding: "10px 20px",
                             border: "none",

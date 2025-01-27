@@ -106,7 +106,7 @@ const BookingDetail = ({handlePrevious, handleNext}) => {
                         style={{
                             padding: "10px 20px",
                             borderRadius: "5px",
-                            backgroundColor: "#f5b500",
+                            backgroundColor: "#0D2B4E",
                             color: "#fff",
                             border: "none",
                             fontSize: "16px",

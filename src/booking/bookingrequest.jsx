@@ -110,10 +110,11 @@ const BookingRequest = () => {
                                 variant="contained"
                                 sx={{
                                     borderRadius: "20px",
-                                    backgroundColor: "#FFD700",
+                                    backgroundColor: "transparent",
                                     color: "#000",
                                     '&:hover': {
-                                        backgroundColor: "#FFC107",
+                                        backgroundColor: "#0D2B4E",
+                                        color:'white'
                                     },
                                 }}
                             >

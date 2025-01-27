@@ -60,7 +60,7 @@ const SeatCard = ({ seatNumber, branchName, occupancy, status, location, floor }
             <Box
               className="chair-icon"
               sx={{
-                backgroundColor: "#fbc02d",
+                backgroundColor: "#0D2B4E",
                 padding: "15px",
                 borderRadius: "10px",
                 display: "inline-block",
@@ -69,7 +69,7 @@ const SeatCard = ({ seatNumber, branchName, occupancy, status, location, floor }
               <ChairIcon
                 sx={{
                   fontSize: 50,
-                  color: "black",
+                  color: "white",
                 }}
               />
             </Box>

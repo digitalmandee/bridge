@@ -79,7 +79,7 @@ const Home = () => {
 
               <button
                 style={{
-                  backgroundColor: '#ffcc00',
+                  backgroundColor: '#0D2B4E',
                   color: 'white',
                   border: 'none',
                   borderRadius: '5px',
@@ -97,7 +97,7 @@ const Home = () => {
               {/* View Booking Request Button */}
               <button
                 style={{
-                  backgroundColor: '#ffcc00',
+                  backgroundColor: '#0D2B4E',
                   color: 'white',
                   border: 'none',
                   borderRadius: '5px',
@@ -113,7 +113,7 @@ const Home = () => {
               </button>
               <button
                 style={{
-                  backgroundColor: '#ffcc00',
+                  backgroundColor: '#0D2B4E',
                   color: 'white',
                   border: 'none',
                   borderRadius: '5px',

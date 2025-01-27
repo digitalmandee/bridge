@@ -12,7 +12,7 @@
 }
 
 .login-card {
-    background-color: #FFCC16;
+    background-color: #F7F7F7;
     margin-top: 1rem;
     border-radius: 2.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -76,11 +76,13 @@
 }
 
 .login-form label {
+    background-color: #F7F7F7;
     align-self: flex-start;
     margin: 0 2rem;
 }
 
 input {
+    background-color: #F7F7F7;
     margin: 0 1rem;
     padding: 0.5rem 1rem;
     border: 1px solid #ccc;
@@ -107,7 +109,7 @@ input {
 
 .login-button {
     margin: 0 1rem;
-    background-color: black;
+    background-color: #0D2B4E;
     color: white;
     padding: 0.75rem;
     border: none;
