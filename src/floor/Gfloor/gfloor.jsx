@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "./floor.css";
 import { Chair } from "@mui/icons-material";
 
-const FloorPlan = () => {
+const GFloorPlan = () => {
   console.log("Rendering Ground Floor");
   const floorRef = useRef(null); // Reference for the floor container
 
@@ -195,4 +195,4 @@ const FloorPlan = () => {
   );
 };
 
-export default FloorPlan;
+export default GFloorPlan;

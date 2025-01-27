@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "./style.css";
 import { Chair } from "@mui/icons-material";
 
-const FirstfPlan = () => {
+const FFloorPlan = () => {
   console.log("Rendering First Floor");
   const floorRef = useRef(null);
   
@@ -199,4 +199,4 @@ const FirstfPlan = () => {
   )
 }
 
-export default FirstfPlan
+export default FFloorPlan

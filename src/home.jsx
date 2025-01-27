@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import TopNavbar from './topNavbar';
 import Sidebar from './leftSideBar';
-import FloorPlan from './floor/Gfloor/floor';
-import FirstfPlan from './floor/Ffloor/firstfloor'
+import Aseat from './assets/A-seat.png';
+import Oseat from './assets/O-seat.png';
+import datab from './assets/datab.png';
 import { IoIosArrowDropright } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
-import Booking from './booking';
+import Booking from './booking/index';
+import GFloorPlan from './floor/Gfloor/gfloor';
+import FFloorPlan from './floor/Ffloor/ffloor'
 import { height } from '@mui/system';
-import Aseat from './assets/A-seat.png'
-import Oseat from './assets/O-seat.png'
-import datab from './assets/datab.png'
+
 
 const Home = () => {
+
   const navigate = useNavigate();
 
   const handleNextClick = () => {
@@ -39,13 +41,33 @@ const Home = () => {
           <Sidebar />
         </div>
         <div className='content'>
-          <div className='right-content'>
+          <div style={{
+            padding: '10px',
+            display: 'flex',
+            width: '100%',
+            /* flex-direction: column; */
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backgroundColor: 'transparent',
+          }}>
             <h3 className="title">Floor Plan</h3>
             <button className="btn create-booking-btn" onClick={handleNextClick}>Next
               <span className='icon'><IoIosArrowDropright /></span>
             </button>
           </div>
-          <div className="dashboard-section">
+          <div style={{
+            backgroundColor: 'transparent',
+            padding: '10px',
+            width: '70%',
+            /* margin-left: 1rem; */
+            marginBottom: '0.5rem',
+            /* margin: 2 auto; */
+            display: 'flex',
+            flexDirection: 'column',
+            /* align-items: center; */
+            /* justify-content: center; */
+            /* text-align: center; */
+          }}>
             <div style={{
               display: 'flex',
               justifyContent: 'flex-start',
@@ -281,13 +303,16 @@ const Home = () => {
                     </div>
                   </div>
                 )}
+
               </div>
+
             </div>
+
           </div>
           {selectedFloor === "G Floor" ? (
-            <FloorPlan />
+            <GFloorPlan />
           ) : (
-            <FirstfPlan />
+            <FFloorPlan />
           )}
         </div>
       </div>
