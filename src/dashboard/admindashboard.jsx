@@ -1,6 +1,7 @@
 import React from 'react'
 import TopNavbar from '../topNavbar'
 import Sidebar from '../leftSideBar'
+import colors from '../styles/color'
 import {
     Box,
     Card,
@@ -43,7 +44,7 @@ const chartData = {
     datasets: [{
         label: 'Total Sale',
         data: [35000, 28000, 32000, 30000, 35000, 28000, 38000, 25000],
-        backgroundColor: '#0D2B4E',
+        backgroundColor: colors.primary,
         barThickness: 20,
         borderRadius: 4
     }]
@@ -136,8 +137,8 @@ const AdminDashboard = () => {
                                         <Button
                                             variant="contained"
                                             sx={{
-                                                bgcolor: '#0D2B4E',
-                                                '&:hover': { bgcolor: '#F0AD00' }
+                                                bgcolor: colors.primary,
+                                                '&:hover': { bgcolor: colors.primary }
                                             }}
                                         >
                                             Add New Branch
@@ -147,10 +148,10 @@ const AdminDashboard = () => {
                                 <Grid container>
                                     <Grid container spacing={2} >
                                         {[
-                                            { title: 'Total Members', value: '350', icon: PeopleIcon, color: '#0D2B4E' },
-                                            { title: 'Available Space', value: '43', icon: SpaceBarIcon, color: '#0D2B4E' },
-                                            { title: 'Total Revenue', value: '35,0000', icon: AttachMoneyIcon, color: '#0D2B4E' },
-                                            { title: 'P&L', value: '329', icon: BarChartIcon, color: '#0D2B4E' },
+                                            { title: 'Total Members', value: '350', icon: PeopleIcon, color: colors.primary },
+                                            { title: 'Available Space', value: '43', icon: SpaceBarIcon, color: colors.primary },
+                                            { title: 'Total Revenue', value: '35,0000', icon: AttachMoneyIcon, color: colors.primary },
+                                            { title: 'P&L', value: '329', icon: BarChartIcon, color: colors.primary },
                                         ].map((item, index) => (
                                             <Grid item xs={12} sm={6} md={3} key={index}>
                                                 <Card sx={{

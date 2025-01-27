@@ -5,7 +5,7 @@ import { TextField, Select, MenuItem, Modal, Box, Typography, Button, FormContro
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers"
 import "bootstrap/dist/css/bootstrap.min.css"
-
+import colors from '../styles/color'
 const BookingCalender = () => {
 
     const [selectedDate, setSelectedDate] = useState(new Date())
@@ -133,7 +133,7 @@ const BookingCalender = () => {
                                 <h1 className="mb-0">Booking Calendar</h1>
                             </div>
                             <div className="col-auto">
-                                <Button variant="contained" sx={{ backgroundColor: "#0D2B4E", color: "white" }}>
+                                <Button variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }}>
                                     Room/Event Booking
                                 </Button>
                             </div>
@@ -220,7 +220,7 @@ const BookingCalender = () => {
                                         <div className="d-flex justify-content-between align-items-center mb-4">
                                             <Typography variant="h5">{selectedDate.toLocaleDateString()}</Typography>
                                             <div className="btn-group gap-2">
-                                                <Button variant="contained" sx={{ backgroundColor: "#0D2B4E", color: "white" }}>
+                                                <Button variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }}>
                                                     Day
                                                 </Button>
                                                 <Button variant="outlined">Week</Button>
@@ -333,7 +333,7 @@ const BookingCalender = () => {
                                     >
                                         Cancel
                                     </Button>
-                                    <Button variant="contained" sx={{ backgroundColor: "#0D2B4E", color: "white" }} onClick={handleSaveEvent}>
+                                    <Button variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }} onClick={handleSaveEvent}>
                                         Save Event
                                     </Button>
                                 </div>
@@ -391,7 +391,7 @@ const BookingCalender = () => {
           gap: 4px;
         }
         .badge.bg-warning.text-white {
-    background-color: #0D2B4E !important;
+    background-color: ${colors.primary} !important;
     color: white; !important /* Adjust text color */
 }
         .calendar-header {
@@ -409,7 +409,7 @@ const BookingCalender = () => {
           background-color: #f0f0f0;
         }
         .calendar-day.selected {
-          background-color: #0D2B4E;
+          background-color: ${colors.primary};
           color: white;
         }
         .time-slots {
@@ -429,7 +429,7 @@ const BookingCalender = () => {
           background-color: #f0f0f0;
         }
         .time-slot.booked {
-    background-color: #0D2B4E; /* Highlight booked slots */
+    background-color: ${colors.primary} /* Highlight booked slots */
     color:white;
     cursor: pointer; /* Indicate clickability */
 }
@@ -441,7 +441,7 @@ const BookingCalender = () => {
           flex-grow: 1;
         }
         .event-card {
-          background-color: #0D2B4E;
+          background-color: ${colors.primary};
           padding: 8px;
           border-radius: 4px;
           color: white;

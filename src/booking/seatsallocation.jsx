@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ChairIcon from "@mui/icons-material/Chair";
 import MoreVertIcon from "@mui/icons-material/MoreVert"; // Three-dot icon
 import { Menu, MenuItem, IconButton, Box } from "@mui/material";
-
+import colors from '../styles/color'
 const SeatCard = ({ seatNumber, branchName, occupancy, status, location, floor }) => {
     const [anchorEl, setAnchorEl] = useState(null);
   
@@ -60,7 +60,7 @@ const SeatCard = ({ seatNumber, branchName, occupancy, status, location, floor }
             <Box
               className="chair-icon"
               sx={{
-                backgroundColor: "#0D2B4E",
+                backgroundColor: colors.primary,
                 padding: "15px",
                 borderRadius: "10px",
                 display: "inline-block",

@@ -1,3 +1,5 @@
+@import "../../styles/variable.css";
+
 .login-container {
     display: flex;
     flex-direction: column;
@@ -109,7 +111,7 @@ input {
 
 .login-button {
     margin: 0 1rem;
-    background-color: #0D2B4E;
+    background-color:var(--primary);
     color: white;
     padding: 0.75rem;
     border: none;
@@ -118,6 +120,6 @@ input {
     cursor: pointer;
 }
 
-.login-button:hover {
+/* .login-button:hover {
     background-color: #333;
-}
+} */

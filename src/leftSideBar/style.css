@@ -1,3 +1,5 @@
+@import "../styles/variable.css";
+
 .sidebar {
     width: 18%;
     height: 100vh;
@@ -61,12 +63,12 @@
 }
 
 .sidebar ul li button:hover {
-    background-color: #0D2B4E;
+    background-color: var(--primary);
     color: white;
 }
 
 .sidebar ul li button.active-button {
-    background-color: #0D2B4E;
+    background-color: var(--primary);
     color: #fff;
     /* Optional: Change text color */
 }
@@ -114,5 +116,5 @@
 }
 
 .submenu li a:hover {
-    color: #0D2B4E;
+    color: var(--primary);
 }

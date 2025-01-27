@@ -19,6 +19,7 @@ import {
 import { MoreVert } from "@mui/icons-material";
 import TopNavbar from '../topNavbar/index';
 import Sidebar from '../leftSideBar';
+import colors from '../styles/color'
 
 const BookingRequest = () => {
 
@@ -113,7 +114,7 @@ const BookingRequest = () => {
                                     backgroundColor: "transparent",
                                     color: "#000",
                                     '&:hover': {
-                                        backgroundColor: "#0D2B4E",
+                                        backgroundColor: colors.primary,
                                         color:'white'
                                     },
                                 }}

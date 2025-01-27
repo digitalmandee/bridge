@@ -1,5 +1,5 @@
 import React from 'react'
-
+import colors from '../../styles/color'
 const BookingDetail = ({handlePrevious, handleNext}) => {
     return (
         <>
@@ -106,7 +106,7 @@ const BookingDetail = ({handlePrevious, handleNext}) => {
                         style={{
                             padding: "10px 20px",
                             borderRadius: "5px",
-                            backgroundColor: "#0D2B4E",
+                            backgroundColor: colors.primary,
                             color: "#fff",
                             border: "none",
                             fontSize: "16px",

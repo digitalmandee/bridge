@@ -10,6 +10,7 @@ import Booking from './booking/index';
 import GFloorPlan from './floor/Gfloor/gfloor';
 import FFloorPlan from './floor/Ffloor/ffloor'
 import { height } from '@mui/system';
+import colors from './styles/color'
 
 
 const Home = () => {
@@ -79,7 +80,7 @@ const Home = () => {
 
               <button
                 style={{
-                  backgroundColor: '#0D2B4E',
+                  backgroundColor: colors.primary,
                   color: 'white',
                   border: 'none',
                   borderRadius: '5px',
@@ -97,7 +98,7 @@ const Home = () => {
               {/* View Booking Request Button */}
               <button
                 style={{
-                  backgroundColor: '#0D2B4E',
+                  backgroundColor: colors.primary,
                   color: 'white',
                   border: 'none',
                   borderRadius: '5px',
@@ -113,7 +114,7 @@ const Home = () => {
               </button>
               <button
                 style={{
-                  backgroundColor: '#0D2B4E',
+                  backgroundColor: colors.primary,
                   color: 'white',
                   border: 'none',
                   borderRadius: '5px',

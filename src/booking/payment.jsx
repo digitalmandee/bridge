@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import cash from '../assets/cash.png'
 import payment from '../assets/payment.png'
 import Modal from './modal'
-
+import colors from '../styles/color'
 const Payment = () => {
     const [showModal, setShowModal] = useState(false);
     const handleConfirm = () => {
@@ -95,7 +95,7 @@ const Payment = () => {
                         htmlFor="receipt-upload"
                         style={{
                             display: "inline-block",
-                            backgroundColor: "#0D2B4E",
+                            backgroundColor: colors.primary,
                             color: "white",
                             padding: "10px 20px",
                             borderRadius: "5px",
@@ -119,7 +119,7 @@ const Payment = () => {
                     style={{
                         display: "block",
                         margin: "0 auto",
-                        backgroundColor: "#0D2B4E",
+                        backgroundColor: colors.primary,
                         color: "white",
                         padding: "10px 20px",
                         border: "none",

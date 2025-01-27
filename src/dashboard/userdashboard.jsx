@@ -1,6 +1,7 @@
 import React from 'react'
 import TopNavbar from '../topNavbar'
 import Sidebar from '../leftSideBar'
+import colors from '../styles/color'
 import {
     Box,
     Card,
@@ -29,6 +30,7 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import GroupsIcon from '@mui/icons-material/Groups';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import PaymentsIcon from '@mui/icons-material/Payments';
+import { color } from '@mui/system';
 
 ChartJS.register(
     ArcElement,
@@ -101,7 +103,7 @@ const UserDashboard = () => {
                                         size="small"
                                         sx={{
                                             minWidth: 120,
-                                            bgcolor: '#0D2B4E',
+                                            bgcolor: colors.primary,
                                             color: 'white',
                                             '.MuiOutlinedInput-notchedOutline': { border: 'none' },
                                             '&:hover .MuiOutlinedInput-notchedOutline': { border: 'none' },
@@ -116,10 +118,10 @@ const UserDashboard = () => {
                             {/* Metric Cards */}
                             <Grid container spacing={3} sx={{ mb: 3 }}>
                                 {[
-                                    { title: 'Available Booking', value: '60', icon: DirectionsCarIcon, color: '#0D2B4E' },
-                                    { title: 'Remaing Booking', value: '45', icon: GroupsIcon, color: '#0D2B4E' },
-                                    { title: 'Total Amount', value: '120,000', icon: AccountBalanceWalletIcon, color: '#0D2B4E' },
-                                    { title: 'Over Due Amount', value: '60,000', icon: PaymentsIcon, color: '#0D2B4E' },
+                                    { title: 'Available Booking', value: '60', icon: DirectionsCarIcon, color: colors.primary },
+                                    { title: 'Remaing Booking', value: '45', icon: GroupsIcon, color: colors.primary },
+                                    { title: 'Total Amount', value: '120,000', icon: AccountBalanceWalletIcon, color: colors.primary },
+                                    { title: 'Over Due Amount', value: '60,000', icon: PaymentsIcon, color: colors.primary },
                                 ].map((item, index) => (
                                     <Grid item xs={12} sm={6} md={3} key={index}>
                                         <Card sx={{
@@ -162,7 +164,7 @@ const UserDashboard = () => {
                                         borderColor: 'divider',
                                     }}>
                                         <Table>
-                                            <TableHead sx={{ bgcolor: '#0D2B4E' }}>
+                                            <TableHead sx={{ bgcolor: colors.primary }}>
                                                 <TableRow>
                                                     <TableCell sx={{ color: 'white' }}>Booking ID</TableCell>
                                                     <TableCell sx={{ color: 'white' }}>Floor</TableCell>

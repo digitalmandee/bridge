@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from "react-router-dom";
-
+import colors from '../styles/color'
 const Modal = ({ handleClose }) => {
     const navigate = useNavigate();
     const handleContinue = () => {
@@ -57,7 +57,7 @@ const Modal = ({ handleClose }) => {
                     <button
                         onClick={handleContinue} // Close modal on click
                         style={{
-                            backgroundColor: "#0D2B4E",
+                            backgroundColor: colors.primary,
                             color: "white",
                             padding: "10px 20px",
                             border: "none",
