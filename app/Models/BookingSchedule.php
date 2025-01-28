@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class BookingSchedule extends Model
 {
     use HasFactory;
+    protected $dates = ['startTime', 'endTime', 'date'];
 
     protected $fillable = [
         'branch_id',
@@ -16,8 +17,10 @@ class BookingSchedule extends Model
         'created_by_branch',
         'created_by_user',
         'title',
-        'start',
-        'end',
+        'description',
+        'startTime',
+        'endTime',
+        'date',
         'persons',
         'price',
     ];

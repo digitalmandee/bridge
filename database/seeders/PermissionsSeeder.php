@@ -40,13 +40,18 @@ class PermissionsSeeder extends Seeder
         }
 
         $superAdminRole = Role::firstOrCreate(['name' => 'super_admin']);
+        $userRole = Role::firstOrCreate(['name' => 'user']);
 
         $superAdminRole->syncPermissions($permissions);
+        $userRole->syncPermissions(['dashboard', 'booking-management', 'roles', 'permissions', 'manage-members']);
 
         $user = User::find(1);
+        $user2 = User::find(2);
         if ($user) {
-            $user->role_id = 1;
-            // $user->assignRole('super_admin');
+            // $user->role_id = 1;
+            // $user2->role_id = 2;
+            $user->assignRole('super_admin');
+            $user2->assignRole('user');
         }
     }
 }

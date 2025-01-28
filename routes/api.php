@@ -18,9 +18,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/login', [UserController::class, 'userlogin']);
+
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::get('/user', [UserController::class, 'getUser']);
+    Route::post('/logout', [UserController::class, 'logout']);
 });
+
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::get('floor-plan', [FloorPlanController::class, 'getFloorPlan']);
 Route::post('check-chair-availability', [FloorPlanController::class, 'checkChairAvailability']);

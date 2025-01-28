@@ -20,12 +20,12 @@ class CreateBookingSchedulesTable extends Migration
             $table->unsignedBigInteger('room_id')->nullable();
             $table->unsignedBigInteger('created_by_branch')->nullable();
             $table->unsignedBigInteger('created_by_user')->nullable();
-
             $table->string('title');
-            $table->string('purpose')->nullable();
-            $table->string('start');
-            $table->string('end');
-            $table->integer('persons');
+            $table->string('description', 400)->nullable();
+            $table->timestamp('startTime', 0)->nullable();
+            $table->timestamp('endTime', 0)->nullable();
+            $table->timestamp('date', 0)->nullable();
+            $table->integer('persons')->unsigned(); // Ensure it's unsigned for valid counts
             $table->decimal('price', 10, 2)->default(0.00);
             $table->timestamps();
 
