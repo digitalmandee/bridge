@@ -32,7 +32,7 @@ const Modal = ({ handleClose }) => {
                 >
                     <div
                         style={{
-                            backgroundColor: "#f0c040",
+                            backgroundColor: colors.primary,
                             borderRadius: "50%",
                             width: "50px",
                             height: "50px",

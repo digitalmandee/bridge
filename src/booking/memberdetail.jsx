@@ -1,5 +1,6 @@
 import React from 'react'
 import colors from '../styles/color'
+import profile from '../assets/Profile user.png'
 const MemberDetail = ({ handleNext }) => {
     return (
         <>
@@ -14,64 +15,118 @@ const MemberDetail = ({ handleNext }) => {
                     marginBottom: '1rem',
                 }}
             >
-                <h3 style={{ textAlign: "center", marginBottom: "20px" }}>🧑 Member Detail</h3>
+                <h3 style={{ textAlign: "center", marginBottom: "20px" }}>
+                    <img
+                        src={profile}
+                        alt="Member Icon"
+                        style={{ width: "25px", height: "25px", marginRight: "10px", marginBottom: '5px', verticalAlign: "middle" }}
+                    />
+                    Member Detail</h3>
 
                 {/* Name Field */}
                 <div style={{
-                    maxWidth: "400px", margin: "0 auto"
+                    maxWidth: "400px",
+                    margin:'0 auto',
+                    padding:0,
+                    textAlign:'left'
                 }}>
-                    <label style={{ display: "block", marginBottom: "5px" }}>Name</label>
-                    <input
-                        type="text"
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            marginBottom: "15px",
-                            borderRadius: "5px",
-                            border: "1px solid #ccc",
-                        }}
-                    />
+                    <div style={{ marginBottom: "15px" }}>
+                        <label
+                            style={{
+                                display: "block",
+                                marginBottom: "5px",
+                                fontWeight: "bold", // Optional: for better label visibility
+                                marginLeft:0
+                            }}
+                        >
+                            Name
+                        </label>
+                        <input
+                            type="text"
+                            style={{
+                                width: "100%",
+                                padding: "10px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                                boxSizing: "border-box", // Ensures padding doesn't mess with dimensions
+                                margin:0
+                            }}
+                        />
+                    </div>
 
                     {/* Email Field */}
-                    <label style={{ display: "block", marginBottom: "5px" }}>Email</label>
-                    <input
-                        type="email"
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            marginBottom: "15px",
-                            borderRadius: "5px",
-                            border: "1px solid #ccc",
-                        }}
-                    />
+                    <div style={{ marginBottom: "15px" }}>
+                        <label
+                            style={{
+                                display: "block",
+                                marginBottom: "5px",
+                                fontWeight: "bold",
+                            }}
+                        >
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            style={{
+                                width: "100%",
+                                padding: "10px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                                boxSizing: "border-box",
+                                margin:0
+                            }}
+                        />
+                    </div>
 
                     {/* Phone Number Field */}
-                    <label style={{ display: "block", marginBottom: "5px" }}>Phone No</label>
-                    <input
-                        type="tel"
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            marginBottom: "15px",
-                            borderRadius: "5px",
-                            border: "1px solid #ccc",
-                        }}
-                    />
+                    <div style={{ marginBottom: "15px" }}>
+                        <label
+                            style={{
+                                display: "block",
+                                marginBottom: "5px",
+                                fontWeight: "bold",
+                                
+                            }}
+                        >
+                            Phone No
+                        </label>
+                        <input
+                            type="tel"
+                            style={{
+                                width: "100%",
+                                padding: "10px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                                boxSizing: "border-box",
+                                margin:0
+                            }}
+                        />
+                    </div>
 
                     {/* Individual/Company Dropdown */}
-                    <label style={{ display: "block", marginBottom: "5px" }}>Individual/Company</label>
-                    <select
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            marginBottom: "15px",
-                            borderRadius: "5px",
-                            border: "1px solid #ccc",
-                        }}
-                    >
-                        <option value="individual">Individual</option>
-                        <option value="company">Company</option>
-                    </select>
+                    <div style={{ marginBottom: "15px" }}>
+                        <label
+                            style={{
+                                display: "block",
+                                marginBottom: "5px",
+                                fontWeight: "bold",
+                            }}
+                        >
+                            Individual/Company
+                        </label>
+                        <select
+                            style={{
+                                width: "100%",
+                                padding: "10px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                                boxSizing: "border-box",
+                            }}
+                        >
+                            <option value="individual">Individual</option>
+                            <option value="company">Company</option>
+                        </select>
+                    </div>
                     <div style={{ textAlign: "right", marginTop: "20px" }}>
                         <button
                             type="button"

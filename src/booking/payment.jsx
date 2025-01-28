@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import cash from '../assets/cash.png'
 import payment from '../assets/payment.png'
 import Modal from './modal'
@@ -90,30 +90,38 @@ const Payment = () => {
                         }}>Bank Transfer</p>
                     </div>
                 </div>
-                <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                    <label
-                        htmlFor="receipt-upload"
-                        style={{
-                            display: "inline-block",
-                            backgroundColor: colors.primary,
-                            color: "white",
-                            padding: "10px 20px",
-                            borderRadius: "5px",
-                            cursor: "pointer",
-                        }}
-                    >
-                        Upload Receipt
-                    </label>
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        border: "1px solid #ccc",
+                        borderRadius: "5px",
+                        padding: "10px",
+                        width: "100%",
+                        maxWidth: "400px",
+                        backgroundColor: "#fff",
+                        margin: '2rem'
+                    }}
+                    onClick={() => document.getElementById("receipt-upload").click()}
+                >
+                    {/* Placeholder Text */}
+                    <span style={{ flex: 1, color: "#999" }}>Upload Receipt</span>
+
+                    {/* Upload Icon (Replace with an actual icon library if needed) */}
+                    <span style={{ marginLeft: "10px", cursor: "pointer" }}>
+                        📤
+                    </span>
+
+                    {/* Hidden File Input */}
                     <input
                         type="file"
                         id="receipt-upload"
                         accept="image/*"
-                        // onChange={handleFileUpload}
-                        style={{ display: "none" }}
+                        style={{
+                            display: "none",
+                        }}
+                    // onChange={handleFileUpload}
                     />
-                    {/* <p style={{ marginTop: "10px" }}>
-                                    {receipt ? `Uploaded: ${receipt}` : "No receipt uploaded"}
-                                </p> */}
                 </div>
                 <button
                     style={{
@@ -131,8 +139,8 @@ const Payment = () => {
                 >
                     Confirm
                 </button>
-                {showModal && 
-                <Modal handleClose={handleClose}/>
+                {showModal &&
+                    <Modal handleClose={handleClose} />
                 }
             </div>
         </>

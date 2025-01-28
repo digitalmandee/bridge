@@ -1,10 +1,26 @@
 import TopNavbar from "../topNavbar"
 import Sidebar from "../leftSideBar"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { TextField, Select, MenuItem, Modal, Box, Typography, Button, FormControl, InputLabel } from "@mui/material"
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers"
+import {
+    startOfWeek,
+    endOfWeek,
+    eachDayOfInterval,
+    format,
+    addDays,
+    startOfMonth,
+    endOfMonth,
+    isSameMonth,
+    isSameDay,
+    parseISO,
+    setHours,
+    setMinutes,
+} from "date-fns"
 import "bootstrap/dist/css/bootstrap.min.css"
+import SkipPreviousSharpIcon from "@mui/icons-material/SkipPreviousSharp"
+import SkipNextSharpIcon from "@mui/icons-material/SkipNextSharp"
 import colors from '../styles/color'
 const BookingCalender = () => {
 
@@ -23,6 +39,11 @@ const BookingCalender = () => {
     const [tempBooking, setTempBooking] = useState(null)
     const [selectedEvent, setSelectedEvent] = useState(null)
     const [eventDetailsModalOpen, setEventDetailsModalOpen] = useState(false)
+    const [currentView, setCurrentView] = useState("day")
+
+    useEffect(() => {
+        // Remove any date changes when switching views
+    }, [currentView])
 
     // Generate time slots from 1 AM to 11 PM
     const timeSlots = Array.from({ length: 23 }, (_, i) => {
@@ -30,12 +51,10 @@ const BookingCalender = () => {
         return `${hour}:00`
     })
 
-    const handleTimeSlotClick = (time) => {
-        const [hours] = time.split(":")
-        const startTime = new Date(selectedDate)
-        startTime.setHours(Number.parseInt(hours), 0, 0)
-
-        const endTime = new Date(startTime)
+    const handleTimeSlotClick = (time, date) => {
+        const [hours, minutes] = time.split(":").map(Number)
+        const startTime = setMinutes(setHours(date, hours), minutes)
+        const endTime = addDays(startTime, 0)
         endTime.setHours(startTime.getHours() + 1)
 
         setSelectedTimeSlot(time)
@@ -43,6 +62,7 @@ const BookingCalender = () => {
             ...newEvent,
             startTime,
             endTime,
+            date,
         })
         setTempBooking({
             startTime,
@@ -76,48 +96,178 @@ const BookingCalender = () => {
         setEventDetailsModalOpen(true)
     }
 
-    const isTimeSlotBooked = (timeSlot) => {
-        const [hours] = timeSlot.split(":")
-        const slotTime = new Date(selectedDate)
-        slotTime.setHours(Number.parseInt(hours), 0, 0)
+    const isTimeSlotBooked = (timeSlot, date) => {
+        const [hours, minutes] = timeSlot.split(":").map(Number)
+        const slotTime = setMinutes(setHours(date, hours), minutes)
 
-        // Check against saved events
-        const isBooked = events.some((event) => {
-            return (
-                event.date.toDateString() === selectedDate.toDateString() &&
-                slotTime >= event.startTime &&
-                slotTime < event.endTime
-            )
+        return events.some((event) => {
+            return isSameDay(event.date, date) && slotTime >= event.startTime && slotTime < event.endTime
         })
-
-        // Check against temporary booking
-        const isTempBooked = tempBooking && slotTime >= tempBooking.startTime && slotTime < tempBooking.endTime
-
-        return isBooked || isTempBooked
     }
 
-    const getEventForTimeSlot = (timeSlot) => {
-        const [hours] = timeSlot.split(":")
-        const slotTime = new Date(selectedDate)
-        slotTime.setHours(Number.parseInt(hours), 0, 0)
+    const getEventForTimeSlot = (timeSlot, date) => {
+        const [hours, minutes] = timeSlot.split(":").map(Number)
+        const slotTime = setMinutes(setHours(date, hours), minutes)
 
         return events.find(
-            (event) =>
-                event.date.toDateString() === selectedDate.toDateString() &&
-                slotTime >= event.startTime &&
-                slotTime < event.endTime,
+            (event) => isSameDay(event.date, date) && slotTime >= event.startTime && slotTime < event.endTime,
         )
     }
 
     const getDaysInMonth = (date) => {
-        const year = date.getFullYear()
-        const month = date.getMonth()
-        const days = new Date(year, month + 1, 0).getDate()
-        return Array.from({ length: days }, (_, i) => i + 1)
+        const start = startOfMonth(date)
+        const end = endOfMonth(date)
+        const firstDayOfMonth = startOfWeek(start)
+        const lastDayOfMonth = endOfWeek(end)
+        return eachDayOfInterval({ start: firstDayOfMonth, end: lastDayOfMonth })
     }
 
     const reservedPercentage = Math.round((events.length / (23 * 31)) * 100)
     const availablePercentage = 100 - reservedPercentage
+
+    const renderDayView = (date) => (
+        <div className="time-slots">
+            {timeSlots.map((time) => {
+                const event = getEventForTimeSlot(time, date)
+                const isBooked = isTimeSlotBooked(time, date)
+                return (
+                    <div
+                        key={time}
+                        className={`time-slot ${isBooked ? "booked" : ""}`}
+                        onClick={() => {
+                            if (event) {
+                                handleEventClick(event)
+                            } else if (!isBooked) {
+                                handleTimeSlotClick(time, date)
+                            }
+                        }}
+                    >
+                        <div className="time">{time}</div>
+                        <div className="event">
+                            {event && (
+                                <div className="event-card">
+                                    <Typography variant="subtitle2">{event.title}</Typography>
+                                    <Typography variant="caption">
+                                        {format(event.startTime, "HH:mm")} - {format(event.endTime, "HH:mm")}
+                                    </Typography>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )
+            })}
+        </div>
+    )
+
+    const renderWeekView = (date) => {
+        const weekStart = startOfWeek(date)
+        const weekEnd = endOfWeek(date)
+        const days = eachDayOfInterval({ start: weekStart, end: weekEnd })
+
+        return (
+            <div className="week-view">
+                <div className="week-header">
+                    <div className="week-time-header"></div>
+                    {days.map((day) => (
+                        <div key={day.toISOString()} className="week-day-header">
+                            {format(day, "EEE dd/MM")}
+                        </div>
+                    ))}
+                </div>
+                <div className="week-body">
+                    {timeSlots.map((time) => (
+                        <div key={time} className="week-row">
+                            <div className="week-time">{time}</div>
+                            {days.map((day) => {
+                                const event = getEventForTimeSlot(time, day)
+                                const isBooked = isTimeSlotBooked(time, day)
+                                return (
+                                    <div
+                                        key={`${day.toISOString()}-${time}`}
+                                        className={`week-cell ${isBooked ? "booked" : ""} ${isSameDay(day, selectedDate) ? "selected" : ""
+                                            }`}
+                                        onClick={() => {
+                                            setSelectedDate(day)
+                                            if (event) {
+                                                handleEventClick(event)
+                                            } else if (!isBooked) {
+                                                handleTimeSlotClick(time, day)
+                                            }
+                                        }}
+                                    >
+                                        {event && (
+                                            <div className="event-card">
+                                                <Typography variant="subtitle2">{event.title}</Typography>
+                                            </div>
+                                        )}
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
+    const renderMonthView = (date) => {
+        const monthStart = startOfMonth(date)
+        const monthEnd = endOfMonth(date)
+        const startDate = startOfWeek(monthStart)
+        const endDate = endOfWeek(monthEnd)
+        const days = eachDayOfInterval({ start: startDate, end: endDate })
+
+        return (
+            <div className="month-view">
+                <div className="month-header">
+                    {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                        <div key={day} className="month-day-header">
+                            {day}
+                        </div>
+                    ))}
+                </div>
+                <div className="month-grid">
+                    {days.map((day) => (
+                        <div
+                            key={day.toISOString()}
+                            className={`month-cell ${!isSameMonth(day, selectedDate) ? "other-month" : ""} ${isSameDay(day, selectedDate) ? "selected" : ""
+                                }`}
+                            onClick={() => {
+                                setSelectedDate(day)
+                                handleTimeSlotClick("00:00", day)
+                            }}
+                        >
+                            <div className="month-date">{format(day, "d")}</div>
+                            <div className="month-events">
+                                {events
+                                    .filter((event) => isSameDay(new Date(event.date), day))
+                                    .slice(0, 3)
+                                    .map((event, index) => (
+                                        <div
+                                            key={index}
+                                            className="month-event"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                handleEventClick(event)
+                                            }}
+                                        >
+                                            {event.title}
+                                        </div>
+                                    ))}
+                                {events.filter((event) => isSameDay(new Date(event.date), day)).length > 3 && (
+                                    <div className="month-more">...</div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
+    const handleDateChange = (newDate) => {
+        setSelectedDate(newDate)
+    }
 
     return (
         <>
@@ -142,10 +292,14 @@ const BookingCalender = () => {
                         <div className="row mb-4">
                             <div className="col">
                                 <div className="d-flex gap-3">
-                                    <div className="badge bg-secondary">Reserved {reservedPercentage}%</div>
-                                    <div className="badge bg-warning text-white">
-                                        Available {availablePercentage}%
-                                    </div>
+                                    <div className="badge bg-secondary pd-5 10">Reserved {reservedPercentage}%</div>
+                                    <div style={{
+                                        fontSize:'14px',
+                                        color:'white',
+                                        backgroundColor:colors.primary,
+                                        padding: "5px 10px",
+                                        borderRadius: "5px"
+                                    }}>Available {availablePercentage}%</div>
                                 </div>
                             </div>
                         </div>
@@ -172,40 +326,48 @@ const BookingCalender = () => {
 
                                         <div className="mt-4">
                                             <div className="d-flex justify-content-between align-items-center mb-2">
-                                                <Typography variant="h8" className="mb-0">
-                                                    {selectedDate.toLocaleString("default", {
-                                                        month: "long",
-                                                        year: "numeric",
-                                                    })}
+                                                <Button
+                                                    onClick={() => {
+                                                        const prevMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1)
+                                                        setSelectedDate(prevMonth)
+                                                    }}
+                                                >
+                                                    <SkipPreviousSharpIcon />
+                                                </Button>
+                                                <Typography
+                                                    variant="p"
+                                                    style={{ cursor: "pointer" }}
+                                                    onClick={() => {
+                                                        const now = new Date()
+                                                        setSelectedDate(now)
+                                                    }}
+                                                >
+                                                    {format(selectedDate, "MMMM yyyy")}
                                                 </Typography>
-                                                <div className="d-flex">
-                                                    <Button
-                                                        onClick={() => setSelectedDate(new Date(selectedDate.setMonth(selectedDate.getMonth() - 1)))}
-                                                    >
-                                                        {"<"}
-                                                    </Button>
-                                                    <Button
-                                                        onClick={() => setSelectedDate(new Date(selectedDate.setMonth(selectedDate.getMonth() + 1)))}
-                                                    >
-                                                        {">"}
-                                                    </Button>
-                                                </div>
+                                                <Button
+                                                    onClick={() => {
+                                                        const nextMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1)
+                                                        setSelectedDate(nextMonth)
+                                                    }}
+                                                >
+                                                    <SkipNextSharpIcon />
+                                                </Button>
                                             </div>
                                             <div className="calendar-grid">
-                                                {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
+                                                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                                                     <div key={day} className="calendar-header">
                                                         {day}
                                                     </div>
                                                 ))}
                                                 {getDaysInMonth(selectedDate).map((day) => (
                                                     <div
-                                                        key={day}
-                                                        className={`calendar-day ${day === selectedDate.getDate() ? "selected" : ""}`}
-                                                        onClick={() =>
-                                                            setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day))
-                                                        }
+                                                        key={day.toISOString()}
+                                                        className={`calendar-day ${isSameDay(day, selectedDate) ? "selected" : ""} 
+                        ${isSameDay(day, new Date()) ? "today" : ""}
+                        ${!isSameMonth(day, selectedDate) ? "other-month" : ""}`}
+                                                        onClick={() => handleDateChange(day)}
                                                     >
-                                                        {day}
+                                                        {format(day, "d")}
                                                     </div>
                                                 ))}
                                             </div>
@@ -218,48 +380,41 @@ const BookingCalender = () => {
                                 <div className="card">
                                     <div className="card-body">
                                         <div className="d-flex justify-content-between align-items-center mb-4">
-                                            <Typography variant="h5">{selectedDate.toLocaleDateString()}</Typography>
+                                            <Typography variant="h5">
+                                                {currentView === "day"
+                                                    ? format(selectedDate, "MMMM d, yyyy")
+                                                    : currentView === "week"
+                                                        ? `Week of ${format(startOfWeek(selectedDate), "MMMM d, yyyy")}`
+                                                        : format(selectedDate, "MMMM yyyy")}
+                                            </Typography>
                                             <div className="btn-group gap-2">
-                                                <Button variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }}>
+                                                <Button
+                                                    variant={currentView === "day" ? "contained" : "outlined"}
+                                                    sx={currentView === "day" ? { backgroundColor: colors.primary, color: "white" } : { color: "#1976d2" }}
+                                                    onClick={() => setCurrentView("day")}
+                                                >
                                                     Day
                                                 </Button>
-                                                <Button variant="outlined">Week</Button>
-                                                <Button variant="outlined">Month</Button>
+                                                <Button
+                                                    variant={currentView === "week" ? "contained" : "outlined"}
+                                                    sx={currentView === "week" ? { backgroundColor: colors.primary, color: "white" } : { color: "#1976d2" }}
+                                                    onClick={() => setCurrentView("week")}
+                                                >
+                                                    Week
+                                                </Button>
+                                                <Button
+                                                    variant={currentView === "month" ? "contained" : "outlined"}
+                                                    sx={currentView === "month" ? { backgroundColor: colors.primary, color: "white" } : { color: "#1976d2" }}
+                                                    onClick={() => setCurrentView("month")}
+                                                >
+                                                    Month
+                                                </Button>
                                             </div>
                                         </div>
 
-                                        <div className="time-slots">
-                                            {timeSlots.map((time) => {
-                                                const event = getEventForTimeSlot(time)
-                                                const isBooked = isTimeSlotBooked(time)
-                                                return (
-                                                    <div
-                                                        key={time}
-                                                        className={`time-slot ${isBooked ? "booked" : ""}`}
-                                                        onClick={() => {
-                                                            if (event) {
-                                                                handleEventClick(event)
-                                                            } else if (!isBooked) {
-                                                                handleTimeSlotClick(time)
-                                                            }
-                                                        }}
-                                                    >
-                                                        <div className="time">{time}</div>
-                                                        <div className="event">
-                                                            {event && (
-                                                                <div className="event-card">
-                                                                    <Typography variant="subtitle2">{event.title}</Typography>
-                                                                    <Typography variant="caption">
-                                                                        {event.startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} -
-                                                                        {event.endTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                                                                    </Typography>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })}
-                                        </div>
+                                        {currentView === "day" && renderDayView(selectedDate)}
+                                        {currentView === "week" && renderWeekView(selectedDate)}
+                                        {currentView === "month" && renderMonthView(selectedDate)}
                                     </div>
                                 </div>
                             </div>
@@ -367,11 +522,10 @@ const BookingCalender = () => {
                                             {selectedEvent.title}
                                         </Typography>
                                         <Typography variant="body2" mb={2}>
-                                            Date: {selectedEvent.date.toLocaleDateString()}
+                                            Date: {format(new Date(selectedEvent.date), "MMMM d, yyyy")}
                                         </Typography>
                                         <Typography variant="body2" mb={2}>
-                                            Time: {selectedEvent.startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} -
-                                            {selectedEvent.endTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                                            Time: {format(selectedEvent.startTime, "HH:mm")} -{format(selectedEvent.endTime, "HH:mm")}
                                         </Typography>
                                         <Typography variant="body2" mb={2}>
                                             Description: {selectedEvent.description}
@@ -389,28 +543,52 @@ const BookingCalender = () => {
           display: grid;
           grid-template-columns: repeat(7, 1fr);
           gap: 4px;
+          padding: 8px;
+          background: white;
+          border-radius: 12px;
         }
-        .badge.bg-warning.text-white {
-    background-color: ${colors.primary} !important;
-    color: white; !important /* Adjust text color */
-}
+          .badge bg-warning text-white{
+          background-color: ${colors.primary}
+          }
         .calendar-header {
           text-align: center;
-          padding: 8px;
-          font-weight: bold;
+          padding: 4px;
+          font-weight: 500;
+          color: #666;
+          font-size: 0.85rem;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .calendar-day {
           text-align: center;
           padding: 8px;
           cursor: pointer;
-          border-radius: 4px;
+          border-radius: 50%;
+          aspect-ratio: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.9rem;
+          color: #333;
+          transition: all 0.2s ease;
+          height: 32px;
+          width: 32px;
+          margin: 2px auto;
         }
         .calendar-day:hover {
-          background-color: #f0f0f0;
+          background-color: #f0f7ff;
         }
         .calendar-day.selected {
           background-color: ${colors.primary};
           color: white;
+        }
+        .calendar-day.today {
+          border: 2px solid ${colors.primary};
+        }
+        .calendar-day.other-month {
+          color: #ccc;
         }
         .time-slots {
           display: flex;
@@ -429,10 +607,9 @@ const BookingCalender = () => {
           background-color: #f0f0f0;
         }
         .time-slot.booked {
-    background-color: ${colors.primary} /* Highlight booked slots */
-    color:white;
-    cursor: pointer; /* Indicate clickability */
-}
+          background-color: rgba(255, 193, 7, 0.1);
+          cursor: pointer;
+        }
         .time {
           width: 80px;
           font-weight: bold;
@@ -446,15 +623,138 @@ const BookingCalender = () => {
           border-radius: 4px;
           color: white;
         }
+        .week-view {
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
+        }
+        .week-header {
+          display: grid;
+          grid-template-columns: 80px repeat(7, 1fr);
+          position: sticky;
+          top: 0;
+          background: white;
+          z-index: 1;
+        }
+        .week-day-header {
+          padding: 10px;
+          text-align: center;
+          background: #f5f5f5;
+          border-bottom: 1px solid #e0e0e0;
+          font-weight: bold;
+        }
+        .week-body {
+          display: flex;
+          flex-direction: column;
+        }
+        .week-row {
+          display: grid;
+          grid-template-columns: 80px repeat(7, 1fr);
+          min-height: 60px;
+        }
+        .week-time {
+          padding: 10px;
+          background: #f5f5f5;
+          border-right: 1px solid #e0e0e0;
+          font-weight: bold;
+        }
+        .week-cell {
+          border: 1px solid #e0e0e0;
+          padding: 4px;
+          cursor: pointer;
+        }
+        .week-cell:hover:not(.booked) {
+          background: #f8f8f8;
+        }
+        .week-cell.booked {
+          background-color: rgba(255, 193, 7, 0.1);
+        }
+        .month-view {
+          display: flex;
+          flex-direction: column;
+        }
+        .month-header {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          background: #f5f5f5;
+        }
+        .month-day-header {
+          padding: 10px;
+          text-align: center;
+          font-weight: bold;
+          border-bottom: 1px solid #e0e0e0;
+        }
+        .month-grid {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          flex: 1;
+        }
+        .month-cell {
+          border: 1px solid #e0e0e0;
+          padding: 8px;
+          min-height: 120px;
+          cursor: pointer;
+        }
+        .month-cell:hover {
+          background: #f8f8f8;
+        }
+        .month-cell.other-month {
+          background: #fafafa;
+          color: #999;
+        }
+        .month-cell.selected {
+          background-color: rgba(25, 118, 210, 0.1);
+        }
+        .month-date {
+          font-weight: bold;
+          margin-bottom: 4px;
+        }
+        .month-events {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        .month-event {
+          background: ${colors.primary};
+          color: white;
+          padding: 2px 4px;
+          border-radius: 2px;
+          font-size: 0.8rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .month-more {
+          color: #666;
+          font-size: 0.8rem;
+          text-align: center;
+        }
+        .calendar-navigation {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          padding: 8px 0;
+        }
 
-.time-slot:not(.booked) {
-    cursor: pointer;
-    background-color: #f8f9fa;
-}
+        .calendar-title {
+          color: ${colors.primary};
+          font-weight: 500;
+        }
 
-.time-slot:hover {
-    background-color: #e9ecef; /* Hover effect */
-}
+        .nav-button {
+          min-width: 40px !important;
+          color: ${colors.primary} !important;
+        }
+        .week-cell.selected,
+        .month-cell.selected {
+          background-color: rgba(25, 118, 210, 0.1);
+        }
+        .card {
+          border-radius: 16px;
+          border: none;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
       `}</style>
                     </div>
                 </div>
