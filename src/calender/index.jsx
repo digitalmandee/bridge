@@ -1,470 +1,525 @@
-import React, { useState } from "react";
-import TopNavbar from "../topNavbar/index";
+import TopNavbar from "../topNavbar";
 import Sidebar from "../leftSideBar";
-import { Box, Typography, Select, MenuItem, IconButton, Button, TextField, Paper, InputAdornment, Dialog, DialogContent, DialogActions } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import React, { useEffect, useState } from "react";
+import { TextField, Select, MenuItem, Modal, Box, Typography, Button, FormControl, InputLabel, ListSubheader, Autocomplete } from "@mui/material";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
+import "bootstrap/dist/css/bootstrap.min.css";
+import colors from "../styles/color";
+import axios from "axios";
 
 const BookingCalender = () => {
-  const [capacity, setCapacity] = useState(0);
-  const [viewMode, setViewMode] = useState("Day");
-  const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
-  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [location, setLocation] = useState("");
+  const [locations, setLocations] = useState([]);
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [members, setMembers] = useState([
+    {
+      id: 1,
+      name: "John Doe",
+    },
+    {
+      id: 2,
+      name: "Jane Doe2",
+    },
+    {
+      id: 3,
+      name: "Jane Doe3",
+    },
+  ]);
+  const [room, setRoom] = useState("");
+  const [rooms, setRooms] = useState([]);
+  const [events, setEvents] = useState([
+    {
+      title: "123",
+      description: "123",
+      startTime: "2025-01-27T20:00:00.080Z",
+      endTime: "2025-01-27T21:00:00.080Z",
+      date: "2025-01-28T15:21:01.080Z",
+    },
+  ]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  const [newEvent, setNewEvent] = useState({
+    title: "",
+    description: "",
+    startTime: null,
+    endTime: null,
+  });
+  const [tempBooking, setTempBooking] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [eventDetailsModalOpen, setEventDetailsModalOpen] = useState(false);
 
-  const timeSlots = ["6:00 PM", "7:00 PM", "8:00 PM", "9:00 PM", "10:00 PM", "11:00 PM"];
+  // Generate time slots from 1 AM to 11 PM
+  const timeSlots = Array.from({ length: 23 }, (_, i) => {
+    const hour = i + 1;
+    return `${hour}:00`;
+  });
 
-  const days = [
-    { date: "Saturday 07/16", tasks: 0 },
-    { date: "Monday 07/17", tasks: 0 },
-    { date: "Saturday 07/18", tasks: 0 },
-    { date: "Saturday 07/19", tasks: 0 },
-    { date: "Saturday 07/20", tasks: 0 },
-    { date: "Saturday 07/21", tasks: 0 },
-  ];
+  const handleTimeSlotClick = (time) => {
+    const [hours] = time.split(":");
 
-  const handleCellClick = () => {
-    setBookingDialogOpen(true);
+    const startTime = new Date(selectedDate);
+    startTime.setHours(Number.parseInt(hours), 0, 0);
+    const endTime = new Date(startTime);
+    endTime.setHours(startTime.getHours() + 1);
+
+    setSelectedTimeSlot(time);
+    setNewEvent({
+      ...newEvent,
+      startTime,
+      endTime,
+    });
+    setTempBooking({
+      startTime,
+      endTime,
+    });
+    setModalOpen(true);
   };
 
-  const handleBookingSuccess = () => {
-    setBookingDialogOpen(false);
-    setSuccessDialogOpen(true);
+  const handleTimeChange = (type, newTime) => {
+    setNewEvent({
+      ...newEvent,
+      [type]: newTime,
+    });
+    setTempBooking({
+      ...tempBooking,
+      [type]: newTime,
+    });
   };
+
+  const handleSaveEvent = () => {
+    if (newEvent.title && newEvent.startTime && newEvent.endTime) {
+      setEvents([...events, { ...newEvent, date: selectedDate }]);
+      setModalOpen(false);
+      setNewEvent({ title: "", description: "", startTime: null, endTime: null });
+      setTempBooking(null);
+    }
+  };
+
+  const handleEventClick = (event) => {
+    setSelectedEvent(event);
+    setEventDetailsModalOpen(true);
+  };
+
+  const isTimeSlotBooked = (timeSlot) => {
+    const [hours] = timeSlot.split(":");
+    const slotTime = new Date(selectedDate);
+    slotTime.setHours(Number.parseInt(hours), 0, 0);
+
+    // Check against saved events
+    const isBooked = events.some((event) => {
+      console.log(event.date);
+      const eventData = new Date(event.date);
+      return eventData.toDateString() === selectedDate.toDateString() && slotTime >= event.startTime && slotTime < event.endTime;
+    });
+
+    // Check against temporary booking
+    const isTempBooked = tempBooking && slotTime >= tempBooking.startTime && slotTime < tempBooking.endTime;
+
+    return isBooked || isTempBooked;
+  };
+
+  const getEventForTimeSlot = (timeSlot) => {
+    const [hours] = timeSlot.split(":");
+    const slotTime = new Date(selectedDate);
+    slotTime.setHours(Number.parseInt(hours), 0, 0);
+
+    return events.find((event) => new Date(event.date).toDateString() === selectedDate.toDateString() && slotTime >= event.startTime && slotTime < event.endTime);
+  };
+
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const days = new Date(year, month + 1, 0).getDate();
+    return Array.from({ length: days }, (_, i) => i + 1);
+  };
+
+  const reservedPercentage = Math.round((events.length / (23 * 31)) * 100);
+  const availablePercentage = 100 - reservedPercentage;
+
+  useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        await axios.get(`${process.env.REACT_APP_BASE_API}booking-schedule/filter`, {
+            params: {
+              branch_id: Number(location),
+              room_id: Number(room),
+            },
+          })
+          .then((res) => {
+            console.log(res.data);
+
+            if (res.data.branches) setLocations(res.data.branches);
+            else if (res.data.floors) setRooms(res.data.floors);
+            else if (res.data.schedules) {
+              const newData = res.data.schedules.map((event) => ({
+                ...event,
+                startTime: new Date(event.startTime),
+                endTime: new Date(event.endTime),
+                date: new Date(event.date),
+              }));
+              // console.log(newData);
+              setEvents(newData);
+            }
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchFilters();
+  }, [location, room]);
 
   return (
     <>
       <TopNavbar />
-      <div className="main d-flex">
+      <div className="main">
         <div className="sideBarWrapper">
           <Sidebar />
         </div>
         <div className="content">
-          <div className="right-content">
-            <Box sx={{ p: 3, bgcolor: "#F8F9FA" }}>
-              <Box sx={{ display: "flex", gap: 3 }}>
-                {/* Left Sidebar */}
-                <Box sx={{ width: 280 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-                    <IconButton>
-                      <ArrowBackIcon />
-                    </IconButton>
-                    <Typography variant="h6" sx={{ ml: 1, fontWeight: 500 }}>
-                      Booking Calendar
-                    </Typography>
-                  </Box>
+          <div className="container-fluid p-4">
+            <pre>{JSON.stringify(events, null, 2)}</pre>
+            <div className="row mb-4 align-items-center">
+              <div className="col">
+                <h1 className="mb-0">Booking Calendar</h1>
+              </div>
+              <div className="col-auto">
+                <Button variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }}>
+                  Room/Event Booking
+                </Button>
+              </div>
+            </div>
 
-                  <Paper sx={{ p: 2, borderRadius: 2 }}>
-                    <Box sx={{ display: "flex", gap: 1, mb: 3 }}>
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        sx={{
-                          bgcolor: "#FFF3E0",
-                          color: "#000",
-                          boxShadow: "none",
-                          "&:hover": { bgcolor: "#FFE0B2", boxShadow: "none" },
-                        }}
-                      >
-                        Reserved 40%
-                      </Button>
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        sx={{
-                          bgcolor: "#E8F5E9",
-                          color: "#000",
-                          boxShadow: "none",
-                          "&:hover": { bgcolor: "#C8E6C9", boxShadow: "none" },
-                        }}
-                      >
-                        Available 60%
-                      </Button>
-                    </Box>
+            <div className="row mb-4">
+              <div className="col">
+                <div className="d-flex gap-3">
+                  <div className="badge bg-secondary">Reserved {reservedPercentage}%</div>
+                  <div className="badge bg-warning text-white">Available {availablePercentage}%</div>
+                </div>
+              </div>
+            </div>
 
-                    <Select fullWidth value="meeting-room" sx={{ mb: 2, ".MuiOutlinedInput-notchedOutline": { borderColor: "#E0E0E0" } }}>
-                      <MenuItem value="meeting-room">Meeting Room</MenuItem>
-                    </Select>
+            <div className="row">
+              <div className="col-md-4">
+                <div className="card mb-4">
+                  <div className="card-body">
+                    <FormControl fullWidth className="mb-3">
+                      <InputLabel>Select Location</InputLabel>
+                      <Select value={location} onChange={(e) => setLocation(e.target.value)} label="Select Location">
+                        {locations.length > 0 ? (
+                          locations.map((item) => (
+                            <MenuItem key={item.id} value={item.id}>
+                              {item.location}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem value="" disabled>
+                            No Location
+                          </MenuItem>
+                        )}
+                      </Select>
+                    </FormControl>
 
-                    <Select fullWidth value="select-location" sx={{ mb: 3, ".MuiOutlinedInput-notchedOutline": { borderColor: "#E0E0E0" } }}>
-                      <MenuItem value="select-location">Select Location</MenuItem>
-                    </Select>
+                    <FormControl fullWidth>
+                      <InputLabel>Meeting Room</InputLabel>
+                      <Select value={room} onChange={(e) => setRoom(e.target.value)} label="Meeting Room">
+                        {rooms.length > 0 ? (
+                          rooms.flatMap((floor) => [
+                            // Floor name as a subheader
+                            <ListSubheader key={`floor-${floor.id}`}>{floor.name}</ListSubheader>,
+                            // Rooms under the floor
+                            ...floor.rooms.map((room) => (
+                              <MenuItem key={`room-${room.id}`} value={room.id}>
+                                {room.name}
+                              </MenuItem>
+                            )),
+                          ])
+                        ) : (
+                          <MenuItem value="" disabled>
+                            No Rooms
+                          </MenuItem>
+                        )}
+                      </Select>
+                    </FormControl>
 
-                    <Typography sx={{ mb: 1, fontWeight: 500 }}>Duration</Typography>
-                    <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        placeholder="From"
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <CalendarTodayIcon fontSize="small" sx={{ color: "#757575" }} />
-                            </InputAdornment>
-                          ),
-                        }}
-                        sx={{ ".MuiOutlinedInput-notchedOutline": { borderColor: "#E0E0E0" } }}
-                      />
-                      <TextField
-                        fullWidth
-                        size="small"
-                        placeholder="To"
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <CalendarTodayIcon fontSize="small" sx={{ color: "#757575" }} />
-                            </InputAdornment>
-                          ),
-                        }}
-                        sx={{ ".MuiOutlinedInput-notchedOutline": { borderColor: "#E0E0E0" } }}
-                      />
-                    </Box>
-
-                    <Typography sx={{ mb: 1, fontWeight: 500 }}>Capacity</Typography>
-                    <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-                      <IconButton
-                        onClick={() => setCapacity(Math.max(0, capacity - 1))}
-                        sx={{
-                          bgcolor: "#FFB800",
-                          color: "white",
-                          "&:hover": { bgcolor: "#FFA000" },
-                        }}
-                      >
-                        <RemoveIcon />
-                      </IconButton>
-                      <Typography sx={{ mx: 3, minWidth: 20, textAlign: "center" }}>{capacity}</Typography>
-                      <IconButton
-                        onClick={() => setCapacity(capacity + 1)}
-                        sx={{
-                          bgcolor: "#FFB800",
-                          color: "white",
-                          "&:hover": { bgcolor: "#FFA000" },
-                        }}
-                      >
-                        <AddIcon />
-                      </IconButton>
-                    </Box>
-
-                    <Select fullWidth value="available-rooms" sx={{ mb: 3, ".MuiOutlinedInput-notchedOutline": { borderColor: "#E0E0E0" } }}>
-                      <MenuItem value="available-rooms">Available Rooms</MenuItem>
-                    </Select>
-
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      onClick={() => setBookingDialogOpen(true)}
-                      sx={{
-                        bgcolor: "#FFB800",
-                        color: "white",
-                        "&:hover": { bgcolor: "#FFA000" },
-                        textTransform: "none",
-                        fontWeight: 500,
-                      }}
-                    >
-                      Quick Booking
-                    </Button>
-                  </Paper>
-                </Box>
-
-                {/* Main Calendar Area */}
-                <Box sx={{ flex: 1 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      mb: 3,
-                    }}
-                  >
-                    <Typography variant="h5" sx={{ fontWeight: 500 }}>
-                      January 2025
-                    </Typography>
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <Button
-                        variant={viewMode === "Day" ? "contained" : "outlined"}
-                        sx={{
-                          bgcolor: viewMode === "Day" ? "#FFB800" : "white",
-                          color: viewMode === "Day" ? "white" : "black",
-                          borderColor: "#E0E0E0",
-                          "&:hover": {
-                            bgcolor: viewMode === "Day" ? "#FFA000" : "#F5F5F5",
-                            borderColor: "#E0E0E0",
-                          },
-                          textTransform: "none",
-                          fontWeight: 500,
-                        }}
-                        onClick={() => setViewMode("Day")}
-                      >
-                        Day
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        sx={{
-                          bgcolor: "white",
-                          color: "black",
-                          borderColor: "#E0E0E0",
-                          "&:hover": { bgcolor: "#F5F5F5", borderColor: "#E0E0E0" },
-                          textTransform: "none",
-                          fontWeight: 500,
-                        }}
-                        onClick={() => setViewMode("Week")}
-                      >
-                        Week
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        sx={{
-                          bgcolor: "white",
-                          color: "black",
-                          borderColor: "#E0E0E0",
-                          "&:hover": { bgcolor: "#F5F5F5", borderColor: "#E0E0E0" },
-                          textTransform: "none",
-                          fontWeight: 500,
-                        }}
-                        onClick={() => setViewMode("Month")}
-                      >
-                        Month
-                      </Button>
-                    </Box>
-                  </Box>
-
-                  <Paper sx={{ borderRadius: 2, overflow: "hidden" }}>
-                    <Box sx={{ display: "flex" }}>
-                      <Box sx={{ width: 100 }} />
-                      {days.map((day, index) => (
-                        <Box
-                          key={index}
-                          sx={{
-                            flex: 1,
-                            p: 2,
-                            textAlign: "center",
-                            borderLeft: 1,
-                            borderColor: "#E0E0E0",
-                            bgcolor: "#FFB800",
-                            color: "white",
-                          }}
-                        >
-                          <Typography sx={{ fontSize: 14, mb: 0.5 }}>Meeting Room Booking</Typography>
-                          <Typography sx={{ fontSize: 14, mb: 0.5, opacity: 0.9 }}>5,000/per Hour</Typography>
-                          <Typography sx={{ fontSize: 14, mb: 0.5 }}>{day.date}</Typography>
-                          <Typography sx={{ fontSize: 14, opacity: 0.9 }}>{day.tasks} Task(s)</Typography>
-                        </Box>
-                      ))}
-                    </Box>
-
-                    {timeSlots.map((time, index) => (
-                      <Box
-                        key={index}
-                        sx={{
-                          display: "flex",
-                          borderTop: 1,
-                          borderColor: "#E0E0E0",
-                        }}
-                      >
-                        <Box
-                          sx={{
-                            width: 100,
-                            p: 2,
-                            borderRight: 1,
-                            borderColor: "#E0E0E0",
-                          }}
-                        >
-                          <Typography sx={{ fontSize: 14, color: "#757575" }}>{time}</Typography>
-                        </Box>
-                        {days.map((_, dayIndex) => (
-                          <Box
-                            key={dayIndex}
-                            sx={{
-                              flex: 1,
-                              height: 80,
-                              borderLeft: dayIndex > 0 ? 1 : 0,
-                              borderColor: "#E0E0E0",
-                              bgcolor: Math.random() > 0.7 ? "#F5F5F5" : "white",
-                              cursor: "pointer",
-                              "&:hover": {
-                                bgcolor: "#FAFAFA",
-                              },
-                            }}
-                            onClick={handleCellClick}
-                          />
+                    <div className="mt-4">
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <Typography variant="h8" className="mb-0">
+                          {selectedDate.toLocaleString("default", {
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </Typography>
+                        <div className="d-flex">
+                          <Button onClick={() => setSelectedDate(new Date(selectedDate.setMonth(selectedDate.getMonth() - 1)))}>{"<"}</Button>
+                          <Button onClick={() => setSelectedDate(new Date(selectedDate.setMonth(selectedDate.getMonth() + 1)))}>{">"}</Button>
+                        </div>
+                      </div>
+                      <div className="calendar-grid">
+                        {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
+                          <div key={day} className="calendar-header">
+                            {day}
+                          </div>
                         ))}
-                      </Box>
-                    ))}
-                  </Paper>
-                </Box>
-              </Box>
+                        {getDaysInMonth(selectedDate).map((day) => (
+                          <div key={day} className={`calendar-day ${day === selectedDate.getDate() ? "selected" : ""}`} onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day))}>
+                            {day}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-              {/* Booking Dialog */}
-              <Dialog
-                open={bookingDialogOpen}
-                onClose={() => setBookingDialogOpen(false)}
-                maxWidth="sm"
-                fullWidth
-                PaperProps={{
-                  sx: {
-                    borderRadius: 2,
-                    p: 2,
-                  },
+              <div className="col-md-8">
+                <div className="card">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                      <Typography variant="h5">{selectedDate.toLocaleDateString()}</Typography>
+                      <div className="btn-group gap-2">
+                        <Button variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }}>
+                          Day
+                        </Button>
+                        <Button variant="outlined">Week</Button>
+                        <Button variant="outlined">Month</Button>
+                      </div>
+                    </div>
+
+                    <div className="time-slots">
+                      {timeSlots.map((time) => {
+                        const event = getEventForTimeSlot(time);
+                        const isBooked = isTimeSlotBooked(time);
+                        return (
+                          <div
+                            key={time}
+                            className={`time-slot ${isBooked ? "booked" : ""}`}
+                            onClick={() => {
+                              if (event) {
+                                handleEventClick(event);
+                              } else if (!isBooked) {
+                                handleTimeSlotClick(time);
+                              }
+                            }}
+                          >
+                            <div className="time">{time}</div>
+                            <div className="event">
+                              {event && (
+                                <div className="event-card">
+                                  <Typography variant="subtitle2">{event.title}</Typography>
+                                  <Typography variant="caption">
+                                    {event.startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} -{event.endTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                                  </Typography>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Modal
+              open={modalOpen}
+              onClose={() => {
+                setModalOpen(false);
+                setTempBooking(null);
+              }}
+              aria-labelledby="event-modal"
+              style={{
+                overflowY: "auto",
+              }}
+            >
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 600,
+                  bgcolor: "background.paper",
+                  boxShadow: 24,
+                  marginTop: 10,
+                  marginBottom: 10,
+                  p: 4,
+                  borderRadius: 2,
                 }}
               >
-                <DialogContent sx={{ p: 0, mb: 3 }}>
-                  <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                    <Box>
-                      <Typography sx={{ mb: 1, fontWeight: 500 }}>Member</Typography>
-                      <Box>
-                        <TextField
-                          fullWidth
-                          placeholder="Name"
-                          size="small"
-                          sx={{
-                            ".MuiOutlinedInput-notchedOutline": {
-                              borderColor: "#E0E0E0",
-                              borderRadius: 1,
-                            },
-                          }}
-                        />
-                        <Button
-                          variant="contained"
-                          sx={{
-                            bgcolor: "#FFB800",
-                            "&:hover": { bgcolor: "#FFA000" },
-                            textTransform: "none",
-                            px: 2,
-                            marginTop: 1,
-                          }}
-                        >
-                          Add New
-                        </Button>
-                      </Box>
-                    </Box>
-
-                    <Box>
-                      <Typography sx={{ mb: 1, fontWeight: 500 }}>Title</Typography>
-                      <TextField
-                        fullWidth
-                        placeholder="Title"
-                        size="small"
-                        sx={{
-                          ".MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#E0E0E0",
-                            borderRadius: 1,
-                          },
-                        }}
-                      />
-                    </Box>
-
-                    <Box>
-                      <Typography sx={{ mb: 1, fontWeight: 500 }}>Meeting Room</Typography>
-                      <TextField
-                        fullWidth
-                        placeholder="Meeting Room"
-                        size="small"
-                        sx={{
-                          ".MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#E0E0E0",
-                            borderRadius: 1,
-                          },
-                        }}
-                      />
-                    </Box>
-
-                    <Box sx={{ display: "flex", gap: 2 }}>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography sx={{ mb: 1, fontWeight: 500 }}>From</Typography>
-                        <TextField
-                          fullWidth
-                          type="time"
-                          size="small"
-                          sx={{
-                            ".MuiOutlinedInput-notchedOutline": {
-                              borderColor: "#E0E0E0",
-                              borderRadius: 1,
-                            },
-                          }}
-                        />
-                      </Box>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography sx={{ mb: 1, fontWeight: 500 }}>To</Typography>
-                        <TextField
-                          fullWidth
-                          type="time"
-                          size="small"
-                          sx={{
-                            ".MuiOutlinedInput-notchedOutline": {
-                              borderColor: "#E0E0E0",
-                              borderRadius: 1,
-                            },
-                          }}
-                        />
-                      </Box>
-                    </Box>
-                  </Box>
-                </DialogContent>
-                <DialogActions sx={{ p: 0, gap: 1 }}>
+                <Typography variant="h6" component="h2" mb={3}>
+                  Create Event
+                </Typography>
+                <Autocomplete
+                  className="mb-3"
+                  options={members} // Array of members
+                  getOptionLabel={(option) => option.name} // Display member name
+                  value={selectedMember} // Controlled value
+                  onChange={(event, newValue) => setSelectedMember(newValue)} // Update selected member
+                  renderInput={(params) => <TextField {...params} label="Search Member" variant="outlined" />}
+                />
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <div className="mb-3">
+                    <TimePicker label="Start Time" value={newEvent.startTime} onChange={(newTime) => handleTimeChange("startTime", newTime)} renderInput={(params) => <TextField {...params} fullWidth />} />
+                  </div>
+                  <div className="mb-3">
+                    <TimePicker label="End Time" value={newEvent.endTime} onChange={(newTime) => handleTimeChange("endTime", newTime)} renderInput={(params) => <TextField {...params} fullWidth />} fullWidth />
+                  </div>
+                </LocalizationProvider>
+                <TextField fullWidth label="Event Title" value={newEvent.title} onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })} className="mb-3" />
+                <TextField fullWidth label="Description" multiline rows={3} value={newEvent.description} onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })} className="mb-3" />
+                <Select value={room} onChange={(e) => setRoom(e.target.value)} label="Meeting Room" id="select-status" className="mb-3" fullWidth>
+                  {rooms.length > 0 ? (
+                    rooms.flatMap((floor) => [
+                      // Floor name as a subheader
+                      <ListSubheader key={`floor-${floor.id}`}>{floor.name}</ListSubheader>,
+                      // Rooms under the floor
+                      ...floor.rooms.map((room) => (
+                        <MenuItem key={`room-${room.id}`} value={room.id}>
+                          {room.name}
+                        </MenuItem>
+                      )),
+                    ])
+                  ) : (
+                    <MenuItem value="" disabled>
+                      No Rooms
+                    </MenuItem>
+                  )}
+                </Select>
+                <div className="d-flex justify-content-end gap-2">
                   <Button
-                    onClick={() => setBookingDialogOpen(false)}
                     variant="outlined"
-                    sx={{
-                      flex: 1,
-                      color: "text.primary",
-                      borderColor: "#E0E0E0",
-                      "&:hover": {
-                        borderColor: "#BDBDBD",
-                        bgcolor: "transparent",
-                      },
-                      textTransform: "none",
-                      borderRadius: 1,
+                    onClick={() => {
+                      setModalOpen(false);
+                      setTempBooking(null);
                     }}
                   >
-                    Close
+                    Cancel
                   </Button>
-                  <Button
-                    onClick={handleBookingSuccess}
-                    variant="contained"
-                    sx={{
-                      flex: 1,
-                      bgcolor: "#FFB800",
-                      "&:hover": { bgcolor: "#FFA000" },
-                      textTransform: "none",
-                      borderRadius: 1,
-                    }}
-                  >
-                    Book Now
+                  <Button variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }} onClick={handleSaveEvent}>
+                    Save Event
                   </Button>
-                </DialogActions>
-              </Dialog>
+                </div>
+              </Box>
+            </Modal>
 
-              {/* Booking Success Dialog */}
-              <Dialog open={successDialogOpen} onClose={() => setSuccessDialogOpen(false)} maxWidth="xs" fullWidth>
-                <DialogContent sx={{ textAlign: "center", p: 3 }}>
-                  <CheckCircleIcon sx={{ fontSize: 50, color: "#FFA000" }} />
-                  <Typography variant="h6" sx={{ mt: 2 }}>
-                    SUCCESS!
-                  </Typography>
-                  <Typography sx={{ opacity: 0.7, mt: 1 }}>Your booking is successful!</Typography>
-                </DialogContent>
-                <DialogActions sx={{ justifyContent: "center" }}>
-                  <Button
-                    onClick={() => setSuccessDialogOpen(false)}
-                    variant="contained"
-                    sx={{
-                      bgcolor: "#FFB800",
-                      "&:hover": { bgcolor: "#FFA000" },
-                      textTransform: "none",
-                    }}
-                  >
-                    Continue
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            </Box>
+            <Modal open={eventDetailsModalOpen} onClose={() => setEventDetailsModalOpen(false)} aria-labelledby="event-details-modal">
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 400,
+                  bgcolor: "background.paper",
+                  boxShadow: 24,
+                  p: 4,
+                  borderRadius: 2,
+                }}
+              >
+                <Typography variant="h6" component="h2" mb={3}>
+                  Event Details
+                </Typography>
+                {selectedEvent && (
+                  <>
+                    <Typography variant="subtitle1" mb={2}>
+                      {selectedEvent.title}
+                    </Typography>
+                    <Typography variant="body2" mb={2}>
+                      Date: {selectedEvent.date.toLocaleDateString()}
+                    </Typography>
+                    <Typography variant="body2" mb={2}>
+                      Time: {selectedEvent.startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} -{selectedEvent.endTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </Typography>
+                    <Typography variant="body2" mb={2}>
+                      Description: {selectedEvent.description}
+                    </Typography>
+                    <Button variant="outlined" onClick={() => setEventDetailsModalOpen(false)}>
+                      Close
+                    </Button>
+                  </>
+                )}
+              </Box>
+            </Modal>
+
+            <style jsx>{`
+        .calendar-grid {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 4px;
+        }
+        .badge.bg-warning.text-white {
+    background-color: ${colors.primary} !important;
+    color: white; !important /* Adjust text color */
+}
+        .calendar-header {
+          text-align: center;
+          padding: 8px;
+          font-weight: bold;
+        }
+        .calendar-day {
+          text-align: center;
+          padding: 8px;
+          cursor: pointer;
+          border-radius: 4px;
+        }
+        .calendar-day:hover {
+          background-color: #f0f0f0;
+        }
+        .calendar-day.selected {
+          background-color: ${colors.primary};
+          color: white;
+        }
+        .time-slots {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .time-slot {
+          display: flex;
+          gap: 16px;
+          padding: 8px;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        }
+        .time-slot:hover:not(.booked) {
+          background-color: #f0f0f0;
+        }
+        .time-slot.booked {
+    background-color: ${colors.primary} /* Highlight booked slots */
+    color:white;
+    cursor: pointer; /* Indicate clickability */
+}
+        .time {
+          width: 80px;
+          font-weight: bold;
+        }
+        .event {
+          flex-grow: 1;
+        }
+        .event-card {
+          background-color: ${colors.primary};
+          padding: 8px;
+          border-radius: 4px;
+          color: white;
+        }
+
+.time-slot:not(.booked) {
+    cursor: pointer;
+    background-color: #f8f9fa;
+}
+
+.time-slot:hover {
+    background-color: #e9ecef; /* Hover effect */
+}
+      `}</style>
           </div>
         </div>
       </div>
     </>
   );
 };
-
 export default BookingCalender;
