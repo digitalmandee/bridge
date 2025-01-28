@@ -14,7 +14,9 @@ import AdminDashboard from "./dashboard/admindashboard";
 import BookingCalender from "./calender";
 import SeatsAllocation from "./booking/seatsallocation";
 import "./App.css";
-import { FloorPlanProvider} from "./contexts/floorplan.context";
+import { FloorPlanProvider } from "./contexts/floorplan.context";
+import AuthProvider from "./contexts/AuthContext";
+import ProtectedRoute from "./ProtectedRoute";
 // import TopNavbar from './topNavbar/page';
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -31,7 +33,14 @@ function App() {
           <Routes>
             {/* Define your routes */}
             <Route path="/" element={<Welcome />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            <Route
+              path="/admin-dashboard"
+              element={
+                <ProtectedRoute role="super_admin">
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/user-dashboard" element={<UserDashboard />} />
             <Route path="/booking" element={<Booking />} />
@@ -41,6 +50,8 @@ function App() {
             <Route path="/booking/plans/create" element={<BookingPlanCreate />} />
             <Route path="/booking-calender" element={<BookingCalender />} />
             <Route path="/seatsAllocation" element={<SeatsAllocation />} />
+
+            <Route path="*" element={<p>404 Not Found</p>} />
           </Routes>
         )}
       </div>
@@ -50,9 +61,11 @@ function App() {
 
 function AppWrapper() {
   return (
-    <FloorPlanProvider>
-      <App />
-    </FloorPlanProvider>
+    <AuthProvider>
+      <FloorPlanProvider>
+        <App />
+      </FloorPlanProvider>
+    </AuthProvider>
   );
 }
 
