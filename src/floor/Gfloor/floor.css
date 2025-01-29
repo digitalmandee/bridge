@@ -4,7 +4,7 @@
     margin:0;
     padding: 0;
     position: relative; /* Ensures child elements are positioned relative to this div */
-    background-image: url("../../assets/newfloor.png");
+    background-image: url("../../assets/gfloor.png");
     background-size: contain; /* Ensures proportional scaling */
     background-repeat: no-repeat;
     background-position: 'flex-center';

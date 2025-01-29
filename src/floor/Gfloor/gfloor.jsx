@@ -13,86 +13,85 @@ const GFloorPlan = () => {
       chairs: [
         //Table1
         { id: 1, position: { x: 18.2, y: 8.5 }, rotation: -45, color: "gray" },
-        { id: 2, position: { x: 24, y: 11 }, rotation: 135, color: "gray" },
-        { id: 3, position: { x: 15, y: 11 }, rotation: 225, color: "gray" },
+        { id: 2, position: { x: 23, y: 11 }, rotation: 135, color: "gray" },
+        { id: 3, position: { x: 16, y: 11 }, rotation: 225, color: "gray" },
         //Table2
-        { id: 4, position: { x: 36.5, y: 8.5 }, rotation: -45, color: "gray" },
-        { id: 5, position: { x: 42, y: 11 }, rotation: 135, color: "gray" },
+        { id: 4, position: { x: 36, y: 8.5 }, rotation: -45, color: "gray" },
+        { id: 5, position: { x: 40.5, y: 11 }, rotation: 135, color: "gray" },
         { id: 6, position: { x: 34, y: 11.2 }, rotation: 225, color: "gray" },
         //Table3
-        { id: 7, position: { x: 15, y: 14 }, rotation: -45, color: "gray" },
-        { id: 8, position: { x: 18.5, y: 16.5 }, rotation: 225, color: "gray" },
-        { id: 9, position: { x: 24, y: 14 }, rotation: 45, color: "gray" },
+        { id: 7, position: { x: 14.8, y: 13.8 }, rotation: -45, color: "gray" },
+        { id: 8, position: { x: 18, y: 16 }, rotation: 225, color: "gray" },
+        { id: 9, position: { x: 23.8, y: 13.5 }, rotation: 45, color: "gray" },
         //Table4
-        { id: 10, position: { x: 33.5, y: 14 }, rotation: -45, color: "gray" },
-        { id: 11, position: { x: 36.8, y: 16.7 }, rotation: 225, color: "gray" },
-        { id: 12, position: { x: 42.5, y: 14 }, rotation: 45, color: "gray" },
+        { id: 10, position: { x: 33, y: 13.5 }, rotation: -45, color: "gray" },
+        { id: 11, position: { x: 36.5, y: 15.8 }, rotation: 225, color: "gray" },
+        { id: 12, position: { x: 42, y: 13.5 }, rotation: 45, color: "gray" },
         //Table5
-        { id: 13, position: { x: 67, y: 9 }, rotation: 0, color: "gray" },
-        { id: 14, position: { x: 71.5, y: 9 }, rotation: 0, color: "gray" },
-        { id: 15, position: { x: 76, y: 9 }, rotation: 0, color: "gray" },
+        { id: 13, position: { x: 66, y: 8.7 }, rotation: 0, color: "gray" },
+        { id: 14, position: { x: 70.5, y: 8.7 }, rotation: 0, color: "gray" },
+        { id: 15, position: { x: 75, y: 8.7 }, rotation: 0, color: "gray" },
 
-        { id: 16, position: { x: 63, y: 11 }, rotation: 270, color: "gray" },
-        { id: 17, position: { x: 63, y: 12.7 }, rotation: 270, color: "gray" },
-        { id: 18, position: { x: 63, y: 14.5 }, rotation: 270, color: "gray" },
+        { id: 16, position: { x: 61.5, y: 10 }, rotation: 270, color: "gray" },
+        { id: 17, position: { x: 61.5, y: 12 }, rotation: 270, color: "gray" },
+        { id: 18, position: { x: 61.5, y: 14 }, rotation: 270, color: "gray" },
 
-        { id: 19, position: { x: 67, y: 16.3 }, rotation: 180, color: "gray" },
-        { id: 20, position: { x: 71.5, y: 16.3 }, rotation: 180, color: "gray" },
-        { id: 21, position: { x: 76, y: 16.3 }, rotation: 180, color: "gray" },
+        { id: 19, position: { x: 66, y: 15.3 }, rotation: 180, color: "gray" },
+        { id: 20, position: { x: 70.5, y: 15.3 }, rotation: 180, color: "gray" },
+        { id: 21, position: { x: 75, y: 15.3 }, rotation: 180, color: "gray" },
 
-        { id: 22, position: { x: 80, y: 11 }, rotation: 90, color: "gray" },
-        { id: 23, position: { x: 80, y: 12.7 }, rotation: 90, color: "gray" },
-        { id: 24, position: { x: 80, y: 14.5 }, rotation: 90, color: "gray" },
+        { id: 22, position: { x: 79, y: 10 }, rotation: 90, color: "gray" },
+        { id: 23, position: { x: 79, y: 12 }, rotation: 90, color: "gray" },
+        { id: 24, position: { x: 79, y: 14 }, rotation: 90, color: "gray" },
         //Table 6
-        { id: 25, position: { x: 67, y: 19.2 }, rotation: 0, color: "gray" },
-        { id: 26, position: { x: 71.5, y: 19.2 }, rotation: 0, color: "gray" },
-        { id: 27, position: { x: 76, y: 19.2 }, rotation: 0, color: "gray" },
+        { id: 25, position: { x: 69, y: 21 }, rotation: -45, color: "gray" },
+        { id: 26, position: { x: 66.5, y: 23.5 }, rotation: 225, color: "gray" },
+        { id: 27, position: { x: 73.5, y: 23.5 }, rotation: 135, color: "gray" },
+//Table 7
+        { id: 28, position: { x: 25, y: 21 }, rotation: -45, color: "gray" },
+        { id: 29, position: { x: 22.2, y: 23.5 }, rotation: 225, color: "gray" },
+        { id: 30, position: { x: 29.5, y: 23.5 }, rotation: 135, color: "gray" },
+//Executive room chair
+        { id: 31, position: { x: 24, y: 27.7 }, rotation: 0, color: "gray" },
 
-        { id: 28, position: { x: 63, y: 21 }, rotation: 270, color: "gray" },
-        { id: 29, position: { x: 63, y: 22.7 }, rotation: 270, color: "gray" },
-        { id: 30, position: { x: 63, y: 24.5 }, rotation: 270, color: "gray" },
-
-        { id: 31, position: { x: 67, y: 26.3 }, rotation: 180, color: "gray" },
-        { id: 32, position: { x: 71.5, y: 26.3 }, rotation: 180, color: "gray" },
-        { id: 33, position: { x: 76, y: 26.3 }, rotation: 180, color: "gray" },
-
-        { id: 34, position: { x: 80, y: 21 }, rotation: 90, color: "gray" },
-        { id: 35, position: { x: 80, y: 22.7 }, rotation: 90, color: "gray" },
-        { id: 36, position: { x: 80, y: 24.5 }, rotation: 90, color: "gray" },
-        //Table7
-        { id: 37, position: { x: 18, y: 20.5 }, rotation: 0, color: "gray" },
-        { id: 38, position: { x: 26, y: 20.5 }, rotation: 0, color: "gray" },
-        { id: 39, position: { x: 18, y: 25.2 }, rotation: 180, color: "gray" },
-        { id: 40, position: { x: 26, y: 25.2 }, rotation: 180, color: "gray" },
         //Table8
-        { id: 41, position: { x: 24, y: 29.1 }, rotation: 0, color: "gray" },
-        //Table9
-        { id: 42, position: { x: 29, y: 43 }, rotation: 90, color: "gray" },
-        { id: 43, position: { x: 29, y: 45.5 }, rotation: 90, color: "gray" },
-        { id: 44, position: { x: 17, y: 43 }, rotation: 270, color: "gray" },
-        { id: 45, position: { x: 17, y: 45.5 }, rotation: 270, color: "gray" },
-//Table10
-        { id: 46, position: { x: 17, y: 49.8 }, rotation: 0, color: "gray" },
-        { id: 47, position: { x: 24, y: 49.8 }, rotation: 0, color: "gray" },
-        { id: 48, position: { x: 17, y: 54.5 }, rotation: 180, color: "gray" },
-        { id: 49, position: { x: 24, y: 54.5 }, rotation: 180, color: "gray" },
-//Table11
-        { id: 50, position: { x: 74, y: 46.5 }, rotation: 180, color: "gray" },
-        { id: 51, position: { x: 80, y: 46.5 }, rotation: 180, color: "gray" },
-//Table12
-        { id: 52, position: { x: 84.2, y: 48 }, rotation: 270, color: "gray" },
-        { id: 53, position: { x: 84.2, y: 50 }, rotation: 270, color: "gray" },
-//Table13
-        { id: 54, position: { x: 70, y: 53.8 }, rotation: 0, color: "gray" },
-        { id: 55, position: { x: 78, y: 53.8 }, rotation: 0, color: "gray" },
-        { id: 56, position: { x: 70, y: 58.2 }, rotation: 180, color: "gray" },
-        { id: 57, position: { x: 78, y: 58.2 }, rotation: 180, color: "gray" },
-//Table14
-        { id: 58, position: { x: 73, y: 65.8 }, rotation: 0, color: "gray" },
-        { id: 59, position: { x: 80, y: 65.8 }, rotation: 0, color: "gray" },
+        { id: 32, position: { x: 29, y: 41 }, rotation: 90, color: "gray" },
+        { id: 33, position: { x: 29, y: 43.5 }, rotation: 90, color: "gray" },
+        { id: 34, position: { x: 17.5, y: 41 }, rotation: 270, color: "gray" },
+        { id: 35, position: { x: 17.5, y: 43.5 }, rotation: 270, color: "gray" },
+//Table 9
+        { id: 36, position: { x: 17, y: 47.4 }, rotation: 0, color: "gray" },
+        { id: 37, position: { x: 24, y: 47.4 }, rotation: 0, color: "gray" },
+        { id: 38, position: { x: 17, y: 51.5 }, rotation: 180, color: "gray" },
+        { id: 39, position: { x: 24, y: 51.5 }, rotation: 180, color: "gray" },
+//Table 10 meeting room
+        { id: 40, position: { x: 68, y: 35.8 }, rotation: 0, color: "gray" },
+        { id: 41, position: { x: 64, y: 35.8 }, rotation: 0, color: "gray" },
+        { id: 42, position: { x: 60, y: 35.8 }, rotation: 0, color: "gray" },
+        { id: 43, position: { x: 68, y: 39.4 }, rotation: 180, color: "gray" },
+        { id: 44, position: { x: 64, y: 39.4 }, rotation: 180, color: "gray" },
+        { id: 45, position: { x: 60, y: 39.4 }, rotation: 180, color: "gray" },
+        { id: 46, position: { x: 56, y: 37.5 }, rotation: 270, color: "gray" },
+        { id: 47, position: { x: 72.5, y: 37.5 }, rotation: 90, color: "gray" },
+//small office
+        { id: 48, position: { x: 83.2, y: 45.8 }, rotation: 270, color: "gray" },
+        { id: 49, position: { x: 83.2, y: 48 }, rotation: 270, color: "gray" },
+        { id: 50, position: { x: 71, y: 44 }, rotation: 180, color: "gray" },
+        { id: 51, position: { x: 78, y: 44 }, rotation: 180, color: "gray" },
+//office
+        { id: 52, position: { x: 69, y: 50.9 }, rotation: 0, color: "gray" },
+        { id: 53, position: { x: 78, y: 50.9 }, rotation: 0, color: "gray" },
+        { id: 54, position: { x: 69, y: 55 }, rotation: 180, color: "gray" },
+        { id: 55, position: { x: 78, y: 55 }, rotation: 180, color: "gray" },
+
+        //small office
+        { id: 56, position: { x: 84, y: 58 }, rotation: 270, color: "gray" },
+        { id: 57, position: { x: 84, y: 60 }, rotation: 270, color: "gray" },
+        { id: 58, position: { x: 75, y: 62.2 }, rotation: 0, color: "gray" },
+        { id: 59, position: { x: 82, y: 62.2 }, rotation: 0, color: "gray" },
         //Table 15
-        { id: 60, position: { x: 84, y: 61.6 }, rotation: 270, color: "gray" },
-        { id: 61, position: { x: 84, y: 64 }, rotation: 270, color: "gray" },
+        // { id: 60, position: { x: 84, y: 58 }, rotation: 270, color: "gray" },
+        // { id: 61, position: { x: 84, y: 60 }, rotation: 270, color: "gray" },
       ],
     },
     {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import logo from '../assets/logo.png.png'
+import logo from '../assets/logo.png'
 import { IoIosMenu } from "react-icons/io";
 import { FaRegBell } from "react-icons/fa6";
 import SearchBar from "./searchBar";
@@ -48,7 +48,10 @@ const TopNavbar = () => {
                     <div className="row d-flex align-items-center w-100">
                         <div className="col-sm-2 part1">
                             <Link to={'./'} className="d-flex align-items-center logo">
-                                <img src={logo} />
+                                <img src={logo} style={{
+                                    width:"100px",
+                                    height:'50px'
+                                }} />
                             </Link>
                         </div>
                         <div className="col-sm-3 d-flex align-items-center part2 pl-4">

@@ -28,14 +28,10 @@ const BookingCalender = () => {
     const [location, setLocation] = useState("")
     const [room, setRoom] = useState("")
     const [events, setEvents] = useState([])
+    
     const [modalOpen, setModalOpen] = useState(false)
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null)
-    const [newEvent, setNewEvent] = useState({
-        title: "",
-        description: "",
-        startTime: null,
-        endTime: null,
-    })
+    const [newEvent, setNewEvent] = useState([])
     const [tempBooking, setTempBooking] = useState(null)
     const [selectedEvent, setSelectedEvent] = useState(null)
     const [eventDetailsModalOpen, setEventDetailsModalOpen] = useState(false)
@@ -84,12 +80,14 @@ const BookingCalender = () => {
 
     const handleSaveEvent = () => {
         if (newEvent.title && newEvent.startTime && newEvent.endTime) {
-            setEvents([...events, { ...newEvent, date: selectedDate }])
-            setModalOpen(false)
-            setNewEvent({ title: "", description: "", startTime: null, endTime: null })
-            setTempBooking(null)
+          const updatedEvents = [...events, { ...newEvent, date: selectedDate }]
+          setEvents(updatedEvents)
+          console.log("Updated events:", updatedEvents)
+          setModalOpen(false)
+          setNewEvent({ title: "", description: "", startTime: null, endTime: null })
+          setTempBooking(null)
         }
-    }
+      };
 
     const handleEventClick = (event) => {
         setSelectedEvent(event)
