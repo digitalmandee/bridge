@@ -113,6 +113,7 @@ class BookingScheduleController extends Controller
                 $query->whereDate('date', '=', $date); // Match only the date part of the timestamp
             }
 
+
             $bookingSchedules = $query->with(['branch', 'room', 'user'])->get();
 
             return response()->json([
