@@ -1,21 +1,18 @@
 import React, { useState, useContext } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Welcome from "./auth/welcome/welcome";
-import SplashScreen from "./auth/splash";
-import LoginPage from "./auth/login/login";
-import Home from "./home";
-import BookingPlans from "./booking/plans";
-import BookingRequests from "./booking/requests";
-import BookingPlanCreate from "./booking/plancreate";
-import Booking from "./booking";
-import UserDashboard from "./dashboard/userdashboard";
-import AdminDashboard from "./dashboard/admindashboard";
-import BookingCalender from "./calender";
-import SeatsAllocation from "./booking/seatsallocation";
-import "./App.css";
-import { FloorPlanProvider } from "./contexts/floorplan.context";
-import AuthProvider from "./contexts/AuthContext";
+import SplashScreen from "./components/splashscreen";
+import AdminDashboard from "./pages/dashboard/admin";
+import UserDashboard from "./pages/dashboard/user";
+import Welcome from "./pages/welcome/welcome";
+import LoginPage from "./pages/auth/login/login";
+import Booking from "./pages/booking";
+import Floorplan from "./pages/booking/floorplan";
+import BookingRequests from "./pages/booking/requests";
+import BookingPlans from "./pages/booking/plans";
+import BookingPlanCreate from "./pages/booking/plancreate";
+import SeatsAllocation from "./pages/booking/seatsallocation";
+import BookingCalender from "./pages/booking/calendar";
 import ProtectedRoute from "./ProtectedRoute";
 // import TopNavbar from './topNavbar/page';
 function App() {
@@ -23,13 +20,10 @@ function App() {
 
   return (
     <>
-      <title>Co-Work @NATSP</title>
-      <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-
-      <div>
-        {showSplash ? (
-          <SplashScreen onComplete={() => setShowSplash(false)} />
-        ) : (
+      {showSplash ? (
+        <SplashScreen onComplete={() => setShowSplash(false)} />
+      ) : (
+        <BrowserRouter>
           <Routes>
             {/* Define your routes */}
             <Route path="/" element={<Welcome />} />
@@ -70,7 +64,7 @@ function App() {
               path="/branch/floorplan"
               element={
                 <ProtectedRoute role="admin">
-                  <Home />
+                  <Floorplan />
                 </ProtectedRoute>
               }
             />
@@ -117,20 +111,10 @@ function App() {
 
             <Route path="*" element={<p>404 Not Found</p>} />
           </Routes>
-        )}
-      </div>
+        </BrowserRouter>
+      )}
     </>
   );
 }
 
-function AppWrapper() {
-  return (
-    <AuthProvider>
-      <FloorPlanProvider>
-        <App />
-      </FloorPlanProvider>
-    </AuthProvider>
-  );
-}
-
-export default AppWrapper;
+export default App;

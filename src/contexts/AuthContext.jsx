@@ -12,7 +12,7 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(process.env.REACT_APP_BASE_API + "user", {
+        const response = await axios.get(import.meta.env.VITE_BASE_API + "user", {
           headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
         });
         setUser(response.data);
@@ -32,7 +32,7 @@ const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post(process.env.REACT_APP_BASE_API + "logout", {}, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } });
+      await axios.post(import.meta.env.VITE_BASE_API + "logout", {}, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } });
       setUser(null);
       setRole("");
       setPermissions([]);

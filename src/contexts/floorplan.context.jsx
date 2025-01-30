@@ -2,7 +2,7 @@ import { createContext, useState } from "react";
 
 export const FloorPlanContext = createContext();
 
-export const FloorPlanProvider = ({ children }) => {
+const FloorPlanProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [tables, setTables] = useState([]);
   const [bookingPlans, setBookingPlans] = useState([]);
@@ -70,3 +70,5 @@ export const FloorPlanProvider = ({ children }) => {
     </FloorPlanContext.Provider>
   );
 };
+
+export default FloorPlanProvider;
