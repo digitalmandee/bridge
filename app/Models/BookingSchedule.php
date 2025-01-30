@@ -13,7 +13,8 @@ class BookingSchedule extends Model
     protected $fillable = [
         'branch_id',
         'user_id',
-        'room_id',
+        'schedule_floor_id',
+        'schedule_room_id',
         'created_by_branch',
         'created_by_user',
         'title',
@@ -37,6 +38,10 @@ class BookingSchedule extends Model
     }
     public function room()
     {
-        return $this->belongsTo(Room::class);
+        return $this->belongsTo(ScheduleRoom::class, 'schedule_room_id');
+    }
+    public function floor()
+    {
+        return $this->belongsTo(ScheduleFloor::class, 'schedule_floor_id');
     }
 }

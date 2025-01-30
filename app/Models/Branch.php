@@ -21,6 +21,10 @@ class Branch extends Model
     {
         return $this->hasMany(Floor::class);
     }
+    public function scheduleFloors()
+    {
+        return $this->hasMany(ScheduleFloor::class);
+    }
 
 
     // public static function branches()

@@ -25,6 +25,7 @@ class Booking extends Model
         'end_date',
         'end_time',
         'total_price',
+        'package_detail',
         'plan',
         'booking_purpose',
         'payment_method',

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingPlanController;
 use App\Http\Controllers\BookingScheduleController;
 use App\Http\Controllers\FloorPlanController;
@@ -18,11 +19,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/login', [UserController::class, 'userlogin']);
+Route::post('/login', [AuthController::class, 'userlogin']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::get('/user', [UserController::class, 'getUser']);
-    Route::post('/logout', [UserController::class, 'logout']);
+    Route::get('/user', [AuthController::class, 'getUser']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::group(['prefix' => 'user'], function () {
+        Route::get('dashboard', [UserController::class, 'index']);
+    });
+
+    // Booking Schedule Calendar
+    Route::get('booking-schedules', [BookingScheduleController::class, 'index']);
+    Route::post('booking-schedule/create', [BookingScheduleController::class, 'create']);
+    Route::get('booking-schedule/filter', [BookingScheduleController::class, 'filter']);
 });
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -41,11 +51,6 @@ Route::post('bookings/update', [BookingPlanController::class, 'updateBooking']);
 
 // Booking Plans
 Route::resource('booking-plans', BookingPlanController::class)->except(['create', 'show', 'edit']);
-
-// Booking Schedule Calendar
-Route::get('booking-schedules', [BookingScheduleController::class, 'index']);
-Route::post('booking-schedule/create', [BookingScheduleController::class, 'create']);
-Route::get('booking-schedule/filter', [BookingScheduleController::class, 'filter']);
 
 // users
 Route::get('users', [UserController::class, 'index']);

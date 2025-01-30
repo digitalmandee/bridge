@@ -13,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
-
+    protected $dates = ['booking_quota_updated_at'];
     /**
      * The attributes that are mass assignable.
      *
@@ -26,6 +26,9 @@ class User extends Authenticatable
         'role_id',
         'password',
         'profile_image',
+        'booking_quota',
+        'booking_quota_updated_at',
+        'created_by_branch_id',
         'deleted_at',
     ];
 
@@ -51,5 +54,14 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+    public function branch()
+    {
+        return $this->hasOne(Branch::class);
+    }
+
+    public function BookingInvoices()
+    {
+        return $this->hasMany(BookingInvoice::class);
     }
 }

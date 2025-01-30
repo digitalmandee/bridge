@@ -27,6 +27,7 @@ class CreateBookingsTable extends Migration
             $table->string('start_time')->nullable();
             $table->date('end_date')->nullable();
             $table->string('end_time')->nullable();
+            $table->string('package_detail')->nullable();
             $table->decimal('total_price', 10, 2)->default(0.00);
             $table->json('plan')->nullable();
             $table->text('purpose')->nullable();

@@ -53,6 +53,8 @@ class PermissionsSeeder extends Seeder
         $branchManager = User::find(2);
         $investor = User::find(3);
         $user = User::find(4);
+        $user2 = User::find(5);
+        $user3 = User::find(6);
         // if ($user) {
         // $user->role_id = 1;
         // $user2->role_id = 2;
@@ -60,6 +62,8 @@ class PermissionsSeeder extends Seeder
         $branchManager->assignRole('admin');
         $investor->assignRole('invester');
         $user->assignRole('user');
+        $user2->assignRole('user');
+        $user3->assignRole('user');
         // }
     }
 }

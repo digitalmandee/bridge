@@ -6,10 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\BookingSchedule;
 use App\Models\Branch;
 use App\Models\Room;
+use App\Models\ScheduleFloor;
+use App\Models\ScheduleRoom;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BookingScheduleController extends Controller
 {
@@ -24,6 +28,7 @@ class BookingScheduleController extends Controller
     {
         $request->validate([
             'branch_id' => 'required|integer',
+            'location_id' => 'required|integer',
             'user_id' => 'required|integer',
             'room_id' => 'required|integer',
             'title' => 'required|string',
@@ -31,7 +36,6 @@ class BookingScheduleController extends Controller
             'endTime' => 'required|date|after:startTime',
             'date' => 'required|date',
             'persons' => 'required|integer',
-            // 'price' => 'required|numeric',
         ]);
 
         try {
@@ -41,7 +45,7 @@ class BookingScheduleController extends Controller
             $date = Carbon::parse($request->date);
 
             // Check if the room's schedule overlaps with the requested time
-            $overlap = BookingSchedule::where('room_id', $request->room_id)
+            $overlap = BookingSchedule::where('schedule_room_id', $request->room_id)
                 ->where(function ($query) use ($startTime, $endTime) {
                     $query->where(function ($query) use ($startTime, $endTime) {
                         // Check for overlapping schedules
@@ -63,7 +67,8 @@ class BookingScheduleController extends Controller
             $bookingSchedule = BookingSchedule::create([
                 'branch_id' => $request->branch_id,
                 'user_id' => $request->user_id,
-                'room_id' => $request->room_id,
+                'schedule_floor_id' => $request->location_id,
+                'schedule_room_id' => $request->room_id,
                 'title' => $request->title,
                 'startTime' => $startTime,  // Store as timestamp
                 'endTime' => $endTime,      // Store as timestamp
@@ -73,7 +78,7 @@ class BookingScheduleController extends Controller
 
             DB::commit();
 
-            return response()->json(['success' => true, 'message' => 'Booking created successfully', 'data' => $bookingSchedule->load('branch', 'room', 'user')], 201);
+            return response()->json(['success' => true, 'message' => 'Booking created successfully', 'data' => $bookingSchedule->load('branch', 'room', 'floor', 'user')], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
@@ -82,49 +87,74 @@ class BookingScheduleController extends Controller
 
     public function filter(Request $request)
     {
-        $branchId = $request->get('branch_id');
+        $locationId = $request->get('location_id');
         $roomId = $request->get('room_id');
         $timestamp = $request->get('date'); // Get the timestamp from the request
 
+        $user = auth()->user();
+
         // Parse the timestamp to a Carbon instance if provided
-        $date = $timestamp ? \Carbon\Carbon::parse($timestamp)->toDateString() : null;
+        $date = $timestamp ? Carbon::parse($timestamp)->toDateString() : null;
 
         // Fetch all branches if no branch and room ID are provided
-        if (empty($branchId) && empty($roomId)) {
-            $branches = Branch::get();
-            return response()->json(['success' => true, 'branches' => $branches], 200);
+        if (empty($locationId) && empty($roomId)) {
+            $locations = ScheduleFloor::get();
+            return response()->json(['success' => true, 'locations' => $locations], 200);
         }
 
         // Fetch branch with floors and rooms if only branch ID is provided
-        if (!empty($branchId) && empty($roomId)) {
-            $branch = Branch::with('floors.rooms')->findOrFail($branchId);
-            $users = User::where('type', 'user')->get();
-            $floors = $branch->floors;
-            return response()->json(['success' => true, 'branch_id' => $branchId, 'floors' => $floors, 'users' => $users], 200);
-        }
-
-        // Fetch booking schedules based on branch ID, room ID, and optionally filter by date
-        if (!empty($branchId) && !empty($roomId)) {
-            $query = BookingSchedule::where('branch_id', $branchId)
-                ->where('room_id', $roomId);
-
-            // Apply date filter if the date parameter is provided
-            if (!empty($date)) {
-                $query->whereDate('date', '=', $date); // Match only the date part of the timestamp
-            }
-
-
-            $bookingSchedules = $query->with(['branch', 'room', 'user'])->get();
+        if (!empty($locationId) && empty($roomId)) {
+            $floors = ScheduleFloor::where('id', $locationId)->with('rooms')->get();
+            $users = $user->type === 'user' ? [] : User::where('type', 'user')->get();
 
             return response()->json([
                 'success' => true,
-                'branch_id' => $branchId,
+                'location_id' => $locationId,
+                'floors' => $floors,
+                'users' => $users
+            ], 200);
+        }
+
+        // Fetch booking schedules based on branch ID, room ID, and optionally filter by date
+        if (!empty($locationId) && !empty($roomId)) {
+            $branchId = $user->type === 'admin' ? $user->branch->id : $user->created_by_branch_id;
+
+            $query = BookingSchedule::where('branch_id', $branchId)
+                ->where('schedule_room_id', $roomId);
+
+            // Apply date filter if provided
+            if (!empty($date)) {
+                $query->whereDate('date', '=', $date);
+            }
+
+            if ($user->type === 'admin') {
+                // Admins get full booking schedule details
+                $bookingSchedules = $query->with(['branch', 'room', 'floor', 'user:id,name'])->get();
+            } else {
+                // Regular users:
+                // - Get full details for **their own bookings** (with branch, floor, and user)
+                // - Get only `id`, `startTime`, and `endTime` for **other users' bookings**
+                $bookingSchedules = $query->with(['branch', 'room', 'floor', 'user:id,name'])->get()->map(function ($schedule) use ($user) {
+                    if ($schedule->user_id === $user->id) {
+                        return $schedule; // Full details for own bookings
+                    }
+                    return [
+                        'id' => $schedule->id,
+                        'startTime' => $schedule->startTime,
+                        'endTime' => $schedule->endTime,
+                        'date' => $schedule->date
+                    ]; // Limited details for other users
+                });
+            }
+
+            return response()->json([
+                'success' => true,
+                'branch_id' => $locationId,
                 'room_id' => $roomId,
                 'schedules' => $bookingSchedules,
             ], 200);
         }
 
-        // If parameters are invalid
         return response()->json(['success' => false, 'message' => 'Invalid parameters'], 400);
     }
 }

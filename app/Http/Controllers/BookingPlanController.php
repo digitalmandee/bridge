@@ -77,6 +77,8 @@ class BookingPlanController extends Controller
                 "start_date" => $bookingDetails['start_date'],
                 "start_time" => $bookingDetails['start_time'],
                 "total_price" => $bookingDetails['total_price'],
+                "package_detail" => $bookingDetails['package_detail'],
+                "payment_method" => $bookingDetails['payment_method'],
                 "plan" => $selectedPlan,
                 "receipt" => $receiptPath,
             ]);
