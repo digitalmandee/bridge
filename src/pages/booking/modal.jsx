@@ -1,10 +1,11 @@
 import React from 'react'
 import { useNavigate } from "react-router-dom";
+import colors from "../../assets/styles/color";
 
 const Modal = ({ handleClose }) => {
     const navigate = useNavigate();
     const handleContinue = () => {
-        navigate("/seatsAllocation"); // Navigate to the seatsAllocation screen
+        navigate("/branch/booking/seats-allocation"); // Navigate to the seatsAllocation screen
     };
     return (
         <>
@@ -32,7 +33,7 @@ const Modal = ({ handleClose }) => {
                 >
                     <div
                         style={{
-                            backgroundColor: "#f0c040",
+                            backgroundColor: colors.primary,
                             borderRadius: "50%",
                             width: "50px",
                             height: "50px",
@@ -57,7 +58,7 @@ const Modal = ({ handleClose }) => {
                     <button
                         onClick={handleContinue} // Close modal on click
                         style={{
-                            backgroundColor: "#f0c040",
+                            backgroundColor: colors.primary,
                             color: "white",
                             padding: "10px 20px",
                             border: "none",

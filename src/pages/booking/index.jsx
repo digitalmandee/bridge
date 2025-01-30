@@ -38,7 +38,7 @@ const Booking = () => {
   };
 
   useEffect(() => {
-    if (selectedChairs.length === 0) return navigate("/floorplan");
+    if (selectedChairs.length === 0) return navigate("/branch/floorplan");
   }, []);
 
   // const handleConfirm = () => {

@@ -34,18 +34,46 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 
   const handleSubmit = () => {
     if (validateBookingDetails()) {
-      const totalPrice = Object.values(selectedChairs)
-        .flat()
-        .reduce((total, chair) => {
-          const planPrice = bookingPlans.find((plan) => plan.id == Number(bookingdetails.selectedPlan) + 1)?.price || 0;
-          console.log(bookingPlans);
-          return Number(total) + Number(planPrice);
-        }, 0)
-        .toFixed(2);
+      const selectedPlan = bookingPlans.find((plan) => plan.id == Number(bookingdetails.selectedPlan) + 1);
+      const planPrice = Number(selectedPlan?.price) || 0;
+
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth();
+      const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const remainingDays = lastDayOfMonth - today.getDate();
+
+      let totalPrice = 0;
+      let packageDetail = "";
+
+      // Count total selected chairs
+      const totalChairs = Object.values(selectedChairs).flat().length;
+
+      if (remainingDays > 0) {
+        const dailyRate = planPrice / lastDayOfMonth;
+        let extraPricePerChair = 0;
+
+        if (remainingDays <= 5) {
+          // If remaining days are ≤ 5, add full month + extra days price
+          extraPricePerChair = planPrice + dailyRate * remainingDays;
+          packageDetail = `1 month, ${remainingDays} days`;
+        } else {
+          // If remaining days > 5, charge only for those days
+          extraPricePerChair = dailyRate * remainingDays;
+          packageDetail = `${remainingDays} days`;
+        }
+
+        totalPrice = (totalChairs * extraPricePerChair).toFixed(2);
+      } else {
+        // If there are no extra days, charge for only 1 full month
+        totalPrice = (totalChairs * planPrice).toFixed(2);
+        packageDetail = "1 month";
+      }
 
       setBookingDetails((prevDetails) => ({
         ...prevDetails,
         total_price: totalPrice,
+        package_detail: packageDetail,
       }));
 
       handleNext();

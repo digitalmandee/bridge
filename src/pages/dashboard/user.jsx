@@ -1,6 +1,7 @@
 import React from "react";
 import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
+import colors from "../../assets/styles/color";
 import { Box, Card, CardContent, Typography, Grid, Button, Select, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
@@ -8,6 +9,7 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import PaymentsIcon from "@mui/icons-material/Payments";
+import { Link } from "react-router-dom";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -65,40 +67,28 @@ const UserDashboard = () => {
                   Dashboard
                 </Typography>
                 <Box sx={{ display: "flex", gap: 2 }}>
-                  <Button
-                    variant="outlined"
-                    sx={{
-                      color: "text.primary",
-                      borderColor: "divider",
-                      bgcolor: "white",
-                    }}
-                  >
-                    Create Booking
-                  </Button>
-                  <Select
-                    value="branch1"
-                    size="small"
-                    sx={{
-                      minWidth: 120,
-                      bgcolor: "#FFB800",
-                      color: "white",
-                      ".MuiOutlinedInput-notchedOutline": { border: "none" },
-                      "&:hover .MuiOutlinedInput-notchedOutline": { border: "none" },
-                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": { border: "none" },
-                    }}
-                  >
-                    <MenuItem value="branch1">Branch 1</MenuItem>
-                  </Select>
+                  <Link to="/user/booking-schedule">
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        color: "text.primary",
+                        borderColor: "divider",
+                        bgcolor: "white",
+                      }}
+                    >
+                      Create Booking
+                    </Button>
+                  </Link>
                 </Box>
               </Box>
 
               {/* Metric Cards */}
               <Grid container spacing={3} sx={{ mb: 3 }}>
                 {[
-                  { title: "Available Booking", value: "60", icon: DirectionsCarIcon, color: "#FFB800" },
-                  { title: "Remaing Booking", value: "45", icon: GroupsIcon, color: "#FFB800" },
-                  { title: "Total Amount", value: "120,000", icon: AccountBalanceWalletIcon, color: "#FFB800" },
-                  { title: "Over Due Amount", value: "60,000", icon: PaymentsIcon, color: "#FFB800" },
+                  { title: "Available Booking", value: "60", icon: DirectionsCarIcon, color: colors.primary },
+                  { title: "Remaing Booking", value: "45", icon: GroupsIcon, color: colors.primary },
+                  { title: "Total Amount", value: "120,000", icon: AccountBalanceWalletIcon, color: colors.primary },
+                  { title: "Over Due Amount", value: "60,000", icon: PaymentsIcon, color: colors.primary },
                 ].map((item, index) => (
                   <Grid item xs={12} sm={6} md={3} key={index}>
                     <Card
@@ -148,7 +138,7 @@ const UserDashboard = () => {
                     }}
                   >
                     <Table>
-                      <TableHead sx={{ bgcolor: "#FFB800" }}>
+                      <TableHead sx={{ bgcolor: colors.primary }}>
                         <TableRow>
                           <TableCell sx={{ color: "white" }}>Booking ID</TableCell>
                           <TableCell sx={{ color: "white" }}>Floor</TableCell>

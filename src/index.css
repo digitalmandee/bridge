@@ -19,6 +19,22 @@ body {
     opacity: 1;
 } */
 
+.payment-methods{
+  flex: 1;
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: #FFFFFF;
+  border: 1px solid white;
+  transition: all 0.15s ease-in-out;
+}
+
+.payment-methods.active{
+  background-color: #0d2b4e25;
+  border-color: #0D2B4E;
+}
+
 .main .content {
   max-width: 80%;
   flex: 0 0 80%;
@@ -51,7 +67,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #202224;
+  background-color: #202224;
+  color: white;
   border: none;
   /* Removes border */
   border-radius: 5px;
@@ -81,6 +98,7 @@ body {
 
 .create-booking-btn:hover {
   background-color: #0D2B4E;
+  color: white;
   /* Slightly darker yellow on hover */
 }
 
@@ -187,12 +205,13 @@ body {
 /* font-weight: 900;  */
 
 /*  */
-.selected-booking-chair{
+.selected-booking-chair {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
   padding: 0;
 }
+
 .selected-booking-chair li {
   list-style: none;
   border-radius: 8px;

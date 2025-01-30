@@ -3,24 +3,11 @@ import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ChairIcon from "@mui/icons-material/Chair";
-import MoreVertIcon from "@mui/icons-material/MoreVert"; // Three-dot icon
 import { Menu, MenuItem, IconButton, Box } from "@mui/material";
 import colors from "../../assets/styles/color";
 import axios from "axios";
 
 const SeatCard = ({ seatNumber, userName, planName, status, location, floor, profile_image }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  // Handle opening the menu
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  // Handle closing the menu
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
   return (
     <div className="col-md-3 mb-4">
       <div className="card" style={{ position: "relative" }}>
@@ -159,7 +146,7 @@ const SeatsAllocation = () => {
               <h3>Seats Allocation</h3>
             </div>
             <div className="row">
-              {seatData2.length > 0 &&
+              {seatData2.length > 0 ?
                 seatData2.map((seat) =>
                   seat.chairs.map((chair) => (
                     <SeatCard
@@ -173,6 +160,8 @@ const SeatsAllocation = () => {
                       profile_image={seat.user.profile_image}
                     />
                   ))
+                ): (
+                  <p>No seats found.</p>
                 )}
             </div>
           </div>

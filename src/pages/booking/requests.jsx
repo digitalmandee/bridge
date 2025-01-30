@@ -309,8 +309,14 @@ const Requests = () => {
             <TextField label="Start Time" type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 20, width: "48%" }} />
           </div>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <TextField label="End Date" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 20, width: "48%" }} />
-            <TextField label="End Time" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 20, width: "48%" }} />
+            <TextField label="End Date" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
+            <TextField label="End Time" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
+          </div>
+          <div style={{ textTransform: "capitalize", marginBottom: 10 }}>
+            <b>Payment Method:</b> {selectedBooking.payment_method}
+          </div>
+          <div style={{ textTransform: "capitalize", marginBottom: 10 }}>
+            <b>Package Detail:</b> {selectedBooking.package_detail}
           </div>
           {receiptImage && (
             <div style={{ marginBottom: 20 }}>

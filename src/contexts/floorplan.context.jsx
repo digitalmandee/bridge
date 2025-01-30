@@ -19,7 +19,9 @@ const FloorPlanProvider = ({ children }) => {
     start_time: "",
     duration: 12,
     selectedPlan: "",
+    package_detail: 0,
     total_price: 0,
+    payment_method: 'cash',
   });
 
   const [formErrors, setFormErrors] = useState({});

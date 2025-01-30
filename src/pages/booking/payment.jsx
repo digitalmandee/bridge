@@ -4,6 +4,7 @@ import payment from "../../assets/payment.png";
 import Modal from "./modal";
 import axios from "axios";
 import { FloorPlanContext } from "../../contexts/floorplan.context";
+import colors from "../../assets/styles/color";
 
 const Payment = () => {
   const { selectedChairs, bookingPlans, bookingdetails, setBookingDetails } = useContext(FloorPlanContext);
@@ -40,7 +41,7 @@ const Payment = () => {
         },
       });
 
-      console.log(response.data);
+      // console.log(response.data);
       setShowModal(true); // Show the modal
     } catch (error) {
       console.error("Error while creating booking:", error);
@@ -91,16 +92,11 @@ const Payment = () => {
               marginBottom: "20px",
             }}
           >
-            <div
-              style={{
-                flex: 1,
-                textAlign: "center",
-                padding: "20px",
-                borderRadius: "10px",
-                cursor: "pointer",
-                backgroundColor: "#FFFFFF",
-              }}
-            >
+            <div className={`payment-methods ${bookingdetails.payment_method === "cash" ? "active" : ""}`}
+              onClick={() => setBookingDetails((prevDetails) => ({
+                ...prevDetails,
+                payment_method: 'cash', // Update receipt field
+              }))}>
               <img src={cash} alt="Cash" style={{ width: "50px", marginBottom: "10px" }} />
               <p
                 style={{
@@ -112,15 +108,11 @@ const Payment = () => {
                 Cash
               </p>
             </div>
-            <div
-              style={{
-                flex: 1,
-                textAlign: "center",
-                padding: "20px",
-                borderRadius: "10px",
-                cursor: "pointer",
-                backgroundColor: "#FFFFFF",
-              }}
+            <div className={`payment-methods ${bookingdetails.payment_method === "bank" ? "active" : ""}`}
+              onClick={() => setBookingDetails((prevDetails) => ({
+                ...prevDetails,
+                payment_method: 'bank', // Update receipt field
+              }))}
             >
               <img src={payment} alt="Bank Transfer" style={{ width: "50px", marginBottom: "10px" }} />
               <p
@@ -163,7 +155,7 @@ const Payment = () => {
               htmlFor="receipt-upload"
               style={{
                 display: "inline-block",
-                backgroundColor: "#f0c040",
+                backgroundColor: colors.primary,
                 color: "white",
                 padding: "10px 20px",
                 borderRadius: "5px",
@@ -179,7 +171,7 @@ const Payment = () => {
             style={{
               display: "block",
               margin: "0 auto",
-              backgroundColor: "#f0c040",
+              backgroundColor: colors.primary,
               color: "white",
               padding: "10px 20px",
               border: "none",
@@ -196,7 +188,8 @@ const Payment = () => {
         <div style={{ backgroundColor: "white", padding: "10px" }}>
           <span style={{ fontSize: "18px", fontWeight: 600 }}>
             Plan name: {bookingPlans[bookingdetails.selectedPlan].name} <br />
-            Plan price: Rs. {bookingdetails.total_price}
+            Plan price: Rs. {bookingdetails.total_price} <br />
+            Plan Details: {bookingdetails.package_detail}
           </span>
           {/* Display Selected Chairs */}
           {Object.entries(selectedChairs).length > 0 && (

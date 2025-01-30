@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
 import Aseat from "../../assets/A-seat.png";
@@ -11,6 +11,7 @@ import FFloorPlan from "./floor/Ffloor/ffloor";
 import colors from "../../assets/styles/color";
 
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
+import { FloorPlanContext } from "../../contexts/floorplan.context";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
@@ -85,10 +86,12 @@ const floorPlanOptions = {
 };
 
 const Floorplan = () => {
+  const { selectedChairs } = useContext(FloorPlanContext);
+
   const navigate = useNavigate();
 
   const handleNextClick = () => {
-    navigate("/booking"); // Navigate to the Booking screen
+    navigate("/branch/booking"); // Navigate to the Booking screen
   };
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -124,7 +127,7 @@ const Floorplan = () => {
             }}
           >
             <h3 className="title">Floor Plan</h3>
-            <button className="btn create-booking-btn" onClick={handleNextClick}>
+            <button className="btn create-booking-btn" onClick={handleNextClick} disabled={selectedChairs.length === 0}>
               Next
               <span className="icon">
                 <IoIosArrowDropright />
