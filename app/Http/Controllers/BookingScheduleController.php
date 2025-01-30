@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\BookingSchedule;
 use App\Models\Branch;
 use App\Models\Room;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -29,52 +31,49 @@ class BookingScheduleController extends Controller
             'endTime' => 'required|date|after:startTime',
             'date' => 'required|date',
             'persons' => 'required|integer',
-            'price' => 'required|numeric',
+            // 'price' => 'required|numeric',
         ]);
 
         try {
-            // Convert startTime and endTime to Carbon date instances
-            $startTime = \Carbon\Carbon::parse($request->startTime);
-            $endTime = \Carbon\Carbon::parse($request->endTime);
-
-            // Combine the date with startTime and endTime
-            $startDate = \Carbon\Carbon::parse($request->date)->setTimeFromTimeString($startTime->toTimeString());
-            $endDate = \Carbon\Carbon::parse($request->date)->setTimeFromTimeString($endTime->toTimeString());
+            // Directly parse timestamps as they are
+            $startTime = Carbon::parse($request->startTime);
+            $endTime = Carbon::parse($request->endTime);
+            $date = Carbon::parse($request->date);
 
             // Check if the room's schedule overlaps with the requested time
             $overlap = BookingSchedule::where('room_id', $request->room_id)
-                ->where(function ($query) use ($startDate, $endDate) {
-                    $query->where(function ($query) use ($startDate, $endDate) {
-                        // Check for overlap
-                        $query->where('startTime', '<', $endDate)
-                            ->where('endTime', '>', $startDate);
+                ->where(function ($query) use ($startTime, $endTime) {
+                    $query->where(function ($query) use ($startTime, $endTime) {
+                        // Check for overlapping schedules
+                        $query->where('startTime', '<', $endTime)
+                            ->where('endTime', '>', $startTime);
                     });
                 })->exists();
 
-            // If there's an overlap, return an error message
             if ($overlap) {
-                return response()->json(['success' => false, 'message' => 'The room is already booked during the selected time range.'], 409);
+                return response()->json([
+                    'success' => false,
+                    'already_exist' => 'The room is already booked during the selected time range.'
+                ], 409);
             }
 
-            // No overlap found, so proceed to create the booking
+            // No overlap found, proceed to create the booking
             DB::beginTransaction();
 
-            // Create the new booking schedule
-            BookingSchedule::create([
+            $bookingSchedule = BookingSchedule::create([
                 'branch_id' => $request->branch_id,
                 'user_id' => $request->user_id,
                 'room_id' => $request->room_id,
                 'title' => $request->title,
-                'startTime' => $startDate,
-                'endTime' => $endDate,
-                'date' => $request->date,
+                'startTime' => $startTime,  // Store as timestamp
+                'endTime' => $endTime,      // Store as timestamp
+                'date' => $date,            // Store as timestamp
                 'persons' => $request->persons,
-                'price' => $request->price,
             ]);
 
             DB::commit();
 
-            return response()->json(['success' => true, 'message' => 'Booking created successfully'], 201);
+            return response()->json(['success' => true, 'message' => 'Booking created successfully', 'data' => $bookingSchedule->load('branch', 'room', 'user')], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
@@ -99,8 +98,9 @@ class BookingScheduleController extends Controller
         // Fetch branch with floors and rooms if only branch ID is provided
         if (!empty($branchId) && empty($roomId)) {
             $branch = Branch::with('floors.rooms')->findOrFail($branchId);
+            $users = User::where('type', 'user')->get();
             $floors = $branch->floors;
-            return response()->json(['success' => true, 'branch_id' => $branchId, 'floors' => $floors], 200);
+            return response()->json(['success' => true, 'branch_id' => $branchId, 'floors' => $floors, 'users' => $users], 200);
         }
 
         // Fetch booking schedules based on branch ID, room ID, and optionally filter by date

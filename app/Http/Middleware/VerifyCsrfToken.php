@@ -18,6 +18,7 @@ class VerifyCsrfToken extends Middleware
         'api/booking/create',
         'api/seat-allocations',
         'api/bookings/update',
+        'api/booking-schedule/create'
         //
     ];
 }

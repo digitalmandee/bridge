@@ -169,7 +169,7 @@ class BookingPlanController extends Controller
             foreach ($chairsData as $group => $chairList) {
                 foreach ($chairList as &$chairData) {
                     // Assuming the chair ID is in the data, we need to update it
-                    $chair = Chair::findOrFail($chairData['id']);
+                    $chair = Chair::findOrFail($chairData['chair_id']);
 
                     // Update chair details based on the booking status
                     if ($booking->status === 'accepted') {

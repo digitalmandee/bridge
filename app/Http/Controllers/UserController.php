@@ -192,7 +192,7 @@ class UserController extends Controller
         // Prepare response data
         $data = [
             'token' => $token,
-            ...$user->only(['id', 'name', 'email', 'phone']),
+            ...$user->only(['id', 'name', 'email', 'phone', 'type']),
             'role' => $role ? $role->name : null,
             'permissions' => $permissions,
         ];

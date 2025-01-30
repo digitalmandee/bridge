@@ -40,18 +40,26 @@ class PermissionsSeeder extends Seeder
         }
 
         $superAdminRole = Role::firstOrCreate(['name' => 'super_admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $investerRole = Role::firstOrCreate(['name' => 'invester']);
         $userRole = Role::firstOrCreate(['name' => 'user']);
 
         $superAdminRole->syncPermissions($permissions);
+        $adminRole->syncPermissions($permissions);
+        $investerRole->syncPermissions($permissions);
         $userRole->syncPermissions(['dashboard', 'booking-management', 'roles', 'permissions', 'manage-members']);
 
-        $user = User::find(1);
-        $user2 = User::find(2);
-        if ($user) {
-            // $user->role_id = 1;
-            // $user2->role_id = 2;
-            $user->assignRole('super_admin');
-            $user2->assignRole('user');
-        }
+        $superAdmin = User::find(1);
+        $branchManager = User::find(2);
+        $investor = User::find(3);
+        $user = User::find(4);
+        // if ($user) {
+        // $user->role_id = 1;
+        // $user2->role_id = 2;
+        $superAdmin->assignRole('super_admin');
+        $branchManager->assignRole('admin');
+        $investor->assignRole('invester');
+        $user->assignRole('user');
+        // }
     }
 }

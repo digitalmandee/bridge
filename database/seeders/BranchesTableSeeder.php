@@ -9,6 +9,6 @@ class BranchesTableSeeder extends Seeder
 {
     public function run()
     {
-        Branch::create(['name' => 'Johar Town', 'location' => 'Lahore']);
+        Branch::create(['name' => 'G Floor', 'location' => 'Lahore']);
     }
 }
