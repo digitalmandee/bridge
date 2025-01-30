@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, MenuItem, IconButton, Modal, Box, TextField, Button, Select, Snackbar, Alert } from "@mui/material";
+import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import { Menu, MenuItem, IconButton, Modal, Box, TextField, Button, Select, Snackbar, Alert, Typography } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import TopNavbar from "../topNavbar";
 import Sidebar from "../leftSideBar";
 import Loader from "../components/Loader";
 import axios from "axios";
+import colors from "../styles/color";
 
 const Requests = () => {
   const [bookings, setBookings] = useState([]);
@@ -118,65 +121,165 @@ const Requests = () => {
           <Sidebar />
         </div>
         <div className="content">
-          <div className="d-flex justify-content-between align-items-center flex-wrap grid-margin py-4">
-            <h3>Booking Requests</h3>
-          </div>
-          <div className="row card col-md-12">
-            <table className="table table-responsive">
-              <thead>
-                <tr>
-                  <th>Booking ID</th>
-                  <th>Name</th>
-                  <th>Floor</th>
-                  <th>Room</th>
-                  <th>Seats</th>
-                  <th>Start Date</th>
-                  <th>End Date</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
+          <Box className="page-content" p={2}>
+            <Box className="d-flex justify-content-between align-items-center flex-wrap" mb={3}>
+              <Typography variant="h5">Booking Request</Typography>
+            </Box>
+
+            {/* Filter and Search */}
+            <Box
+              className="mt-2 ms-2 me-2 d-flex justify-content-between align-items-center"
+              p={2}
+              sx={{
+                display: "flex",
+                gap: "16px",
+              }}
+            >
+              {/* Check-in and Check-out Buttons */}
+              <Button
+                variant="contained"
+                sx={{
+                  borderRadius: "20px",
+                  backgroundColor: "transparent",
+                  color: "#000",
+                  "&:hover": {
+                    backgroundColor: colors.primary,
+                    color: "white",
+                  },
+                }}
+              >
+                Check in
+              </Button>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderRadius: "20px",
+                  color: "#000",
+                  borderColor: "#dcdcdc",
+                  backgroundColor: "#fff",
+                  "&:hover": {
+                    backgroundColor: "#f1f1f1",
+                  },
+                }}
+              >
+                Check out
+              </Button>
+
+              {/* Filter and Search Box */}
+              <Box
+                className="filter-search-container"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                  gap: "16px",
+                  flex: 1,
+                }}
+              >
+                {/* Filter Button */}
+                <Button
+                  variant="outlined"
+                  startIcon={<FilterAltOutlinedIcon />}
+                  sx={{
+                    borderRadius: "20px",
+                    color: "#000",
+                    borderColor: "#dcdcdc",
+                    backgroundColor: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#f1f1f1",
+                    },
+                  }}
+                >
+                  Filter
+                </Button>
+
+                {/* Search Box */}
+                <Box
+                  className="search-form"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    backgroundColor: "#fff",
+                    border: "1px solid #dcdcdc",
+                    borderRadius: "20px",
+                    padding: "4px 10px",
+                    flexGrow: 1,
+                    maxWidth: "400px",
+                  }}
+                >
+                  <SearchOutlinedIcon style={{ marginRight: "8px", color: "#000" }} />
+                  <TextField
+                    placeholder="Search by room number"
+                    size="small"
+                    variant="standard"
+                    InputProps={{ disableUnderline: true }}
+                    sx={{
+                      flex: 1,
+                      "& input::placeholder": {
+                        color: "#6c757d",
+                      },
+                    }}
+                  />
+                </Box>
+              </Box>
+            </Box>
+            <div className="row card col-md-12">
+              <table className="table table-responsive">
+                <thead>
                   <tr>
-                    <td colSpan="9">
-                      <Loader variant="C" />
-                    </td>
+                    <th>Booking ID</th>
+                    <th>Name</th>
+                    <th>Floor</th>
+                    <th>Room</th>
+                    <th>Seats</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
                   </tr>
-                ) : bookings.length ? (
-                  bookings.map((booking) => (
-                    <tr key={booking.id}>
-                      <td>#{booking.id}</td>
-                      <td>{booking.name}</td>
-                      <td>{booking.floor?.name}</td>
-                      <td>{booking.rooms?.join(", ")}</td>
-                      <td>{booking.total_chairs}</td>
-                      <td>{booking.start_date}</td>
-                      <td>{booking.end_date || "N/A"}</td>
-                      <td>Rs. {booking.total_price}</td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className={`status ${booking.status}`}>{booking.status}</span>
-                          <IconButton onClick={(e) => handleMenuOpen(e, booking)}>
-                            <MoreVertIcon />
-                          </IconButton>
-                        </div>
-                        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                          <MenuItem onClick={handleEditClick}>Edit</MenuItem>
-                        </Menu>
+                </thead>
+                <tbody>
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan="9">
+                        <Loader variant="C" />
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="9" className="text-center">
-                      No booking requests available
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : bookings.length > 0 ? (
+                    bookings.map((booking) => (
+                      <tr key={booking.id}>
+                        <td>#{booking.id}</td>
+                        <td>{booking.name}</td>
+                        <td>{booking.floor?.name}</td>
+                        <td>{booking.rooms?.join(", ")}</td>
+                        <td>{booking.total_chairs}</td>
+                        <td>{booking.start_date}</td>
+                        <td>{booking.end_date || "N/A"}</td>
+                        <td>Rs. {booking.total_price}</td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <span className={`status ${booking.status}`}>{booking.status}</span>
+                            <IconButton onClick={(e) => handleMenuOpen(e, booking)}>
+                              <MoreVertIcon />
+                            </IconButton>
+                          </div>
+                          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+                            <MenuItem onClick={handleEditClick}>Edit</MenuItem>
+                          </Menu>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="9" className="text-center">
+                        No booking requests available
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Box>
         </div>
       </div>
 
@@ -194,7 +297,7 @@ const Requests = () => {
             width: 700,
           }}
         >
-          <h3>Edit Booking</h3>
+          <h3 style={{ marginBottom: 20 }}>Edit Booking</h3>
           <TextField label="Price" fullWidth value={newPrice} onChange={(e) => setNewPrice(e.target.value)} style={{ marginBottom: 20 }} />
           <Select fullWidth value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
             <MenuItem value="pending">Pending</MenuItem>
@@ -214,16 +317,18 @@ const Requests = () => {
               <img src={receiptImage} alt="Receipt" style={{ width: 100, height: 100, objectFit: "contain" }} />
             </div>
           )}
-          <ul className="selected-booking-chair">
-            {Object.entries(selectedBooking.chairs).map(([tableId, chairs]) =>
-              chairs.map((chair) => (
-                <li key={chair.id}>
-                  {tableId}
-                  {chair.id}
-                </li>
-              ))
-            )}
-          </ul>
+          {selectedBooking && Object.entries(selectedBooking.chairs).length > 0 && (
+            <ul className="selected-booking-chair">
+              {Object.entries(selectedBooking.chairs).map(([tableId, chairs]) =>
+                chairs.map((chair) => (
+                  <li key={chair.id} style={{ backgroundColor: colors.primary }}>
+                    {tableId}
+                    {chair.id}
+                  </li>
+                ))
+              )}
+            </ul>
+          )}
           <Button variant="contained" color="primary" onClick={handleUpdateBooking}>
             Update Booking
           </Button>

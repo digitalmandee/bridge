@@ -1,0 +1,56 @@
+.floor {
+    width: 800px;
+    height: 2000px;
+    margin:0;
+    padding: 0;
+    position: relative; /* Ensures child elements are positioned relative to this div */
+    background-image: url("../../assets/newfloor.png");
+    background-size: contain; /* Ensures proportional scaling */
+    background-repeat: no-repeat;
+    background-position: 'flex-center';
+    /* background-color: black; */
+
+}
+
+ .container {
+    display: flex;
+    /* flex-direction: column; */
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100vh;
+    padding: 0px;
+}
+.chair:hover{
+    scale: 1.1;
+    transition: ease-in-out;
+}
+.selected-chairs{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    width: 30%;
+    
+}
+.selected-chairs h3{
+    background-color:#d9d9d9;
+    padding: 5px 10px;
+    border-radius: 8px;
+    /* color: white; */
+}
+.selected-chairs ul{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Creates three equal columns */
+    gap: 7px; /* Space between items */
+    padding: 0;
+}
+.selected-chairs li{
+    list-style: none;
+    border-radius: 8px;
+    background-color: #FFCC16;
+    padding: 4px;
+    color: white;
+    font-weight: 500;
+}

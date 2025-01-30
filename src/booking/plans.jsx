@@ -6,6 +6,7 @@ import axios from "axios";
 import { IconButton, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Select, Snackbar, Alert } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Loader from "../components/Loader";
+import colors from '../styles/color'
 
 const BookingPlans = () => {
   const [bookingPlans, setBookingPlans] = useState([]);
@@ -128,7 +129,7 @@ const BookingPlans = () => {
               style={{
                 padding: "10px 20px",
                 borderRadius: "5px",
-                backgroundColor: "#f5b500",
+                backgroundColor: colors.primary,
                 color: "#fff",
                 border: "none",
                 fontSize: "16px",

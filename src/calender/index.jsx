@@ -13,36 +13,24 @@ const BookingCalender = () => {
   const [location, setLocation] = useState("");
   const [locations, setLocations] = useState([]);
   const [selectedMember, setSelectedMember] = useState(null);
-  const [members, setMembers] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-    },
-    {
-      id: 2,
-      name: "Jane Doe2",
-    },
-    {
-      id: 3,
-      name: "Jane Doe3",
-    },
-  ]);
+  const [members, setMembers] = useState([]);
   const [room, setRoom] = useState("");
+  const [timeExist, setTimeExist] = useState("");
   const [rooms, setRooms] = useState([]);
-  const [events, setEvents] = useState([
-    {
-      title: "123",
-      description: "123",
-      startTime: "2025-01-27T20:00:00.080Z",
-      endTime: "2025-01-27T21:00:00.080Z",
-      date: "2025-01-28T15:21:01.080Z",
-    },
-  ]);
+  const [events, setEvents] = useState([]);
+  // {
+  //   title: "Hardcoded Event",
+  //   description: "This is a hardcoded event",
+  //   startTime: new Date(2025, 0, 29, 1, 0), // June 15, 2023, 10:00 AM
+  //   endTime: new Date(2025, 0, 29, 2, 0), // June 15, 2023, 11:00 AM
+  //   date: new Date(2025, 0, 29), // June 15, 2023
+  // },
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [newEvent, setNewEvent] = useState({
     title: "",
     description: "",
+    persons: 0,
     startTime: null,
     endTime: null,
   });
@@ -57,6 +45,8 @@ const BookingCalender = () => {
   });
 
   const handleTimeSlotClick = (time) => {
+    console.log(events);
+
     const [hours] = time.split(":");
 
     const startTime = new Date(selectedDate);
@@ -89,11 +79,23 @@ const BookingCalender = () => {
   };
 
   const handleSaveEvent = () => {
-    if (newEvent.title && newEvent.startTime && newEvent.endTime) {
-      setEvents([...events, { ...newEvent, date: selectedDate }]);
-      setModalOpen(false);
-      setNewEvent({ title: "", description: "", startTime: null, endTime: null });
-      setTempBooking(null);
+    if (newEvent.title && newEvent.startTime && newEvent.endTime && newEvent.persons > 0 && selectedMember) {
+      setTimeExist("");
+      axios
+        .post(`${process.env.REACT_APP_BASE_API}booking-schedule/create`, { ...newEvent, date: selectedDate, branch_id: Number(location), room_id: Number(room), user_id: selectedMember.id, created_by_branch: 1 })
+        .then((res) => {
+          console.log(res.data);
+
+          setEvents([...events, { ...res.data.data, date: new Date(res.data.data.date), startTime: new Date(res.data.data.startTime), endTime: new Date(res.data.data.endTime) }]);
+          setModalOpen(false);
+          setNewEvent({ title: "", description: "", startTime: null, persons: 0, endTime: null });
+          setTempBooking(null);
+        })
+        .catch((err) => {
+          console.log(err.response.data.already_exist);
+
+          setTimeExist(err.response.data.already_exist);
+        });
     }
   };
 
@@ -141,7 +143,8 @@ const BookingCalender = () => {
   useEffect(() => {
     const fetchFilters = async () => {
       try {
-        await axios.get(`${process.env.REACT_APP_BASE_API}booking-schedule/filter`, {
+        await axios
+          .get(`${process.env.REACT_APP_BASE_API}booking-schedule/filter`, {
             params: {
               branch_id: Number(location),
               room_id: Number(room),
@@ -151,8 +154,10 @@ const BookingCalender = () => {
             console.log(res.data);
 
             if (res.data.branches) setLocations(res.data.branches);
-            else if (res.data.floors) setRooms(res.data.floors);
-            else if (res.data.schedules) {
+            else if (res.data.floors) {
+              setRooms(res.data.floors);
+              setMembers(res.data.users);
+            } else if (res.data.schedules) {
               const newData = res.data.schedules.map((event) => ({
                 ...event,
                 startTime: new Date(event.startTime),
@@ -179,7 +184,6 @@ const BookingCalender = () => {
         </div>
         <div className="content">
           <div className="container-fluid p-4">
-            <pre>{JSON.stringify(events, null, 2)}</pre>
             <div className="row mb-4 align-items-center">
               <div className="col">
                 <h1 className="mb-0">Booking Calendar</h1>
@@ -210,7 +214,7 @@ const BookingCalender = () => {
                         {locations.length > 0 ? (
                           locations.map((item) => (
                             <MenuItem key={item.id} value={item.id}>
-                              {item.location}
+                              {item.name}
                             </MenuItem>
                           ))
                         ) : (
@@ -350,26 +354,49 @@ const BookingCalender = () => {
                 }}
               >
                 <Typography variant="h6" component="h2" mb={3}>
-                  Create Event
+                  Create Booking
                 </Typography>
+                {timeExist != "" && (
+                  <p className="mb-3" style={{ color: "red" }}>
+                    {timeExist}
+                  </p>
+                )}
                 <Autocomplete
                   className="mb-3"
                   options={members} // Array of members
                   getOptionLabel={(option) => option.name} // Display member name
                   value={selectedMember} // Controlled value
                   onChange={(event, newValue) => setSelectedMember(newValue)} // Update selected member
-                  renderInput={(params) => <TextField {...params} label="Search Member" variant="outlined" />}
+                  renderInput={(params) => <TextField {...params} label="Member" variant="outlined" />}
                 />
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <div className="mb-3">
-                    <TimePicker label="Start Time" value={newEvent.startTime} onChange={(newTime) => handleTimeChange("startTime", newTime)} renderInput={(params) => <TextField {...params} fullWidth />} />
-                  </div>
-                  <div className="mb-3">
-                    <TimePicker label="End Time" value={newEvent.endTime} onChange={(newTime) => handleTimeChange("endTime", newTime)} renderInput={(params) => <TextField {...params} fullWidth />} fullWidth />
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="mb-3">
+                      <TimePicker label="Start Time" value={newEvent.startTime} onChange={(newTime) => handleTimeChange("startTime", newTime)} renderInput={(params) => <TextField {...params} fullWidth />} />
+                    </div>
+                    <div className="mb-3">
+                      <TimePicker label="End Time" value={newEvent.endTime} onChange={(newTime) => handleTimeChange("endTime", newTime)} renderInput={(params) => <TextField {...params} fullWidth />} fullWidth />
+                    </div>
                   </div>
                 </LocalizationProvider>
-                <TextField fullWidth label="Event Title" value={newEvent.title} onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })} className="mb-3" />
-                <TextField fullWidth label="Description" multiline rows={3} value={newEvent.description} onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })} className="mb-3" />
+                <TextField fullWidth label="Booking Title" value={newEvent.title} onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })} className="mb-3" />
+                <TextField fullWidth label="Persons" type="number" value={newEvent.persons} onChange={(e) => setNewEvent({ ...newEvent, persons: e.target.value })} className="mb-3" />
+                <FormControl fullWidth className="mb-3">
+                  <InputLabel>Select Location</InputLabel>
+                  <Select value={location} onChange={(e) => setLocation(e.target.value)} label="Select Location">
+                    {locations.length > 0 ? (
+                      locations.map((item) => (
+                        <MenuItem key={item.id} value={item.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem value="" disabled>
+                        No Location
+                      </MenuItem>
+                    )}
+                  </Select>
+                </FormControl>
                 <Select value={room} onChange={(e) => setRoom(e.target.value)} label="Meeting Room" id="select-status" className="mb-3" fullWidth>
                   {rooms.length > 0 ? (
                     rooms.flatMap((floor) => [
@@ -420,7 +447,7 @@ const BookingCalender = () => {
                 }}
               >
                 <Typography variant="h6" component="h2" mb={3}>
-                  Event Details
+                  Booking Details
                 </Typography>
                 {selectedEvent && (
                   <>
@@ -434,7 +461,19 @@ const BookingCalender = () => {
                       Time: {selectedEvent.startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} -{selectedEvent.endTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </Typography>
                     <Typography variant="body2" mb={2}>
-                      Description: {selectedEvent.description}
+                      Persons: {selectedEvent.persons}
+                    </Typography>
+                    <Typography variant="body2" mb={2}>
+                      Location: {selectedEvent.branch.name}
+                    </Typography>
+                    <Typography variant="body2" mb={2}>
+                      Room: {selectedEvent.room.name}
+                    </Typography>
+                    <Typography variant="body2" mb={2}>
+                      Member Name: {selectedEvent.user.name}
+                    </Typography>
+                    <Typography variant="body2" mb={2}>
+                      Member Email: {selectedEvent.user.email}
                     </Typography>
                     <Button variant="outlined" onClick={() => setEventDetailsModalOpen(false)}>
                       Close

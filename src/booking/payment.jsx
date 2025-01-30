@@ -12,6 +12,7 @@ const Payment = () => {
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
     setReceiptFile(file);
 
     // Save file name in bookingdetails.receipt
@@ -22,7 +23,6 @@ const Payment = () => {
   };
 
   const handleConfirm = async () => {
-    
     try {
       // Create a FormData object to send the image and other data
       const formData = new FormData();
@@ -65,6 +65,7 @@ const Payment = () => {
             backgroundColor: "transparent",
             padding: "20px",
             borderRadius: "10px",
+            // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             width: "80%",
             maxWidth: "500px",
             margin: "0 auto",
@@ -84,6 +85,7 @@ const Payment = () => {
           <div
             style={{
               display: "flex",
+              // backgroundColor:'black',
               justifyContent: "space-between",
               gap: "2rem",
               marginBottom: "20px",
@@ -132,7 +134,31 @@ const Payment = () => {
               </p>
             </div>
           </div>
-          <div style={{ textAlign: "center", marginBottom: "20px" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              padding: "10px",
+              width: "100%",
+              maxWidth: "400px",
+              backgroundColor: "#fff",
+              margin: "2rem",
+            }}
+            onClick={() => document.getElementById("receipt-upload").click()}
+          >
+            {/* Placeholder Text */}
+            <span style={{ flex: 1, color: "#999" }}>Upload Receipt</span>
+
+            {/* Upload Icon (Replace with an actual icon library if needed) */}
+            <span style={{ marginLeft: "10px", cursor: "pointer" }}>📤</span>
+
+            {/* Hidden File Input */}
+            <input type="file" id="receipt-upload" accept="image/*" onChange={handleFileUpload} style={{ display: "none" }} />
+            {receiptFile && <p style={{ marginTop: "10px" }}>Uploaded: {receiptFile.name}</p>}
+          </div>
+          {/* <div style={{ textAlign: "center", marginBottom: "20px" }}>
             <label
               htmlFor="receipt-upload"
               style={{
@@ -148,7 +174,7 @@ const Payment = () => {
             </label>
             <input type="file" id="receipt-upload" accept="image/*" onChange={handleFileUpload} style={{ display: "none" }} />
             {receiptFile && <p style={{ marginTop: "10px" }}>Uploaded: {receiptFile.name}</p>}
-          </div>
+          </div> */}
           <button
             style={{
               display: "block",

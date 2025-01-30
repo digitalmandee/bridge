@@ -1,9 +1,9 @@
 import React, { useState, useContext } from "react";
 import { Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Welcome from "./auth/welcome";
+import Welcome from "./auth/welcome/welcome";
 import SplashScreen from "./auth/splash";
-import LoginPage from "./auth/login";
+import LoginPage from "./auth/login/login";
 import Home from "./home";
 import BookingPlans from "./booking/plans";
 import BookingRequests from "./booking/requests";
@@ -33,23 +33,87 @@ function App() {
           <Routes>
             {/* Define your routes */}
             <Route path="/" element={<Welcome />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route
-              path="/admin-dashboard"
+              path="/super-admin/dashboard"
               element={
                 <ProtectedRoute role="super_admin">
                   <AdminDashboard />
                 </ProtectedRoute>
               }
             />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/user-dashboard" element={<UserDashboard />} />
-            <Route path="/booking" element={<Booking />} />
-            <Route path="/floorplan" element={<Home />} />
-            <Route path="/booking/requests" element={<BookingRequests />} />
-            <Route path="/booking/plans" element={<BookingPlans />} />
-            <Route path="/booking/plans/create" element={<BookingPlanCreate />} />
-            <Route path="/booking-calender" element={<BookingCalender />} />
-            <Route path="/seatsAllocation" element={<SeatsAllocation />} />
+            <Route
+              path="/branch/dashboard"
+              element={
+                <ProtectedRoute role="admin">
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/user/dashboard"
+              element={
+                <ProtectedRoute role="user">
+                  <UserDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/branch/booking"
+              element={
+                <ProtectedRoute role="admin">
+                  <Booking />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/branch/floorplan"
+              element={
+                <ProtectedRoute role="admin">
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/branch/booking/requests"
+              element={
+                <ProtectedRoute role="admin">
+                  <BookingRequests />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/branch/booking/plans"
+              element={
+                <ProtectedRoute role="admin">
+                  <BookingPlans />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/branch/booking/plans/create"
+              element={
+                <ProtectedRoute role="admin">
+                  <BookingPlanCreate />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/branch/booking/seats-allocation"
+              element={
+                <ProtectedRoute role="admin">
+                  <SeatsAllocation />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/branch/booking-schedule"
+              element={
+                <ProtectedRoute role="admin">
+                  <BookingCalender />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path="*" element={<p>404 Not Found</p>} />
           </Routes>

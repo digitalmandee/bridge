@@ -2,6 +2,8 @@ import React, { useContext, useState } from "react";
 import { FloorPlanContext } from "../contexts/floorplan.context";
 import axios from "axios";
 import Loader from "../components/Loader";
+import profile from "../assets/Profile user.png";
+import colors from "../styles/color";
 
 const MemberDetail = ({ handleNext }) => {
   const { bookingdetails, setBookingDetails, formErrors, validateMemeberDetails, selectedChairs, setCheckAvailability } = useContext(FloorPlanContext);
@@ -86,7 +88,6 @@ const MemberDetail = ({ handleNext }) => {
     <>
       <form
         style={{
-          position: "relative",
           backgroundColor: "#fff",
           padding: "20px",
           borderRadius: "10px",
@@ -94,15 +95,34 @@ const MemberDetail = ({ handleNext }) => {
           width: "50%",
           margin: "0 auto",
           marginBottom: "1rem",
+          position: "relative",
         }}
       >
-        <h3 style={{ textAlign: "center", marginBottom: "20px" }}>🧑 Member Detail</h3>
+        <h3 style={{ textAlign: "center", marginBottom: "20px" }}>
+          <img src={profile} alt="Member Icon" style={{ width: "25px", height: "25px", marginRight: "10px", marginBottom: "5px", verticalAlign: "middle" }} /> Member Detail
+        </h3>
 
         {isLoading && <Loader variant="B" />}
 
         {/* Name Field */}
-        <div style={{ maxWidth: "400px", margin: "0 auto" }}>
-          <label style={{ display: "block", marginBottom: "5px" }}>Name</label>
+        <div
+          style={{
+            maxWidth: "400px",
+            margin: "0 auto",
+            padding: 0,
+            textAlign: "left",
+          }}
+        >
+          <label
+            style={{
+              display: "block",
+              marginBottom: "5px",
+              fontWeight: "bold", // Optional: for better label visibility
+              marginLeft: 0,
+            }}
+          >
+            Name
+          </label>
           <div style={{ marginBottom: "15px" }}>
             <input
               type="text"
@@ -114,13 +134,23 @@ const MemberDetail = ({ handleNext }) => {
                 padding: "10px",
                 borderRadius: "5px",
                 border: "1px solid #ccc",
+                boxSizing: "border-box", // Ensures padding doesn't mess with dimensions
+                margin: 0,
               }}
             />
             {formErrors.name && <span style={{ color: "red" }}>{formErrors.name}</span>}
           </div>
 
           {/* Email Field */}
-          <label style={{ display: "block", marginBottom: "5px" }}>Email</label>
+          <label
+            style={{
+              display: "block",
+              marginBottom: "5px",
+              fontWeight: "bold",
+            }}
+          >
+            Email
+          </label>
           <div style={{ marginBottom: "15px" }}>
             <input
               type="email"
@@ -132,13 +162,23 @@ const MemberDetail = ({ handleNext }) => {
                 padding: "10px",
                 borderRadius: "5px",
                 border: "1px solid #ccc",
+                boxSizing: "border-box",
+                margin: 0,
               }}
             />
             {formErrors.email && <span style={{ color: "red" }}>{formErrors.email}</span>}
           </div>
 
           {/* Phone Number Field */}
-          <label style={{ display: "block", marginBottom: "5px" }}>Phone No</label>
+          <label
+            style={{
+              display: "block",
+              marginBottom: "5px",
+              fontWeight: "bold",
+            }}
+          >
+            Phone No
+          </label>
           <div style={{ marginBottom: "15px" }}>
             <input
               type="tel"
@@ -150,13 +190,15 @@ const MemberDetail = ({ handleNext }) => {
                 padding: "10px",
                 borderRadius: "5px",
                 border: "1px solid #ccc",
+                boxSizing: "border-box",
+                margin: 0,
               }}
             />
             {formErrors.phone_no && <span style={{ color: "red" }}>{formErrors.phone_no}</span>}
           </div>
 
           {/* Individual/Company Dropdown */}
-          <label style={{ display: "block", marginBottom: "5px" }}>Individual/Company</label>
+          <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Individual/Company</label>
           <select
             name="type"
             value={bookingdetails.type}
@@ -164,9 +206,10 @@ const MemberDetail = ({ handleNext }) => {
             style={{
               width: "100%",
               padding: "10px",
-              marginBottom: "15px",
               borderRadius: "5px",
               border: "1px solid #ccc",
+              boxSizing: "border-box",
+              marginBottom: "15px",
             }}
           >
             <option value="individual">Individual</option>
@@ -174,7 +217,7 @@ const MemberDetail = ({ handleNext }) => {
           </select>
 
           {/* Image Upload Field */}
-          <label style={{ display: "block", marginBottom: "5px" }}>Upload Image (Optional)</label>
+          <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Profile Image (Optional)</label>
           <input
             type="file"
             accept="image/*"
@@ -182,16 +225,17 @@ const MemberDetail = ({ handleNext }) => {
             style={{
               width: "100%",
               padding: "10px",
-              marginBottom: "15px",
               borderRadius: "5px",
               border: "1px solid #ccc",
+              boxSizing: "border-box",
+              margin: 0,
             }}
           />
 
           {/* Image Preview */}
           {imagePreview && (
             <div style={{ textAlign: "left", marginTop: "4px" }}>
-              <img src={imagePreview} alt="Preview" style={{ width: "100px", height: "100px", objectFit: "cover",borderRadius:'50%' }} />
+              <img src={imagePreview} alt="Preview" style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%" }} />
             </div>
           )}
 
@@ -201,7 +245,7 @@ const MemberDetail = ({ handleNext }) => {
               style={{
                 padding: "10px 20px",
                 borderRadius: "5px",
-                backgroundColor: "#f5b500",
+                backgroundColor: colors.primary,
                 color: "#fff",
                 border: "none",
                 fontSize: "16px",

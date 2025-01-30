@@ -5,9 +5,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ChairIcon from "@mui/icons-material/Chair";
 import MoreVertIcon from "@mui/icons-material/MoreVert"; // Three-dot icon
 import { Menu, MenuItem, IconButton, Box } from "@mui/material";
+import colors from "../styles/color";
 import axios from "axios";
 
-const SeatCard = ({ seatNumber, userName, planName, status, location, floor,profile_image }) => {
+const SeatCard = ({ seatNumber, userName, planName, status, location, floor, profile_image }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   // Handle opening the menu
@@ -64,7 +65,7 @@ const SeatCard = ({ seatNumber, userName, planName, status, location, floor,prof
             <Box
               className="chair-icon"
               sx={{
-                backgroundColor: "#fbc02d",
+                backgroundColor: colors.primary,
                 padding: "15px",
                 borderRadius: "10px",
                 display: "inline-block",
@@ -73,7 +74,7 @@ const SeatCard = ({ seatNumber, userName, planName, status, location, floor,prof
               <ChairIcon
                 sx={{
                   fontSize: 50,
-                  color: "black",
+                  color: "white",
                 }}
               />
             </Box>

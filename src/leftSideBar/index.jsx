@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import { Link, useLocation } from "react-router-dom"
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
-import { RxDashboard } from "react-icons/rx"
+import { RxDashboard } from "react-icons/rx";
 import { AiOutlineProduct } from "react-icons/ai";
 import { MdOutlineInventory } from "react-icons/md";
 import { MdProductionQuantityLimits } from "react-icons/md";
@@ -13,11 +13,9 @@ import { MdOutlineDateRange } from "react-icons/md";
 import { IoMdContact } from "react-icons/io";
 import { RiLogoutBoxLine } from "react-icons/ri";
 import { FaAngleRight } from "react-icons/fa6";
-import './style.css';
-
+import "./style.css";
 
 const Sidebar = () => {
-
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -28,14 +26,16 @@ const Sidebar = () => {
 
   return (
     <>
-      <div className='sidebar'>
+      <div className="sidebar">
         <ul>
           <li>
             <Link to="/admin-dashboard">
-              <Button className={`w-100 ${location.pathname === '/admin-dashboard' ? 'active-button' : ''}`}>
-                <span className='icon'><RxDashboard /></span>
+              <Button className={`w-100 ${location.pathname === "/admin-dashboard" ? "active-button" : ""}`}>
+                <span className="icon">
+                  <RxDashboard />
+                </span>
                 Dashboard
-                <span className='arrow'>
+                <span className="arrow">
                   <FaAngleRight />
                 </span>
               </Button>
@@ -44,11 +44,14 @@ const Sidebar = () => {
         </ul>
         <ul>
           <li>
-            <Button className={`w-100 ${isDropdownOpen ? 'active-button' : ''}`}
-              onClick={toggleDropdown}>
-              <span className='icon'><RxDashboard /></span>
+            <Button className={`w-100 ${isDropdownOpen ? "active-button" : ""}`} onClick={toggleDropdown}>
+              <span className="icon">
+                <RxDashboard />
+              </span>
               Seat Booking
-              <span className={`arrow ${isDropdownOpen ? 'rotate' : ''}`}><FaAngleRight /></span>
+              <span className={`arrow ${isDropdownOpen ? "rotate" : ""}`}>
+                <FaAngleRight />
+              </span>
             </Button>
             {isDropdownOpen && (
               <ul className="submenu">
@@ -71,54 +74,14 @@ const Sidebar = () => {
         <ul>
           <li>
             <Link to="">
-              <Button className='w-100'>
-                <span className='icon'><MdOutlineInventory /></span>
+              <Button className="w-100">
+                <span className="icon">
+                  <MdOutlineInventory />
+                </span>
                 Inventory Management
-                <span className='arrow'><FaAngleRight /></span>
-              </Button>
-            </Link>
-          </li>
-        </ul>
-        <ul>
-          <li>
-            <Link to="/booking">
-              <Button className={`w-100 ${location.pathname === '/booking' ? 'active-button' : ''}`}>
-                <span className='icon'><SlCalender /></span>
-                Booking Management
-                <span className='arrow'><FaAngleRight /></span>
-              </Button>
-            </Link>
-          </li>
-        </ul>
-        <ul>
-          <li>
-            <Link to="">
-              <Button className='w-100'>
-                <span className='icon'><LuListTodo /></span>
-                Expense Manegement
-                <span className='arrow'><FaAngleRight /></span>
-              </Button>
-            </Link>
-          </li>
-        </ul>
-        <ul>
-          <li>
-            <Link to="">
-              <Button className='w-100'>
-                <span className='icon'><GoDatabase /></span>
-                Financial Report
-                <span className='arrow'><FaAngleRight /></span>
-              </Button>
-            </Link>
-          </li>
-        </ul>
-        <ul>
-          <li>
-            <Link to="">
-              <Button className='w-100'>
-                <span className='icon'><BsGraphUpArrow /></span>
-                Revenue Check
-                <span className='arrow'><FaAngleRight /></span>
+                <span className="arrow">
+                  <FaAngleRight />
+                </span>
               </Button>
             </Link>
           </li>
@@ -126,10 +89,29 @@ const Sidebar = () => {
         <ul>
           <li>
             <Link to="/booking-calender">
-              <Button className={`w-100 ${location.pathname === '/booking-calender' ? 'active-button' : ''}`}>
-                <span className='icon'><MdOutlineDateRange /></span>
-                Calender
-                <span className='arrow'><FaAngleRight /></span>
+              <Button className={`w-100 ${location.pathname === "/booking-calender" ? "active-button" : ""}`}>
+                <span className="icon">
+                  <MdOutlineDateRange />
+                </span>
+                Room Booking
+                <span className="arrow">
+                  <FaAngleRight />
+                </span>
+              </Button>
+            </Link>
+          </li>
+        </ul>
+        <ul>
+          <li>
+            <Link to="/booking">
+              <Button className={`w-100 ${location.pathname === "/booking" ? "active-button" : ""}`}>
+                <span className="icon">
+                  <SlCalender />
+                </span>
+                Booking Management
+                <span className="arrow">
+                  <FaAngleRight />
+                </span>
               </Button>
             </Link>
           </li>
@@ -137,10 +119,59 @@ const Sidebar = () => {
         <ul>
           <li>
             <Link to="">
-              <Button className='w-100'>
-                <span className='icon'><IoMdContact /></span>
+              <Button className="w-100">
+                <span className="icon">
+                  <LuListTodo />
+                </span>
+                Expense Manegement
+                <span className="arrow">
+                  <FaAngleRight />
+                </span>
+              </Button>
+            </Link>
+          </li>
+        </ul>
+        <ul>
+          <li>
+            <Link to="">
+              <Button className="w-100">
+                <span className="icon">
+                  <GoDatabase />
+                </span>
+                Financial Report
+                <span className="arrow">
+                  <FaAngleRight />
+                </span>
+              </Button>
+            </Link>
+          </li>
+        </ul>
+        <ul>
+          <li>
+            <Link to="">
+              <Button className="w-100">
+                <span className="icon">
+                  <BsGraphUpArrow />
+                </span>
+                Revenue Check
+                <span className="arrow">
+                  <FaAngleRight />
+                </span>
+              </Button>
+            </Link>
+          </li>
+        </ul>
+        <ul>
+          <li>
+            <Link to="">
+              <Button className="w-100">
+                <span className="icon">
+                  <IoMdContact />
+                </span>
                 Contact
-                <span className='arrow'><FaAngleRight /></span>
+                <span className="arrow">
+                  <FaAngleRight />
+                </span>
               </Button>
             </Link>
           </li>
@@ -148,10 +179,14 @@ const Sidebar = () => {
         <ul>
           <li>
             <Link to="">
-              <Button className='w-100'>
-                <span className='icon'><RxDashboard /></span>
+              <Button className="w-100">
+                <span className="icon">
+                  <RxDashboard />
+                </span>
                 Settings
-                <span className='arrow'><FaAngleRight /></span>
+                <span className="arrow">
+                  <FaAngleRight />
+                </span>
               </Button>
             </Link>
           </li>
@@ -159,8 +194,10 @@ const Sidebar = () => {
         <ul>
           <li>
             <Link to="">
-              <Button className='w-100'>
-                <span className='icon'><RiLogoutBoxLine /></span>
+              <Button className="w-100">
+                <span className="icon">
+                  <RiLogoutBoxLine />
+                </span>
                 Log Out
               </Button>
             </Link>

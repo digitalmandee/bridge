@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import TopNavbar from "../topNavbar/index";
 import Sidebar from "../leftSideBar";
 import MemberDetail from "./memberdetail";
-import BookingDetail from "./bookingdetail";
+import BookingDetail from "./BookingDetail/bookingdetail";
 import Payment from "./payment";
 import { FloorPlanContext } from "../contexts/floorplan.context";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +15,6 @@ const Booking = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [receipt, setReceipt] = useState(null);
-
 
   const handleNext = () => {
     setCurrentStep(currentStep + 1); // Move to the next step
@@ -39,9 +38,8 @@ const Booking = () => {
   };
 
   useEffect(() => {
-    if (selectedChairs.length === 0) return navigate('/floorplan');
-  }, [])
-  
+    if (selectedChairs.length === 0) return navigate("/floorplan");
+  }, []);
 
   // const handleConfirm = () => {
   //     if (!paymentMethod || !receipt) {
@@ -107,7 +105,9 @@ const Booking = () => {
                   fontWeight: "600",
                   fontSize: "18px",
                   color: currentStep >= 1 ? "#000" : "#ccc",
+                  cursor: "pointer",
                 }}
+                onClick={() => setCurrentStep(1)}
               >
                 <span>Step-1</span>
               </div>
@@ -126,7 +126,9 @@ const Booking = () => {
                   fontWeight: "600",
                   fontSize: "18px",
                   color: currentStep >= 2 ? "#000" : "#ccc",
+                  cursor: "pointer",
                 }}
+                onClick={() => setCurrentStep(2)}
               >
                 <span>Step-2</span>
               </div>
@@ -145,19 +147,16 @@ const Booking = () => {
                   fontWeight: "600",
                   fontSize: "18px",
                   color: currentStep === 3 ? "#000" : "#ccc",
+                  cursor: "pointer",
                 }}
+                onClick={() => setCurrentStep(3)}
               >
                 <span>Step-3</span>
               </div>
             </div>
           </div>
           {currentStep === 1 && <MemberDetail handleNext={handleNext} />}
-          {currentStep === 2 && (
-            <BookingDetail
-              handleNext={handleNext}
-              handlePrevious={handlePrevious}
-            />
-          )}
+          {currentStep === 2 && <BookingDetail handleNext={handleNext} handlePrevious={handlePrevious} />}
           {currentStep === 3 && <Payment />}
         </div>
       </div>

@@ -80,7 +80,7 @@ body {
 }
 
 .create-booking-btn:hover {
-  background-color: #FFCC16;
+  background-color: #0D2B4E;
   /* Slightly darker yellow on hover */
 }
 
@@ -196,7 +196,7 @@ body {
 .selected-booking-chair li {
   list-style: none;
   border-radius: 8px;
-  background-color: #FFCC16;
+  background-color: #0D2B4E;
   padding: 4px;
   color: white;
   font-weight: 500;
@@ -240,7 +240,7 @@ body {
 .custom-loader {
   border: 8px solid #f3f3f3;
   border-radius: 50%;
-  border-top: 8px solid #FFCC16;
+  border-top: 8px solid #0D2B4E;
   width: 80px;
   height: 80px;
   -webkit-animation: spin 1s linear infinite;
@@ -252,7 +252,7 @@ body {
   width: 40px;
   height: 40px;
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #FFCC16;
+  border-top: 4px solid #0D2B4E;
 }
 
 .loader-backdrop.isselected {
