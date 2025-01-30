@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
 import logo from "../assets/logo.png";
 import { IoIosMenu } from "react-icons/io";
 import { FaRegBell } from "react-icons/fa6";
@@ -11,11 +10,13 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
-import Avatar from "@mui/material/Avatar";
 import "./style.css";
-import { AppBar, Button, Toolbar, IconButton, Stack, Typography, Drawer, List, ListItem, ListItemText, Tooltip, Box } from "@mui/material";
+import { Button } from "@mui/material";
+import { AuthContext } from "../contexts/AuthContext";
 
 const TopNavbar = () => {
+  const { logout } = useContext(AuthContext);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -78,7 +79,7 @@ const TopNavbar = () => {
                     </ListItemIcon>
                     Settings
                   </MenuItem>
-                  <MenuItem onClick={handleCloseMyAccDr}>
+                  <MenuItem onClick={logout}>
                     <ListItemIcon>
                       <Logout fontSize="small" />
                     </ListItemIcon>

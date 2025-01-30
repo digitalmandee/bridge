@@ -56,16 +56,16 @@ const Sidebar = () => {
             {isDropdownOpen && (
               <ul className="submenu">
                 <li>
-                  <Link to="/floorplan">Floor Plan</Link>
+                  <Link to="/branch/floorplan">Floor Plan</Link>
                 </li>
                 <li>
-                  <Link to="/booking/plans">Price Plan</Link>
+                  <Link to="/branch/booking/plans">Price Plan</Link>
                 </li>
                 <li>
-                  <Link to="/booking/requests">Booking Request</Link>
+                  <Link to="/branch/booking/requests">Booking Request</Link>
                 </li>
                 <li>
-                  <Link to="/seatsAllocation">Seat Card</Link>
+                  <Link to="/branch/booking/seats-allocation">Seat Card</Link>
                 </li>
               </ul>
             )}

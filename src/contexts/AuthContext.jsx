@@ -5,14 +5,14 @@ export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [userRole, setRole] = useState([]);
+  const [userRole, setRole] = useState("");
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/user", {
+        const response = await axios.get(process.env.REACT_APP_BASE_API + "user", {
           headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
         });
         setUser(response.data);
@@ -20,7 +20,7 @@ const AuthProvider = ({ children }) => {
         setPermissions(response.data.permissions);
       } catch {
         setUser(null);
-        setRole('');
+        setRole("");
         setPermissions([]);
       } finally {
         setLoading(false);
@@ -31,14 +31,18 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   const logout = async () => {
-    await axios.post("http://localhost:8000/api/logout", {}, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
-    setUser(null);
-    setRole("");
-    setPermissions([]);
-    localStorage.removeItem("token");
+    try {
+      await axios.post(process.env.REACT_APP_BASE_API + "logout", {}, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } });
+      setUser(null);
+      setRole("");
+      setPermissions([]);
+      localStorage.removeItem("token");
+    } catch (error) {
+      console.error(error.response.data);
+    }
   };
 
-  return <AuthContext.Provider value={{ user, userRole, permissions, loading, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, userRole, permissions, loading, setUser, setRole, setPermissions, logout }}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

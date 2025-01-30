@@ -23,7 +23,7 @@ function App() {
 
   return (
     <>
-      <title>BRIDGE</title>
+      <title>Co-Work @NATSP</title>
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
 
       <div>

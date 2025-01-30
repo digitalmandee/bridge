@@ -1,108 +1,94 @@
-import React, { useState } from 'react';
-import TopNavbar from './topNavbar';
-import Sidebar from './leftSideBar';
-import Aseat from './assets/A-seat.png';
-import Oseat from './assets/O-seat.png';
-import datab from './assets/datab.png';
+import React, { useState } from "react";
+import TopNavbar from "./topNavbar";
+import Sidebar from "./leftSideBar";
+import Aseat from "./assets/A-seat.png";
+import Oseat from "./assets/O-seat.png";
+import datab from "./assets/datab.png";
 import { IoIosArrowDropright } from "react-icons/io";
-import { useNavigate } from 'react-router-dom';
-import GFloorPlan from './floor/Gfloor/gfloor';
-import FFloorPlan from './floor/Ffloor/ffloor'
-import colors from './styles/color'
+import { useNavigate } from "react-router-dom";
+import GFloorPlan from "./floor/Gfloor/gfloor";
+import FFloorPlan from "./floor/Ffloor/ffloor";
+import colors from "./styles/color";
 
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-    ArcElement
-} from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-    ArcElement
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const chartData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-    datasets: [{
-        label: 'Total Sale',
-        data: [35000, 28000, 32000, 30000, 35000, 28000, 38000, 25000],
-        backgroundColor: '#FFB800',
-        barThickness: 20,
-        borderRadius: 4
-    }]
+  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+  datasets: [
+    {
+      label: "Total Sale",
+      data: [35000, 28000, 32000, 30000, 35000, 28000, 38000, 25000],
+      backgroundColor: "#FFB800",
+      barThickness: 20,
+      borderRadius: 4,
+    },
+  ],
 };
 
 const chartOptions = {
-    responsive: true,
-    plugins: {
-        legend: {
-            display: false
-        },
-        title: {
-            display: true,
-            text: 'Total Sale',
-            align: 'start',
-            font: {
-                size: 16,
-                weight: 'bold'
-            },
-            padding: {
-                bottom: 30
-            }
-        }
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false,
     },
-    scales: {
-        y: {
-            beginAtZero: true,
-            grid: {
-                drawBorder: false
-            },
-            ticks: {
-                maxTicksLimit: 5
-            }
-        },
-        x: {
-            grid: {
-                display: false
-            }
-        }
-    }
+    title: {
+      display: true,
+      text: "Total Sale",
+      align: "start",
+      font: {
+        size: 16,
+        weight: "bold",
+      },
+      padding: {
+        bottom: 30,
+      },
+    },
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      grid: {
+        drawBorder: false,
+      },
+      ticks: {
+        maxTicksLimit: 5,
+      },
+    },
+    x: {
+      grid: {
+        display: false,
+      },
+    },
+  },
 };
 
 const floorPlanData = {
-    labels: ['Available', 'Occupied'],
-    datasets: [{
-        data: [32, 14],
-        backgroundColor: ['#4285F4', '#34A853'],
-        borderWidth: 0
-    }]
+  labels: ["Available", "Occupied"],
+  datasets: [
+    {
+      data: [32, 14],
+      backgroundColor: ["#4285F4", "#34A853"],
+      borderWidth: 0,
+    },
+  ],
 };
 
 const floorPlanOptions = {
-    cutout: '70%',
-    plugins: {
-        legend: {
-            position: 'bottom'
-        }
-    }
+  cutout: "70%",
+  plugins: {
+    legend: {
+      position: "bottom",
+    },
+  },
 };
-
 
 const Home = () => {
   const navigate = useNavigate();
 
   const handleNextClick = () => {
-    navigate('/booking'); // Navigate to the Booking screen
+    navigate("/booking"); // Navigate to the Booking screen
   };
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -121,59 +107,67 @@ const Home = () => {
   return (
     <>
       <TopNavbar />
-      <div className='main'>
-        <div className='sidebarWrapper'>
+      <div className="main">
+        <div className="sidebarWrapper">
           <Sidebar />
         </div>
-        <div className='content'>
-          <div style={{
-            padding: '10px',
-            display: 'flex',
-            width: '100%',
-            /* flex-direction: column; */
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            backgroundColor: 'transparent',
-          }}>
+        <div className="content">
+          <div
+            style={{
+              padding: "10px",
+              display: "flex",
+              width: "100%",
+              /* flex-direction: column; */
+              justifyContent: "space-between",
+              alignItems: "center",
+              backgroundColor: "transparent",
+            }}
+          >
             <h3 className="title">Floor Plan</h3>
-            <button className="btn create-booking-btn" onClick={handleNextClick}>Next
-              <span className='icon'><IoIosArrowDropright /></span>
+            <button className="btn create-booking-btn" onClick={handleNextClick}>
+              Next
+              <span className="icon">
+                <IoIosArrowDropright />
+              </span>
             </button>
           </div>
-          <div style={{
-            backgroundColor: 'transparent',
-            padding: '10px',
-            width: '70%',
-            /* margin-left: 1rem; */
-            marginBottom: '0.5rem',
-            /* margin: 2 auto; */
-            display: 'flex',
-            flexDirection: 'column',
-            /* align-items: center; */
-            /* justify-content: center; */
-            /* text-align: center; */
-          }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              marginBottom: '20px',
-              gap: '3.5rem',
-              // backgroundColor:'#000'
-            }}>
-
+          <div
+            style={{
+              backgroundColor: "transparent",
+              padding: "10px",
+              width: "70%",
+              /* margin-left: 1rem; */
+              marginBottom: "0.5rem",
+              /* margin: 2 auto; */
+              display: "flex",
+              flexDirection: "column",
+              /* align-items: center; */
+              /* justify-content: center; */
+              /* text-align: center; */
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                marginBottom: "20px",
+                gap: "3.5rem",
+                // backgroundColor:'#000'
+              }}
+            >
               <button
                 style={{
                   backgroundColor: colors.primary,
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '5px',
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
                   width: "30%",
-                  padding: '10px 10px',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                  padding: "10px 10px",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                 }}
               >
                 View Seats Allocation
@@ -183,15 +177,15 @@ const Home = () => {
               <button
                 style={{
                   backgroundColor: colors.primary,
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '5px',
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
                   width: "30%",
-                  padding: '10px 10px',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                  padding: "10px 10px",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                 }}
               >
                 View Booking Request
@@ -199,15 +193,15 @@ const Home = () => {
               <button
                 style={{
                   backgroundColor: colors.primary,
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '5px',
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
                   width: "20%",
-                  padding: '10px 10px',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                  padding: "10px 10px",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                 }}
               >
                 Select Floor
@@ -215,45 +209,47 @@ const Home = () => {
             </div>
 
             {/* Cards Section */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              marginBottom: '20px',
-              // gap:'3.5rem',
-              gap: '1.2rem',
-              // backgroundColor:'black',
-            }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                marginBottom: "20px",
+                // gap:'3.5rem',
+                gap: "1.2rem",
+                // backgroundColor:'black',
+              }}
+            >
               {/* Available Seats Card */}
               <div
                 style={{
-                  backgroundColor: 'white',
-                  borderRadius: '10px',
-                  padding: '20px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  padding: "20px",
+                  display: "flex",
+                  justifyContent: "space-between",
                   // flex: '1',
-                  width: '35%',
-                  height: '20%',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                  textAlign: 'center',
+                  width: "35%",
+                  height: "20%",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                  textAlign: "center",
                 }}
               >
                 <div>
-                  <h6 style={{ color: '#888', marginBottom: '10px' }}>Available Seats</h6>
-                  <h2 style={{ fontSize: '36px', color: '#000', margin: '0' }}>60</h2>
+                  <h6 style={{ color: "#888", marginBottom: "10px" }}>Available Seats</h6>
+                  <h2 style={{ fontSize: "36px", color: "#000", margin: "0" }}>60</h2>
                 </div>
                 <div
                   style={{
-                    width: '50px',
-                    height: '50px',
-                    backgroundColor: '#425af5',
-                    borderRadius: '10px',
+                    width: "50px",
+                    height: "50px",
+                    backgroundColor: "#425af5",
+                    borderRadius: "10px",
                     // margin: '0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "white",
                   }}
                 >
                   <img src={Aseat} alt="" />
@@ -266,33 +262,33 @@ const Home = () => {
               {/* Occupied Seats Card */}
               <div
                 style={{
-                  backgroundColor: 'white',
-                  borderRadius: '10px',
-                  padding: '20px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  padding: "20px",
+                  display: "flex",
+                  justifyContent: "space-between",
                   // flex: '1',
-                  width: '35%',
-                  height: '20%',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                  textAlign: 'center',
+                  width: "35%",
+                  height: "20%",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                  textAlign: "center",
                 }}
               >
                 <div>
-                  <h6 style={{ color: '#888', marginBottom: '10px' }}>Occupied Seats</h6>
-                  <h2 style={{ fontSize: '36px', color: '#000', margin: '0' }}>45</h2>
+                  <h6 style={{ color: "#888", marginBottom: "10px" }}>Occupied Seats</h6>
+                  <h2 style={{ fontSize: "36px", color: "#000", margin: "0" }}>45</h2>
                 </div>
                 <div
                   style={{
-                    width: '50px',
-                    height: '50px',
-                    backgroundColor: '#00c853',
-                    borderRadius: '10px',
+                    width: "50px",
+                    height: "50px",
+                    backgroundColor: "#00c853",
+                    borderRadius: "10px",
                     // margin: '20px auto 0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "white",
                   }}
                 >
                   <img src={Oseat} alt="" />
@@ -302,77 +298,81 @@ const Home = () => {
               {/* Floor Selector */}
               <div
                 style={{
-                  width: '20.5%',
+                  width: "20.5%",
                   // height: '10%',
-                  backgroundColor: 'white',
-                  borderRadius: '10px',
-                  padding: '20px',
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  padding: "20px",
                   // flex: '1',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                  textAlign: 'center',
-                  position: 'relative',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-start',
-                  height: '110px',
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                  textAlign: "center",
+                  position: "relative",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                  height: "110px",
                   // overflow:'hidden'
                 }}
               >
                 {/* Image Section */}
-                <img src={datab} alt="Floor image" style={{
-                  alignSelf: 'center',
-                  marginBottom: 'auto'
-                  // height:'45px',
-                  // width:'45px'
-                }} />
+                <img
+                  src={datab}
+                  alt="Floor image"
+                  style={{
+                    alignSelf: "center",
+                    marginBottom: "auto",
+                    // height:'45px',
+                    // width:'45px'
+                  }}
+                />
 
                 {/* Button Section */}
                 <button
                   onClick={toggleDropdown} // Toggle dropdown on button click
                   style={{
-                    backgroundColor: 'transparent',
-                    width: '100%',
+                    backgroundColor: "transparent",
+                    width: "100%",
                     // marginTop: '15px', // Add margin between image and button
-                    color: '#000',
-                    border: 'none',
-                    marginTop: '15px',
-                    borderRadius: '10px',
-                    fontSize: '16px',
-                    fontWeight: '400',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between', // Add space between text and icon
+                    color: "#000",
+                    border: "none",
+                    marginTop: "15px",
+                    borderRadius: "10px",
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between", // Add space between text and icon
                     // padding: '10px 15px', // Add padding for better look
                   }}
                 >
-                  {selectedFloor} <span style={{ fontSize: '16px' }}>▼</span>
+                  {selectedFloor} <span style={{ fontSize: "16px" }}>▼</span>
                 </button>
 
                 {/* Dropdown Section */}
                 {isDropdownOpen && (
                   <div
                     style={{
-                      marginTop: '10px',
-                      backgroundColor: 'white',
-                      border: '1px solid #ddd',
-                      borderRadius: '5px',
-                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                      padding: '5px',
-                      textAlign: 'left',
-                      position: 'absolute',
+                      marginTop: "10px",
+                      backgroundColor: "white",
+                      border: "1px solid #ddd",
+                      borderRadius: "5px",
+                      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                      padding: "5px",
+                      textAlign: "left",
+                      position: "absolute",
                       zIndex: 1,
-                      top: '100%',
-                      left: '0',
-                      width: '100%'
+                      top: "100%",
+                      left: "0",
+                      width: "100%",
                     }}
                   >
                     <div
                       onClick={() => handleFloorSelection("G Floor")} // Handle ground floor selection
                       style={{
-                        padding: '8px 10px',
-                        cursor: 'pointer',
-                        borderBottom: '1px solid #eee',
+                        padding: "8px 10px",
+                        cursor: "pointer",
+                        borderBottom: "1px solid #eee",
                       }}
                     >
                       G Floor
@@ -380,29 +380,22 @@ const Home = () => {
                     <div
                       onClick={() => handleFloorSelection("1st Floor")} // Handle first floor selection
                       style={{
-                        padding: '8px 10px',
-                        cursor: 'pointer',
+                        padding: "8px 10px",
+                        cursor: "pointer",
                       }}
                     >
                       1st Floor
                     </div>
                   </div>
                 )}
-
               </div>
-
             </div>
-
           </div>
-          {selectedFloor === "G Floor" ? (
-            <GFloorPlan />
-          ) : (
-            <FFloorPlan />
-          )}
+          {selectedFloor === "G Floor" ? <GFloorPlan /> : <FFloorPlan />}
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
