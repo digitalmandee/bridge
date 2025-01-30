@@ -36,19 +36,30 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/branch/dashboard"
-              element={
-                <ProtectedRoute role="admin">
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
+            {/* User Routes */}
             <Route
               path="/user/dashboard"
               element={
                 <ProtectedRoute role="user">
                   <UserDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/user/booking-schedule"
+              element={
+                <ProtectedRoute role="user">
+                  <BookingCalender />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Branch Routes */}
+            <Route
+              path="/branch/dashboard"
+              element={
+                <ProtectedRoute role="admin">
+                  <AdminDashboard />
                 </ProtectedRoute>
               }
             />
@@ -108,7 +119,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route path="*" element={<p>404 Not Found</p>} />
           </Routes>
         </BrowserRouter>

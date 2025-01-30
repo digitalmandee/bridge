@@ -15,7 +15,7 @@ import { Button } from "@mui/material";
 import { AuthContext } from "../../contexts/AuthContext";
 
 const TopNavbar = () => {
-  const { logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -58,12 +58,12 @@ const TopNavbar = () => {
                 <Button className="myAcc d-flex align-items-center" onClick={handleOpenMyAccDr}>
                   <div className="userImg">
                     <span className="rounded-circle">
-                      <img src={profile} alt="" />
+                      <img src={user.profile_image ? user.profile_image : profile} alt={user.name} />
                     </span>
                   </div>
                   <div className="userInfo">
-                    <h4>Bial Tanveer</h4>
-                    <p className="mb-0">bilal@gmail.com</p>
+                    <h4>{user.name}</h4>
+                    <p className="mb-0">{user.email}</p>
                   </div>
                 </Button>
                 <Menu anchorEl={anchorEl} id="account-menu" open={open} onClose={handleCloseMyAccDr} onClick={handleCloseMyAccDr} transformOrigin={{ horizontal: "right", vertical: "top" }} anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>

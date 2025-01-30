@@ -1,14 +1,17 @@
-import TopNavbar from "../../components/topNavbar";
-import Sidebar from "../../components/leftSideBar";
-import React, { useEffect, useState } from "react";
+import TopNavbar from "@/components/topNavbar";
+import Sidebar from "@/components/leftSideBar";
+import React, { useContext, useEffect, useState } from "react";
 import { TextField, Select, MenuItem, Modal, Box, Typography, Button, FormControl, InputLabel, ListSubheader, Autocomplete } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import "bootstrap/dist/css/bootstrap.min.css";
-import colors from "../../assets/styles/color";
+import colors from "@/assets/styles/color";
 import axios from "axios";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const BookingCalender = () => {
+  const { user } = useContext(AuthContext);
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [location, setLocation] = useState("");
   const [locations, setLocations] = useState([]);
@@ -18,13 +21,6 @@ const BookingCalender = () => {
   const [timeExist, setTimeExist] = useState("");
   const [rooms, setRooms] = useState([]);
   const [events, setEvents] = useState([]);
-  // {
-  //   title: "Hardcoded Event",
-  //   description: "This is a hardcoded event",
-  //   startTime: new Date(2025, 0, 29, 1, 0), // June 15, 2023, 10:00 AM
-  //   endTime: new Date(2025, 0, 29, 2, 0), // June 15, 2023, 11:00 AM
-  //   date: new Date(2025, 0, 29), // June 15, 2023
-  // },
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [newEvent, setNewEvent] = useState({
@@ -45,8 +41,6 @@ const BookingCalender = () => {
   });
 
   const handleTimeSlotClick = (time) => {
-    console.log(events);
-
     const [hours] = time.split(":");
 
     const startTime = new Date(selectedDate);
@@ -81,8 +75,10 @@ const BookingCalender = () => {
   const handleSaveEvent = () => {
     if (newEvent.title && newEvent.startTime && newEvent.endTime && newEvent.persons > 0 && selectedMember) {
       setTimeExist("");
+      const userBranchId = user.type === "user" ? { created_by_user: user.id, branch_id: user.created_by_branch_id } : { branch_id: user.branch_id };
+
       axios
-        .post(`${import.meta.env.VITE_BASE_API}booking-schedule/create`, { ...newEvent, date: selectedDate, branch_id: Number(location), room_id: Number(room), user_id: selectedMember.id, created_by_branch: 1 })
+        .post(`${import.meta.env.VITE_BASE_API}booking-schedule/create`, { ...newEvent, ...userBranchId, date: selectedDate, location_id: Number(location), room_id: Number(room), user_id: selectedMember.id }, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } })
         .then((res) => {
           console.log(res.data);
 
@@ -92,7 +88,7 @@ const BookingCalender = () => {
           setTempBooking(null);
         })
         .catch((err) => {
-          console.log(err.response.data.already_exist);
+          console.log(err.response.data);
 
           setTimeExist(err.response.data.already_exist);
         });
@@ -111,7 +107,6 @@ const BookingCalender = () => {
 
     // Check against saved events
     const isBooked = events.some((event) => {
-      console.log(event.date);
       const eventData = new Date(event.date);
       return eventData.toDateString() === selectedDate.toDateString() && slotTime >= event.startTime && slotTime < event.endTime;
     });
@@ -141,22 +136,29 @@ const BookingCalender = () => {
   const availablePercentage = 100 - reservedPercentage;
 
   useEffect(() => {
+    // Update Default User according Type
+    if (user.type === "user") setSelectedMember(user);
+
     const fetchFilters = async () => {
       try {
         await axios
           .get(`${import.meta.env.VITE_BASE_API}booking-schedule/filter`, {
             params: {
-              branch_id: Number(location),
+              location_id: Number(location),
               room_id: Number(room),
             },
+            headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
           })
           .then((res) => {
             console.log(res.data);
 
-            if (res.data.branches) setLocations(res.data.branches);
-            else if (res.data.floors) {
+            if (res.data.locations) {
+              setLocations(res.data.locations);
+            } else if (res.data.floors) {
               setRooms(res.data.floors);
-              setMembers(res.data.users);
+              // update user according Type
+              if (user.type !== "user") setMembers(res.data.users);
+              // End
             } else if (res.data.schedules) {
               const newData = res.data.schedules.map((event) => ({
                 ...event,
@@ -169,7 +171,7 @@ const BookingCalender = () => {
             }
           });
       } catch (error) {
-        console.log(error);
+        console.log(error.response.data);
       }
     };
     fetchFilters();
@@ -300,7 +302,7 @@ const BookingCalender = () => {
                             key={time}
                             className={`time-slot ${isBooked ? "booked" : ""}`}
                             onClick={() => {
-                              if (event) {
+                              if (event && event.user) {
                                 handleEventClick(event);
                               } else if (!isBooked) {
                                 handleTimeSlotClick(time);
@@ -310,7 +312,7 @@ const BookingCalender = () => {
                             <div className="time">{time}</div>
                             <div className="event">
                               {event && (
-                                <div className="event-card">
+                                <div className={`event-card ${event && !event.user ? "disabled" : ""}`}>
                                   <Typography variant="subtitle2">{event.title}</Typography>
                                   <Typography variant="caption">
                                     {event.startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} -{event.endTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -361,14 +363,16 @@ const BookingCalender = () => {
                     {timeExist}
                   </p>
                 )}
-                <Autocomplete
-                  className="mb-3"
-                  options={members} // Array of members
-                  getOptionLabel={(option) => option.name} // Display member name
-                  value={selectedMember} // Controlled value
-                  onChange={(event, newValue) => setSelectedMember(newValue)} // Update selected member
-                  renderInput={(params) => <TextField {...params} label="Member" variant="outlined" />}
-                />
+                {user.type !== "user" && (
+                  <Autocomplete
+                    className="mb-3"
+                    options={members} // Array of members
+                    getOptionLabel={(option) => option.name} // Display member name
+                    value={selectedMember} // Controlled value
+                    onChange={(event, newValue) => setSelectedMember(newValue)} // Update selected member
+                    renderInput={(params) => <TextField {...params} label="Member" variant="outlined" />}
+                  />
+                )}
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <div className="d-flex align-items-center gap-3">
                     <div className="mb-3">
@@ -464,7 +468,10 @@ const BookingCalender = () => {
                       Persons: {selectedEvent.persons}
                     </Typography>
                     <Typography variant="body2" mb={2}>
-                      Location: {selectedEvent.branch.name}
+                      Branch: {selectedEvent.branch.name}
+                    </Typography>
+                    <Typography variant="body2" mb={2}>
+                      Location: {selectedEvent.floor.name}
                     </Typography>
                     <Typography variant="body2" mb={2}>
                       Room: {selectedEvent.room.name}
@@ -544,6 +551,9 @@ const BookingCalender = () => {
           padding: 8px;
           border-radius: 4px;
           color: white;
+        }
+        .event-card.disabled {
+          background-color: #ca1111;
         }
 
 .time-slot:not(.booked) {

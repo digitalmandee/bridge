@@ -17,6 +17,7 @@ const LoginPage = () => {
     try {
       const response = await axios.post(import.meta.env.VITE_BASE_API + "login", { email, password }, { headers: { "Content-Type": "application/json" } });
       localStorage.setItem("authToken", response.data.data.token);
+      console.log(response.data.data);
       setUser(response.data.data);
       setRole(response.data.data.role);
       setPermissions(response.data.data.permissions);
@@ -25,7 +26,7 @@ const LoginPage = () => {
       else if (response.data.data.type === "investor") navigate("/investor/dashboard");
       else if (response.data.data.type === "user") navigate("/user/dashboard");
     } catch (error) {
-      // console.log(error.response.data);
+      console.log(error.response.data);
       alert("Login failed. Check credentials.");
     }
   };

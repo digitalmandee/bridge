@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
 import colors from "../../assets/styles/color";
@@ -10,6 +10,8 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import Loader from "../../components/Loader";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -46,6 +48,20 @@ const chartOptions = {
 };
 
 const UserDashboard = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      await axios.get(import.meta.env.VITE_BASE_API + "user/dashboard", { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } }).then((res) => {
+        // console.log(res.data);
+        setData(res.data);
+      });
+      setIsLoading(false);
+    };
+    getData();
+  }, []);
+
   return (
     <>
       <TopNavbar />
@@ -85,10 +101,10 @@ const UserDashboard = () => {
               {/* Metric Cards */}
               <Grid container spacing={3} sx={{ mb: 3 }}>
                 {[
-                  { title: "Available Booking", value: "60", icon: DirectionsCarIcon, color: colors.primary },
-                  { title: "Remaing Booking", value: "45", icon: GroupsIcon, color: colors.primary },
-                  { title: "Total Amount", value: "120,000", icon: AccountBalanceWalletIcon, color: colors.primary },
-                  { title: "Over Due Amount", value: "60,000", icon: PaymentsIcon, color: colors.primary },
+                  { title: "Available Booking", value: data.totalBookings ?? 0, icon: DirectionsCarIcon, color: colors.primary },
+                  { title: "Remaing Booking", value: data.remainingbookings ?? 0, icon: GroupsIcon, color: colors.primary },
+                  { title: "Total Amount", value: data.totalAmount ?? 0, icon: AccountBalanceWalletIcon, color: colors.primary },
+                  { title: "Over Due Amount", value: data.overDueAmount ?? 0, icon: PaymentsIcon, color: colors.primary },
                 ].map((item, index) => (
                   <Grid item xs={12} sm={6} md={3} key={index}>
                     <Card
@@ -140,40 +156,53 @@ const UserDashboard = () => {
                     <Table>
                       <TableHead sx={{ bgcolor: colors.primary }}>
                         <TableRow>
+                          <TableCell sx={{ color: "white" }}>Invoice ID</TableCell>
                           <TableCell sx={{ color: "white" }}>Booking ID</TableCell>
-                          <TableCell sx={{ color: "white" }}>Floor</TableCell>
-                          <TableCell sx={{ color: "white" }}>Seat/Room Name</TableCell>
-                          <TableCell sx={{ color: "white" }}>Booking Type</TableCell>
-                          <TableCell sx={{ color: "white" }}>Start Date</TableCell>
-                          <TableCell sx={{ color: "white" }}>End Date</TableCell>
+                          <TableCell sx={{ color: "white" }}>Name</TableCell>
+                          <TableCell sx={{ color: "white" }}>Date</TableCell>
+                          <TableCell sx={{ color: "white" }}>Amount</TableCell>
                           <TableCell sx={{ color: "white" }}>Status</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {bookingData.map((row, index) => (
-                          <TableRow key={index}>
-                            <TableCell>{row.id}</TableCell>
-                            <TableCell>{row.floor}</TableCell>
-                            <TableCell>{row.room}</TableCell>
-                            <TableCell>{row.type}</TableCell>
-                            <TableCell>{row.startDate}</TableCell>
-                            <TableCell>{row.endDate}</TableCell>
-                            <TableCell>
-                              <Box
-                                sx={{
-                                  bgcolor: row.status === "Complete" ? "#E8F5E9" : row.status === "Pending" ? "#FFF3E0" : "#FFEBEE",
-                                  color: row.status === "Complete" ? "#2E7D32" : row.status === "Pending" ? "#E65100" : "#C62828",
-                                  px: 2,
-                                  py: 0.5,
-                                  borderRadius: 1,
-                                  display: "inline-block",
-                                }}
-                              >
-                                {row.status}
-                              </Box>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {isLoading ? (
+                          <tr>
+                            <td colSpan="6">
+                              <Loader variant="C" />
+                            </td>
+                          </tr>
+                        ) : data.bookingInvoices.length > 0 ? (
+                          data.bookingInvoices.map((row, index) => (
+                            <TableRow key={index}>
+                              {/* <TableCell>{row.id}</TableCell>
+                              <TableCell>{row.floor}</TableCell>
+                              <TableCell>{row.room}</TableCell>
+                              <TableCell>{row.type}</TableCell>
+                              <TableCell>{row.startDate}</TableCell>
+                              <TableCell>{row.endDate}</TableCell>
+                              <TableCell>
+                                <Box
+                                  sx={{
+                                    bgcolor: row.status === "Complete" ? "#E8F5E9" : row.status === "Pending" ? "#FFF3E0" : "#FFEBEE",
+                                    color: row.status === "Complete" ? "#2E7D32" : row.status === "Pending" ? "#E65100" : "#C62828",
+                                    px: 2,
+                                    py: 0.5,
+                                    borderRadius: 1,
+                                    display: "inline-block",
+                                  }}
+                                >
+                                  {row.status}
+                                </Box>
+                              </TableCell> */}
+                            </TableRow>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="6" className="text-center">
+                              No data available
+                            </td>
+                          </tr>
+                        )}
                       </TableBody>
                     </Table>
                   </TableContainer>
