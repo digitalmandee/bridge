@@ -7,6 +7,7 @@ const FloorPlanProvider = ({ children }) => {
   const [tables, setTables] = useState([]);
   const [bookingPlans, setBookingPlans] = useState([]);
   const [selectedChairs, setSelectedChairs] = useState([]);
+  const [selectedFloor, setSelectedFloor] = useState(1); // Default is Ground Floor
   const [floorSize, setFloorSize] = useState({ width: 0, height: 0 });
   const [checkAvailability, setCheckAvailability] = useState({});
   const [bookingdetails, setBookingDetails] = useState({
@@ -21,7 +22,7 @@ const FloorPlanProvider = ({ children }) => {
     selectedPlan: "",
     package_detail: 0,
     total_price: 0,
-    payment_method: 'cash',
+    payment_method: "cash",
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -57,6 +58,8 @@ const FloorPlanProvider = ({ children }) => {
         bookingdetails,
         formErrors,
         checkAvailability,
+        selectedFloor,
+        setSelectedFloor,
         setCheckAvailability,
         setIsLoading,
         setTables,

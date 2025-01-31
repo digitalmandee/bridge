@@ -7,7 +7,7 @@ import { FloorPlanContext } from "@/contexts/floorplan.context";
 import colors from "@/assets/styles/color";
 
 const Payment = () => {
-  const { selectedChairs, bookingPlans, bookingdetails, setBookingDetails } = useContext(FloorPlanContext);
+  const { selectedChairs, selectedFloor, bookingPlans, bookingdetails, setBookingDetails } = useContext(FloorPlanContext);
   const [showModal, setShowModal] = useState(false);
   const [receiptFile, setReceiptFile] = useState(null); // State to store the uploaded file
 
@@ -28,7 +28,7 @@ const Payment = () => {
       // Create a FormData object to send the image and other data
       const formData = new FormData();
       formData.append("branch_id", 1);
-      formData.append("floor_id", 1);
+      formData.append("floor_id", selectedFloor);
       formData.append("profile_image", bookingdetails.profile_image); // Add the receipt file
       formData.append("receipt", receiptFile); // Add the receipt file
       formData.append("bookingdetails", JSON.stringify(bookingdetails));

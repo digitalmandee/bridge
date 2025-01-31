@@ -12,34 +12,6 @@ const GFloorPlan = () => {
 
   const { isLoading, tables, selectedChairs, floorSize, setIsLoading, setTables, setSelectedChairs, setFloorSize } = useContext(FloorPlanContext);
 
-  // Fetch floor and rooms data
-  useEffect(() => {
-    setSelectedChairs([]);
-    const fetchFloorPlanData = async () => {
-      setIsLoading(true);
-      try {
-        const branchId = 1; // Use the actual branch ID here
-        const floorId = 1; // Use the actual floor ID here
-
-        const response = await axios.get(import.meta.env.VITE_BASE_API + `floor-plan?branch_id=${branchId}&floor_id=${floorId}`);
-
-        if (response.data && Array.isArray(response.data.tables)) {
-          setTables(response.data.tables);
-        }
-      } catch (error) {
-        console.error("Error fetching floor plan data", error);
-      } finally {
-        setTimeout(() => {
-          console.log(tables);
-
-          setIsLoading(false);
-        }, 500);
-      }
-    };
-
-    fetchFloorPlanData();
-  }, []);
-
   // Update floor size on resize
   useEffect(() => {
     const updateFloorSize = () => {
@@ -72,7 +44,6 @@ const GFloorPlan = () => {
       const newSelected = { ...prevSelected };
 
       console.log(newSelected);
-      
 
       // Check if the tableId already has selected chairs
       if (!newSelected[tableId]) {

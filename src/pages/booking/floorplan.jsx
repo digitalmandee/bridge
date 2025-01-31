@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
 import Aseat from "../../assets/A-seat.png";
@@ -12,6 +12,7 @@ import colors from "../../assets/styles/color";
 
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
 import { FloorPlanContext } from "../../contexts/floorplan.context";
+import axios from "axios";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
@@ -86,7 +87,7 @@ const floorPlanOptions = {
 };
 
 const Floorplan = () => {
-  const { selectedChairs } = useContext(FloorPlanContext);
+  const { isLoading, tables, selectedChairs, selectedFloor, setIsLoading, setTables, setSelectedChairs, setSelectedFloor } = useContext(FloorPlanContext);
 
   const navigate = useNavigate();
 
@@ -95,7 +96,6 @@ const Floorplan = () => {
   };
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedFloor, setSelectedFloor] = useState("G Floor"); // Default is Ground Floor
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -106,6 +106,33 @@ const Floorplan = () => {
     setSelectedFloor(floor); // Update the selected floor
     setIsDropdownOpen(false); // Close the dropdown
   };
+
+  // Fetch floor and rooms data
+  useEffect(() => {
+    setSelectedChairs([]);
+    const fetchFloorPlanData = async () => {
+      setIsLoading(true);
+      try {
+        const branchId = 1; // Use the actual branch ID here
+
+        const response = await axios.get(import.meta.env.VITE_BASE_API + `floor-plan?branch_id=${branchId}&floor_id=${selectedFloor}`);
+
+        if (response.data && Array.isArray(response.data.tables)) {
+          setTables(response.data.tables);
+        }
+      } catch (error) {
+        console.error("Error fetching floor plan data", error);
+      } finally {
+        setTimeout(() => {
+          console.log(tables);
+
+          setIsLoading(false);
+        }, 500);
+      }
+    };
+
+    fetchFloorPlanData();
+  }, [selectedFloor]);
 
   return (
     <>
@@ -349,7 +376,7 @@ const Floorplan = () => {
                     // padding: '10px 15px', // Add padding for better look
                   }}
                 >
-                  {selectedFloor} <span style={{ fontSize: "16px" }}>▼</span>
+                  {selectedFloor == 1 ? "G Floor" : "1st Floor"} <span style={{ fontSize: "16px" }}>▼</span>
                 </button>
 
                 {/* Dropdown Section */}
@@ -371,7 +398,7 @@ const Floorplan = () => {
                     }}
                   >
                     <div
-                      onClick={() => handleFloorSelection("G Floor")} // Handle ground floor selection
+                      onClick={() => handleFloorSelection(1)} // Handle ground floor selection
                       style={{
                         padding: "8px 10px",
                         cursor: "pointer",
@@ -381,7 +408,7 @@ const Floorplan = () => {
                       G Floor
                     </div>
                     <div
-                      onClick={() => handleFloorSelection("1st Floor")} // Handle first floor selection
+                      onClick={() => handleFloorSelection(2)} // Handle first floor selection
                       style={{
                         padding: "8px 10px",
                         cursor: "pointer",
@@ -394,7 +421,7 @@ const Floorplan = () => {
               </div>
             </div>
           </div>
-          {selectedFloor === "G Floor" ? <GFloorPlan /> : <FFloorPlan />}
+          {selectedFloor === 1 ? <GFloorPlan /> : <FFloorPlan />}
         </div>
       </div>
     </>
