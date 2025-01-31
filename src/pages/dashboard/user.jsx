@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
 import colors from "../../assets/styles/color";
-import { Box, Card, CardContent, Typography, Grid, Button, Select, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import { Box, Card, CardContent, Typography, Grid, Button, Select, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from "@mui/material";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
@@ -12,6 +12,7 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Loader from "../../components/Loader";
+import { MoreVerticalIcon } from "lucide-react";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -172,8 +173,16 @@ const UserDashboard = () => {
                             </td>
                           </tr>
                         ) : data.bookingInvoices.length > 0 ? (
-                          data.bookingInvoices.map((row, index) => (
+                          data.bookingInvoices.map((invoice, index) => (
                             <TableRow key={index}>
+                              <TableCell>#{invoice.id}</TableCell>
+                              <TableCell>#{invoice.booking_id}</TableCell>
+                              <TableCell>{invoice.user.name}</TableCell>
+                              <TableCell>{invoice.due_date}</TableCell>
+                              <TableCell>Rs. {invoice.amount}</TableCell>
+                              <TableCell>
+                                <span className={`status ${invoice.status}`}>{invoice.status}</span>
+                              </TableCell>
                               {/* <TableCell>{row.id}</TableCell>
                               <TableCell>{row.floor}</TableCell>
                               <TableCell>{row.room}</TableCell>

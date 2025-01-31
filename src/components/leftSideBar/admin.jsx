@@ -62,6 +62,9 @@ const Admin = () => {
               <li>
                 <Link to="/branch/booking/seats-allocation">Seat Card</Link>
               </li>
+              <li>
+                <Link to="/branch/booking/invoices">Booking Invoice</Link>
+              </li>
             </ul>
           )}
         </li>

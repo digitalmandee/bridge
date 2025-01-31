@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Menu, MenuItem, IconButton, Modal, Box, TextField, Button, Select, Snackbar, Alert, Typography } from "@mui/material";
@@ -9,13 +8,16 @@ import Sidebar from "../../components/leftSideBar";
 import Loader from "../../components/Loader";
 import axios from "axios";
 import colors from "../../assets/styles/color";
+import { AuthContext } from "../../contexts/AuthContext";
 
-const Requests = () => {
-  const [bookings, setBookings] = useState([]);
+const Invoices = () => {
+  const { user } = useContext(AuthContext);
+
+  const [invoices, setInvoices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openEditModal, setOpenEditModal] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [newPrice, setNewPrice] = useState("");
   const [newStatus, setNewStatus] = useState("");
   const [receiptImage, setReceiptImage] = useState(null);
@@ -23,57 +25,55 @@ const Requests = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-  const [startDate, setStartDate] = useState("");
-  const [startTime, setStartTime] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [paidDate, setPaidDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("");
 
-  const handleMenuOpen = (event, booking) => {
+  const handleMenuOpen = (event, invoice) => {
     setAnchorEl(event.currentTarget);
-    setSelectedBooking(booking);
+    setSelectedInvoice(invoice);
   };
 
   const handleMenuClose = () => setAnchorEl(null);
 
   const handleEditClick = () => {
     setOpenEditModal(true);
-    setNewPrice(selectedBooking.total_price);
-    setNewStatus(selectedBooking.status);
-    setReceiptImage(selectedBooking.receipt_image || null);
-    setStartDate(selectedBooking.start_date || "");
-    setStartTime(selectedBooking.start_time || "");
-    setEndDate(selectedBooking.end_date || "");
-    setEndTime(selectedBooking.end_time || "");
+    console.log(selectedInvoice);
+
+    setNewPrice(selectedInvoice.amount);
+    setNewStatus(selectedInvoice.status);
+    setDueDate(selectedInvoice.due_date || "");
+    setPaidDate(selectedInvoice.paid_date || "");
+    setReceiptImage(selectedInvoice.receipt || null);
   };
 
   const handleCloseEditModal = () => setOpenEditModal(false);
 
-  const handleUpdateBooking = async () => {
+  const handleUpdateInvoice = async () => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_API}bookings/update`, {
-        booking_id: selectedBooking.id,
-        price: newPrice,
-        status: newStatus,
-        start_date: startDate,
-        start_time: startTime,
-        end_date: endDate,
-        end_time: endTime,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_API}invoices/update`,
+        {
+          invoice_id: selectedInvoice.id,
+          amount: newPrice,
+          status: newStatus,
+          paid_date: paidDate,
+        },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } }
+      );
 
       if (response.data.success) {
-        setBookings((prev) =>
-          prev.map((booking) =>
-            booking.id === selectedBooking.id
+        setInvoices((prev) =>
+          prev.map((invoice) =>
+            invoice.id === selectedInvoice.id
               ? {
-                  ...booking,
-                  total_price: newPrice,
+                  ...invoice,
+                  amount: newPrice,
                   status: newStatus,
-                  start_date: startDate,
-                  start_time: startTime,
-                  end_date: endDate,
-                  end_time: endTime,
+                  paid_date: paidDate,
                 }
-              : booking
+              : invoice
           )
         );
         setOpenEditModal(false);
@@ -95,13 +95,13 @@ const Requests = () => {
   const handleSnackbarClose = () => setSnackbarOpen(false);
 
   useEffect(() => {
-    const fetchBookings = async () => {
+    const fetchInvoices = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_API}bookings?branch_id=1`);
+        const response = await axios.get(`${import.meta.env.VITE_BASE_API}invoices`, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` } });
 
-        if (response.data && Array.isArray(response.data.bookings)) {
-          setBookings(response.data.bookings);
+        if (response.data && Array.isArray(response.data.invoices)) {
+          setInvoices(response.data.invoices);
         }
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -110,7 +110,7 @@ const Requests = () => {
       }
     };
 
-    fetchBookings();
+    fetchInvoices();
   }, []);
 
   return (
@@ -123,7 +123,7 @@ const Requests = () => {
         <div className="content">
           <Box className="page-content" p={2}>
             <Box className="d-flex justify-content-between align-items-center flex-wrap" mb={3}>
-              <Typography variant="h5">Booking Request</Typography>
+              <Typography variant="h5">Booking Invoices</Typography>
             </Box>
 
             {/* Filter and Search */}
@@ -227,13 +227,10 @@ const Requests = () => {
               <table className="table table-responsive">
                 <thead>
                   <tr>
+                    <th>Invoice ID</th>
                     <th>Booking ID</th>
                     <th>Name</th>
-                    <th>Floor</th>
-                    <th>Room</th>
-                    <th>Seats</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
+                    <th>Date</th>
                     <th>Amount</th>
                     <th>Status</th>
                   </tr>
@@ -245,34 +242,35 @@ const Requests = () => {
                         <Loader variant="C" />
                       </td>
                     </tr>
-                  ) : bookings.length > 0 ? (
-                    bookings.map((booking) => (
-                      <tr key={booking.id}>
-                        <td>#{booking.id}</td>
-                        <td>{booking.name}</td>
-                        <td>{booking.floor?.name}</td>
-                        <td>{booking.rooms?.join(", ")}</td>
-                        <td>{booking.total_chairs}</td>
-                        <td>{booking.start_date}</td>
-                        <td>{booking.end_date || "N/A"}</td>
-                        <td>Rs. {booking.total_price}</td>
+                  ) : invoices.length > 0 ? (
+                    invoices.map((invoice) => (
+                      <tr key={invoice.id}>
+                        <td>#{invoice.id}</td>
+                        <td>#{invoice.booking_id}</td>
+                        <td>{invoice.user.name}</td>
+                        <td>{invoice.due_date}</td>
+                        <td>Rs. {invoice.amount}</td>
                         <td>
                           <div className="d-flex align-items-center">
-                            <span className={`status ${booking.status}`}>{booking.status}</span>
-                            <IconButton onClick={(e) => handleMenuOpen(e, booking)}>
-                              <MoreVertIcon />
-                            </IconButton>
+                            <span className={`status ${invoice.status}`}>{invoice.status}</span>
+                            {user.type !== "user" && (
+                              <IconButton onClick={(e) => handleMenuOpen(e, invoice)}>
+                                <MoreVertIcon />
+                              </IconButton>
+                            )}
                           </div>
-                          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                            <MenuItem onClick={handleEditClick}>Edit</MenuItem>
-                          </Menu>
+                          {user.type !== "user" && (
+                            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+                              <MenuItem onClick={handleEditClick}>Edit</MenuItem>
+                            </Menu>
+                          )}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
                       <td colSpan="9" className="text-center">
-                        No booking requests available
+                        No booking Invoices available
                       </td>
                     </tr>
                   )}
@@ -297,46 +295,26 @@ const Requests = () => {
             width: 700,
           }}
         >
-          <h3 style={{ marginBottom: 20 }}>Edit Booking</h3>
+          <h3 style={{ marginBottom: 20 }}>Edit Invoice</h3>
           <TextField label="Price" fullWidth value={newPrice} onChange={(e) => setNewPrice(e.target.value)} style={{ marginBottom: 20 }} />
           <Select fullWidth value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
             <MenuItem value="pending">Pending</MenuItem>
-            <MenuItem value="accepted">Accepted</MenuItem>
-            <MenuItem value="rejected">Rejected</MenuItem>
+            <MenuItem value="paid">Paid</MenuItem>
+            <MenuItem value="overdue">Over Due</MenuItem>
           </Select>
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 20 }}>
-            <TextField label="Start Date" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 20, width: "48%" }} />
-            <TextField label="Start Time" type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 20, width: "48%" }} />
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <TextField label="End Date" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
-            <TextField label="End Time" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
-          </div>
+          <TextField label="Due Date" type="date" value={dueDate} InputLabelProps={{ shrink: true }} style={{ marginBottom: 20, marginTop: 20 }} fullWidth />
+          <TextField label="Paid Date" type="date" value={paidDate} onChange={(e) => setPaidDate(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
           <div style={{ textTransform: "capitalize", marginBottom: 10 }}>
-            <b>Payment Method:</b> {selectedBooking?.payment_method}
-          </div>
-          <div style={{ textTransform: "capitalize", marginBottom: 10 }}>
-            <b>Package Detail:</b> {selectedBooking?.package_detail}
+            <b>Payment Method:</b> {selectedInvoice?.payment_method}
           </div>
           {receiptImage && (
             <div style={{ marginBottom: 20 }}>
-              <img src={receiptImage} alt="Receipt" style={{ width: 100, height: 100, objectFit: "contain" }} />
+              <img src={VITE_ASSET_API + receiptImage} alt="Receipt" style={{ width: 100, height: 100, objectFit: "contain" }} />
             </div>
           )}
-          {selectedBooking && Object.entries(selectedBooking.chairs).length > 0 && (
-            <ul className="selected-booking-chair">
-              {Object.entries(selectedBooking.chairs).map(([tableId, chairs]) =>
-                chairs.map((chair) => (
-                  <li key={chair.id} style={{ backgroundColor: colors.primary }}>
-                    {tableId}
-                    {chair.id}
-                  </li>
-                ))
-              )}
-            </ul>
-          )}
-          <Button variant="contained" color="primary" onClick={handleUpdateBooking}>
-            Update Booking
+
+          <Button variant="contained" color="primary" onClick={handleUpdateInvoice}>
+            Update Invoice
           </Button>
         </Box>
       </Modal>
@@ -349,4 +327,4 @@ const Requests = () => {
   );
 };
 
-export default Requests;
+export default Invoices;

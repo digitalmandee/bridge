@@ -7,7 +7,8 @@ import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import "bootstrap/dist/css/bootstrap.min.css";
 import colors from "@/assets/styles/color";
 import axios from "axios";
-import { AuthContext } from "../../contexts/AuthContext";
+import { AuthContext } from "@/contexts/AuthContext";
+import Loader from "@/components/Loader";
 
 const BookingCalender = () => {
   const { user } = useContext(AuthContext);
@@ -19,9 +20,11 @@ const BookingCalender = () => {
   const [members, setMembers] = useState([]);
   const [room, setRoom] = useState("");
   const [timeExist, setTimeExist] = useState("");
+  const [userLimitError, setUserLimitError] = useState("");
   const [rooms, setRooms] = useState([]);
   const [events, setEvents] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [newEvent, setNewEvent] = useState({
     title: "",
@@ -75,22 +78,23 @@ const BookingCalender = () => {
   const handleSaveEvent = () => {
     if (newEvent.title && newEvent.startTime && newEvent.endTime && newEvent.persons > 0 && selectedMember) {
       setTimeExist("");
+      setUserLimitError("");
       const userBranchId = user.type === "user" ? { created_by_user: user.id, branch_id: user.created_by_branch_id } : { branch_id: user.branch_id };
+
+      console.log(selectedDate);
 
       axios
         .post(`${import.meta.env.VITE_BASE_API}booking-schedule/create`, { ...newEvent, ...userBranchId, date: selectedDate, location_id: Number(location), room_id: Number(room), user_id: selectedMember.id }, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } })
         .then((res) => {
-          console.log(res.data);
-
           setEvents([...events, { ...res.data.data, date: new Date(res.data.data.date), startTime: new Date(res.data.data.startTime), endTime: new Date(res.data.data.endTime) }]);
           setModalOpen(false);
           setNewEvent({ title: "", description: "", startTime: null, persons: 0, endTime: null });
           setTempBooking(null);
         })
         .catch((err) => {
-          console.log(err.response.data);
-
-          setTimeExist(err.response.data.already_exist);
+          // console.log(err.response.data);
+          if (err.response.data.already_exist) setTimeExist(err.response.data.already_exist);
+          else if (err.response.data.user_limit_error) setUserLimitError(err.response.data.user_limit_error);
         });
     }
   };
@@ -135,30 +139,47 @@ const BookingCalender = () => {
   const reservedPercentage = Math.round((events.length / (23 * 31)) * 100);
   const availablePercentage = 100 - reservedPercentage;
 
+  const changeLocation = async (value) => {
+    setLocation(value);
+    try {
+      await axios
+        .get(`${import.meta.env.VITE_BASE_API}booking-schedule/filter`, {
+          params: { location_id: Number(value) },
+          headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
+        })
+        .then((res) => {
+          if (res.data.floors) {
+            setRooms(res.data.floors);
+            // update user according Type
+            if (user.type !== "user") setMembers(res.data.users);
+            // End
+          }
+        });
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  };
+
   useEffect(() => {
     // Update Default User according Type
     if (user.type === "user") setSelectedMember(user);
 
     const fetchFilters = async () => {
+      setIsLoading(true);
+
       try {
         await axios
           .get(`${import.meta.env.VITE_BASE_API}booking-schedule/filter`, {
             params: {
               location_id: Number(location),
               room_id: Number(room),
+              date: selectedDate,
             },
             headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
           })
           .then((res) => {
-            console.log(res.data);
-
             if (res.data.locations) {
               setLocations(res.data.locations);
-            } else if (res.data.floors) {
-              setRooms(res.data.floors);
-              // update user according Type
-              if (user.type !== "user") setMembers(res.data.users);
-              // End
             } else if (res.data.schedules) {
               const newData = res.data.schedules.map((event) => ({
                 ...event,
@@ -166,16 +187,18 @@ const BookingCalender = () => {
                 endTime: new Date(event.endTime),
                 date: new Date(event.date),
               }));
-              // console.log(newData);
+
               setEvents(newData);
             }
           });
       } catch (error) {
         console.log(error.response.data);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchFilters();
-  }, [location, room]);
+  }, [room, selectedDate]);
 
   return (
     <>
@@ -212,7 +235,7 @@ const BookingCalender = () => {
                   <div className="card-body">
                     <FormControl fullWidth className="mb-3">
                       <InputLabel>Select Location</InputLabel>
-                      <Select value={location} onChange={(e) => setLocation(e.target.value)} label="Select Location">
+                      <Select value={location} onChange={(e) => changeLocation(e.target.value)} label="Select Location">
                         {locations.length > 0 ? (
                           locations.map((item) => (
                             <MenuItem key={item.id} value={item.id}>
@@ -280,8 +303,9 @@ const BookingCalender = () => {
               </div>
 
               <div className="col-md-8">
-                <div className="card">
+                <div className="card position-relative">
                   <div className="card-body">
+                    {isLoading && <Loader variant="B" />}
                     <div className="d-flex justify-content-between align-items-center mb-4">
                       <Typography variant="h5">{selectedDate.toLocaleDateString()}</Typography>
                       <div className="btn-group gap-2">
@@ -361,6 +385,11 @@ const BookingCalender = () => {
                 {timeExist != "" && (
                   <p className="mb-3" style={{ color: "red" }}>
                     {timeExist}
+                  </p>
+                )}
+                {userLimitError != "" && (
+                  <p className="mb-3" style={{ color: "red" }}>
+                    {userLimitError}
                   </p>
                 )}
                 {user.type !== "user" && (

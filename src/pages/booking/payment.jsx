@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
-import cash from "../../assets/cash.png";
-import payment from "../../assets/payment.png";
+import cash from "@/assets/cash.png";
+import payment from "@/assets/payment.png";
 import Modal from "./modal";
 import axios from "axios";
-import { FloorPlanContext } from "../../contexts/floorplan.context";
-import colors from "../../assets/styles/color";
+import { FloorPlanContext } from "@/contexts/floorplan.context";
+import colors from "@/assets/styles/color";
 
 const Payment = () => {
   const { selectedChairs, bookingPlans, bookingdetails, setBookingDetails } = useContext(FloorPlanContext);
@@ -92,11 +92,15 @@ const Payment = () => {
               marginBottom: "20px",
             }}
           >
-            <div className={`payment-methods ${bookingdetails.payment_method === "cash" ? "active" : ""}`}
-              onClick={() => setBookingDetails((prevDetails) => ({
-                ...prevDetails,
-                payment_method: 'cash', // Update receipt field
-              }))}>
+            <div
+              className={`payment-methods ${bookingdetails.payment_method === "cash" ? "active" : ""}`}
+              onClick={() =>
+                setBookingDetails((prevDetails) => ({
+                  ...prevDetails,
+                  payment_method: "cash", // Update receipt field
+                }))
+              }
+            >
               <img src={cash} alt="Cash" style={{ width: "50px", marginBottom: "10px" }} />
               <p
                 style={{
@@ -108,11 +112,14 @@ const Payment = () => {
                 Cash
               </p>
             </div>
-            <div className={`payment-methods ${bookingdetails.payment_method === "bank" ? "active" : ""}`}
-              onClick={() => setBookingDetails((prevDetails) => ({
-                ...prevDetails,
-                payment_method: 'bank', // Update receipt field
-              }))}
+            <div
+              className={`payment-methods ${bookingdetails.payment_method === "bank" ? "active" : ""}`}
+              onClick={() =>
+                setBookingDetails((prevDetails) => ({
+                  ...prevDetails,
+                  payment_method: "bank", // Update receipt field
+                }))
+              }
             >
               <img src={payment} alt="Bank Transfer" style={{ width: "50px", marginBottom: "10px" }} />
               <p

@@ -52,6 +52,21 @@ const User = () => {
           </Link>
         </li>
       </ul>
+      <ul>
+        <li>
+          <Link to="/user/booking/invoices">
+            <Button className={`w-100 ${location.pathname === "/user/booking/invoices" ? "active-button" : ""}`}>
+              <span className="icon">
+                <MdOutlineDateRange />
+              </span>
+              Booking Invoices
+              <span className="arrow">
+                <FaAngleRight />
+              </span>
+            </Button>
+          </Link>
+        </li>
+      </ul>
     </>
   );
 };

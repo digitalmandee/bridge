@@ -13,6 +13,7 @@ import BookingPlans from "./pages/booking/plans";
 import BookingPlanCreate from "./pages/booking/plancreate";
 import SeatsAllocation from "./pages/booking/seatsallocation";
 import BookingCalender from "./pages/booking/calendar";
+import BookingInvoices from "./pages/booking/invoices";
 import ProtectedRoute from "./ProtectedRoute";
 // import TopNavbar from './topNavbar/page';
 function App() {
@@ -53,6 +54,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/user/booking/invoices"
+              element={
+                <ProtectedRoute role="user">
+                  <BookingInvoices />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Branch Routes */}
             <Route
@@ -84,6 +93,14 @@ function App() {
               element={
                 <ProtectedRoute role="admin">
                   <BookingRequests />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/branch/booking/invoices"
+              element={
+                <ProtectedRoute role="admin">
+                  <BookingInvoices />
                 </ProtectedRoute>
               }
             />
