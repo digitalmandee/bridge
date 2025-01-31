@@ -64,4 +64,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(BookingInvoice::class);
     }
+
+    // Define notifications relationship (optional, but explicit)
+    // public function notifications()
+    // {
+    //     return $this->morphMany('Illuminate\Notifications\DatabaseNotification', 'notifiable')->orderBy('created_at', 'desc');
+    // }
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\BookingPlanController;
 use App\Http\Controllers\BookingScheduleController;
 use App\Http\Controllers\FloorPlanController;
 use App\Http\Controllers\InvoicesController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('dashboard', [UserController::class, 'index']);
     });
 
+    // Bookings
+    Route::get('bookings', [BookingPlanController::class, 'getBookings']);
+    Route::post('booking/create', [BookingPlanController::class, 'createBooking']);
+    Route::post('bookings/update', [BookingPlanController::class, 'updateBooking']);
+
     // Booking Schedule Calendar
     Route::get('booking-schedules', [BookingScheduleController::class, 'index']);
     Route::post('booking-schedule/create', [BookingScheduleController::class, 'create']);
@@ -37,17 +43,16 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     // Invoices
     Route::get('invoices', [InvoicesController::class, 'index']);
     Route::post('invoices/update', [InvoicesController::class, 'update']);
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'getNotifications']);
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 });
 
 Route::get('floor-plan', [FloorPlanController::class, 'getFloorPlan']);
 Route::post('check-chair-availability', [FloorPlanController::class, 'checkChairAvailability']);
 
 Route::get('seat-allocations', [FloorPlanController::class, 'getSeatAllocations']);
-
-// Bookings
-Route::get('bookings', [BookingPlanController::class, 'getBookings']);
-Route::post('booking/create', [BookingPlanController::class, 'createBooking']);
-Route::post('bookings/update', [BookingPlanController::class, 'updateBooking']);
 
 // Booking Plans
 Route::resource('booking-plans', BookingPlanController::class)->except(['create', 'show', 'edit']);

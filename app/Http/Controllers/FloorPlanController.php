@@ -26,7 +26,7 @@ class FloorPlanController extends Controller
             }
 
             // Fetch bookings with related data
-            $bookings = Booking::where('branch_id', $branchId)->with(['branch', 'floor','user'])->get();
+            $bookings = Booking::where('branch_id', $branchId)->with(['branch', 'floor', 'user'])->get();
 
             // Fetch all rooms once to avoid multiple queries
             $rooms = Room::all()->keyBy('id'); // Key rooms by 'id' for easy lookup
@@ -86,14 +86,28 @@ class FloorPlanController extends Controller
             // Fetch the floor with its related rooms, tables, and chairs
             $floor = Floor::with(['rooms.tables.chairs'])->where('id', $floorId)->where('branch_id', $branchId)->first();
 
+            // Initialize counters for available and occupied chairs
+            $totalAvailableChairs = 0;
+            $totalOccupiedChairs = 0;
+
             if ($floor) {
                 // Collect all tables (and their chairs) into a single array
-                $tables = $floor->rooms->flatMap(function ($room) {
-                    return $room->tables->map(function ($table) {
+                $tables = $floor->rooms->flatMap(function ($room) use (&$totalAvailableChairs, &$totalOccupiedChairs) {
+                    return $room->tables->map(function ($table) use (&$totalAvailableChairs, &$totalOccupiedChairs) {
                         return [
                             'id' => $table->table_id,
                             'name' => $table->name,
-                            'chairs' => $table->chairs->map(function ($chair) {
+                            'chairs' => $table->chairs->map(function ($chair) use (&$totalAvailableChairs, &$totalOccupiedChairs) {
+                                if ($chair->booked) {
+                                    $totalOccupiedChairs++;
+                                    if ($chair->duration != 24) {
+                                        // If booked and duration is not 24, count as avaable
+                                        $totalAvailableChairs++;
+                                    }
+                                } else {
+                                    // If not booked, count as available
+                                    $totalAvailableChairs++;
+                                }
                                 return [
                                     'floor_id' => $chair->floor_id,
                                     'room_id' => $chair->room_id,
@@ -120,6 +134,8 @@ class FloorPlanController extends Controller
                     'floor_id' => $floor->id,
                     'branch_id' => $floor->branch_id,
                     'tables' => $tables->values(), // Convert collection to array
+                    'totalAvailableChairs' => $totalAvailableChairs,
+                    'totalOccupiedChairs' => $totalOccupiedChairs,
                 ];
             } else {
                 $result = []; // Handle case where floor is not found

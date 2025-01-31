@@ -24,6 +24,7 @@ class BookingSchedule extends Model
         'date',
         'persons',
         'price',
+        'status'
     ];
 
     protected $primaryKey = 'event_id';

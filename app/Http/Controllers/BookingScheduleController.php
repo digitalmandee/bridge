@@ -27,7 +27,6 @@ class BookingScheduleController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'branch_id' => 'required|integer',
             'location_id' => 'required|integer',
             'user_id' => 'required|integer',
             'room_id' => 'required|integer',
@@ -72,8 +71,11 @@ class BookingScheduleController extends Controller
                 return response()->json(['success' => false, 'user_limit_error' => 'User has reached the booking limit.'], 403);
             }
 
+            $LoggedInUser = auth()->user();
+            $branchId = $LoggedInUser->type === 'admin' ? $LoggedInUser->branch->id : $LoggedInUser->created_by_branch_id;
+
             $bookingSchedule = BookingSchedule::create([
-                'branch_id' => $request->branch_id,
+                'branch_id' => $branchId,
                 'user_id' => $request->user_id,
                 'schedule_floor_id' => $request->location_id,
                 'schedule_room_id' => $request->room_id,
@@ -128,8 +130,7 @@ class BookingScheduleController extends Controller
         if (!empty($locationId) && !empty($roomId)) {
             $branchId = $user->type === 'admin' ? $user->branch->id : $user->created_by_branch_id;
 
-            $query = BookingSchedule::where('branch_id', $branchId)
-                ->where('schedule_room_id', $roomId);
+            $query = BookingSchedule::where('branch_id', $branchId)->where('schedule_room_id', $roomId);
 
             // Apply date filter if provided
             if (!empty($date)) {

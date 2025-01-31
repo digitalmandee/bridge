@@ -28,6 +28,7 @@ class CreateBookingSchedulesTable extends Migration
             $table->timestamp('date', 0)->nullable();
             $table->integer('persons')->unsigned(); // Ensure it's unsigned for valid counts
             $table->decimal('price', 10, 2)->default(0.00);
+            $table->string('status')->default('pending');
             $table->timestamps();
 
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');

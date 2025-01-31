@@ -9,6 +9,7 @@ use App\Models\BookingPlan;
 use App\Models\Chair;
 use App\Models\Room;
 use App\Models\User;
+use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +28,6 @@ class BookingPlanController extends Controller
         try {
             // Validate required fields
             $validated = $request->validate([
-                'branch_id' => 'required|integer',
                 'floor_id' => 'required|integer',
                 'bookingdetails' => 'required|string', // Will parse JSON
                 'selectedPlan' => 'required|string',   // Will parse JSON
@@ -38,6 +38,11 @@ class BookingPlanController extends Controller
             $bookingDetails = json_decode($validated['bookingdetails'], true);
             $selectedPlan = json_decode($validated['selectedPlan'], true);
             $selectedChairs = json_decode($validated['selectedChairs'], true);
+
+            $branchId = auth()->user()->branch->id;
+            $adminName = auth()->user()->name; // Get admin who created booking
+
+            DB::beginTransaction();
 
             // Check if user exists or create a new user
             $user = User::where('email', $bookingDetails['email'])->first();
@@ -67,12 +72,10 @@ class BookingPlanController extends Controller
                 $receiptPath = $request->file('receipt')->store('receipts', 'public');
             }
 
-            DB::beginTransaction();
-
             // Create booking
             $booking = Booking::create([
                 "user_id" => $userId,
-                "branch_id" => $validated['branch_id'],
+                "branch_id" => $branchId,
                 "floor_id" => $validated['floor_id'],
                 "plan_id" => $selectedPlan['id'],
                 "chairs" => $selectedChairs,
@@ -89,8 +92,8 @@ class BookingPlanController extends Controller
                 "receipt" => $receiptPath,
             ]);
 
-            BookingInvoice::create([
-                'branch_id' => $validated['branch_id'],
+            $invoice = BookingInvoice::create([
+                'branch_id' => $branchId,
                 'booking_id' => $booking->id,
                 'user_id' => $userId,
                 'due_date' => Carbon::parse($booking->start_date)->format('Y-m-d'),
@@ -98,6 +101,45 @@ class BookingPlanController extends Controller
                 'amount' => $booking->total_price,
                 'receipt' => $receiptPath,
             ]);
+
+            $admin = User::where('id', auth()->user()->id)->first();
+
+            // Notify user
+            $userBookingNotificationData = [
+                'title' => 'New Booking Created',
+                'message' => "Your Booking has been created.",
+                'type' => 'booking',
+                'booking_id' => $booking->id,
+            ];
+            $user->notify(new GeneralNotification($userBookingNotificationData));
+
+            $userInvoiceNotificationData = [
+                'title' => 'New Invoice Created',
+                'message' => "Your Invoice has been generated.",
+                'type' => 'invoice',
+                'invoice_id' => $invoice->id,
+            ];
+            $user->notify(new GeneralNotification($userInvoiceNotificationData));
+
+            // Notify admin
+            $adminBookingNotificationData = [
+                'title' => 'New Booking',
+                'message' => "A Booking has been created by $adminName.",
+                'type' => 'booking',
+                'booking_id' => $booking->id,
+                'created_by' => $adminName,
+            ];
+            $admin->notify(new GeneralNotification($adminBookingNotificationData));
+
+            $adminInvoiceNotificationData = [
+                'title' => 'New Invoice',
+                'message' => "An Invoice has been generated for a booking by $adminName.",
+                'type' => 'invoice',
+                'invoice_id' => $invoice->id,
+                'created_by' => $adminName,
+            ];
+
+            $admin->notify(new GeneralNotification($adminInvoiceNotificationData));
 
             DB::commit();
 
@@ -108,18 +150,13 @@ class BookingPlanController extends Controller
         }
     }
 
-
-    public function getBookings(Request $request)
+    public function getBookings()
     {
         try {
-            $branchId = $request->branch_id;
-
-            if (!$branchId) {
-                return response()->json(['message' => 'Branch ID parameter is required'], 400);
-            }
+            $branchId = auth()->user()->branch->id;
 
             // Fetch bookings with user relationships
-            $bookingPlans = Booking::where('branch_id', $branchId)->with(['user', 'floor'])->get();
+            $bookingPlans = Booking::where('branch_id', $branchId)->with(['user', 'floor'])->orderBy('created_at', 'desc')->get();
 
             // Fetch all rooms (assuming you have a Room model)
             $rooms = Room::all()->keyBy('id'); // Create a map of rooms by room_id
@@ -168,18 +205,10 @@ class BookingPlanController extends Controller
                 'price' => 'required|numeric',
             ]);
 
+            DB::beginTransaction();
+
             // Retrieve the booking from the database
             $booking = Booking::findOrFail($request->booking_id);
-
-            // Update the booking details
-            $booking->update([
-                'status' => $request->status,
-                'total_price' => $request->price,
-                'start_date' => $request->start_date,
-                'start_time' => $request->start_time,
-                'end_date' => $request->end_date,
-                'end_time' => $request->end_time
-            ]);
 
             // Get the chair data from the request (grouped by C, D, etc.)
             $chairsData = $booking->chairs;
@@ -192,36 +221,41 @@ class BookingPlanController extends Controller
                     $chair = Chair::findOrFail($chairData['chair_id']);
 
                     // Update chair details based on the booking status
-                    if ($booking->status === 'accepted') {
+                    if ($request->status === 'accepted') {
                         $chair->update([
-                            'booking_startdate' => $booking->start_date . ' ' . $booking->start_time,
-                            'booking_enddate' => $booking->end_date . ' ' . $booking->end_time,
+                            'booking_startdate' => $request->start_date . ' ' . $request->start_time,
+                            'booking_enddate' => $request->end_date . ' ' . $request->end_time,
                             'booked' => true,
                             'duration' => $booking->duration,
                             'color' => $color, // Set the color based on duration
                         ]);
                     }
-                    // else {
-                    //     // Clear booking details if status is pending or rejected
+                    // else if ($request->status === 'vacate') {
+                    //     if ($booking->status === 'accepted') {
                     //     $chair->update([
                     //         'booking_startdate' => null,
                     //         'booking_enddate' => null,
                     //         'booked' => false,
+                    //         'color' => null,
                     //         'duration' => null,
-                    //         'color' => 'gray', // Reset color when not booked
-                    //     ]);
+                    //     ])
                     // }
-                    // // Update the chair data within the grouped array (C, D, etc.)
-                    // $chairData['booking_startdate'] = $request->status === 'accepted' ? $request->start_date : null;
-                    // $chairData['booking_enddate'] = $request->status === 'accepted' ? $request->end_date : null;
-                    // $chairData['booked'] = $request->status === 'accepted' ? 1 : 0;
-                    // $chairData['duration'] = $request->status === 'accepted' ? $request->duration : null;
-                    // $chairData['color'] = $request->status === 'accepted' ? $color : null;
+                    // }
                 }
             }
 
-            // Save updated chair data back to the booking
-            $booking->update(['chair' => $chairsData]);
+            // Update the booking details
+            $booking->update([
+                'status' => $request->status,
+                'total_price' => $request->price,
+                'start_date' => $request->start_date,
+                'start_time' => $request->start_time,
+                'end_date' => $request->end_date,
+                'end_time' => $request->end_time,
+                'chair' => $chairsData
+            ]);
+
+            DB::commit();
 
             return response()->json(['success' => true, 'message' => 'Booking and chairs updated successfully'], 200);
         } catch (\Throwable $th) {
