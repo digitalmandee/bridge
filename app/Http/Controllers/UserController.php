@@ -13,7 +13,7 @@ class UserController extends Controller
         try {
             $user = auth()->user();
 
-            $bookingInvoices = $user->BookingInvoices()->latest()->take(10)->get();
+            $bookingInvoices = $user->BookingInvoices()->with('user')->latest()->take(10)->get();
 
             $totalAmount = $user->BookingInvoices()->sum('amount');
 

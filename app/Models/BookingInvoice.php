@@ -7,8 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class BookingInvoice extends Model
 {
-    protected $dates = ['due_date'];
     use HasFactory;
 
-    protected $fillable = ['user_id', 'booking_id', 'floor_id', 'room_id', 'due_date', 'amount', 'status'];
+    // protected $dates = ['due_date', 'paid_date'];
+
+    protected $fillable = ['branch_id', 'booking_id', 'user_id', 'due_date', 'paid_date', 'payment_method', 'amount', 'receipt', 'status'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -64,6 +64,14 @@ class BookingScheduleController extends Controller
             // No overlap found, proceed to create the booking
             DB::beginTransaction();
 
+            $user = User::findOrFail($request->user_id);
+            if ($user->booking_quota > 0) {
+                $user->decrement('booking_quota');
+            } else {
+                DB::rollBack();
+                return response()->json(['success' => false, 'user_limit_error' => 'User has reached the booking limit.'], 403);
+            }
+
             $bookingSchedule = BookingSchedule::create([
                 'branch_id' => $request->branch_id,
                 'user_id' => $request->user_id,
@@ -93,8 +101,9 @@ class BookingScheduleController extends Controller
 
         $user = auth()->user();
 
+
         // Parse the timestamp to a Carbon instance if provided
-        $date = $timestamp ? Carbon::parse($timestamp)->toDateString() : null;
+        $date = $timestamp ? Carbon::parse($timestamp)->setTimezone('Asia/Karachi')->toDateString() : null;
 
         // Fetch all branches if no branch and room ID are provided
         if (empty($locationId) && empty($roomId)) {

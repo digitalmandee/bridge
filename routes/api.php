@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingPlanController;
 use App\Http\Controllers\BookingScheduleController;
 use App\Http\Controllers\FloorPlanController;
+use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,11 +34,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('booking-schedules', [BookingScheduleController::class, 'index']);
     Route::post('booking-schedule/create', [BookingScheduleController::class, 'create']);
     Route::get('booking-schedule/filter', [BookingScheduleController::class, 'filter']);
+    // Invoices
+    Route::get('invoices', [InvoicesController::class, 'index']);
+    Route::post('invoices/update', [InvoicesController::class, 'update']);
 });
-
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 
 Route::get('floor-plan', [FloorPlanController::class, 'getFloorPlan']);
 Route::post('check-chair-availability', [FloorPlanController::class, 'checkChairAvailability']);

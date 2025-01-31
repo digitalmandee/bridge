@@ -15,18 +15,20 @@ class CreateBookingInvoicesTable extends Migration
     {
         Schema::create('booking_invoices', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('booking_id')->nullable();
-            $table->unsignedBigInteger('floor_id')->nullable();
-            $table->unsignedBigInteger('room_id')->nullable();
-            $table->timestamp('due_date', 0)->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->date('due_date')->nullable();
+            $table->date('paid_date')->nullable();
+            $table->string('payment_method')->default('cash');
             $table->decimal('amount', 10, 2)->default(0.00);
             $table->string('status')->default('pending');
+            $table->string('receipt')->nullable();
             $table->timestamps();
 
-            $table->foreign('booking_id')->references('event_id')->on('booking_schedules')->onDelete('cascade');
-            $table->foreign('floor_id')->references('id')->on('schedule_floors')->onDelete('cascade');
-            $table->foreign('room_id')->references('id')->on('schedule_rooms')->onDelete('cascade');
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
+            $table->foreign('booking_id')->references('id')->on('bookings')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

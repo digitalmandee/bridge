@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\BookingInvoice;
 use App\Models\BookingPlan;
 use App\Models\Chair;
 use App\Models\Room;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
@@ -45,8 +48,9 @@ class BookingPlanController extends Controller
                     'email' => $bookingDetails['email'],
                     'type' => $type,
                     'role' => $type == 'user' ? 1 : 1,
-                    'password' => Hash::make('bridge@123'),
+                    'password' => Hash::make('password'),
                 ]);
+                $user->assignRole('user');
             }
 
             $userId = $user->id;
@@ -63,8 +67,10 @@ class BookingPlanController extends Controller
                 $receiptPath = $request->file('receipt')->store('receipts', 'public');
             }
 
+            DB::beginTransaction();
+
             // Create booking
-            Booking::create([
+            $booking = Booking::create([
                 "user_id" => $userId,
                 "branch_id" => $validated['branch_id'],
                 "floor_id" => $validated['floor_id'],
@@ -82,6 +88,18 @@ class BookingPlanController extends Controller
                 "plan" => $selectedPlan,
                 "receipt" => $receiptPath,
             ]);
+
+            BookingInvoice::create([
+                'branch_id' => $validated['branch_id'],
+                'booking_id' => $booking->id,
+                'user_id' => $userId,
+                'due_date' => Carbon::parse($booking->start_date)->format('Y-m-d'),
+                'payment_method' => $booking->payment_method,
+                'amount' => $booking->total_price,
+                'receipt' => $receiptPath,
+            ]);
+
+            DB::commit();
 
             return response()->json(['success' => true, 'message' => 'Booking created successfully'], 202);
         } catch (\Throwable $th) {
