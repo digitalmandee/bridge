@@ -7,6 +7,7 @@ import LoginPage from './auth/login/login';
 import Home from './home';
 import Booking from './booking';
 import UserDashboard from './Dashboard/userdashboard';
+import BranchAdmin from './Dashboard/branchadmin';
 import AdminDashboard from './Dashboard/AdminDashboard';
 import BookingCalender from './calender';
 import SeatsAllocation from './booking/seatsallocation';
@@ -31,6 +32,7 @@ function App() {
         <Routes>
           {/* Define your routes */}
           <Route path="/" element={<Welcome />} />
+          <Route path="/branch-admin-dashboard" element={<BranchAdmin />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />

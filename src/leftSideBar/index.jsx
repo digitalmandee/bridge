@@ -31,8 +31,8 @@ const Sidebar = () => {
       <div className='sidebar'>
         <ul>
           <li>
-            <Link to="/admin-dashboard">
-              <Button className={`w-100 ${location.pathname === '/admin-dashboard' ? 'active-button' : ''}`}>
+            <Link to="/branch-admin-dashboard">
+              <Button className={`w-100 ${location.pathname === '/branch-admin-dashboard' ? 'active-button' : ''}`}>
                 <span className='icon'><RxDashboard /></span>
                 Dashboard
                 <span className='arrow'>
