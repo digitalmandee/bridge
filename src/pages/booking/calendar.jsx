@@ -92,7 +92,7 @@ const BookingCalender = () => {
           setTempBooking(null);
         })
         .catch((err) => {
-          // console.log(err.response.data);
+          console.log(err.response.data);
           if (err.response.data.already_exist) setTimeExist(err.response.data.already_exist);
           else if (err.response.data.user_limit_error) setUserLimitError(err.response.data.user_limit_error);
         });

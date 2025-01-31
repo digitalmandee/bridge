@@ -232,7 +232,7 @@ const Invoices = () => {
                     <th>Name</th>
                     <th>Date</th>
                     <th>Amount</th>
-                    <th>Status</th>
+                    <th className="text-center">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -251,7 +251,7 @@ const Invoices = () => {
                         <td>{invoice.due_date}</td>
                         <td>Rs. {invoice.amount}</td>
                         <td>
-                          <div className="d-flex align-items-center">
+                          <div className="d-flex align-items-center justify-content-end">
                             <span className={`status ${invoice.status}`}>{invoice.status}</span>
                             {user.type !== "user" && (
                               <IconButton onClick={(e) => handleMenuOpen(e, invoice)}>

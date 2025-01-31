@@ -32,35 +32,35 @@ const FFloorPlan = () => {
   }, []);
 
   // Toggle chair and selection
+  // Toggle chair and selection
   const toggleChairColor = (tableId, chairId) => {
     // Find the selected table and chair
     const chairData = tables.find((table) => table.id === tableId)?.chairs.find((chair) => chair.id === chairId);
-
     if (!chairData) return; // If no chair found, return
 
-    const chairIdentifier = `${tableId}${chairId}`;
+    // Clone the previous state to avoid mutation
+    const newSelected = { ...selectedChairs };
 
-    setSelectedChairs((prevSelected) => {
-      const newSelected = { ...prevSelected };
+    // Initialize the array for this tableId if it doesn't exist
+    if (!newSelected[tableId]) {
+      newSelected[tableId] = [];
+    }
 
-      // Check if the tableId already has selected chairs
-      if (!newSelected[tableId]) {
-        newSelected[tableId] = [];
-      }
+    const tableSelectedChairs = newSelected[tableId];
 
-      const tableSelectedChairs = newSelected[tableId];
+    // Check if the chair is already selected
+    const chairIndex = tableSelectedChairs.findIndex((chair) => chair.id === chairId);
 
-      // If the chair is already selected, remove it
-      const chairIndex = tableSelectedChairs.findIndex((chair) => chair.id === chairId);
-      if (chairIndex > -1) {
-        tableSelectedChairs.splice(chairIndex, 1);
-      } else {
-        // If not selected, add it
-        tableSelectedChairs.push(chairData);
-      }
+    if (chairIndex > -1) {
+      // If the chair is found, remove it
+      tableSelectedChairs.splice(chairIndex, 1);
+    } else {
+      // Otherwise, add the chair
+      tableSelectedChairs.push(chairData);
+    }
 
-      return newSelected;
-    });
+    // Return a new object for state with the updated chairs for the specific tableId
+    setSelectedChairs({ ...newSelected });
 
     // Update chair color
     tables.forEach((table) => {
@@ -112,7 +112,6 @@ const FFloorPlan = () => {
               {Object.entries(selectedChairs).map(([tableId, chairs]) =>
                 chairs.map((chair) => (
                   <li key={chair.id}>
-                    {chair.chair_id}
                     {tableId}
                     {chair.id}
                   </li>

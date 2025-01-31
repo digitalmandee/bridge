@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SplashScreen from "./components/splashscreen";
+import SuperAdminDashboard from "./pages/dashboard/superadmin";
 import AdminDashboard from "./pages/dashboard/admin";
 import UserDashboard from "./pages/dashboard/user";
 import Welcome from "./pages/welcome/welcome";
@@ -33,7 +34,7 @@ function App() {
               path="/super-admin/dashboard"
               element={
                 <ProtectedRoute role="super_admin">
-                  <AdminDashboard />
+                  <SuperAdminDashboard />
                 </ProtectedRoute>
               }
             />

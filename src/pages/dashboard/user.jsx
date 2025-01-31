@@ -12,7 +12,11 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Loader from "../../components/Loader";
-import { MoreVerticalIcon } from "lucide-react";
+import { Bell, Building, Building2, FileText, MoreVerticalIcon } from "lucide-react";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime); // Enable relative time formatting
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -51,6 +55,7 @@ const chartOptions = {
 const UserDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     const getData = async () => {
@@ -62,6 +67,37 @@ const UserDashboard = () => {
     };
     getData();
   }, []);
+
+  useEffect(() => {
+    axios
+      .get(import.meta.env.VITE_BASE_API + "notifications", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
+      })
+      .then((response) => {
+        setNotifications(response.data);
+      })
+      .catch((error) => console.error("Error fetching notifications:", error.response.data));
+  }, []);
+
+  //   const markAsRead = (notificationId) => {
+  //     axios.post(import.meta.env.VITE_BASE_API + `notifications/${notificationId}/read`, {}, {
+  //         headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` }
+  //     }).then(() => {
+  //         setNotifications(notifications.filter(n => n.id !== notificationId)); // Remove from list
+  //     })
+  //     .catch(error => console.error("Error marking as read:", error));
+  // };
+
+  const notificationsStyle = {
+    marginTop: "1rem",
+    backgroundColor: "#FFFFFF",
+    borderRadius: "0.2rem",
+    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+    border: "1px solid #E5E7EB",
+    height: "30rem",
+    width: "21rem",
+    padding: "1.5rem",
+  };
 
   return (
     <>
@@ -183,26 +219,6 @@ const UserDashboard = () => {
                               <TableCell>
                                 <span className={`status ${invoice.status}`}>{invoice.status}</span>
                               </TableCell>
-                              {/* <TableCell>{row.id}</TableCell>
-                              <TableCell>{row.floor}</TableCell>
-                              <TableCell>{row.room}</TableCell>
-                              <TableCell>{row.type}</TableCell>
-                              <TableCell>{row.startDate}</TableCell>
-                              <TableCell>{row.endDate}</TableCell>
-                              <TableCell>
-                                <Box
-                                  sx={{
-                                    bgcolor: row.status === "Complete" ? "#E8F5E9" : row.status === "Pending" ? "#FFF3E0" : "#FFEBEE",
-                                    color: row.status === "Complete" ? "#2E7D32" : row.status === "Pending" ? "#E65100" : "#C62828",
-                                    px: 2,
-                                    py: 0.5,
-                                    borderRadius: 1,
-                                    display: "inline-block",
-                                  }}
-                                >
-                                  {row.status}
-                                </Box>
-                              </TableCell> */}
                             </TableRow>
                           ))
                         ) : (
@@ -218,69 +234,30 @@ const UserDashboard = () => {
                 </Grid>
 
                 <Grid item xs={12} md={4}>
-                  <Card
-                    sx={{
-                      boxShadow: "none",
-                      border: "1px solid",
-                      borderColor: "divider",
-                      height: "100%",
-                    }}
-                  >
-                    <CardContent sx={{ p: 2 }}>
-                      <Box sx={{ position: "relative", height: 300, mb: 3 }}>
-                        <Doughnut data={chartData} options={chartOptions} />
-                        <Box
-                          sx={{
-                            position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            transform: "translate(-50%, -50%)",
-                            textAlign: "center",
-                          }}
-                        >
-                          <Typography
-                            sx={{
-                              fontSize: "16px",
-                              fontWeight: 500,
-                              color: "#000",
-                            }}
-                          >
-                            Booking
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontSize: "16px",
-                              fontWeight: 500,
-                              color: "#000",
-                            }}
-                          >
-                            Trend
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                        {[
-                          { branch: "Branch 1", value: "32", percentage: "62.5%", color: "#4285F4" },
-                          { branch: "Branch 2", value: "14", percentage: "22.4%", color: "#34A853" },
-                          { branch: "Branch 3", value: "8", percentage: "18.9%", color: "#EA4335" },
-                        ].map((item, index) => (
-                          <Box key={index} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                            <Box
-                              sx={{
-                                width: 8,
-                                height: 8,
-                                borderRadius: "50%",
-                                bgcolor: item.color,
-                              }}
-                            />
-                            <Typography sx={{ flex: 1, color: "#000", fontSize: "14px" }}>{item.branch}</Typography>
-                            <Typography sx={{ color: "#000", fontSize: "14px", mr: 4 }}>{item.value}</Typography>
-                            <Typography sx={{ color: "#000", fontSize: "14px", width: 60 }}>{item.percentage}</Typography>
-                          </Box>
-                        ))}
-                      </Box>
-                    </CardContent>
-                  </Card>
+                  <div style={notificationsStyle}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+                      <h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Notifications</h2>
+                      <div style={{ backgroundColor: "#0A2156", padding: "0.5rem", borderRadius: "0.375rem" }}>
+                        <Bell style={{ width: "1.25rem", height: "1.25rem", color: "white" }} />
+                      </div>
+                    </div>
+                    <div style={{ marginTop: "0.5rem" }}>
+                      {notifications.map((notification, i) => (
+                        <div key={i} style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
+                          <div style={{ marginTop: "0.05rem" }}>
+                            <FileText style={{ width: "1.25rem", height: "1.25rem", color: "#0A2156" }} />
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                              <span style={{ fontWeight: "500", fontSize: "0.875rem", color: "#111827" }}>{notification.title}</span>
+                              <span style={{ fontSize: "0.75rem", color: "#6B7280", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{dayjs(notification.created_at).fromNow()}</span>
+                            </div>
+                            <p style={{ fontSize: "0.875rem", color: "#4B5563", marginTop: "0.25rem", lineHeight: "1.25" }}>{notification.message}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </Grid>
               </Grid>
             </Box>
@@ -292,3 +269,30 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
+
+const notifications2 = [
+  {
+    icon: FileText,
+    title: "Booking Confirmation",
+    message: "Your booking for Desk #12 at Downtown Branch is confirmed for Jan 10, 2025, 9:00 AM",
+    time: "2 min ago",
+  },
+  {
+    icon: FileText,
+    title: "Upcoming Booking Reminder",
+    message: "Reminder: You have an upcoming booking for Meeting Room",
+    time: "10 min ago",
+  },
+  {
+    icon: Building2,
+    title: "New Amenities Added",
+    message: "*New* High-speed internet and ergonomic chairs are now available at Branch 1",
+    time: "2 days ago",
+  },
+  {
+    icon: Building,
+    title: "Payment Reminder",
+    message: "Payment overdue! Please complete payment for your monthly booking",
+    time: "3 days ago",
+  },
+];

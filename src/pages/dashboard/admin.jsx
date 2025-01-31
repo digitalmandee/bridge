@@ -1,229 +1,267 @@
-import React from "react";
-import TopNavbar from "../../components/topNavbar";
-import Sidebar from "../../components/leftSideBar";
-import colors from "../../assets/styles/color";
-import { Box, Card, CardContent, Typography, Grid, Button, Select, MenuItem } from "@mui/material";
-import { Bar, Doughnut } from "react-chartjs-2";
-import PeopleIcon from "@mui/icons-material/People";
-import SpaceBarIcon from "@mui/icons-material/SpaceBar";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import BarChartIcon from "@mui/icons-material/BarChart";
+import React, { useEffect, useState } from "react";
+import TopNavbar from "@/components/topNavbar";
+import Sidebar from "@/components/leftSideBar";
+import { ArrowDownIcon, ArrowUpIcon, Bell, Building2, FileText, Building } from "lucide-react";
+import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import axios from "axios";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
+dayjs.extend(relativeTime); // Enable relative time formatting
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
-
-const chartData = {
-  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
-  datasets: [
-    {
-      label: "Total Sale",
-      data: [35000, 28000, 32000, 30000, 35000, 28000, 38000, 25000],
-      backgroundColor: colors.primary,
-      barThickness: 20,
-      borderRadius: 4,
-    },
-  ],
-};
-
-const chartOptions = {
-  responsive: true,
-  plugins: {
-    legend: {
-      display: false,
-    },
-    title: {
-      display: true,
-      text: "Total Sale",
-      align: "start",
-      font: {
-        size: 16,
-        weight: "bold",
-      },
-      padding: {
-        bottom: 30,
-      },
-    },
-  },
-  scales: {
-    y: {
-      beginAtZero: true,
-      grid: {
-        drawBorder: false,
-      },
-      ticks: {
-        maxTicksLimit: 5,
-      },
-    },
-    x: {
-      grid: {
-        display: false,
-      },
-    },
-  },
-};
-
-const floorPlanData = {
-  labels: ["Available", "Occupied"],
-  datasets: [
-    {
-      data: [32, 14],
-      backgroundColor: ["#0D2B4E", "#34A853"],
-      borderWidth: 0,
-    },
-  ],
-};
-
-const floorPlanOptions = {
-  cutout: "70%",
-  plugins: {
-    legend: {
-      position: "bottom",
-    },
-  },
-};
+// Register ChartJS components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const AdminDashboard = () => {
+  const [notifications, setNotifications] = useState([]);
+
+  const chartData = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+    datasets: [
+      {
+        label: "Revenue",
+        data: [40000, 32000, 35000, 45000, 35000, 45000, 35000, 30000],
+        backgroundColor: "#1E40AF",
+        barThickness: 15,
+      },
+      {
+        label: "Membership Revenue",
+        data: [35000, 30000, 28000, 35000, 28000, 30000, 35000, 32000],
+        backgroundColor: "#93C5FD",
+        barThickness: 15,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 50000,
+        ticks: {
+          stepSize: 10000,
+        },
+        grid: {
+          drawBorder: false,
+        },
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        position: "top",
+        align: "start",
+        labels: {
+          boxWidth: 12,
+          usePointStyle: true,
+          pointStyle: "circle",
+        },
+      },
+    },
+  };
+
+  const metrics = [
+    { label: "Total Revenue", value: "100,000", unit: "Pkr", change: 2.5, increase: true },
+    { label: "Members Revenue", value: "90,000", unit: "Pkr", change: 5, increase: false },
+    { label: "On off Revenue", value: "0.00", unit: "Pkr", change: 2.5, increase: true },
+    { label: "Desk Occupancy", value: "20", unit: "%", change: 5, increase: false },
+    { label: "Occupied Desk Rate", value: "20,000", unit: "Pkr", change: 21.5, increase: true },
+    { label: "Members Revenue", value: "30,000", unit: "Pkr", change: 5, increase: false },
+  ];
+
+  const stats = [
+    { label: "Customer", new: { value: 35, change: 90.5 }, lost: { value: 0, change: 0.0 } },
+    { label: "Member", new: { value: 70, change: 100 }, lost: { value: 0, change: 0.0 } },
+    { label: "Invoice", paid: { value: 30, change: 90.5 }, overdue: { value: 4, change: 16.75 } },
+    { label: "Booking", new: { value: 2, change: 84.5 }, lost: { value: 0, change: 0.0 } },
+  ];
+
+  const containerStyle = {
+    // padding: '1.5rem',
+    backgroundColor: "transparent",
+    minHeight: "100vh",
+    marginLeft: "0px",
+  };
+
+  const cardStyle = {
+    backgroundColor: "#FFFFFF",
+    borderRadius: "0.2rem",
+    padding: "1rem",
+    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+    border: "1px solid #E5E7EB",
+  };
+
+  const metricsGridStyle = {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+    gap: "0.5rem",
+  };
+
+  const analyticsStyle = {
+    marginTop: "1rem",
+    height: "30rem",
+    width: "45rem",
+    backgroundColor: "#FFFFFF",
+    borderRadius: "0.2rem",
+    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+    border: "1px solid #E5E7EB",
+  };
+
+  const notificationsStyle = {
+    marginTop: "1rem",
+    backgroundColor: "#FFFFFF",
+    borderRadius: "0.2rem",
+    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+    border: "1px solid #E5E7EB",
+    height: "30rem",
+    width: "21rem",
+    padding: "1.5rem",
+  };
+
+  const statsGridStyle = {
+    marginTop: "1rem",
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+    gap: "1rem",
+  };
+
+  useEffect(() => {
+    axios
+      .get(import.meta.env.VITE_BASE_API + "notifications", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
+      })
+      .then((response) => {
+        setNotifications(response.data);
+      })
+      .catch((error) => console.error("Error fetching notifications:", error.response.data));
+  }, []);
+
   return (
     <>
       <TopNavbar />
-      <div className="main d-flex">
+      <div className="main">
         <div className="sideBarWrapper">
           <Sidebar />
         </div>
         <div className="content">
-          <div className="right-content">
-            <Box>
-              <Box sx={{ bgcolor: "transparent" }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-                  <Typography variant="h4" sx={{ fontWeight: "medium", fontSize: "24px" }}>
-                    Dashboard
-                  </Typography>
-                  <Box sx={{ display: "flex", gap: 2 }}>
-                    <Button variant="outlined" sx={{ color: "text.primary", borderColor: "divider" }}>
-                      View Report
-                    </Button>
-                    <Box sx={{ minWidth: 120 }}>
-                      <Select value="branch1" size="small" sx={{ bgcolor: "background.paper" }}>
-                        <MenuItem value="branch1">Branch 1</MenuItem>
-                      </Select>
-                    </Box>
-                    <Button
-                      variant="contained"
-                      sx={{
-                        bgcolor: colors.primary,
-                        "&:hover": { bgcolor: colors.primary },
-                      }}
-                    >
-                      Add New Branch
-                    </Button>
-                  </Box>
-                </Box>
-                <Grid container>
-                  <Grid container spacing={2}>
-                    {[
-                      { title: "Total Members", value: "350", icon: PeopleIcon, color: colors.primary },
-                      { title: "Available Space", value: "43", icon: SpaceBarIcon, color: colors.primary },
-                      { title: "Total Revenue", value: "35,0000", icon: AttachMoneyIcon, color: colors.primary },
-                      { title: "P&L", value: "329", icon: BarChartIcon, color: colors.primary },
-                    ].map((item, index) => (
-                      <Grid item xs={12} sm={6} md={3} key={index}>
-                        <Card
-                          sx={{
-                            boxShadow: "none",
-                            border: "1px solid",
-                            borderColor: "divider",
-                            borderRadius: "8px",
-                          }}
-                        >
-                          <CardContent sx={{ p: 2, display: "flex", flexDirection: "column", height: "100%" }}>
-                            <Typography variant="body2" color="text.secondary" gutterBottom>
-                              {item.title}
-                            </Typography>
-                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: "auto" }}>
-                              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-                                {item.value}
-                              </Typography>
-                              <Box
-                                sx={{
-                                  bgcolor: item.color,
-                                  borderRadius: "8px",
-                                  p: 1,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                }}
-                              >
-                                <item.icon sx={{ color: "#fff", fontSize: 24 }} />
-                              </Box>
-                            </Box>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>
+          <div style={containerStyle}>
+            {/* Metrics */}
+            <div style={metricsGridStyle}>
+              {metrics.map((metric, i) => (
+                <div key={i} style={cardStyle}>
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
+                      <span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
+                      <span style={{ fontSize: "0.875rem", color: "#6B7280" }}>{metric.unit}</span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", marginTop: "1rem", fontSize: "0.875rem", color: metric.increase ? "#16A34A" : "#DC2626" }}>
+                      {metric.increase ? <ArrowUpIcon style={{ width: "0.75rem", height: "0.75rem", marginRight: "0.25rem" }} /> : <ArrowDownIcon style={{ width: "0.75rem", height: "0.75rem", marginRight: "0.25rem" }} />}
+                      <span>{metric.change}%</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-                  <Grid container spacing={2} sx={{ mt: "20px" }}>
-                    <Grid item xs={12} md={7}>
-                      <Card
-                        sx={{
-                          boxShadow: "none",
-                          border: "1px solid",
-                          borderColor: "divider",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        <CardContent>
-                          <Bar data={chartData} options={chartOptions} />
-                        </CardContent>
-                      </Card>
-                    </Grid>
+            {/* Analytics and Notifications */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }}>
+              <div style={analyticsStyle}>
+                <div style={{ padding: "1rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                    <h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Analytics</h2>
+                    <select style={{ fontSize: "0.875rem", border: "1px solid #D1D5DB", borderRadius: "1rem", padding: "0.25rem 0.5rem", backgroundColor: "white" }}>
+                      <option>Dec</option>
+                    </select>
+                  </div>
+                  <div style={{ height: "400px" }}>
+                    <Bar data={chartData} options={chartOptions} />
+                  </div>
+                </div>
+              </div>
 
-                    <Grid item xs={12} md={5}>
-                      <Card
-                        sx={{
-                          boxShadow: "none",
-                          border: "1px solid",
-                          borderColor: "divider",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        <CardContent>
-                          <Box sx={{ position: "relative" }}>
-                            <Doughnut data={floorPlanData} options={floorPlanOptions} />
-                            <Box
-                              sx={{
-                                position: "absolute",
-                                top: "50%",
-                                left: "50%",
-                                transform: "translate(-50%, -50%)",
-                                textAlign: "center",
-                              }}
-                            >
-                              <Typography variant="h6">Floor Plan </Typography>
-                              <Typography variant="h4">46</Typography>
-                              <Typography variant="body2">seats</Typography>
-                            </Box>
-                          </Box>
-                          <Box sx={{ mt: 2 }}>
-                            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                              <Typography>Available</Typography>
-                              <Typography>32</Typography>
-                              <Typography>62.5%</Typography>
-                            </Box>
-                            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                              <Typography>Occupied</Typography>
-                              <Typography>14</Typography>
-                              <Typography>38.2%</Typography>
-                            </Box>
-                          </Box>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Box>
+              <div style={notificationsStyle}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+                  <h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Notifications</h2>
+                  <div style={{ backgroundColor: "#0A2156", padding: "0.5rem", borderRadius: "0.375rem" }}>
+                    <Bell style={{ width: "1.25rem", height: "1.25rem", color: "white" }} />
+                  </div>
+                </div>
+                <div style={{ marginTop: "0.5rem" }}>
+                  {notifications.map((notification, i) => (
+                    <div key={i} style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
+                      <div style={{ marginTop: "0.05rem" }}>
+                        <FileText style={{ width: "1.25rem", height: "1.25rem", color: "#0A2156" }} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                          <span style={{ fontWeight: "500", fontSize: "0.875rem", color: "#111827" }}>{notification.title}</span>
+                          <span style={{ fontSize: "0.75rem", color: "#6B7280", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{dayjs(notification.created_at).fromNow()}</span>
+                        </div>
+                        <p style={{ fontSize: "0.875rem", color: "#4B5563", marginTop: "0.25rem", lineHeight: "1.25" }}>{notification.message}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div style={statsGridStyle}>
+              {stats.map((stat, i) => (
+                <div key={i} style={cardStyle}>
+                  <h3 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827", marginBottom: "1rem" }}>{stat.label}</h3>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    {"new" in stat && (
+                      <>
+                        <div>
+                          <div style={{ fontSize: "0.875rem", color: "#6B7280" }}>New</div>
+                          <div style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827", marginTop: "0.25rem" }}>{stat.new.value}</div>
+                          <div style={{ fontSize: "0.875rem", color: "#16A34A", display: "flex", alignItems: "center", marginTop: "0.25rem" }}>
+                            <ArrowUpIcon style={{ width: "0.75rem", height: "0.75rem", marginRight: "0.25rem" }} />
+                            {stat.new.change}%
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: "0.875rem", color: "#6B7280" }}>Lost</div>
+                          <div style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827", marginTop: "0.25rem" }}>{stat.lost.value}</div>
+                          <div style={{ fontSize: "0.875rem", color: "#DC2626", display: "flex", alignItems: "center", marginTop: "0.25rem" }}>
+                            <ArrowDownIcon style={{ width: "0.75rem", height: "0.75rem", marginRight: "0.25rem" }} />
+                            {stat.lost.change}%
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    {"paid" in stat && (
+                      <>
+                        <div>
+                          <div style={{ fontSize: "0.875rem", color: "#6B7280" }}>Paid</div>
+                          <div style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827", marginTop: "0.25rem" }}>{stat.paid.value}</div>
+                          <div style={{ fontSize: "0.875rem", color: "#16A34A", display: "flex", alignItems: "center", marginTop: "0.25rem" }}>
+                            <ArrowUpIcon style={{ width: "0.75rem", height: "0.75rem", marginRight: "0.25rem" }} />
+                            {stat.paid.change}%
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: "0.875rem", color: "#6B7280" }}>Overdue</div>
+                          <div style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827", marginTop: "0.25rem" }}>{stat.overdue.value}</div>
+                          <div style={{ fontSize: "0.875rem", color: "#DC2626", display: "flex", alignItems: "center", marginTop: "0.25rem" }}>
+                            <ArrowDownIcon style={{ width: "0.75rem", height: "0.75rem", marginRight: "0.25rem" }} />
+                            {stat.overdue.change}%
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

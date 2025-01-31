@@ -24,8 +24,8 @@ const Admin = () => {
     <>
       <ul>
         <li>
-          <Link to="/admin-dashboard">
-            <Button className={`w-100 ${location.pathname === "/admin/dashboard" ? "active-button" : ""}`}>
+          <Link to="/branch/dashboard">
+            <Button className={`w-100 ${location.pathname === "/branch/dashboard" ? "active-button" : ""}`}>
               <span className="icon">
                 <RxDashboard />
               </span>

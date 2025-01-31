@@ -50,15 +50,19 @@ const Requests = () => {
 
   const handleUpdateBooking = async () => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_API}bookings/update`, {
-        booking_id: selectedBooking.id,
-        price: newPrice,
-        status: newStatus,
-        start_date: startDate,
-        start_time: startTime,
-        end_date: endDate,
-        end_time: endTime,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_API}bookings/update`,
+        {
+          booking_id: selectedBooking.id,
+          price: newPrice,
+          status: newStatus,
+          start_date: startDate,
+          start_time: startTime,
+          end_date: endDate,
+          end_time: endTime,
+        },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } }
+      );
 
       if (response.data.success) {
         setBookings((prev) =>
@@ -98,7 +102,7 @@ const Requests = () => {
     const fetchBookings = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_API}bookings?branch_id=1`);
+        const response = await axios.get(`${import.meta.env.VITE_BASE_API}bookings`, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } });
 
         if (response.data && Array.isArray(response.data.bookings)) {
           setBookings(response.data.bookings);
@@ -302,16 +306,19 @@ const Requests = () => {
           <Select fullWidth value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
             <MenuItem value="pending">Pending</MenuItem>
             <MenuItem value="accepted">Accepted</MenuItem>
+            <MenuItem value="vacate">Vacated</MenuItem>
             <MenuItem value="rejected">Rejected</MenuItem>
           </Select>
           <div style={{ display: "flex", justifyContent: "space-between", marginTop: 20 }}>
             <TextField label="Start Date" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 20, width: "48%" }} />
             <TextField label="Start Time" type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 20, width: "48%" }} />
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <TextField label="End Date" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
-            <TextField label="End Time" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
-          </div>
+          {newStatus === "vacate" && (
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <TextField label="End Date" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
+              <TextField label="End Time" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
+            </div>
+          )}
           <div style={{ textTransform: "capitalize", marginBottom: 10 }}>
             <b>Payment Method:</b> {selectedBooking?.payment_method}
           </div>

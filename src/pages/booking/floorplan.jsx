@@ -87,7 +87,7 @@ const floorPlanOptions = {
 };
 
 const Floorplan = () => {
-  const { isLoading, tables, selectedChairs, selectedFloor, setIsLoading, setTables, setSelectedChairs, setSelectedFloor } = useContext(FloorPlanContext);
+  const { tables, selectedChairs, selectedFloor, setIsLoading, setTables, setSelectedChairs, setSelectedFloor, totalAvailableChairs, totalOccupiedChairs, setTotalAvailableChairs, setTotalOccupiedChairs } = useContext(FloorPlanContext);
 
   const navigate = useNavigate();
 
@@ -102,7 +102,6 @@ const Floorplan = () => {
   };
 
   const handleFloorSelection = (floor) => {
-    console.log("Selected floor:", floor);
     setSelectedFloor(floor); // Update the selected floor
     setIsDropdownOpen(false); // Close the dropdown
   };
@@ -118,6 +117,8 @@ const Floorplan = () => {
         const response = await axios.get(import.meta.env.VITE_BASE_API + `floor-plan?branch_id=${branchId}&floor_id=${selectedFloor}`);
 
         if (response.data && Array.isArray(response.data.tables)) {
+          setTotalAvailableChairs(response.data.totalAvailableChairs);
+          setTotalOccupiedChairs(response.data.totalOccupiedChairs);
           setTables(response.data.tables);
         }
       } catch (error) {
@@ -154,7 +155,7 @@ const Floorplan = () => {
             }}
           >
             <h3 className="title">Floor Plan</h3>
-            <button className="btn create-booking-btn" onClick={handleNextClick} disabled={selectedChairs.length === 0}>
+            <button className="btn create-booking-btn" onClick={handleNextClick} disabled={Object.entries(selectedChairs).length === 0}>
               Next
               <span className="icon">
                 <IoIosArrowDropright />
@@ -267,7 +268,7 @@ const Floorplan = () => {
               >
                 <div>
                   <h6 style={{ color: "#888", marginBottom: "10px" }}>Available Seats</h6>
-                  <h2 style={{ fontSize: "36px", color: "#000", margin: "0" }}>60</h2>
+                  <h2 style={{ fontSize: "36px", color: "#000", margin: "0" }}>{totalAvailableChairs}</h2>
                 </div>
                 <div
                   style={{
@@ -306,7 +307,7 @@ const Floorplan = () => {
               >
                 <div>
                   <h6 style={{ color: "#888", marginBottom: "10px" }}>Occupied Seats</h6>
-                  <h2 style={{ fontSize: "36px", color: "#000", margin: "0" }}>45</h2>
+                  <h2 style={{ fontSize: "36px", color: "#000", margin: "0" }}>{totalOccupiedChairs}</h2>
                 </div>
                 <div
                   style={{

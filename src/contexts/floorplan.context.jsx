@@ -6,8 +6,10 @@ const FloorPlanProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [tables, setTables] = useState([]);
   const [bookingPlans, setBookingPlans] = useState([]);
-  const [selectedChairs, setSelectedChairs] = useState([]);
+  const [selectedChairs, setSelectedChairs] = useState({});
   const [selectedFloor, setSelectedFloor] = useState(1); // Default is Ground Floor
+  const [totalAvailableChairs, setTotalAvailableChairs] = useState(0);
+  const [totalOccupiedChairs, setTotalOccupiedChairs] = useState(0);
   const [floorSize, setFloorSize] = useState({ width: 0, height: 0 });
   const [checkAvailability, setCheckAvailability] = useState({});
   const [bookingdetails, setBookingDetails] = useState({
@@ -59,6 +61,10 @@ const FloorPlanProvider = ({ children }) => {
         formErrors,
         checkAvailability,
         selectedFloor,
+        totalAvailableChairs,
+        totalOccupiedChairs,
+        setTotalAvailableChairs,
+        setTotalOccupiedChairs,
         setSelectedFloor,
         setCheckAvailability,
         setIsLoading,

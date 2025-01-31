@@ -24,28 +24,29 @@ const Payment = () => {
   };
 
   const handleConfirm = async () => {
-    try {
-      // Create a FormData object to send the image and other data
-      const formData = new FormData();
-      formData.append("branch_id", 1);
-      formData.append("floor_id", selectedFloor);
-      formData.append("profile_image", bookingdetails.profile_image); // Add the receipt file
-      formData.append("receipt", receiptFile); // Add the receipt file
-      formData.append("bookingdetails", JSON.stringify(bookingdetails));
-      formData.append("selectedPlan", JSON.stringify(bookingPlans[bookingdetails.selectedPlan]));
-      formData.append("selectedChairs", JSON.stringify(selectedChairs));
+    // Create a FormData object to send the image and other data
+    const formData = new FormData();
+    formData.append("branch_id", 1);
+    formData.append("floor_id", selectedFloor);
+    formData.append("profile_image", bookingdetails.profile_image); // Add the receipt file
+    formData.append("receipt", receiptFile); // Add the receipt file
+    formData.append("bookingdetails", JSON.stringify(bookingdetails));
+    formData.append("selectedPlan", JSON.stringify(bookingPlans[bookingdetails.selectedPlan]));
+    formData.append("selectedChairs", JSON.stringify(selectedChairs));
 
-      const response = await axios.post(import.meta.env.VITE_BASE_API + "booking/create", formData, {
+    await axios
+      .post(import.meta.env.VITE_BASE_API + "booking/create", formData, {
         headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "multipart/form-data",
         },
+      })
+      .then((response) => {
+        setShowModal(true); // Show the modal
+      })
+      .catch((error) => {
+        console.error("Error while creating booking:", error);
       });
-
-      // console.log(response.data);
-      setShowModal(true); // Show the modal
-    } catch (error) {
-      console.error("Error while creating booking:", error);
-    }
   };
 
   const handleClose = async () => {
