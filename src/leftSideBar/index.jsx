@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from "react-router-dom"
 import { Button } from "@mui/material";
 import { RxDashboard } from "react-icons/rx"
@@ -18,10 +18,21 @@ import './style.css';
 
 const Sidebar = () => {
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isSeatBookingOpen, setIsSeatBookingOpen] = useState(false);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  // const toggleDropdown = () => {
+  //   setIsDropdownOpen(!isDropdownOpen);
+  // };
+
+  const toggleSeatBookingDropdown = () => {
+    setIsSeatBookingOpen(!isSeatBookingOpen);
+    if (isInvoiceOpen) setIsInvoiceOpen(false); // Close Invoice dropdown if it's open
+  };
+
+  const toggleInvoiceDropdown = () => {
+    setIsInvoiceOpen(!isInvoiceOpen);
+    if (isSeatBookingOpen) setIsSeatBookingOpen(false); // Close Seat Booking dropdown if it's open
   };
 
   const location = useLocation();
@@ -44,13 +55,13 @@ const Sidebar = () => {
         </ul>
         <ul>
           <li>
-            <Button className={`w-100 ${isDropdownOpen ? 'active-button' : ''}`}
-              onClick={toggleDropdown}>
+            <Button className={`w-100 ${isSeatBookingOpen ? 'active-button' : ''}`}
+              onClick={toggleSeatBookingDropdown}>
               <span className='icon'><RxDashboard /></span>
               Seat Booking
-              <span className={`arrow ${isDropdownOpen ? 'rotate' : ''}`}><FaAngleRight /></span>
+              <span className={`arrow ${isSeatBookingOpen ? 'rotate' : ''}`}><FaAngleRight /></span>
             </Button>
-            {isDropdownOpen && (
+            {isSeatBookingOpen && (
               <ul className="submenu">
                 <li>
                   <Link to="/floorplan">Floor Plan</Link>
@@ -92,7 +103,7 @@ const Sidebar = () => {
             <Link to="">
               <Button className='w-100'>
                 <span className='icon'><LuListTodo /></span>
-                Expense Manegement
+                Finance Manegement
                 <span className='arrow'><FaAngleRight /></span>
               </Button>
             </Link>
@@ -100,13 +111,23 @@ const Sidebar = () => {
         </ul>
         <ul>
           <li>
-            <Link to="">
-              <Button className='w-100'>
-                <span className='icon'><GoDatabase /></span>
-                Financial Report
-                <span className='arrow'><FaAngleRight /></span>
-              </Button>
-            </Link>
+            <Button className={`w-100 ${isInvoiceOpen ? 'active-button' : ''}`}
+              onClick={toggleInvoiceDropdown}>
+              <span className='icon'><GoDatabase /></span>
+              Invoice
+              <span className={`arrow ${isInvoiceOpen ? 'rotate' : ''}`}><FaAngleRight /></span>
+            </Button>
+            {isInvoiceOpen && (
+              <ul className="submenu">
+                <li>
+                  <Link to="/invoice-dashboard">Dashboard</Link>
+                </li>
+                <li>
+                  <Link to="">New Invoice</Link>
+                </li>
+              </ul>
+            )}
+
           </li>
         </ul>
         <ul>

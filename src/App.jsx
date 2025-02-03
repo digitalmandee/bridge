@@ -13,6 +13,7 @@ import CompanyDashboard from './Dashboard/companydashboard';
 import Staff from './Dashboard/staff';
 import StaffArchive from './Dashboard/staffarchive';
 import BookingCalender from './calender';
+import InvoiceDashboard from './invoice/dashboard';
 import SeatsAllocation from './booking/seatsallocation';
 import BookingRequest from './booking/bookingrequest';
 import './App.css';
@@ -35,6 +36,7 @@ function App() {
         <Routes>
           {/* Define your routes */}
           <Route path="/" element={<Welcome />} />
+          <Route path="/invoice-dashboard" element={<InvoiceDashboard />} />
           <Route path="/add-staff" element={<Staff />} />
           <Route path="/staff-archive" element={<StaffArchive />} />
           <Route path="/branch-admin-dashboard" element={<BranchAdmin />} />
