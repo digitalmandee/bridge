@@ -14,7 +14,7 @@ class NotificationController extends Controller
         return auth()->user()->notifications->map(function ($notification) {
             return [
                 'id' => $notification->id,
-                // 'title' => $notification->data['title'],
+                'title' => $notification->data['title'],
                 'message' => $notification->data['message'],
                 'type' => $notification->data['type'],
                 'created_by' => $notification->data['created_by'] ?? 'System',

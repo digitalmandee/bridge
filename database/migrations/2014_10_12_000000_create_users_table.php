@@ -21,7 +21,7 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('profile_image')->nullable();
-            $table->integer('booking_quota')->default(10);
+            $table->decimal('booking_quota', 10, 1)->default(20.0);
             $table->timestamp('booking_quota_updated_at')->nullable()->default(now());
             $table->rememberToken();
             $table->timestamps();

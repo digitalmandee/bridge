@@ -209,10 +209,16 @@ class AuthController extends Controller
         $role = $user->roles()->first(); // Assuming the user has one role
         $permissions = $role ? $role->permissions->pluck('name')->toArray() : [];
 
+        $newData = [];
+        if ($user->type === 'user') {
+            $newData = ['branch' => $user->userBranch->only(['id', 'name', 'location'])];
+        }
+
         $data = [
             ...$user->only(['id', 'name', 'email', 'phone', 'type']),
             'role' => $role ? $role->name : null,
             'permissions' => $permissions,
+            ...$newData
         ];
 
         if ($user->type === 'admin') {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -33,5 +34,13 @@ class UserController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
+    }
+
+    public function getBookingUsers()
+    {
+        $user = auth()->user();
+        $users = $user->type === 'user' ? [] : User::where('type', 'user')->get();
+
+        return response()->json(['success' => true, 'users' => $users]);
     }
 }

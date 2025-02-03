@@ -15,8 +15,6 @@ class BookingSchedule extends Model
         'user_id',
         'schedule_floor_id',
         'schedule_room_id',
-        'created_by_branch',
-        'created_by_user',
         'title',
         'description',
         'startTime',

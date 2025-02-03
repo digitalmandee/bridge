@@ -31,6 +31,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('dashboard', [UserController::class, 'index']);
     });
 
+    // Booking Seats
+    Route::get('floor-plan', [FloorPlanController::class, 'getFloorPlan']);
+    Route::get('seat-allocations', [FloorPlanController::class, 'getSeatAllocations']);
+
     // Bookings
     Route::get('bookings', [BookingPlanController::class, 'getBookings']);
     Route::post('booking/create', [BookingPlanController::class, 'createBooking']);
@@ -40,6 +44,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('booking-schedules', [BookingScheduleController::class, 'index']);
     Route::post('booking-schedule/create', [BookingScheduleController::class, 'create']);
     Route::get('booking-schedule/filter', [BookingScheduleController::class, 'filter']);
+    Route::get('booking-schedule/availability-rooms', [BookingScheduleController::class, 'getAvailabilityRooms']);
+    Route::get('booking-schedule/requests', [BookingScheduleController::class, 'getRequests']);
+    Route::post('booking-schedule/update', [BookingScheduleController::class, 'update']);
+    // Booking Users
+    Route::get('booking/users', [UserController::class, 'getBookingUsers']);
+
     // Invoices
     Route::get('invoices', [InvoicesController::class, 'index']);
     Route::post('invoices/update', [InvoicesController::class, 'update']);
@@ -49,13 +59,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 });
 
-Route::get('floor-plan', [FloorPlanController::class, 'getFloorPlan']);
 Route::post('check-chair-availability', [FloorPlanController::class, 'checkChairAvailability']);
-
-Route::get('seat-allocations', [FloorPlanController::class, 'getSeatAllocations']);
 
 // Booking Plans
 Route::resource('booking-plans', BookingPlanController::class)->except(['create', 'show', 'edit']);
-
-// users
-Route::get('users', [UserController::class, 'index']);

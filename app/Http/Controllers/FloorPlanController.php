@@ -19,7 +19,7 @@ class FloorPlanController extends Controller
     public function getSeatAllocations(Request $request)
     {
         try {
-            $branchId = $request->branch_id;
+            $branchId = auth()->user()->branch->id;
 
             if (!$branchId) {
                 return response()->json(['message' => 'Branch ID parameter is required'], 400);
@@ -73,15 +73,13 @@ class FloorPlanController extends Controller
     public function getFloorPlan(Request $request)
     {
         try {
-            $branchId = $request->branch_id;
             $floorId = $request->floor_id;
 
-            if (!$branchId) {
-                return response()->json(['message' => 'Branch ID parameter is required'], 400);
-            }
             if (!$floorId) {
                 return response()->json(['message' => 'Floor ID parameter is required'], 400);
             }
+
+            $branchId = auth()->user()->branch->id;
 
             // Fetch the floor with its related rooms, tables, and chairs
             $floor = Floor::with(['rooms.tables.chairs'])->where('id', $floorId)->where('branch_id', $branchId)->first();
