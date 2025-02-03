@@ -9,6 +9,9 @@ import Booking from './booking';
 import UserDashboard from './Dashboard/userdashboard';
 import BranchAdmin from './Dashboard/branchadmin';
 import AdminDashboard from './Dashboard/AdminDashboard';
+import CompanyDashboard from './Dashboard/companydashboard';
+import Staff from './Dashboard/staff';
+import StaffArchive from './Dashboard/staffarchive';
 import BookingCalender from './calender';
 import SeatsAllocation from './booking/seatsallocation';
 import BookingRequest from './booking/bookingrequest';
@@ -32,7 +35,10 @@ function App() {
         <Routes>
           {/* Define your routes */}
           <Route path="/" element={<Welcome />} />
+          <Route path="/add-staff" element={<Staff />} />
+          <Route path="/staff-archive" element={<StaffArchive />} />
           <Route path="/branch-admin-dashboard" element={<BranchAdmin />} />
+          <Route path="/company-dashboard" element={<CompanyDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />

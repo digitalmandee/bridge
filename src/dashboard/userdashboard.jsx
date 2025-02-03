@@ -2,6 +2,7 @@ import React from 'react'
 import TopNavbar from '../topNavbar'
 import Sidebar from '../leftSideBar'
 import colors from '../styles/color'
+import { ArrowDownIcon, ArrowUpIcon, Bell, Building2, FileText, Building } from "lucide-react"
 import {
     Box,
     Card,
@@ -68,6 +69,45 @@ const chartOptions = {
     },
 };
 
+const notifications = [
+    {
+        icon: FileText,
+        title: "Booking Confirmation",
+        message: "Your booking for Desk #12 at Downtown Branch is confirmed for Jan 10, 2025, 9:00 AM",
+        time: "2 min ago",
+    },
+    {
+        icon: FileText,
+        title: "Upcoming Booking Reminder",
+        message: "Reminder: You have an upcoming booking for Meeting Room",
+        time: "10 min ago",
+    },
+    {
+        icon: Building2,
+        title: "New Amenities Added",
+        message: "*New* High-speed internet and ergonomic chairs are now available at Branch 1",
+        time: "2 days ago",
+    },
+    {
+        icon: Building,
+        title: "Payment Reminder",
+        message: "Payment overdue! Please complete payment for your monthly booking",
+        time: "3 days ago",
+    },
+]
+
+const notificationsStyle = {
+    marginTop:'1.5rem',
+    backgroundColor: '#FFFFFF',
+    borderRadius: '1rem',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+    border: '1px solid #E5E7EB',
+    height: '30rem',
+    width: '21rem',
+    padding: '1rem',
+    marginLeft: '1rem'
+};
+
 const UserDashboard = () => {
     return (
         <>
@@ -77,198 +117,109 @@ const UserDashboard = () => {
                     <Sidebar />
                 </div>
                 <div className='content'>
-                    <div className='right-content'>
-                        <Box sx={{
-                            p: 3, 
-                            // bgcolor: '#F8F9FA' 
-                            }}>
-                            {/* Header */}
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                                    Dashboard
-                                </Typography>
-                                <Box sx={{ display: 'flex', gap: 2 }}>
-                                    <Button
-                                        variant="outlined"
-                                        sx={{
-                                            color: 'text.primary',
-                                            borderColor: 'divider',
-                                            bgcolor: 'white',
-                                        }}
-                                    >
-                                        Create Booking
-                                    </Button>
-                                    <Select
-                                        value="branch1"
-                                        size="small"
-                                        sx={{
-                                            minWidth: 120,
-                                            bgcolor: colors.primary,
-                                            color: 'white',
-                                            '.MuiOutlinedInput-notchedOutline': { border: 'none' },
-                                            '&:hover .MuiOutlinedInput-notchedOutline': { border: 'none' },
-                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: 'none' },
-                                        }}
-                                    >
-                                        <MenuItem value="branch1">Branch 1</MenuItem>
-                                    </Select>
-                                </Box>
-                            </Box>
+                    <div style={{ marginTop: '0.5rem', backgroundColor: 'transparent' }}>
+                        {/* Header */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', width: '98%' }}>
+                            <Typography variant="h5" style={{ fontWeight: 'bold' }}>Dashboard</Typography>
+                            <Button variant="outlined" style={{ color: '#000', borderColor: '#ccc', backgroundColor: '#fff' }}>Create Booking</Button>
+                        </div>
 
-                            {/* Metric Cards */}
-                            <Grid container spacing={3} sx={{ mb: 3 }}>
-                                {[
-                                    { title: 'Available Booking', value: '60', icon: DirectionsCarIcon, color: colors.primary },
-                                    { title: 'Remaing Booking', value: '45', icon: GroupsIcon, color: colors.primary },
-                                    { title: 'Total Amount', value: '120,000', icon: AccountBalanceWalletIcon, color: colors.primary },
-                                    { title: 'Over Due Amount', value: '60,000', icon: PaymentsIcon, color: colors.primary },
-                                ].map((item, index) => (
-                                    <Grid item xs={12} sm={6} md={3} key={index}>
-                                        <Card sx={{
-                                            boxShadow: 'none',
-                                            border: '1px solid',
-                                            borderColor: 'divider',
-                                            borderRadius: '8px',
-                                            height: '100%',
-                                            bgcolor: 'white',
-                                        }}>
-                                            <CardContent>
-                                                <Typography variant="body2" color="text.secondary" gutterBottom>
-                                                    {item.title}
-                                                </Typography>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                    <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                                                        {item.value}
-                                                    </Typography>
-                                                    <Box sx={{
-                                                        bgcolor: item.color,
-                                                        borderRadius: '8px',
-                                                        p: 1,
-                                                    }}>
-                                                        <item.icon sx={{ color: '#fff' }} />
-                                                    </Box>
-                                                </Box>
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                ))}
-                            </Grid>
-
-                            {/* Main Content */}
-                            <Grid container spacing={3}>
-                                {/* Booking Table */}
-                                <Grid item xs={12} md={8}>
-                                    <TableContainer component={Paper} sx={{
-                                        boxShadow: 'none',
-                                        border: '1px solid',
-                                        borderColor: 'divider',
-                                    }}>
-                                        <Table>
-                                            <TableHead sx={{ bgcolor: colors.primary }}>
-                                                <TableRow>
-                                                    <TableCell sx={{ color: 'white' }}>Booking ID</TableCell>
-                                                    <TableCell sx={{ color: 'white' }}>Floor</TableCell>
-                                                    <TableCell sx={{ color: 'white' }}>Seat/Room Name</TableCell>
-                                                    <TableCell sx={{ color: 'white' }}>Booking Type</TableCell>
-                                                    <TableCell sx={{ color: 'white' }}>Start Date</TableCell>
-                                                    <TableCell sx={{ color: 'white' }}>End Date</TableCell>
-                                                    <TableCell sx={{ color: 'white' }}>Status</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {bookingData.map((row, index) => (
-                                                    <TableRow key={index}>
-                                                        <TableCell>{row.id}</TableCell>
-                                                        <TableCell>{row.floor}</TableCell>
-                                                        <TableCell>{row.room}</TableCell>
-                                                        <TableCell>{row.type}</TableCell>
-                                                        <TableCell>{row.startDate}</TableCell>
-                                                        <TableCell>{row.endDate}</TableCell>
-                                                        <TableCell>
-                                                            <Box sx={{
-                                                                bgcolor: row.status === 'Complete' ? '#E8F5E9' :
-                                                                    row.status === 'Pending' ? '#FFF3E0' : '#FFEBEE',
-                                                                color: row.status === 'Complete' ? '#2E7D32' :
-                                                                    row.status === 'Pending' ? '#E65100' : '#C62828',
-                                                                px: 2,
-                                                                py: 0.5,
-                                                                borderRadius: 1,
-                                                                display: 'inline-block',
-                                                            }}>
-                                                                {row.status}
-                                                            </Box>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                    </TableContainer>
-                                </Grid>
-
-                                <Grid item xs={12} md={4}>
-                                    <Card sx={{
-                                        boxShadow: 'none',
-                                        border: '1px solid',
-                                        borderColor: 'divider',
-                                        height: '100%',
-                                    }}>
-                                        
-                                        <CardContent sx={{ p: 2 }}>
-                                            <Box sx={{ position: 'relative', height: 300, mb: 3 }}>
-                                                <Doughnut data={chartData} options={chartOptions} />
-                                                <Box sx={{
-                                                    position: 'absolute',
-                                                    top: '50%',
-                                                    left: '50%',
-                                                    transform: 'translate(-50%, -50%)',
-                                                    textAlign: 'center'
-                                                }}>
-                                                    <Typography sx={{
-                                                        fontSize: '16px',
-                                                        fontWeight: 500,
-                                                        color: '#000'
-                                                    }}>
-                                                        Booking
-                                                    </Typography>
-                                                    <Typography sx={{
-                                                        fontSize: '16px',
-                                                        fontWeight: 500,
-                                                        color: '#000'
-                                                    }}>
-                                                        Trend
-                                                    </Typography>
-                                                </Box>
-                                            </Box>
-                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                                {[
-                                                    { branch: 'Branch 1', value: '32', percentage: '62.5%', color: '#4285F4' },
-                                                    { branch: 'Branch 2', value: '14', percentage: '22.4%', color: '#34A853' },
-                                                    { branch: 'Branch 3', value: '8', percentage: '18.9%', color: '#EA4335' },
-                                                ].map((item, index) => (
-                                                    <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                        <Box sx={{
-                                                            width: 8,
-                                                            height: 8,
-                                                            borderRadius: '50%',
-                                                            bgcolor: item.color
-                                                        }} />
-                                                        <Typography sx={{ flex: 1, color: '#000', fontSize: '14px' }}>
-                                                            {item.branch}
-                                                        </Typography>
-                                                        <Typography sx={{ color: '#000', fontSize: '14px', mr: 4 }}>
-                                                            {item.value}
-                                                        </Typography>
-                                                        <Typography sx={{ color: '#000', fontSize: '14px', width: 60 }}>
-                                                            {item.percentage}
-                                                        </Typography>
-                                                    </Box>
-                                                ))}
-                                            </Box>
+                        {/* Metric Cards */}
+                        <Grid container spacing={3} style={{ marginBottom: '24px' }}>
+                            {[
+                                { title: 'Available Booking', value: '60', icon: DirectionsCarIcon, color: '#0D2B4E' },
+                                { title: 'Remaining Booking', value: '45', icon: GroupsIcon, color: '#0D2B4E' },
+                                { title: 'Printing Paper', value: '150', icon: AccountBalanceWalletIcon, color: '#0D2B4E' },
+                                { title: 'Over Due Amount', value: '60,000', icon: PaymentsIcon, color: '#0D2B4E' },
+                            ].map((item, index) => (
+                                <Grid item xs={10} sm={6} md={2.8} key={index}>
+                                    <Card style={{ boxShadow: 'none', border: '1px solid #ccc', borderRadius: '8px', height: '100%', backgroundColor: 'white' }}>
+                                        <CardContent>
+                                            <Typography variant="body2" color="text.secondary" gutterBottom>{item.title}</Typography>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                <Typography variant="h5" style={{ fontWeight: 'bold' }}>{item.value}</Typography>
+                                                <div style={{ backgroundColor: item.color, borderRadius: '8px', padding: '8px' }}>
+                                                    <item.icon style={{ color: '#fff' }} />
+                                                </div>
+                                            </div>
                                         </CardContent>
                                     </Card>
                                 </Grid>
+                            ))}
+                        </Grid>
+
+                        {/* Main Content: Table and Notifications */}
+                        <Grid container spacing={3}>
+                            {/* Booking Table */}
+                            <Grid item xs={12} md={8}>
+                                <TableContainer component={Paper} style={{ boxShadow: 'none', borderRadius:'1rem', border: '1px solid #ccc' }}>
+                                    <Table>
+                                        <TableHead style={{ backgroundColor: '#C5D9F0' }}>
+                                            <TableRow>
+                                                <TableCell style={{ color: 'black' }}>Booking ID</TableCell>
+                                                <TableCell style={{ color: 'black' }}>Floor</TableCell>
+                                                <TableCell style={{ color: 'black' }}>Seat/Room Name</TableCell>
+                                                <TableCell style={{ color: 'black' }}>Booking Type</TableCell>
+                                                <TableCell style={{ color: 'black' }}>Start Date</TableCell>
+                                                <TableCell style={{ color: 'black' }}>End Date</TableCell>
+                                                <TableCell style={{ color: 'black' }}>Status</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {bookingData.map((row, index) => (
+                                                <TableRow key={index}>
+                                                    <TableCell>{row.id}</TableCell>
+                                                    <TableCell>{row.floor}</TableCell>
+                                                    <TableCell>{row.room}</TableCell>
+                                                    <TableCell>{row.type}</TableCell>
+                                                    <TableCell>{row.startDate}</TableCell>
+                                                    <TableCell>{row.endDate}</TableCell>
+                                                    <TableCell>
+                                                        <div style={{
+                                                            backgroundColor: row.status === 'Complete' ? '#E8F5E9' :
+                                                                row.status === 'Pending' ? '#FFF3E0' : '#FFEBEE',
+                                                            color: row.status === 'Complete' ? '#2E7D32' :
+                                                                row.status === 'Pending' ? '#E65100' : '#C62828',
+                                                            padding: '4px 8px',
+                                                            borderRadius: '4px',
+                                                            display: 'inline-block',
+                                                        }}>
+                                                            {row.status}
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
                             </Grid>
-                        </Box>
+
+                            {/* Notifications Section */}
+                            <div style={notificationsStyle}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                    <h2 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#111827' }}>Notifications</h2>
+                                    <div style={{ backgroundColor: '#0A2156', padding: '0.5rem', borderRadius: '0.375rem' }}>
+                                        <Bell style={{ width: '1.25rem', height: '1.25rem', color: 'white' }} />
+                                    </div>
+                                </div>
+                                <div style={{ marginTop: '0.5rem' }}>
+                                    {notifications.map((notification, i) => (
+                                        <div key={i} style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                                            <div style={{ marginTop: '0.05rem' }}>
+                                                <notification.icon style={{ width: '1.25rem', height: '1.25rem', color: '#0A2156' }} />
+                                            </div>
+                                            <div style={{ flex: 1, minWidth: 0 }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                    <span style={{ fontWeight: '500', fontSize: '0.875rem', color: '#111827' }}>{notification.title}</span>
+                                                    <span style={{ fontSize: '0.75rem', color: '#6B7280', whiteSpace: 'nowrap', marginLeft: '0.5rem' }}>{notification.time}</span>
+                                                </div>
+                                                <p style={{ fontSize: '0.875rem', color: '#4B5563', marginTop: '0.25rem', lineHeight: '1.25' }}>{notification.message}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </Grid>
                     </div>
                 </div>
             </div>

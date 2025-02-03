@@ -23,7 +23,7 @@ const Welcome = () => {
       <div className="accountTypeContainer">
         {[
           { name: "Super Admin", img: admin, path: "/admin-dashboard" },
-          { name: "Branch Login", img: branch, path: "/branch-dashboard" },
+          { name: "Company", img: branch, path: "/company-dashboard" },
           { name: "Investor Login", img: invester, path: "/investor-dashboard" },
           { name: "User", img: user, path: "/user-dashboard" },
         ].map((account, index) => (
