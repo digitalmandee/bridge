@@ -230,29 +230,22 @@ body {
   text-transform: capitalize;
 }
 
-.status.pending {
-  background: #E8F1FD;
-  color: #448DF2;
-}
-
-.status.accepted {
-  background: #E7F8F0;
-  color: #41C588;
-}
-
-.status.rejected {
-  background-color: #fcdcd9;
-  color: #f44336;
-}
-
+.status.accepted,
+.status.approved,
+.status.overdue,
 .status.paid {
   background: #E7F8F0;
   color: #41C588;
 }
 
-.status.overdue {
-  background: #E7F8F0;
-  color: #41C588;
+.status.pending {
+  background: #E8F1FD;
+  color: #448DF2;
+}
+
+.status.rejected {
+  background-color: #fcdcd9;
+  color: #f44336;
 }
 
 #select-status+input+svg+fieldset legend {

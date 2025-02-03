@@ -1,0 +1,12 @@
+{
+  "tailwindPreserveWhitespace": true,
+  "tailwindPreserveDuplicates": false,
+  "semi": true,
+  "singleQuote": false,
+  "tabWidth": 4,
+  "useTabs": true,
+  "jsxBracketSameLine": true,
+  "singleAttributePerLine ": false,
+  "printWidth": 3000,
+  "bracketSpacing": true
+}

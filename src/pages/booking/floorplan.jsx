@@ -112,9 +112,7 @@ const Floorplan = () => {
     const fetchFloorPlanData = async () => {
       setIsLoading(true);
       try {
-        const branchId = 1; // Use the actual branch ID here
-
-        const response = await axios.get(import.meta.env.VITE_BASE_API + `floor-plan?branch_id=${branchId}&floor_id=${selectedFloor}`);
+        const response = await axios.get(import.meta.env.VITE_BASE_API + `floor-plan?floor_id=${selectedFloor}`, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } });
 
         if (response.data && Array.isArray(response.data.tables)) {
           setTotalAvailableChairs(response.data.totalAvailableChairs);

@@ -116,8 +116,7 @@ const SeatsAllocation = () => {
     const fetchFloorPlanData = async () => {
       setIsLoading(true);
       try {
-        const branchId = 1; // Use the actual branch ID here
-        const response = await axios.get(import.meta.env.VITE_BASE_API + `seat-allocations?branch_id=${branchId}`);
+        const response = await axios.get(import.meta.env.VITE_BASE_API + `seat-allocations`, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } });
         console.log(response.data.seats);
 
         if (response.data.success) {
@@ -146,7 +145,7 @@ const SeatsAllocation = () => {
               <h3>Seats Allocation</h3>
             </div>
             <div className="row">
-              {seatData2.length > 0 ?
+              {seatData2.length > 0 ? (
                 seatData2.map((seat) =>
                   seat.chairs.map((chair) => (
                     <SeatCard
@@ -160,9 +159,10 @@ const SeatsAllocation = () => {
                       profile_image={seat.user.profile_image}
                     />
                   ))
-                ): (
-                  <p>No seats found.</p>
-                )}
+                )
+              ) : (
+                <p>No seats found.</p>
+              )}
             </div>
           </div>
         </div>

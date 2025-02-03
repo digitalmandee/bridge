@@ -2,48 +2,25 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
 import { RxDashboard } from "react-icons/rx";
-import { MdOutlineInventory } from "react-icons/md";
-import { SlCalender } from "react-icons/sl";
-import { LuListTodo } from "react-icons/lu";
-import { GoDatabase } from "react-icons/go";
-import { BsGraphUpArrow } from "react-icons/bs";
-import { IoMdContact } from "react-icons/io";
 import { FaAngleRight } from "react-icons/fa6";
-("react-icons/all");
+import { MdOutlineDateRange } from "react-icons/md";
 import "./style.css";
+import { SlCalender } from "react-icons/sl";
 
 const menuItems = [
-	{ to: "/branch/dashboard", label: "Dashboard", icon: <RxDashboard /> },
-	{
-		label: "Seat Booking",
-		icon: <RxDashboard />,
-		dropdown: [
-			{ to: "/branch/floorplan", label: "Floor Plan" },
-			{ to: "/branch/booking/plans", label: "Price Plan" },
-			{ to: "/branch/booking/requests", label: "Booking Request" },
-			{ to: "/branch/booking/seats-allocation", label: "Seat Card" },
-			{ to: "/branch/booking/invoices", label: "Booking Invoice" },
-		],
-	},
+	{ to: "/company/dashboard", label: "Dashboard", icon: <RxDashboard /> },
 	{
 		label: "Booking Management",
 		icon: <SlCalender />,
 		dropdown: [
-			{ to: "/branch/booking-schedule", label: "Room Booking" },
-			{ to: "/branch/booking-schedule/requests", label: "Booking Requests" },
+			{ to: "/company/booking-schedule", label: "Room Booking" },
+			{ to: "/company/booking-schedule/requests", label: "Booking Requests" },
 		],
 	},
-	{ to: "", label: "Inventory Management", icon: <MdOutlineInventory /> },
-	// { to: "/branch/booking-schedule", label: "Room Booking", icon: <MdOutlineDateRange /> },
-	// { to: "/branch/booking", label: "Booking Management", icon: <SlCalender /> },
-	{ to: "", label: "Expense Management", icon: <LuListTodo /> },
-	{ to: "", label: "Financial Report", icon: <GoDatabase /> },
-	{ to: "", label: "Revenue Check", icon: <BsGraphUpArrow /> },
-	{ to: "", label: "Contact", icon: <IoMdContact /> },
-	{ to: "", label: "Settings", icon: <RxDashboard /> },
+	{ to: "/company/", label: "Biling Management", icon: <MdOutlineDateRange /> },
 ];
 
-const Admin = () => {
+const Company = () => {
 	const [openDropdown, setOpenDropdown] = useState(null);
 	const location = useLocation();
 
@@ -91,4 +68,4 @@ const Admin = () => {
 	);
 };
 
-export default Admin;
+export default Company;

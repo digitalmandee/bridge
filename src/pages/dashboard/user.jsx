@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import TopNavbar from "../../components/topNavbar";
-import Sidebar from "../../components/leftSideBar";
-import colors from "../../assets/styles/color";
+import TopNavbar from "@/components/topNavbar";
+import Sidebar from "@/components/leftSideBar";
+import colors from "@/assets/styles/color";
 import { Box, Card, CardContent, Typography, Grid, Button, Select, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from "@mui/material";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
@@ -193,7 +193,6 @@ const UserDashboard = () => {
                     <Table>
                       <TableHead sx={{ bgcolor: colors.primary }}>
                         <TableRow>
-                          <TableCell sx={{ color: "white" }}>Invoice ID</TableCell>
                           <TableCell sx={{ color: "white" }}>Booking ID</TableCell>
                           <TableCell sx={{ color: "white" }}>Name</TableCell>
                           <TableCell sx={{ color: "white" }}>Date</TableCell>
