@@ -123,7 +123,7 @@ const Sidebar = () => {
                   <Link to="/invoice-dashboard">Dashboard</Link>
                 </li>
                 <li>
-                  <Link to="">New Invoice</Link>
+                  <Link to="/new-invoice">New Invoice</Link>
                 </li>
               </ul>
             )}

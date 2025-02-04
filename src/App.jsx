@@ -11,8 +11,12 @@ import BranchAdmin from './Dashboard/branchadmin';
 import AdminDashboard from './Dashboard/AdminDashboard';
 import CompanyDashboard from './Dashboard/companydashboard';
 import Staff from './Dashboard/staff';
+import NewInvoice from './invoice/newinvoice';
 import StaffArchive from './Dashboard/staffarchive';
 import BookingCalender from './calender';
+import InvoiceSlip from './invoice/invoiceslip';
+import InvoiceDetail from './invoice/invoicedetail';
+import ShowInvoice from './invoice/showinvoice';
 import InvoiceDashboard from './invoice/dashboard';
 import SeatsAllocation from './booking/seatsallocation';
 import BookingRequest from './booking/bookingrequest';
@@ -36,6 +40,10 @@ function App() {
         <Routes>
           {/* Define your routes */}
           <Route path="/" element={<Welcome />} />
+          <Route path="/invoice-slip" element={<InvoiceSlip />} />
+          <Route path="/invoice-detail" element={<InvoiceDetail />} />
+          <Route path="/show-invoice" element={<ShowInvoice />} />
+          <Route path="/new-invoice" element={<NewInvoice />} />
           <Route path="/invoice-dashboard" element={<InvoiceDashboard />} />
           <Route path="/add-staff" element={<Staff />} />
           <Route path="/staff-archive" element={<StaffArchive />} />

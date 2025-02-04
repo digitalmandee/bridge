@@ -32,8 +32,11 @@ import {
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TopNavbar from '../topNavbar'
 import Sidebar from '../leftSideBar'
+import { useNavigate } from "react-router-dom";
 
 const InvoiceDashboard = () => {
+
+      const navigate = useNavigate();
 
     const [month, setMonth] = useState('January');
 
@@ -77,7 +80,7 @@ const InvoiceDashboard = () => {
                         <div className="row mb-4 align-items-center">
                             <div className="col">
                                 <Box display="flex" alignItems="center" gap={2}>
-                                    <ArrowBackIcon />
+                                    
                                     <Typography variant="h5">Invoice Dashboard</Typography>
                                 </Box>
                             </div>
@@ -102,7 +105,7 @@ const InvoiceDashboard = () => {
                                     <Button
                                         variant="contained"
                                         sx={{ bgcolor: '#0F172A', '&:hover': { bgcolor: '#1E293B' } }}
-                                    >
+                                        onClick={ () => navigate ('/new-invoice')}>
                                         Create Invoice
                                     </Button>
                                 </Box>
