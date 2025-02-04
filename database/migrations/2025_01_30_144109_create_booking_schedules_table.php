@@ -17,6 +17,7 @@ class CreateBookingSchedulesTable extends Migration
             $table->id('event_id');
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('company_id')->nullable();
             $table->unsignedBigInteger('schedule_floor_id')->nullable();
             $table->unsignedBigInteger('schedule_room_id')->nullable();
             $table->string('title');
@@ -31,6 +32,7 @@ class CreateBookingSchedulesTable extends Migration
 
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('schedule_floor_id')->references('id')->on('schedule_floors')->onDelete('cascade');
             $table->foreign('schedule_room_id')->references('id')->on('schedule_rooms')->onDelete('cascade');
         });

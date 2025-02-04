@@ -20,16 +20,14 @@ class UserController extends Controller
 
             $overDueAmount = $user->BookingInvoices()->where('status', 'overdue')->sum('amount');
 
-            $bookingQuota = $user->booking_quota;
-
             return response()->json([
                 'success' => true,
                 'user' => $user,
                 'bookingInvoices' => $bookingInvoices,
                 'totalAmount' => $totalAmount,
                 'overDueAmount' => $overDueAmount,
-                'remainingbookings' => $bookingQuota,
-                'totalBookings' => 10
+                'remainingbookings' => $user->booking_quota,
+                'totalBookings' => $user->total_booking_quota
             ]);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()]);

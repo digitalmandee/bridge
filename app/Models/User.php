@@ -26,9 +26,17 @@ class User extends Authenticatable
         'role_id',
         'password',
         'profile_image',
+        'phone_no',
+        'designation',
+        'address',
+        'total_booking_quota',
         'booking_quota',
+        'printing_quota',
+        'company_id',
+        'allocated_seat_id',
         'booking_quota_updated_at',
         'created_by_branch_id',
+        'status',
         'deleted_at',
     ];
 
@@ -68,6 +76,22 @@ class User extends Authenticatable
     {
         return $this->hasMany(BookingInvoice::class);
     }
+
+    public function bookingSchedulesByCompany()
+    {
+        return $this->hasMany(BookingSchedule::class, 'company_id');
+    }
+
+    public function booking()
+    {
+        return $this->hasOne(Booking::class);
+    }
+
+    public function chair()
+    {
+        return $this->belongsTo(Chair::class, 'allocated_seat_id', 'id');
+    }
+
 
     // Define notifications relationship (optional, but explicit)
     // public function notifications()

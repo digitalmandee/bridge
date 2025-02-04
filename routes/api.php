@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingPlanController;
 use App\Http\Controllers\BookingScheduleController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FloorPlanController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\NotificationController;
@@ -29,6 +30,15 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::group(['prefix' => 'user'], function () {
         Route::get('dashboard', [UserController::class, 'index']);
+    });
+
+    Route::group(['prefix' => 'company'], function () {
+        Route::get('dashboard', [CompanyController::class, 'index']);
+        Route::get('dashboard/staff', [CompanyController::class, 'getStaff']);
+        Route::get('staffs', [CompanyController::class, 'getStaffs']);
+        Route::post('staff/create', [CompanyController::class, 'createStaff']);
+        Route::put('staffs/{id}', [CompanyController::class, 'updateStaff']);
+        Route::delete('staffs/{id}', [CompanyController::class, 'deleteStaff']);
     });
 
     // Booking Seats

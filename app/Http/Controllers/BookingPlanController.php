@@ -54,6 +54,8 @@ class BookingPlanController extends Controller
                     'type' => $type,
                     'role' => $type == 'user' ? 1 : 1,
                     'password' => Hash::make('password'),
+                    'booking_quota' => 20,
+                    'total_booking_quota' => 20,
                 ]);
                 $user->assignRole('user');
             }

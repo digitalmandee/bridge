@@ -13,6 +13,7 @@ class BookingSchedule extends Model
     protected $fillable = [
         'branch_id',
         'user_id',
+        'company_id',
         'schedule_floor_id',
         'schedule_room_id',
         'title',

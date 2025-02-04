@@ -64,4 +64,9 @@ class Chair extends Model
     {
         return self::find($id)->delete();
     }
+
+    public function table()
+    {
+        return $this->belongsTo(Table::class, 'table_id', 'id');
+    }
 }
