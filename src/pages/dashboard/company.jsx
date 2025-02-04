@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { Button, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper } from "@mui/material";
@@ -8,6 +8,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import PrintIcon from "@mui/icons-material/Print";
 import { ArrowDownIcon, ArrowUpIcon, Bell, Building2, FileText, Building } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const bookingData = [
 	{ id: "#123457", floor: "1", room: "Desk #12", type: "Monthly", startDate: "Jan 01, 2024", endDate: "Jan 31, 2024", status: "Confirmed" },
@@ -62,6 +63,31 @@ const notificationsStyle = {
 const CompanyDashboard = () => {
 	const navigate = useNavigate();
 
+	const [isLoading, setIsLoading] = useState(true);
+	const [data, setData] = useState({});
+	// const [notifications, setNotifications] = useState([]);
+
+	useEffect(() => {
+		const getData = async () => {
+			await axios.get(import.meta.env.VITE_BASE_API + "company/dashboard", { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } }).then((res) => {
+				console.log(res.data);
+				setData(res.data);
+			});
+			setIsLoading(false);
+		};
+		getData();
+	}, []);
+
+	// useEffect(() => {
+	// 	axios
+	// 		.get(import.meta.env.VITE_BASE_API + "notifications", {
+	// 			headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
+	// 		})
+	// 		.then((response) => {
+	// 			setNotifications(response.data);
+	// 		});
+	// }, []);
+
 	return (
 		<>
 			<TopNavbar />
@@ -84,10 +110,10 @@ const CompanyDashboard = () => {
 						{/* Metric Cards */}
 						<div style={{ display: "flex", justifyContent: "space-between", marginBottom: "24px" }}>
 							{[
-								{ title: "Available Seats", value: "60", icon: EventSeatIcon, color: "#0D2B4E" },
-								{ title: "Occupied Seats", value: "45", icon: PeopleIcon, color: "#0D2B4E" },
-								{ title: "Booking", value: "100", icon: AssignmentIcon, color: "#0D2B4E" },
-								{ title: "Printing Papers", value: "1000", icon: PrintIcon, color: "#0D2B4E" },
+								{ title: "Available Seats", value: data.totalSeats ?? 0, icon: EventSeatIcon, color: "#0D2B4E" },
+								{ title: "Occupied Seats", value: data.occupiedSeats ?? 0, icon: PeopleIcon, color: "#0D2B4E" },
+								{ title: "Booking", value: data.remainingBookings ?? 0, icon: AssignmentIcon, color: "#0D2B4E" },
+								{ title: "Printing Papers", value: data.remainingPrinting ?? 0, icon: PrintIcon, color: "#0D2B4E" },
 							].map((item, index) => (
 								<div key={index} style={{ flex: 1, margin: "0 10px" }}>
 									<Card style={{ boxShadow: "none", border: "1px solid #ccc", borderRadius: "8px", height: "100%", backgroundColor: "white" }}>

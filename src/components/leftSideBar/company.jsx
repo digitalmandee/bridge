@@ -10,11 +10,11 @@ import { SlCalender } from "react-icons/sl";
 const menuItems = [
 	{ to: "/company/dashboard", label: "Dashboard", icon: <RxDashboard /> },
 	{
-		label: "Booking Management",
+		label: "Staff Management",
 		icon: <SlCalender />,
 		dropdown: [
-			{ to: "/company/booking-schedule", label: "Room Booking" },
-			{ to: "/company/booking-schedule/requests", label: "Booking Requests" },
+			{ to: "/company/staff/add", label: "Add Staff" },
+			{ to: "/company/staff/management", label: "Management" },
 		],
 	},
 	{ to: "/company/", label: "Biling Management", icon: <MdOutlineDateRange /> },
