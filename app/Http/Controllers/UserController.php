@@ -14,7 +14,7 @@ class UserController extends Controller
         try {
             $user = auth()->user();
 
-            $bookingInvoices = $user->BookingInvoices()->with('user')->latest()->take(10)->get();
+            $bookingSchedules = $user->bookingSchedules()->with(['floor:id,name', 'room:id,name'])->latest()->take(10)->get();
 
             $totalAmount = $user->BookingInvoices()->sum('amount');
 
@@ -23,7 +23,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => true,
                 'user' => $user,
-                'bookingInvoices' => $bookingInvoices,
+                'bookingSchedules' => $bookingSchedules,
                 'totalAmount' => $totalAmount,
                 'overDueAmount' => $overDueAmount,
                 'remainingbookings' => $user->booking_quota,

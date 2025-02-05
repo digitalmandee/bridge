@@ -56,6 +56,7 @@ class BookingPlanController extends Controller
                     'password' => Hash::make('password'),
                     'booking_quota' => 20,
                     'total_booking_quota' => 20,
+                    'created_by_branch_id' => $branchId
                 ]);
                 $user->assignRole('user');
             }

@@ -18,7 +18,7 @@ class CompanyController extends Controller
         try {
             $company = auth()->user();
 
-            $bookingSchedules = $company->bookingSchedulesByCompany()->latest()->take(10)->get();
+            $bookingSchedules = $company->bookingSchedulesByCompany()->with(['floor:id,name', 'room:id,name', 'user:id,name'])->latest()->take(10)->get();
 
             $chairs = $company->booking()->get()->map(function ($booking) {
                 // Decode chairs JSON (handles multiple keys like 'P', 'F')
@@ -148,6 +148,7 @@ class CompanyController extends Controller
                 'printing_quota' => $request->printing_quota,
                 'booking_quota' => $request->booking_quota,
                 'total_booking_quota' => $request->booking_quota,
+                'created_by_branch_id' => $company->created_by_branch_id
             ]);
 
             $user->assignRole('user');

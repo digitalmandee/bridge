@@ -18,6 +18,7 @@ class CreateBookingInvoicesTable extends Migration
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('booking_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('invoice_id')->nullable();
             $table->date('due_date')->nullable();
             $table->date('paid_date')->nullable();
             $table->string('payment_method')->default('cash');

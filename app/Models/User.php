@@ -77,6 +77,11 @@ class User extends Authenticatable
         return $this->hasMany(BookingInvoice::class);
     }
 
+    public function bookingSchedules()
+    {
+        return $this->hasMany(BookingSchedule::class);
+    }
+
     public function bookingSchedulesByCompany()
     {
         return $this->hasMany(BookingSchedule::class, 'company_id');
