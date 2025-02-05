@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Loader from "../../components/Loader";
 import profile from "../../assets/Profile user.png";
@@ -9,7 +9,6 @@ const MemberDetail = ({ handleNext }) => {
 	const { bookingdetails, setBookingDetails, formErrors, validateMemeberDetails, selectedChairs, setCheckAvailability } = useContext(FloorPlanContext);
 	const [isLoading, setIsLoading] = useState(false);
 	const [imagePreview, setImagePreview] = useState(null); // State to store image preview
-	const [imageFile, setImageFile] = useState(null); // State to store the image file
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -22,8 +21,6 @@ const MemberDetail = ({ handleNext }) => {
 	const handleImageChange = (e) => {
 		const file = e.target.files[0];
 		if (file) {
-			// Set the image file and generate a preview
-			setImageFile(file);
 			setBookingDetails((prevDetails) => ({
 				...prevDetails,
 				profile_image: file, // Save image URL to profile_image
@@ -83,6 +80,10 @@ const MemberDetail = ({ handleNext }) => {
 		const [hours, minutes] = time.split(":");
 		return `${hours}:${minutes}`;
 	};
+
+	const totalSelectedChairs = Object.values(selectedChairs).flat().length;
+
+	useEffect(() => setBookingDetails((prevDetails) => ({ ...prevDetails, type: totalSelectedChairs > 1 ? "company" : "individual" })), [totalSelectedChairs]);
 
 	return (
 		<>
@@ -206,7 +207,7 @@ const MemberDetail = ({ handleNext }) => {
 							boxSizing: "border-box",
 							marginBottom: "15px",
 						}}>
-						<option value="individual">Individual</option>
+						{totalSelectedChairs === 1 && <option value="individual">Individual</option>}
 						<option value="company">Company</option>
 					</select>
 

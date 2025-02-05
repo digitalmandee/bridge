@@ -9,44 +9,10 @@ import PrintIcon from "@mui/icons-material/Print";
 import { ArrowDownIcon, ArrowUpIcon, Bell, Building2, FileText, Building } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 
-const bookingData = [
-	{ id: "#123457", floor: "1", room: "Desk #12", type: "Monthly", startDate: "Jan 01, 2024", endDate: "Jan 31, 2024", status: "Confirmed" },
-	{ id: "#123458", floor: "2", room: "Meeting Room", type: "Weekly", startDate: "Jan 15, 2024", endDate: "Jan 22, 2024", status: "Confirmed" },
-	{ id: "#123459", floor: "1", room: "Desk #14", type: "Daily", startDate: "Feb 01, 2024", endDate: "Feb 01, 2024", status: "Cancelled" },
-	{ id: "#123460", floor: "3", room: "Conference Room", type: "Monthly", startDate: "Feb 05, 2024", endDate: "Feb 29, 2024", status: "Pending" },
-	{ id: "#123461", floor: "2", room: "Desk #15", type: "Weekly", startDate: "Feb 10, 2024", endDate: "Feb 17, 2024", status: "Confirmed" },
-	{ id: "#123462", floor: "1", room: "Desk #16", type: "Daily", startDate: "Feb 12, 2024", endDate: "Feb 12, 2024", status: "Confirmed" },
-	{ id: "#123463", floor: "3", room: "Meeting Room 2", type: "Monthly", startDate: "Feb 20, 2024", endDate: "Mar 20, 2024", status: "Confirmed" },
-	{ id: "#123464", floor: "1", room: "Desk #17", type: "Daily", startDate: "Feb 25, 2024", endDate: "Feb 25, 2024", status: "Confirmed" },
-];
-
-const notifications = [
-	{
-		icon: FileText,
-		title: "Booking Confirmation",
-		message: "Your booking for Desk #12 at Downtown Branch is confirmed for Jan 10, 2025, 9:00 AM",
-		time: "2 min ago",
-	},
-	{
-		icon: FileText,
-		title: "Upcoming Booking Reminder",
-		message: "Reminder: You have an upcoming booking for Meeting Room",
-		time: "10 min ago",
-	},
-	{
-		icon: Building2,
-		title: "New Amenities Added",
-		message: "*New* High-speed internet and ergonomic chairs are now available at Branch 1",
-		time: "2 days ago",
-	},
-	{
-		icon: Building,
-		title: "Payment Reminder",
-		message: "Payment overdue! Please complete payment for your monthly booking",
-		time: "3 days ago",
-	},
-];
+dayjs.extend(relativeTime); // Enable relative time formatting
 
 const notificationsStyle = {
 	// marginTop:'1rem',
@@ -65,7 +31,7 @@ const CompanyDashboard = () => {
 
 	const [isLoading, setIsLoading] = useState(true);
 	const [data, setData] = useState({});
-	// const [notifications, setNotifications] = useState([]);
+	const [notifications, setNotifications] = useState([]);
 
 	useEffect(() => {
 		const getData = async () => {
@@ -78,15 +44,15 @@ const CompanyDashboard = () => {
 		getData();
 	}, []);
 
-	// useEffect(() => {
-	// 	axios
-	// 		.get(import.meta.env.VITE_BASE_API + "notifications", {
-	// 			headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
-	// 		})
-	// 		.then((response) => {
-	// 			setNotifications(response.data);
-	// 		});
-	// }, []);
+	useEffect(() => {
+		axios
+			.get(import.meta.env.VITE_BASE_API + "notifications", {
+				headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
+			})
+			.then((response) => {
+				setNotifications(response.data);
+			});
+	}, []);
 
 	return (
 		<>
@@ -142,23 +108,31 @@ const CompanyDashboard = () => {
 										<TableRow>
 											<TableCell style={{ color: "black", fontWeight: "700" }}>Booking ID</TableCell>
 											<TableCell style={{ color: "black", fontWeight: "700" }}>Floor</TableCell>
-											<TableCell style={{ color: "black", fontWeight: "700" }}>Seat/Room Name</TableCell>
-											<TableCell style={{ color: "black", fontWeight: "700" }}>Booking Type</TableCell>
-											<TableCell style={{ color: "black", fontWeight: "700" }}>Start Date</TableCell>
-											<TableCell style={{ color: "black", fontWeight: "700" }}>End Date</TableCell>
+											<TableCell style={{ color: "black", fontWeight: "700" }}>Room Name</TableCell>
+											<TableCell style={{ color: "black", fontWeight: "700" }}>Name</TableCell>
+											<TableCell style={{ color: "black", fontWeight: "700" }}>Date</TableCell>
+											<TableCell style={{ color: "black", fontWeight: "700" }}>Start Time</TableCell>
+											<TableCell style={{ color: "black", fontWeight: "700" }}>End Time</TableCell>
+											<TableCell style={{ color: "black", fontWeight: "700" }}>Status</TableCell>
 										</TableRow>
 									</TableHead>
 									<TableBody>
-										{bookingData.map((row, index) => (
-											<TableRow key={index}>
-												<TableCell>{row.id}</TableCell>
-												<TableCell>{row.floor}</TableCell>
-												<TableCell>{row.room}</TableCell>
-												<TableCell>{row.type}</TableCell>
-												<TableCell>{row.startDate}</TableCell>
-												<TableCell>{row.endDate}</TableCell>
-											</TableRow>
-										))}
+										{data.bookingSchedules &&
+											data.bookingSchedules.length > 0 &&
+											data.bookingSchedules.map((row, index) => (
+												<TableRow key={index}>
+													<TableCell>#{row.event_id}</TableCell>
+													<TableCell>{row.floor.name}</TableCell>
+													<TableCell>{row.room.name}</TableCell>
+													<TableCell>{row.user.name}</TableCell>
+													<TableCell>{new Date(row.date).toLocaleDateString()}</TableCell>
+													<TableCell>{new Date(row.startTime).toLocaleTimeString()}</TableCell>
+													<TableCell>{new Date(row.endTime).toLocaleTimeString()}</TableCell>
+													<TableCell>
+														<span className={`status ${row.status.toLowerCase()}`}>{row.status}</span>
+													</TableCell>
+												</TableRow>
+											))}
 									</TableBody>
 								</Table>
 							</TableContainer>
@@ -172,20 +146,21 @@ const CompanyDashboard = () => {
 									</div>
 								</div>
 								<div style={{ marginTop: "0.5rem" }}>
-									{notifications.map((notification, i) => (
-										<div key={i} style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
-											<div style={{ marginTop: "0.05rem" }}>
-												<notification.icon style={{ width: "1.25rem", height: "1.25rem", color: "#0A2156" }} />
-											</div>
-											<div style={{ flex: 1, minWidth: 0 }}>
-												<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-													<span style={{ fontWeight: "500", fontSize: "0.875rem", color: "#111827" }}>{notification.title}</span>
-													<span style={{ fontSize: "0.75rem", color: "#6B7280", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{notification.time}</span>
+									{notifications.length > 0 &&
+										notifications.map((notification, i) => (
+											<div key={i} style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
+												<div style={{ marginTop: "0.05rem" }}>
+													<FileText style={{ width: "1.25rem", height: "1.25rem", color: "#0A2156" }} />
 												</div>
-												<p style={{ fontSize: "0.875rem", color: "#4B5563", marginTop: "0.25rem", lineHeight: "1.25" }}>{notification.message}</p>
+												<div style={{ flex: 1, minWidth: 0 }}>
+													<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+														<span style={{ fontWeight: "500", fontSize: "0.875rem", color: "#111827" }}>{notification.title}</span>
+														<span style={{ fontSize: "0.75rem", color: "#6B7280", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{dayjs(notification.created_at).fromNow()}</span>
+													</div>
+													<p style={{ fontSize: "0.875rem", color: "#4B5563", marginTop: "0.25rem", lineHeight: "1.25" }}>{notification.message}</p>
+												</div>
 											</div>
-										</div>
-									))}
+										))}
 								</div>
 							</div>
 						</div>

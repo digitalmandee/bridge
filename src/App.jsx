@@ -101,6 +101,22 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
+						<Route
+							path="/company/booking/invoices"
+							element={
+								<ProtectedRoute role="user">
+									<BookingInvoices />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/company/booking-schedule/requests"
+							element={
+								<ProtectedRoute role="user">
+									<ScheduleRequests />
+								</ProtectedRoute>
+							}
+						/>
 
 						{/* Branch Routes */}
 						<Route

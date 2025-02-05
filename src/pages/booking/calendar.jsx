@@ -206,6 +206,24 @@ const BookingCalender = () => {
 		}
 	}, []);
 
+	const getTimeDifference = (start, end) => {
+		if (!start || !end) return "";
+
+		const diffInMs = end.getTime() - start.getTime();
+		const diffInMinutes = diffInMs / (1000 * 60); // Convert milliseconds to minutes
+
+		if (diffInMinutes < 30) return "Invalid time range"; // Handle invalid range
+
+		const hours = Math.floor(diffInMinutes / 60);
+		const minutes = diffInMinutes % 60;
+
+		let timeString = "";
+		if (hours > 0) timeString += `${hours} hour${hours > 1 ? "s" : ""}`;
+		if (minutes > 0) timeString += ` ${minutes} minute${minutes > 1 ? "s" : ""}`;
+
+		return timeString.trim();
+	};
+
 	return (
 		<>
 			<TopNavbar />
@@ -403,13 +421,40 @@ const BookingCalender = () => {
 								<LocalizationProvider dateAdapter={AdapterDateFns}>
 									<div className="d-flex align-items-center gap-3">
 										<div className="mb-3">
-											<TimePicker label="Start Time" value={newEvent.startTime} onChange={(newTime) => handleTimeChange("startTime", newTime)} renderInput={(params) => <TextField {...params} fullWidth />} />
+											<TimePicker
+												label="Start Time"
+												value={newEvent.startTime}
+												onChange={(newTime) => handleTimeChange("startTime", newTime)}
+												shouldDisableTime={(timeValue, view) => {
+													if (view === "minutes") {
+														return timeValue.getMinutes() !== 0 && timeValue.getMinutes() !== 30;
+													}
+													return false;
+												}}
+												renderInput={(params) => <TextField {...params} fullWidth />}
+											/>
 										</div>
 										<div className="mb-3">
-											<TimePicker label="End Time" value={newEvent.endTime} onChange={(newTime) => handleTimeChange("endTime", newTime)} renderInput={(params) => <TextField {...params} fullWidth />} fullWidth />
+											<TimePicker
+												label="End Time"
+												value={newEvent.endTime}
+												onChange={(newTime) => handleTimeChange("endTime", newTime)}
+												shouldDisableTime={(timeValue, view) => {
+													if (view === "minutes") {
+														return timeValue.getMinutes() !== 0 && timeValue.getMinutes() !== 30;
+													}
+													return false;
+												}}
+												renderInput={(params) => <TextField {...params} fullWidth />}
+											/>
 										</div>
 									</div>
 								</LocalizationProvider>
+								{newEvent.startTime && newEvent.endTime && (
+									<Typography variant="body2" color="textSecondary" mb={2}>
+										Selected Hours: {getTimeDifference(newEvent.startTime, newEvent.endTime)}
+									</Typography>
+								)}
 								<TextField fullWidth label="Booking Title" value={newEvent.title} onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })} className="mb-3" />
 								<TextField fullWidth label="Persons" type="number" value={newEvent.persons} onChange={(e) => setNewEvent({ ...newEvent, persons: e.target.value })} className="mb-3" />
 								<FormControl fullWidth className="mb-3">
@@ -450,7 +495,7 @@ const BookingCalender = () => {
 										}}>
 										Cancel
 									</Button>
-									<Button variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }} onClick={handleSaveEvent}>
+									<Button variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }} onClick={handleSaveEvent} disabled={getTimeDifference(newEvent.startTime, newEvent.endTime) == "Invalid time range"}>
 										Save Event
 									</Button>
 								</div>

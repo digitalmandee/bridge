@@ -75,23 +75,23 @@ const Requests = () => {
 
 	const handleSnackbarClose = () => setSnackbarOpen(false);
 
-	useEffect(() => {
-		const fetchBookings = async () => {
-			setIsLoading(true);
-			try {
-				const res = await axios.get(`${import.meta.env.VITE_BASE_API}booking-schedule/requests`, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } });
-				console.log(res.data);
+	const fetchBookings = async () => {
+		setIsLoading(true);
+		try {
+			const res = await axios.get(`${import.meta.env.VITE_BASE_API}booking-schedule/requests`, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } });
+			console.log(res.data);
 
-				if (res.data && Array.isArray(res.data.schedules)) {
-					setBookings(res.data.schedules);
-				}
-			} catch (error) {
-				console.error("Error fetching bookings:", error);
-			} finally {
-				setIsLoading(false);
+			if (res.data && Array.isArray(res.data.schedules)) {
+				setBookings(res.data.schedules);
 			}
-		};
+		} catch (error) {
+			console.error("Error fetching bookings:", error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
+	useEffect(() => {
 		fetchBookings();
 	}, []);
 
@@ -195,7 +195,7 @@ const Requests = () => {
 										</tr>
 									) : bookings.length > 0 ? (
 										bookings.map((booking) => (
-											<tr key={booking.id}>
+											<tr key={booking.event_id}>
 												<td>#{booking.event_id}</td>
 												<td>{booking.user?.name}</td>
 												<td>{booking.floor?.name}</td>
@@ -218,8 +218,8 @@ const Requests = () => {
 														<IconButton onClick={(e) => handleMenuOpen(e)}>
 															<MoreVertIcon />
 														</IconButton>
-														<Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-															<MenuItem onClick={handleEditClick(booking)}>Edit</MenuItem>
+														<Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => handleMenuClose()}>
+															<MenuItem onClick={() => handleEditClick(booking)}>Edit</MenuItem>
 														</Menu>
 													</td>
 												)}

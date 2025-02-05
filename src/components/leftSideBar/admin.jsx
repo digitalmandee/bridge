@@ -33,9 +33,15 @@ const menuItems = [
 			{ to: "/branch/booking-schedule/requests", label: "Booking Requests" },
 		],
 	},
+	{
+		label: "Invoice",
+		icon: <SlCalender />,
+		dropdown: [
+			{ to: "/branch/booking-schedule", label: "Invoice Dashboard " },
+			{ to: "/branch/booking-schedule/requests", label: "New Invoice" },
+		],
+	},
 	{ to: "", label: "Inventory Management", icon: <MdOutlineInventory /> },
-	// { to: "/branch/booking-schedule", label: "Room Booking", icon: <MdOutlineDateRange /> },
-	// { to: "/branch/booking", label: "Booking Management", icon: <SlCalender /> },
 	{ to: "", label: "Expense Management", icon: <LuListTodo /> },
 	{ to: "", label: "Financial Report", icon: <GoDatabase /> },
 	{ to: "", label: "Revenue Check", icon: <BsGraphUpArrow /> },

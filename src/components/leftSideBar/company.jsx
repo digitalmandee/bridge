@@ -17,7 +17,8 @@ const menuItems = [
 			{ to: "/company/staff/management", label: "Management" },
 		],
 	},
-	{ to: "/company/", label: "Biling Management", icon: <MdOutlineDateRange /> },
+	{ to: "/company/booking/invoices", label: "Biling Management", icon: <MdOutlineDateRange /> },
+	{ to: "/company/booking-schedule/requests", label: "Booking Requests", icon: <MdOutlineDateRange /> },
 ];
 
 const Company = () => {

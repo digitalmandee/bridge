@@ -9,8 +9,7 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import Loader from "../../components/Loader";
-import { Bell, Building, Building2, FileText } from "lucide-react";
+import { Bell, FileText } from "lucide-react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -53,14 +52,14 @@ const UserDashboard = () => {
 	// };
 
 	const notificationsStyle = {
-		marginTop: "1rem",
 		backgroundColor: "#FFFFFF",
-		borderRadius: "0.2rem",
+		borderRadius: "1rem",
 		boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
 		border: "1px solid #E5E7EB",
 		height: "30rem",
 		width: "21rem",
-		padding: "1.5rem",
+		padding: "1rem",
+		marginLeft: "1rem",
 	};
 
 	return (
@@ -139,85 +138,66 @@ const UserDashboard = () => {
 							</Grid>
 
 							{/* Main Content */}
-							<Grid container spacing={3}>
+							<div style={{ display: "flex", marginBottom: "1rem" }}>
 								{/* Booking Table */}
-								<Grid item xs={12} md={8}>
-									<TableContainer
-										component={Paper}
-										sx={{
-											boxShadow: "none",
-											border: "1px solid",
-											borderColor: "divider",
-										}}>
-										<Table>
-											<TableHead sx={{ bgcolor: colors.primary }}>
-												<TableRow>
-													<TableCell sx={{ color: "white" }}>Booking ID</TableCell>
-													<TableCell sx={{ color: "white" }}>Name</TableCell>
-													<TableCell sx={{ color: "white" }}>Date</TableCell>
-													<TableCell sx={{ color: "white" }}>Amount</TableCell>
-													<TableCell sx={{ color: "white" }}>Status</TableCell>
-												</TableRow>
-											</TableHead>
-											<TableBody>
-												{isLoading ? (
-													<tr>
-														<td colSpan="6">
-															<Loader variant="C" />
-														</td>
-													</tr>
-												) : data.bookingInvoices.length > 0 ? (
-													data.bookingInvoices.map((invoice, index) => (
-														<TableRow key={index}>
-															<TableCell>#{invoice.id}</TableCell>
-															<TableCell>#{invoice.booking_id}</TableCell>
-															<TableCell>{invoice.user.name}</TableCell>
-															<TableCell>{invoice.due_date}</TableCell>
-															<TableCell>Rs. {invoice.amount}</TableCell>
-															<TableCell>
-																<span className={`status ${invoice.status}`}>{invoice.status}</span>
-															</TableCell>
-														</TableRow>
-													))
-												) : (
-													<tr>
-														<td colSpan="6" className="text-center">
-															No data available
-														</td>
-													</tr>
-												)}
-											</TableBody>
-										</Table>
-									</TableContainer>
-								</Grid>
+								<TableContainer component={Paper} style={{ width: "65%", backgroundColor: "#FFFFFF", borderRadius: "1rem", boxShadow: "none", border: "1px solid #ccc", marginBottom: "24px" }}>
+									<Table>
+										<TableHead style={{ backgroundColor: "#C5D9F0" }}>
+											<TableRow>
+												<TableCell style={{ color: "black", fontWeight: "700" }}>Booking ID</TableCell>
+												<TableCell style={{ color: "black", fontWeight: "700" }}>Floor</TableCell>
+												<TableCell style={{ color: "black", fontWeight: "700" }}>Room Name</TableCell>
+												<TableCell style={{ color: "black", fontWeight: "700" }}>Date</TableCell>
+												<TableCell style={{ color: "black", fontWeight: "700" }}>Start Time</TableCell>
+												<TableCell style={{ color: "black", fontWeight: "700" }}>End Time</TableCell>
+												<TableCell style={{ color: "black", fontWeight: "700" }}>Status</TableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{data.bookingSchedules &&
+												data.bookingSchedules.length > 0 &&
+												data.bookingSchedules.map((row, index) => (
+													<TableRow key={index}>
+														<TableCell>#{row.event_id}</TableCell>
+														<TableCell>{row.floor.name}</TableCell>
+														<TableCell>{row.room.name}</TableCell>
+														<TableCell>{new Date(row.date).toLocaleDateString()}</TableCell>
+														<TableCell>{new Date(row.startTime).toLocaleTimeString()}</TableCell>
+														<TableCell>{new Date(row.endTime).toLocaleTimeString()}</TableCell>
+														<TableCell>
+															<span className={`status ${row.status.toLowerCase()}`}>{row.status}</span>
+														</TableCell>
+													</TableRow>
+												))}
+										</TableBody>
+									</Table>
+								</TableContainer>
 
-								<Grid item xs={12} md={4}>
-									<div style={notificationsStyle}>
-										<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-											<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Notifications</h2>
-											<div style={{ backgroundColor: "#0A2156", padding: "0.5rem", borderRadius: "0.375rem" }}>
-												<Bell style={{ width: "1.25rem", height: "1.25rem", color: "white" }} />
-											</div>
-										</div>
-										<div style={{ marginTop: "0.5rem" }}>
-											{notifications.map((notification, i) => (
-												<div key={i} style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
-													<div style={{ marginTop: "0.05rem" }}>
-														<FileText style={{ width: "1.25rem", height: "1.25rem", color: "#0A2156" }} />
-													</div>
-													<div style={{ flex: 1, minWidth: 0 }}>
-														<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-															<span style={{ fontWeight: "500", fontSize: "0.875rem", color: "#111827" }}>{notification.title}</span>
-															<span style={{ fontSize: "0.75rem", color: "#6B7280", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{dayjs(notification.created_at).fromNow()}</span>
-														</div>
-														<p style={{ fontSize: "0.875rem", color: "#4B5563", marginTop: "0.25rem", lineHeight: "1.25" }}>{notification.message}</p>
-													</div>
-												</div>
-											))}
+								<div style={notificationsStyle}>
+									<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+										<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Notifications</h2>
+										<div style={{ backgroundColor: "#0A2156", padding: "0.5rem", borderRadius: "0.375rem" }}>
+											<Bell style={{ width: "1.25rem", height: "1.25rem", color: "white" }} />
 										</div>
 									</div>
-								</Grid>
-							</Grid>
+									<div style={{ marginTop: "0.5rem" }}>
+										{notifications.map((notification, i) => (
+											<div key={i} style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
+												<div style={{ marginTop: "0.05rem" }}>
+													<FileText style={{ width: "1.25rem", height: "1.25rem", color: "#0A2156" }} />
+												</div>
+												<div style={{ flex: 1, minWidth: 0 }}>
+													<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+														<span style={{ fontWeight: "500", fontSize: "0.875rem", color: "#111827" }}>{notification.title}</span>
+														<span style={{ fontSize: "0.75rem", color: "#6B7280", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{dayjs(notification.created_at).fromNow()}</span>
+													</div>
+													<p style={{ fontSize: "0.875rem", color: "#4B5563", marginTop: "0.25rem", lineHeight: "1.25" }}>{notification.message}</p>
+												</div>
+											</div>
+										))}
+									</div>
+								</div>
+							</div>
 						</Box>
 					</div>
 				</div>
@@ -227,30 +207,3 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
-
-const notifications2 = [
-	{
-		icon: FileText,
-		title: "Booking Confirmation",
-		message: "Your booking for Desk #12 at Downtown Branch is confirmed for Jan 10, 2025, 9:00 AM",
-		time: "2 min ago",
-	},
-	{
-		icon: FileText,
-		title: "Upcoming Booking Reminder",
-		message: "Reminder: You have an upcoming booking for Meeting Room",
-		time: "10 min ago",
-	},
-	{
-		icon: Building2,
-		title: "New Amenities Added",
-		message: "*New* High-speed internet and ergonomic chairs are now available at Branch 1",
-		time: "2 days ago",
-	},
-	{
-		icon: Building,
-		title: "Payment Reminder",
-		message: "Payment overdue! Please complete payment for your monthly booking",
-		time: "3 days ago",
-	},
-];
