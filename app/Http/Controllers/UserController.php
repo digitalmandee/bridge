@@ -26,8 +26,10 @@ class UserController extends Controller
                 'bookingSchedules' => $bookingSchedules,
                 'totalAmount' => $totalAmount,
                 'overDueAmount' => $overDueAmount,
+                'totalBookings' => $user->total_booking_quota,
                 'remainingbookings' => $user->booking_quota,
-                'totalBookings' => $user->total_booking_quota
+                'totalPrintingPapers' => $user->total_printing_quota,
+                'remainingPrintingPapers' => $user->printing_quota,
             ]);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()]);

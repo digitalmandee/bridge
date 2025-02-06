@@ -116,9 +116,9 @@ class InvoicesController extends Controller
             $userId = $request->selectedTab == 'individual' ? $request->member_id : $request->company_id;
 
             // Check if it's a Monthly invoice, and fetch the related booking
-            if ($request->invoiceType == 'Monthly') {
-                $booking = Booking::where('user_id', $userId)->first();
-            }
+            // if ($request->invoiceType == 'Monthly') {
+            //     $booking = Booking::where('user_id', $userId)->first();
+            // }
 
             // Create the invoice
             $invoice = new Invoice();
@@ -126,7 +126,7 @@ class InvoicesController extends Controller
             $invoice->user_id = $userId;
 
             if ($request->invoiceType === 'Monthly') {
-                $invoice->booking_id = $booking->id;
+                // $invoice->booking_id = $booking->id;
                 $invoice->plan = ["id" => $selectedPlan['id'], "name" => $selectedPlan['name'], "price" => $selectedPlan['price']];
             }
 
@@ -136,6 +136,8 @@ class InvoicesController extends Controller
             $invoice->hours = $request->hours;
             $invoice->status = $request->status;
             $invoice->paid_date = $request->paidDate && $request->status === 'paid' ? $request->paidDate : null;
+            $invoice->paid_month = $request->paidMonth;
+            $invoice->paid_year = $request->paidYear;
             $invoice->amount = $request->invoiceType === 'Monthly' ? $selectedPlan['price'] : $request->amount;
             $invoice->payment_type = $request->paymentType;
 
@@ -149,6 +151,18 @@ class InvoicesController extends Controller
             $invoice->save();
 
             $user = User::find($invoice->user_id);
+
+            if ($request->invoiceType === 'Printing Papers' && $request->status === 'paid') {
+                $user->printing_quota = $user->printing_quota + $request->quantity;
+                $user->total_printing_quota = $user->total_printing_quota + $request->quantity;
+            }
+            if ($request->invoiceType === 'Meeting Rooms' && $request->status === 'paid') {
+                $user->booking_quota = $user->booking_quota + $request->hours;
+                $user->total_booking_quota = $user->total_booking_quota + $request->hours;
+            }
+
+            $user->save();
+
 
             // Notify the user about the created invoice
             $userNotificationData = [

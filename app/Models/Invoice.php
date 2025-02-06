@@ -9,7 +9,7 @@ class Invoice extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['branch_id', 'booking_id', 'user_id', 'invoice_type', 'quantity', 'hours', 'amount', 'status', 'due_date', 'paid_date', 'plan', 'payment_type', 'receipt'];
+    protected $fillable = ['branch_id', 'booking_id', 'user_id', 'invoice_type', 'quantity', 'hours', 'amount', 'status', 'due_date', 'paid_date', 'paid_month', 'paid_year', 'plan', 'payment_type', 'receipt'];
 
     protected $casts = ['plan' => 'array'];
 

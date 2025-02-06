@@ -33,6 +33,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     // Members and Companies
     Route::get('/members', [GlobalController::class, 'getMembers']);
     Route::get('/companies', [GlobalController::class, 'getCompanies']);
+    Route::get('/search', [GlobalController::class, 'search']);
 
     Route::group(['prefix' => 'user'], function () {
         Route::get('dashboard', [UserController::class, 'index']);
