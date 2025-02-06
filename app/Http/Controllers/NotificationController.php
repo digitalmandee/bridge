@@ -11,9 +11,12 @@ use Illuminate\Http\Request;
 class NotificationController extends Controller
 {
     //
-    public function getNotifications()
+    public function getNotifications(Request $request)
     {
-        return auth()->user()->notifications->map(function ($notification) {
+        $limit = $request->input('limit', 10); // Default limit
+        $notifications = auth()->user()->notifications()->paginate($limit);
+
+        return $notifications->map(function ($notification) {
             return [
                 'id' => $notification->id,
                 'title' => $notification->data['title'],

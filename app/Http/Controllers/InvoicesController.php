@@ -76,10 +76,7 @@ class InvoicesController extends Controller
         $invoice = BookingInvoice::find($request->invoice_id);
 
         if (!$invoice) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invoice not found or not match with user',
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'Invoice not found or not match with user',], 404);
         }
 
         $invoice->update([
@@ -88,10 +85,7 @@ class InvoicesController extends Controller
             'paid_date' => $request->paid_date,
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Invoice updated successfully',
-        ]);
+        return response()->json(['success' => true, 'message' => 'Invoice updated successfully']);
     }
 
     public function store(Request $request)
