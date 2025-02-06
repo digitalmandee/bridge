@@ -135,6 +135,7 @@ const AdminDashboard = () => {
 	const getNotifications = async () => {
 		try {
 			const res = await axiosInstance.get(import.meta.env.VITE_BASE_API + "notifications?limit=4");
+
 			setNotifications(res.data);
 		} catch (error) {
 			console.error("Error fetching notifications:", error.response.data);
@@ -197,20 +198,21 @@ const AdminDashboard = () => {
 									</div>
 								</div>
 								<div style={{ marginTop: "0.5rem" }}>
-									{notifications.map((notification, i) => (
-										<div key={i} style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
-											<div style={{ marginTop: "0.05rem" }}>
-												<FileText style={{ width: "1.25rem", height: "1.25rem", color: "#0A2156" }} />
-											</div>
-											<div style={{ flex: 1, minWidth: 0 }}>
-												<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-													<span style={{ fontWeight: "500", fontSize: "0.875rem", color: "#111827" }}>{notification.title}</span>
-													<span style={{ fontSize: "0.75rem", color: "#6B7280", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{notification.created_at}</span>
+									{notifications.length > 0 &&
+										notifications.map((notification, i) => (
+											<div key={i} style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
+												<div style={{ marginTop: "0.05rem" }}>
+													<FileText style={{ width: "1.25rem", height: "1.25rem", color: "#0A2156" }} />
 												</div>
-												<p style={{ fontSize: "0.875rem", color: "#4B5563", marginTop: "0.25rem", lineHeight: "1.25" }}>{notification.message}</p>
+												<div style={{ flex: 1, minWidth: 0 }}>
+													<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+														<span style={{ fontWeight: "500", fontSize: "0.875rem", color: "#111827" }}>{notification.title}</span>
+														<span style={{ fontSize: "0.75rem", color: "#6B7280", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{notification.created_at}</span>
+													</div>
+													<p style={{ fontSize: "0.875rem", color: "#4B5563", marginTop: "0.25rem", lineHeight: "1.25" }}>{notification.message}</p>
+												</div>
 											</div>
-										</div>
-									))}
+										))}
 								</div>
 							</div>
 						</div>

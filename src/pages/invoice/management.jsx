@@ -3,7 +3,7 @@ import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
-import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Menu, MenuItem, IconButton, Avatar, Select, CircularProgress } from "@mui/material";
+import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Menu, MenuItem, IconButton, Avatar, Select, CircularProgress, Snackbar } from "@mui/material";
 import { MoreVert as MoreVertIcon, Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon, ArrowBack as ArrowBackIcon, Download as DownloadIcon, Notifications as NotificationsIcon } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -12,7 +12,6 @@ import { AuthContext } from "../../contexts/AuthContext";
 
 const InvoiceManagement = () => {
 	const { user } = useContext(AuthContext);
-
 	const navigate = useNavigate();
 
 	const [invoices, setInvoices] = useState([]);
@@ -24,6 +23,8 @@ const InvoiceManagement = () => {
 
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [selectedInvoice, setSelectedInvoice] = useState(null);
+	const [snackbarOpen, setSnackbarOpen] = useState(false);
+	const [snackbarMessage, setSnackbarMessage] = useState("");
 
 	const handleMenuClick = (event, invoiceId) => {
 		setAnchorEl(event.currentTarget);
@@ -64,13 +65,16 @@ const InvoiceManagement = () => {
 			});
 
 			if (res.data.success) {
-				alert("Notification sent successfully!");
+				setSnackbarMessage("Notification sent successfully!");
+				setSnackbarOpen(true);
 			} else {
-				alert("Failed to send notification.");
+				setSnackbarMessage("Failed to send notification.");
+				setSnackbarOpen(true);
 			}
 		} catch (error) {
 			console.error("Error sending notification:", error.response.data);
-			alert("An error occurred while sending the notification.");
+			setSnackbarMessage("An error occurred while sending the notification.");
+			setSnackbarOpen(true);
 		}
 	};
 
@@ -82,6 +86,10 @@ const InvoiceManagement = () => {
 	useEffect(() => {
 		getInvoices(currentPage);
 	}, [currentPage, limit]);
+
+	const handleSnackbarClose = () => {
+		setSnackbarOpen(false);
+	};
 
 	return (
 		<>
@@ -171,7 +179,7 @@ const InvoiceManagement = () => {
 										<TableRow>
 											<TableCell>Invoice #</TableCell>
 											<TableCell>Type</TableCell>
-											<TableCell>Clients</TableCell>
+											{user.type === "admin" && <TableCell>Clients</TableCell>}
 											<TableCell>Issue date</TableCell>
 											<TableCell>Payment Date</TableCell>
 											<TableCell>Status</TableCell>
@@ -183,19 +191,21 @@ const InvoiceManagement = () => {
 										{invoices.length > 0 ? (
 											invoices.map((invoice) => (
 												<TableRow key={invoice.id}>
-													<TableCell>{invoice.id}</TableCell>
+													<TableCell>#NASTP-{invoice.id}</TableCell>
 													<TableCell style={{ textTransform: "capitalize" }}>{invoice.user.type}</TableCell>
-													<TableCell>
-														<Box display="flex" alignItems="center" gap={1} onClick={() => navigate(`/branch/invoice/customer-detail/${invoice.user.id}`)} sx={{ cursor: "pointer" }}>
-															<Avatar sx={{ width: 32, height: 32 }} src={import.meta.env.VITE_ASSET_API + invoice.user.profile_image}></Avatar>
-															<Box>
-																<Typography variant="body2">{invoice.user.name}</Typography>
-																<Typography variant="caption" color="text.secondary">
-																	{invoice.user.email}
-																</Typography>
+													{user.type === "admin" && (
+														<TableCell>
+															<Box display="flex" alignItems="center" gap={1} onClick={() => navigate(`/branch/invoice/customer-detail/${invoice.user.id}`)} sx={{ cursor: "pointer" }}>
+																<Avatar sx={{ width: 32, height: 32 }} src={import.meta.env.VITE_ASSET_API + invoice.user.profile_image}></Avatar>
+																<Box>
+																	<Typography variant="body2">{invoice.user.name}</Typography>
+																	<Typography variant="caption" color="text.secondary">
+																		{invoice.user.email}
+																	</Typography>
+																</Box>
 															</Box>
-														</Box>
-													</TableCell>
+														</TableCell>
+													)}
 													<TableCell>{new Date(invoice.created_at).toISOString().split("T")[0]}</TableCell>
 													<TableCell>{invoice.due_date}</TableCell>
 													<TableCell>
@@ -254,6 +264,9 @@ const InvoiceManagement = () => {
 					</div>
 				</div>
 			</div>
+
+			{/* Snackbar */}
+			<Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} message={snackbarMessage} />
 		</>
 	);
 };

@@ -104,7 +104,8 @@ const UserDashboard = () => {
 								{[
 									{ title: "Available Booking", value: data.totalBookings ?? 0, icon: DirectionsCarIcon, color: colors.primary },
 									{ title: "Remaing Booking", value: data.remainingbookings ?? 0, icon: GroupsIcon, color: colors.primary },
-									{ title: "Total Amount", value: data.totalAmount ?? 0, icon: AccountBalanceWalletIcon, color: colors.primary },
+									{ title: "Available Printing Papers", value: data.totalPrintingPapers ?? 0, icon: AccountBalanceWalletIcon, color: colors.primary },
+									{ title: "Available Printing Papers", value: data.remainingPrintingPapers ?? 0, icon: GroupsIcon, color: colors.primary },
 									{ title: "Over Due Amount", value: data.overDueAmount ?? 0, icon: PaymentsIcon, color: colors.primary },
 								].map((item, index) => (
 									<Grid item xs={12} sm={6} md={3} key={index}>
@@ -184,20 +185,21 @@ const UserDashboard = () => {
 										</div>
 									</div>
 									<div style={{ marginTop: "0.5rem" }}>
-										{notifications.map((notification, i) => (
-											<div key={i} style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
-												<div style={{ marginTop: "0.05rem" }}>
-													<FileText style={{ width: "1.25rem", height: "1.25rem", color: "#0A2156" }} />
-												</div>
-												<div style={{ flex: 1, minWidth: 0 }}>
-													<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-														<span style={{ fontWeight: "500", fontSize: "0.875rem", color: "#111827" }}>{notification.title}</span>
-														<span style={{ fontSize: "0.75rem", color: "#6B7280", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{notification.created_at}</span>
+										{notifications.length > 0 &&
+											notifications.map((notification, i) => (
+												<div key={i} style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
+													<div style={{ marginTop: "0.05rem" }}>
+														<FileText style={{ width: "1.25rem", height: "1.25rem", color: "#0A2156" }} />
 													</div>
-													<p style={{ fontSize: "0.875rem", color: "#4B5563", marginTop: "0.25rem", lineHeight: "1.25" }}>{notification.message}</p>
+													<div style={{ flex: 1, minWidth: 0 }}>
+														<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+															<span style={{ fontWeight: "500", fontSize: "0.875rem", color: "#111827" }}>{notification.title}</span>
+															<span style={{ fontSize: "0.75rem", color: "#6B7280", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{notification.created_at}</span>
+														</div>
+														<p style={{ fontSize: "0.875rem", color: "#4B5563", marginTop: "0.25rem", lineHeight: "1.25" }}>{notification.message}</p>
+													</div>
 												</div>
-											</div>
-										))}
+											))}
 									</div>
 								</div>
 							</div>

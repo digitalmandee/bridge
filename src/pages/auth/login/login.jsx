@@ -21,11 +21,11 @@ const LoginPage = () => {
 			setUser(response.data.data);
 			setRole(response.data.data.role);
 			setPermissions(response.data.data.permissions);
-			if (response.data.data.type === "superadmin") navigate("/super-admin/dashboard");
-			else if (response.data.data.type === "admin") navigate("/branch/dashboard");
-			else if (response.data.data.type === "investor") navigate("/investor/dashboard");
-			else if (response.data.data.type === "user") navigate("/user/dashboard");
-			else if (response.data.data.type === "company") navigate("/company/dashboard");
+			if (response.data.data.type === "superadmin") window.location.href = "/super-admin/dashboard";
+			else if (response.data.data.type === "admin") window.location.href = "/branch/dashboard";
+			else if (response.data.data.type === "investor") window.location.href = "/investor/dashboard";
+			else if (response.data.data.type === "user") window.location.href = "/user/dashboard";
+			else if (response.data.data.type === "company") window.location.href = "/company/dashboard";
 		} catch (error) {
 			console.log(error.response.data);
 			alert("Login failed. Check credentials.");

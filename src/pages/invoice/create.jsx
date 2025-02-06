@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { TextField, Button, Grid, Typography, Tabs, Tab, FormControl, InputLabel, RadioGroup, FormControlLabel, Radio, Select, MenuItem, Autocomplete, FormHelperText } from "@mui/material";
+import React, { useState, useEffect, useCallback } from "react";
+import { TextField, Button, Grid, Typography, Tabs, Tab, FormControl, InputLabel, RadioGroup, FormControlLabel, Radio, Select, MenuItem, Autocomplete, FormHelperText, Snackbar, Alert } from "@mui/material";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { MdArrowBackIos } from "react-icons/md";
@@ -27,23 +27,28 @@ const InvoiceCreate = () => {
 		amount: "",
 		file: null,
 		status: "pending",
+		paidMonth: null,
+		paidYear: new Date().getFullYear(),
 	});
 
 	const [members, setMembers] = useState([]);
 	const [companies, setCompanies] = useState([]);
 	const [bookingPlans, setBookingPlans] = useState([]);
 	const [errors, setErrors] = useState({});
+	const [loading, setLoading] = useState(false);
+	const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar state
+	const [snackbarMessage, setSnackbarMessage] = useState(""); // Snackbar message
 
 	// Fetch Members & Companies on Load
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const membersRes = await axiosInstance.get(import.meta.env.VITE_BASE_API + "members");
-				const companiesRes = await axiosInstance.get(import.meta.env.VITE_BASE_API + "companies");
+				// const membersRes = await axiosInstance.get(import.meta.env.VITE_BASE_API + "members");
+				// const companiesRes = await axiosInstance.get(import.meta.env.VITE_BASE_API + "companies");
 				const bookingPlansRes = await axiosInstance.get(`${import.meta.env.VITE_BASE_API}booking-plans`);
 
-				setMembers(membersRes.data.members);
-				setCompanies(companiesRes.data.companies);
+				// setMembers(membersRes.data.members);
+				// setCompanies(companiesRes.data.companies);
 				setBookingPlans(bookingPlansRes.data.data);
 			} catch (error) {
 				console.error("Error fetching data:", error);
@@ -52,17 +57,61 @@ const InvoiceCreate = () => {
 		fetchData();
 	}, []);
 
-	// Handle form field changes
-	const handleChange = (e) => {
-		const { name, value } = e.target;
-		setFormData({ ...formData, [name]: value });
-		setErrors({ ...errors, [name]: "" }); // Clear error on change
+	const fetchSearchResults = useCallback(async (query, type) => {
+		if (!query) return []; // Don't make a request if the query is empty.
+		setLoading(true);
+		try {
+			const response = await axiosInstance.get(import.meta.env.VITE_BASE_API + "search", {
+				params: {
+					query: query,
+					type: type,
+				},
+			});
+			setLoading(false);
+			if (response.data.success) {
+				return response.data.results;
+			} else {
+				setLoading(false);
+				return [];
+			}
+		} catch (error) {
+			setLoading(false);
+			console.error("Error fetching search results:", error);
+			return [];
+		}
+	}, []);
+
+	const handleMemberSearch = async (event, newValue) => {
+		const query = event.target.value;
+		if (query) {
+			const results = await fetchSearchResults(query, "user");
+			setMembers(results);
+		} else {
+			setMembers([]);
+		}
+	};
+
+	const handleCompanySearch = async (event, newValue) => {
+		const query = event.target.value;
+		if (query) {
+			const results = await fetchSearchResults(query, "company");
+			setCompanies(results);
+		} else {
+			setCompanies([]);
+		}
 	};
 
 	// Handle Autocomplete change
 	const handleAutocompleteChange = (event, value, field) => {
 		setFormData({ ...formData, [field]: value });
 		setErrors({ ...errors, [field]: "" }); // Clear error on change
+	};
+
+	// Handle form field changes
+	const handleChange = (e) => {
+		const { name, value } = e.target;
+		setFormData({ ...formData, [name]: value });
+		setErrors({ ...errors, [name]: "" }); // Clear error on change
 	};
 
 	// Handle file selection
@@ -105,6 +154,9 @@ const InvoiceCreate = () => {
 		if (formData.invoiceType === "Monthly" && !formData.plan) {
 			newErrors.plan = "Plan is required for Monthly invoices";
 		}
+		if (formData.invoiceType === "Monthly" && !formData.paidMonth) {
+			newErrors.paidMonth = "Paid Month is required for Monthly invoices";
+		}
 		if (formData.invoiceType === "Printing Papers" && !formData.quantity) {
 			newErrors.quantity = "Quantity is required for Printing Papers invoices";
 		}
@@ -145,6 +197,8 @@ const InvoiceCreate = () => {
 		formDataToSend.append("quantity", formData.quantity);
 		formDataToSend.append("hours", formData.hours);
 		formDataToSend.append("amount", formData.amount);
+		formDataToSend.append("paidMonth", formData.paidMonth);
+		formDataToSend.append("paidYear", formData.paidYear);
 		formDataToSend.append("status", formData.status);
 
 		// Append file if selected
@@ -161,6 +215,8 @@ const InvoiceCreate = () => {
 			});
 
 			if (response.data.success) {
+				setSnackbarMessage("Invoice successfully created!"); // Set success message
+				setSnackbarOpen(true); // Show the snackbar
 				navigate("/branch/invoice/management");
 			}
 		} catch (error) {
@@ -198,14 +254,21 @@ const InvoiceCreate = () => {
 										<Grid item xs={12}>
 											<Autocomplete
 												options={members}
-												getOptionLabel={(option) => option.name}
+												getOptionLabel={(option) => option.name} // Return just the name
 												value={formData.member}
+												onInputChange={handleMemberSearch} // Trigger search on input change
 												onChange={(event, value) => handleAutocompleteChange(event, value, "member")}
 												renderInput={(params) => (
 													<>
-														<TextField {...params} label="Select Member" variant="outlined" />
+														<TextField {...params} label="Search Member" variant="outlined" />
 														{errors.member && <FormHelperText error>{errors.member}</FormHelperText>}
 													</>
+												)}
+												renderOption={(props, option) => (
+													<li {...props}>
+														<span>{option.name}</span>
+														<span style={{ color: "gray", fontSize: "0.875rem" }}> ({option.email})</span>
+													</li>
 												)}
 											/>
 										</Grid>
@@ -213,14 +276,21 @@ const InvoiceCreate = () => {
 										<Grid item xs={12}>
 											<Autocomplete
 												options={companies}
-												getOptionLabel={(option) => option.name}
+												getOptionLabel={(option) => option.name} // Return just the name
 												value={formData.company}
+												onInputChange={handleCompanySearch} // Trigger search on input change
 												onChange={(event, value) => handleAutocompleteChange(event, value, "company")}
 												renderInput={(params) => (
 													<>
-														<TextField {...params} label="Select Company" variant="outlined" />
+														<TextField {...params} label="Search Company" variant="outlined" />
 														{errors.company && <FormHelperText error>{errors.company}</FormHelperText>}
 													</>
+												)}
+												renderOption={(props, option) => (
+													<li {...props}>
+														<span>{option.name}</span>
+														<span style={{ color: "gray", fontSize: "0.875rem" }}> ({option.email})</span>
+													</li>
 												)}
 											/>
 										</Grid>
@@ -285,6 +355,21 @@ const InvoiceCreate = () => {
 											{errors.status && <FormHelperText error>{errors.status}</FormHelperText>}
 										</FormControl>
 									</Grid>
+									{/* Dropdown to select the Paid month */}
+									{formData.invoiceType === "Monthly" && (
+										<Grid item xs={12}>
+											<FormControl fullWidth error={Boolean(errors.paidMonth)}>
+												<TextField select label="Select Month You Paid" name="paidMonth" value={formData.paidMonth} onChange={handleChange} variant="outlined" fullWidth>
+													{["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((month, index) => (
+														<MenuItem key={index} value={month}>
+															{month}
+														</MenuItem>
+													))}
+												</TextField>
+												{errors.paidMonth && <FormHelperText error>{errors.paidMonth}</FormHelperText>}
+											</FormControl>
+										</Grid>
+									)}
 
 									{/* Due Date */}
 									<Grid item xs={12} className="selectPicker">
@@ -352,6 +437,12 @@ const InvoiceCreate = () => {
 					</div>
 				</div>
 			</div>
+			{/* Snackbar for success/failure message */}
+			<Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)} autoHideDuration={6000}>
+				<Alert onClose={() => setSnackbarOpen(false)} severity="success">
+					{snackbarMessage}
+				</Alert>
+			</Snackbar>
 		</>
 	);
 };

@@ -53,8 +53,6 @@ const InvoiceDashboard = () => {
 		try {
 			const res = await axiosInstance.get(`${import.meta.env.VITE_BASE_API}invoices/dashboard`);
 			if (res.data.success) {
-				console.log(res.data);
-
 				setDashboardStats({
 					totalInvoices: res.data.totalInvoices,
 					totalPaid: res.data.totalPaid,
@@ -104,7 +102,7 @@ const InvoiceDashboard = () => {
 						<div className="row mb-4 align-items-center">
 							<div className="col">
 								<Box display="flex" alignItems="center" gap={2}>
-									<Typography variant="h5">Invoice Dashboard</Typography>
+									<Typography variant="h5">Dashboard</Typography>
 								</Box>
 							</div>
 							<div className="col-auto">
@@ -172,6 +170,7 @@ const InvoiceDashboard = () => {
 									<TableHead sx={{ bgcolor: "#F8FAFC" }}>
 										<TableRow>
 											<TableCell>Invoice #</TableCell>
+											<TableCell>Type</TableCell>
 											<TableCell>Clients</TableCell>
 											<TableCell>Issue date</TableCell>
 											<TableCell>Payment Date</TableCell>
@@ -184,7 +183,8 @@ const InvoiceDashboard = () => {
 										{invoices.length > 0 ? (
 											invoices.map((invoice) => (
 												<TableRow key={invoice.id}>
-													<TableCell>{invoice.id}</TableCell>
+													<TableCell>#NASTP-{invoice.id}</TableCell>
+													<TableCell style={{ textTransform: "capitalize" }}>{invoice.user.type}</TableCell>
 													<TableCell>
 														<Box display="flex" alignItems="center" gap={1}>
 															<Avatar sx={{ width: 32, height: 32 }} src={import.meta.env.VITE_ASSET_API + invoice.user.profile_image}></Avatar>
