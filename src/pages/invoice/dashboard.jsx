@@ -116,7 +116,7 @@ const InvoiceDashboard = () => {
 										<MenuItem value="January">January</MenuItem>
 										{/* Add more months */}
 									</Select>
-									<Button variant="contained" sx={{ bgcolor: "#0F172A", "&:hover": { bgcolor: "#1E293B" } }} onClick={() => navigate("/branch/invoice/create")}>
+									<Button variant="contained" sx={{ bgcolor: "#0D2b4e", "&:hover": { bgcolor: "#1E293B" } }} onClick={() => navigate("/branch/invoice/create")}>
 										Create Invoice
 									</Button>
 								</Box>

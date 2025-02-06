@@ -34,6 +34,8 @@ const Requests = () => {
 	const handleMenuClose = () => setAnchorEl(null);
 
 	const handleEditClick = (booking) => {
+		console.log(booking);
+
 		setOpenEditModal(true);
 		setSelectedBooking(booking);
 		setNewStatus(booking.status);
@@ -206,6 +208,7 @@ const Requests = () => {
 												<td>
 													<span className={`status ${booking.status}`}>{booking.status}</span>
 												</td>
+												<MenuItem onClick={() => handleEditClick(booking)}>Edit</MenuItem>
 												{user.type === "user" && (
 													<td>
 														<IconButton onClick={() => handleEditClick(booking)}>
@@ -218,9 +221,7 @@ const Requests = () => {
 														<IconButton onClick={(e) => handleMenuOpen(e)}>
 															<MoreVertIcon />
 														</IconButton>
-														<Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => handleMenuClose()}>
-															<MenuItem onClick={() => handleEditClick(booking)}>Edit</MenuItem>
-														</Menu>
+														<Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => handleMenuClose()}></Menu>
 													</td>
 												)}
 											</tr>

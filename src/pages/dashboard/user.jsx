@@ -12,6 +12,7 @@ import axios from "axios";
 import { Bell, FileText } from "lucide-react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import axiosInstance from "../../utils/axiosInstance";
 
 dayjs.extend(relativeTime); // Enable relative time formatting
 
@@ -22,7 +23,7 @@ const UserDashboard = () => {
 
 	useEffect(() => {
 		const getData = async () => {
-			await axios.get(import.meta.env.VITE_BASE_API + "user/dashboard", { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } }).then((res) => {
+			await axiosInstance.get(import.meta.env.VITE_BASE_API + "user/dashboard").then((res) => {
 				// console.log(res.data);
 				setData(res.data);
 			});
@@ -31,15 +32,17 @@ const UserDashboard = () => {
 		getData();
 	}, []);
 
+	const getNotifications = async () => {
+		try {
+			const res = await axiosInstance.get(import.meta.env.VITE_BASE_API + "notifications?limit=4");
+			setNotifications(res.data);
+		} catch (error) {
+			console.error("Error fetching notifications:", error.response.data);
+		}
+	};
+
 	useEffect(() => {
-		axios
-			.get(import.meta.env.VITE_BASE_API + "notifications", {
-				headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
-			})
-			.then((response) => {
-				setNotifications(response.data);
-			})
-			.catch((error) => console.error("Error fetching notifications:", error.response.data));
+		getNotifications();
 	}, []);
 
 	//   const markAsRead = (notificationId) => {
@@ -189,7 +192,7 @@ const UserDashboard = () => {
 												<div style={{ flex: 1, minWidth: 0 }}>
 													<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
 														<span style={{ fontWeight: "500", fontSize: "0.875rem", color: "#111827" }}>{notification.title}</span>
-														<span style={{ fontSize: "0.75rem", color: "#6B7280", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{dayjs(notification.created_at).fromNow()}</span>
+														<span style={{ fontSize: "0.75rem", color: "#6B7280", whiteSpace: "nowrap", marginLeft: "0.5rem" }}>{notification.created_at}</span>
 													</div>
 													<p style={{ fontSize: "0.875rem", color: "#4B5563", marginTop: "0.25rem", lineHeight: "1.25" }}>{notification.message}</p>
 												</div>
