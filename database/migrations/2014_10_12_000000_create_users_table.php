@@ -27,6 +27,7 @@ class CreateUsersTable extends Migration
             $table->decimal('total_booking_quota', 10, 1)->default(20.0);
             $table->decimal('booking_quota', 10, 1)->default(20.0);
             $table->integer('printing_quota')->default(100);
+            $table->integer('total_printing_quota')->default(100);
             $table->bigInteger('company_id')->nullable();
             $table->bigInteger('allocated_seat_id')->nullable();
             $table->timestamp('booking_quota_updated_at')->nullable()->default(now());

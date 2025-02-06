@@ -9,9 +9,7 @@ class BookingInvoice extends Model
 {
     use HasFactory;
 
-    // protected $dates = ['due_date', 'paid_date'];
-
-    protected $fillable = ['branch_id', 'booking_id', 'type', 'user_id', 'due_date', 'paid_date', 'payment_method', 'amount', 'receipt', 'status'];
+    protected $fillable = ['branch_id', 'booking_id', 'user_id', 'type', 'due_date', 'paid_date', 'payment_method', 'amount', 'receipt', 'status'];
 
     public function user()
     {

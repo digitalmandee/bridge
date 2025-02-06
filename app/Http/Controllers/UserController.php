@@ -16,9 +16,9 @@ class UserController extends Controller
 
             $bookingSchedules = $user->bookingSchedules()->with(['floor:id,name', 'room:id,name'])->latest()->take(10)->get();
 
-            $totalAmount = $user->BookingInvoices()->sum('amount');
+            $totalAmount = $user->invoices()->sum('amount');
 
-            $overDueAmount = $user->BookingInvoices()->where('status', 'overdue')->sum('amount');
+            $overDueAmount = $user->invoices()->where('status', 'overdue')->sum('amount');
 
             return response()->json([
                 'success' => true,

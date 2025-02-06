@@ -32,6 +32,7 @@ class User extends Authenticatable
         'total_booking_quota',
         'booking_quota',
         'printing_quota',
+        'total_printing_quota',
         'company_id',
         'allocated_seat_id',
         'booking_quota_updated_at',
@@ -85,6 +86,10 @@ class User extends Authenticatable
     public function bookingSchedulesByCompany()
     {
         return $this->hasMany(BookingSchedule::class, 'company_id');
+    }
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
     }
 
     public function booking()

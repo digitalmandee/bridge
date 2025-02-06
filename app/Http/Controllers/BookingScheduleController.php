@@ -7,6 +7,7 @@ use App\Models\BookingSchedule;
 use App\Models\ScheduleFloor;
 use App\Models\ScheduleRoom;
 use App\Models\User;
+use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -50,7 +51,6 @@ class BookingScheduleController extends Controller
             $date = Carbon::parse($request->date);
 
             // Check if the room's schedule overlaps with the requested time
-
             $overlap = $this->checkBookingAvailability($request->room_id, $startTime, $endTime);
             if ($overlap) {
                 return response()->json(['success' => false, 'already_exist' => 'The room is already booked during the selected time range.'], 409);
@@ -67,7 +67,8 @@ class BookingScheduleController extends Controller
 
             $branchId = $LoggedInUser->type === 'admin' ? $LoggedInUser->branch->id : $LoggedInUser->created_by_branch_id;
 
-            BookingSchedule::create([
+            // Create the booking
+            $booking = BookingSchedule::create([
                 'branch_id' => $branchId,
                 'user_id' => $request->user_id,
                 'company_id' => $user->company_id ?? null,
@@ -81,6 +82,41 @@ class BookingScheduleController extends Controller
             ]);
 
             DB::commit();
+
+            $room = ScheduleRoom::find($request->room_id);  // Adjust according to your model
+            $roomName = $room ? $room->name : 'Unknown Room';
+
+            // Admin notification if the logged-in user is an admin
+            if ($LoggedInUser->type === 'admin') {
+                $userBookingNotificationData = [
+                    'title' => "Booking Created - {$LoggedInUser->branch->name}",
+                    'message' => "Booking #{$booking->id} for Meeting Room {$roomName} has been created.",
+                    'type' => 'booking_created',
+                    'booking_id' => $booking->id,
+                ];
+                $user->notify(new GeneralNotification($userBookingNotificationData));
+
+                $adminBookingNotificationData = [
+                    'title' => "New Booking - UserId: #{$user->id}",
+                    'message' => "Booking #{$booking->id} for Meeting Room {$roomName} created by {$LoggedInUser->name}.",
+                    'type' => 'booking_created',
+                    'booking_id' => $booking->id,
+                    'created_by' => $LoggedInUser->name,
+                ];
+                $LoggedInUser->notify(new GeneralNotification($adminBookingNotificationData));
+            }
+            // If the logged-in user is a regular user, notify the admin
+            else {
+                $adminBookingNotificationData = [
+                    'title' => "New Booking - UserId: #{$LoggedInUser->id}",
+                    'message' => "Booking #{$booking->id} for Meeting Room {$roomName} created by {$LoggedInUser->name}.",
+                    'type' => 'booking_created',
+                    'booking_id' => $booking->id,
+                    'created_by' => $LoggedInUser->name,
+                ];
+                $admin = User::find($LoggedInUser->created_by); // Get the admin user
+                $admin->notify(new GeneralNotification($adminBookingNotificationData));
+            }
 
             return response()->json(['success' => true, 'message' => 'Booking created successfully'], 201);
         } catch (\Throwable $th) {
@@ -196,8 +232,7 @@ class BookingScheduleController extends Controller
         $user = auth()->user();
         if ($user->type === 'user') {
             $bookingSchedules = BookingSchedule::where('user_id', $user->id)->orderBy('created_at', 'desc')->with(['branch:id,name', 'room:id,name', 'floor:id,name', 'user:id,name,email'])->get();
-        } else if ($user->type === 'admin') {
-            {
+        } else if ($user->type === 'admin') { {
                 $branchId = $user->branch->id;
                 if (!$branchId) {
                     return response()->json(['message' => 'Branch ID parameter is required'], 400);
@@ -222,7 +257,9 @@ class BookingScheduleController extends Controller
             DB::beginTransaction();
 
             $bookingSchedule = BookingSchedule::findOrFail($validated['booking_id']);
+            $oldStatus = $bookingSchedule->status; // Store the old status before updating
 
+            // Check if the status is being updated to 'approved' and handle accordingly
             if ($validated['status'] === 'approved' && $bookingSchedule->status != 'approved') {
                 // Check if the booking is available
                 $overlap = $this->checkBookingAvailability($bookingSchedule->schedule_room_id, $bookingSchedule->startTime, $bookingSchedule->endTime);
@@ -230,21 +267,20 @@ class BookingScheduleController extends Controller
                 if ($overlap) {
                     return response()->json(['success' => false, 'already_exist' => 'The room is already booked during the selected time range.'], 409);
                 }
-                // code...
+
+                // Proceed with quota and availability checks as before
                 $user = User::findOrFail($bookingSchedule->user_id);
 
                 // Calculate booking duration in hours
                 $startTime = new Carbon($bookingSchedule->startTime);
                 $endTime = new Carbon($bookingSchedule->endTime);
+                $durationInHours = $startTime->diffInMinutes($endTime) / 60;
 
-                $durationInHours = $startTime->diffInMinutes($endTime) / 60;  // Duration in hours
-
-                // Check if the duration is less than 1 hour (e.g., 30 minutes should be 0.5)
-                $quotaDecrement = round($durationInHours, 2);  // Round to 2 decimal places for 0.5 hours
+                // Round to 2 decimal places for duration
+                $quotaDecrement = round($durationInHours, 2);
 
                 // Check if the user has enough booking quota
                 if ($user->booking_quota >= $quotaDecrement) {
-                    // Decrement the booking quota by the calculated amount
                     $user->decrement('booking_quota', $quotaDecrement);
                 } else {
                     DB::rollBack();
@@ -255,10 +291,42 @@ class BookingScheduleController extends Controller
             // Update the booking schedule status
             $bookingSchedule->update(['status' => $validated['status']]);
 
+            // Get the meeting room name (assuming it's stored in a Room model)
+            $room = ScheduleRoom::find($bookingSchedule->schedule_room_id);  // Adjust according to your model
+            $roomName = $room ? $room->name : 'Unknown Room';
+
+            // Notify user if status has changed (to approved or any other status)
+            if ($validated['status'] !== $oldStatus) {
+                $user = User::findOrFail($bookingSchedule->user_id);
+
+                $userNotificationData = [
+                    'title' => "Booking Status Updated - {$roomName}",
+                    'message' => "Your booking #{$bookingSchedule->id} for Meeting Room {$roomName} is now {$validated['status']}.",
+                    'type' => 'booking_status_updated',
+                    'booking_id' => $bookingSchedule->id,
+                    'status' => $validated['status'],
+                ];
+                $user->notify(new GeneralNotification($userNotificationData));
+
+                // Notify admin (assuming the admin is the one who updated the status)
+                $admin = auth()->user();  // Admin who updated the booking status
+
+                $adminNotificationData = [
+                    'title' => "Booking Status Updated - UserId: {$user->id}",
+                    'message' => "Booking #{$bookingSchedule->id} for Meeting Room {$roomName} has been updated to {$validated['status']} by {$admin->name}.",
+                    'type' => 'booking_status_updated',
+                    'booking_id' => $bookingSchedule->id,
+                    'status' => $validated['status'],
+                    'updated_by' => $admin->name,
+                ];
+                $admin->notify(new GeneralNotification($adminNotificationData));
+            }
+
             DB::commit();
 
             return response()->json(['success' => true, 'message' => 'Booking Schedule updated successfully'], 200);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
     }
