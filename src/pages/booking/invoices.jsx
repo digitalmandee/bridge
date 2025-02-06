@@ -9,6 +9,7 @@ import Loader from "../../components/Loader";
 import axios from "axios";
 import colors from "../../assets/styles/color";
 import { AuthContext } from "../../contexts/AuthContext";
+import axiosInstance from "../../utils/axiosInstance";
 
 const Invoices = () => {
 	const { user } = useContext(AuthContext);
@@ -98,7 +99,7 @@ const Invoices = () => {
 		const fetchInvoices = async () => {
 			setIsLoading(true);
 			try {
-				const response = await axios.get(`${import.meta.env.VITE_BASE_API}invoices`, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` } });
+				const response = await axiosInstance.get(`${import.meta.env.VITE_BASE_API}invoices`);
 
 				if (response.data && Array.isArray(response.data.invoices)) {
 					setInvoices(response.data.invoices);
@@ -198,8 +199,8 @@ const Invoices = () => {
 										<th>Name</th>
 										<th>Issue Date</th>
 										<th>Payment Date</th>
-										<th>Status</th>
 										<th>Amount</th>
+										<th>Status</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -217,6 +218,7 @@ const Invoices = () => {
 												<td>{invoice.user.name}</td>
 												<td>{invoice.due_date}</td>
 												<td>{invoice.paid_date || "N/A"}</td>
+												<td>Rs. {invoice.amount}</td>
 												<td>
 													<div className="d-flex align-items-center">
 														<span className={`status ${invoice.status}`}>{invoice.status}</span>
@@ -232,7 +234,6 @@ const Invoices = () => {
 														)}
 													</div>
 												</td>
-												<td>Rs. {invoice.amount}</td>
 											</tr>
 										))
 									) : (

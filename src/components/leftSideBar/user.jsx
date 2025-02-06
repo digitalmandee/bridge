@@ -17,7 +17,7 @@ const menuItems = [
 			{ to: "/user/booking-schedule/requests", label: "Booking Requests" },
 		],
 	},
-	{ to: "/user/booking/invoices", label: "Invoice Management", icon: <MdOutlineDateRange /> },
+	{ to: "/user/invoices/management", label: "Invoice Management", icon: <MdOutlineDateRange /> },
 ];
 
 const User = () => {

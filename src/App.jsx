@@ -4,6 +4,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import SplashScreen from "./components/splashscreen";
 import SuperAdminDashboard from "./pages/dashboard/superadmin";
 import AdminDashboard from "./pages/dashboard/admin";
+import InvoiceDashboard from "./pages/invoice/dashboard";
+import InvoiceCreate from "./pages/invoice/create";
+import InvoiceManagement from "./pages/invoice/management";
+import InvoiceDetail from "./pages/invoice/detail";
 import UserDashboard from "./pages/dashboard/user";
 import CompanyDashboard from "./pages/dashboard/company";
 import CompanyAddStaff from "./pages/company/addstaff";
@@ -68,10 +72,10 @@ function App() {
 							}
 						/>
 						<Route
-							path="/user/booking/invoices"
+							path="/user/invoices/management"
 							element={
 								<ProtectedRoute role="user">
-									<BookingInvoices />
+									<InvoiceManagement />
 								</ProtectedRoute>
 							}
 						/>
@@ -102,10 +106,10 @@ function App() {
 							}
 						/>
 						<Route
-							path="/company/booking/invoices"
+							path="/company/invoices/management"
 							element={
 								<ProtectedRoute role="user">
-									<BookingInvoices />
+									<InvoiceManagement />
 								</ProtectedRoute>
 							}
 						/>
@@ -196,6 +200,38 @@ function App() {
 							element={
 								<ProtectedRoute role="admin">
 									<ScheduleRequests />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/branch/invoice/dashboard"
+							element={
+								<ProtectedRoute role="admin">
+									<InvoiceDashboard />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/branch/invoice/create"
+							element={
+								<ProtectedRoute role="admin">
+									<InvoiceCreate />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/branch/invoice/management"
+							element={
+								<ProtectedRoute role="admin">
+									<InvoiceManagement />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/branch/invoice/customer-detail/:customerId"
+							element={
+								<ProtectedRoute role="admin">
+									<InvoiceDetail />
 								</ProtectedRoute>
 							}
 						/>

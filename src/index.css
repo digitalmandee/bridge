@@ -258,6 +258,10 @@ body {
   font-weight: 700;
 }
 
+.selectPicker .MuiFormControl-root {
+  width: 100%;
+}
+
 /* Loader */
 .custom-loader {
   border: 8px solid #f3f3f3;

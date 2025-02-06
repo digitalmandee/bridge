@@ -37,8 +37,9 @@ const menuItems = [
 		label: "Invoice",
 		icon: <SlCalender />,
 		dropdown: [
-			{ to: "/branch/booking-schedule", label: "Invoice Dashboard " },
-			{ to: "/branch/booking-schedule/requests", label: "New Invoice" },
+			{ to: "/branch/invoice/dashboard", label: "Invoice Dashboard " },
+			{ to: "/branch/invoice/create", label: "New Invoice" },
+			{ to: "/branch/invoice/management", label: "Invoice Management" },
 		],
 	},
 	{ to: "", label: "Inventory Management", icon: <MdOutlineInventory /> },
