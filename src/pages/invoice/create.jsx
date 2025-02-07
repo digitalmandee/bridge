@@ -438,7 +438,7 @@ const InvoiceCreate = () => {
 				</div>
 			</div>
 			{/* Snackbar for success/failure message */}
-			<Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)} autoHideDuration={6000}>
+			<Snackbar open={snackbarOpen} onClose={() => setSnackbarOpen(false)} autoHideDuration={6000}>
 				<Alert onClose={() => setSnackbarOpen(false)} severity="success">
 					{snackbarMessage}
 				</Alert>
