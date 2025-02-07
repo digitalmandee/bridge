@@ -312,7 +312,7 @@ class BookingScheduleController extends Controller
                 $admin = auth()->user();  // Admin who updated the booking status
 
                 $adminNotificationData = [
-                    'title' => "Booking Status Updated - UserId: {$user->id}",
+                    'title' => "Booking Status Updated - User: {$user->name}",
                     'message' => "Booking #{$bookingSchedule->id} for Meeting Room {$roomName} has been updated to {$validated['status']} by {$admin->name}.",
                     'type' => 'booking_status_updated',
                     'booking_id' => $bookingSchedule->id,
