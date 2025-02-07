@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -170,14 +171,16 @@ class AuthController extends Controller
         ]);
 
         // Attempt to find the user
-        $user = User::where('email', $validatedData['email'])->first();
+        $user = User::where('email', $validatedData['email'])
+            ->select(['id', 'name', 'email', 'phone_no', 'type', 'password'])
+            ->first();
 
         // Verify user existence and password
         if (!$user || !Hash::check($validatedData['password'], $user->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid credentials. Please try again.',
-            ], 401); // 401 Unauthorized is a more appropriate status code here
+            ], 401);
         }
 
         // Generate token
@@ -187,48 +190,57 @@ class AuthController extends Controller
         $role = $user->roles()->first(); // Assuming the user has one role
         $permissions = $role ? $role->permissions->pluck('name')->toArray() : [];
 
+        // Convert User model to an array & hide password
+        $userData = $user->makeHidden(['password'])->toArray();
+
         // Prepare response data
-        $data = [
+        $data = array_merge($userData, [
             'token' => $token,
-            ...$user->only(['id', 'name', 'email', 'phone', 'type']),
             'role' => $role ? $role->name : null,
             'permissions' => $permissions,
-        ];
+        ]);
 
         // Return success response
         return response()->json([
             'success' => true,
             'message' => 'User logged in successfully.',
             'data' => $data,
-        ], 200); // 200 OK is appropriate for successful logins
+        ], 200);
     }
 
     public function getUser()
     {
         $user = auth()->user();
-        $role = $user->roles()->first(); // Assuming the user has one role
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.'
+            ], 404);
+        }
+
+        // Fetch user role and permissions
+        $role = $user->roles()->first();
         $permissions = $role ? $role->permissions->pluck('name')->toArray() : [];
 
-        $newData = [];
+        // Basic user data without password
+        $data = $user->only(['id', 'name', 'email', 'phone_no', 'type']);
+
+        // Role and permissions
+        $data['role'] = $role ? $role->name : null;
+        $data['permissions'] = $permissions;
+
+        // Add branch-related data based on user type
         if ($user->type === 'user') {
-            $newData = ['branch' => $user->userBranch->only(['id', 'name', 'location'])];
-        }
-
-        $data = [
-            ...$user->only(['id', 'name', 'email', 'phone', 'type']),
-            'role' => $role ? $role->name : null,
-            'permissions' => $permissions,
-            ...$newData
-        ];
-
-        if ($user->type === 'admin') {
-            $data['branch_id'] = $user->branch->id;
-        } else if ($user->type === 'user') {
+            $data['branch'] = $user->userBranch->only(['id', 'name', 'location']);
             $data['created_by_branch_id'] = $user->created_by_branch_id;
+        } elseif ($user->type === 'admin') {
+            $data['branch_id'] = $user->branch->id ?? null;
         }
 
-        return response()->json($data);
+        return response()->json($data, 200);
     }
+
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();

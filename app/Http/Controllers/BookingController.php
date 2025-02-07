@@ -46,6 +46,7 @@ class BookingController extends Controller
                 $user = User::create([
                     'name' => $bookingDetails['name'],
                     'email' => $bookingDetails['email'],
+                    'phone_no' => $bookingDetails['phone_no'],
                     'type' => $type,
                     'password' => Hash::make('password'),
                     'created_by_branch_id' => $branchId
