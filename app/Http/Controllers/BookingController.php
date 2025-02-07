@@ -114,7 +114,7 @@ class BookingController extends Controller
                 'branch_id' => $branchId,
                 'booking_id' => $booking->id,
                 'user_id' => $userId,
-                'invoice_type' => 'Monthly',
+                'invoice_type' => $bookingDetails['duration'],
                 'due_date' => Carbon::parse($booking->start_date)->addDay()->format('Y-m-d'),
                 'amount' => $booking->total_price,
                 'payment_type' => $booking->payment_method,

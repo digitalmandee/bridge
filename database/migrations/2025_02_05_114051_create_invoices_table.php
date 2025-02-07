@@ -22,7 +22,7 @@ class CreateInvoicesTable extends Migration
             $table->integer('quantity')->nullable();
             $table->decimal('hours', 10, 2)->nullable();
             $table->decimal('amount', 10, 2)->nullable();
-            $table->string('status')->default('pending');
+            $table->string('status')->default('unpiad');
             $table->date('due_date');
             $table->date('paid_date')->nullable();
             $table->string('paid_month')->nullable();
