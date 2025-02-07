@@ -17,7 +17,7 @@ class CreateBookingPlansTable extends Migration
             $table->id();
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->string('name');
-            $table->string('type');
+            $table->enum('type', ['full_day', 'monthly']);
             $table->decimal('price', 10, 2)->default(0.00);
             $table->timestamps();
 

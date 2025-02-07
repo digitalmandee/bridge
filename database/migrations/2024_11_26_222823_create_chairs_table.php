@@ -24,10 +24,7 @@ class CreateChairsTable extends Migration
             $table->bigInteger('rotation')->nullable();
             $table->string('color')->nullable();
             $table->string('activeColor')->nullable();
-            $table->string('booking_startdate')->nullable();
-            $table->string('booking_enddate')->nullable();
-            $table->tinyInteger('booked')->nullable();
-            $table->string('duration')->nullable();
+            $table->string('time_slot')->default('available');
             $table->timestamps();
 
             $table->foreign('floor_id')->references('id')->on('floors')->onDelete('cascade');

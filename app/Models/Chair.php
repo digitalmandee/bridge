@@ -18,10 +18,7 @@ class Chair extends Model
         'positiony',
         'rotation',
         'color',
-        'booking_startdate',
-        'booking_enddate',
-        'booked',
-        'duration'
+        'time_slot'
     ];
 
     public function floor()
@@ -68,5 +65,9 @@ class Chair extends Model
     public function table()
     {
         return $this->belongsTo(Table::class, 'table_id', 'id');
+    }
+    public function room()
+    {
+        return $this->belongsTo(Room::class, 'room_id', 'id');
     }
 }

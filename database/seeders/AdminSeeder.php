@@ -27,11 +27,11 @@ class AdminSeeder extends Seeder
             'type' => 'admin',
             'password' => Hash::make('password'),
         ]);
-        User::create([
-            'name' => 'Invester',
-            'email' => 'invester@gmail.com',
-            'type' => 'invester',
-            'password' => Hash::make('password'),
-        ]);
+        // User::create([
+        //     'name' => 'Invester',
+        //     'email' => 'invester@gmail.com',
+        //     'type' => 'invester',
+        //     'password' => Hash::make('password'),
+        // ]);
     }
 }

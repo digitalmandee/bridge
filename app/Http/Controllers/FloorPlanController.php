@@ -16,6 +16,7 @@ class FloorPlanController extends Controller
     {
         return view('admin.floor_plan.index');
     }
+
     public function getSeatAllocations(Request $request)
     {
         try {
@@ -26,36 +27,33 @@ class FloorPlanController extends Controller
             }
 
             // Fetch bookings with related data
-            $bookings = Booking::where('branch_id', $branchId)->with(['branch', 'floor', 'user'])->get();
+            $bookings = Booking::where('branch_id', $branchId)->where('status', 'confirmed')->with(['branch:id,name', 'floor:id,name', 'user:id,name,profile_image'])->get();
 
-            // Fetch all rooms once to avoid multiple queries
-            $rooms = Room::all()->keyBy('id'); // Key rooms by 'id' for easy lookup
+            // Extract all chair IDs from bookings
+            // Fetch all chairs that are associated with any booking
+            $allChairIds = $bookings->pluck('chair_ids')->flatten()->unique()->toArray();
+            $chairs = Chair::whereIn('id', $allChairIds)->with(['table', 'room'])->get()->keyBy('id');
 
-            // Transform chairs JSON for each booking
-            $response = $bookings->map(function ($booking) use ($rooms) {
-                $chairsData = $booking->chairs; // Assume `chairs` contains your JSON structure
+            // Format response
+            $response = $bookings->map(function ($booking) use ($chairs) {
+                $chairIds = $booking->chair_ids ?? [];
 
-                // Flatten and enhance each chair with its corresponding room data
-                $flattenedChairs = collect($chairsData)->flatMap(function ($chairs, $tableName) use ($rooms) {
-                    return collect($chairs)->map(function ($chair) use ($tableName, $rooms) {
-                        $chair['table_name'] = $tableName; // Add table_name to each chair
-
-                        // Match room data by room_id and add it to the chair
-                        if (isset($chair['room_id']) && $rooms->has($chair['room_id'])) {
-                            $chair['room'] = $rooms[$chair['room_id']]; // Add room data
-                        } else {
-                            $chair['room'] = null; // No matching room found
-                        }
-
-                        return $chair;
-                    });
-                })->values(); // Flatten and return as a collection
+                $flattenedChairs = collect($chairIds)->map(function ($chairId) use ($chairs) {
+                    $chair = $chairs[$chairId] ?? null;
+                    return $chair ? [
+                        'id' => $chair->id,
+                        'chair_id' => $chair->chair_id,
+                        'table_id' => $chair->table->table_id ?? null,
+                        'table_name' => $chair->table->name ?? 'N/A',
+                        'room_id' => $chair->room->id ?? null,
+                        'room_name' => $chair->room->name ?? 'N/A',
+                    ] : null;
+                })->filter()->values(); // Remove null values
 
                 return [
                     'booking_id' => $booking->id,
                     'name' => $booking->name,
                     'plan' => $booking->plan,
-                    'booked' => $booking->booked,
                     'branch' => $booking->branch,
                     'floor' => $booking->floor,
                     'user' => $booking->user,
@@ -65,10 +63,11 @@ class FloorPlanController extends Controller
 
             return response()->json(['success' => true, 'seats' => $response]);
         } catch (\Throwable $th) {
-            Log::info($th->getMessage());
+            Log::error("Seat allocation error: " . $th->getMessage());
             return response()->json(['success' => false, 'error' => 'An error occurred while retrieving the seat allocations'], 500);
         }
     }
+
 
     public function getFloorPlan(Request $request)
     {
@@ -96,10 +95,11 @@ class FloorPlanController extends Controller
                             'id' => $table->table_id,
                             'name' => $table->name,
                             'chairs' => $table->chairs->map(function ($chair) use (&$totalAvailableChairs, &$totalOccupiedChairs) {
-                                if ($chair->booked) {
+
+                                if ($chair->time_slot !== 'available') {
                                     $totalOccupiedChairs++;
-                                    if ($chair->duration != 24) {
-                                        // If booked and duration is not 24, count as avaable
+                                    if ($chair->time_slot != 'full_day') {
+                                        // If booked and duration is not full_day, count as available
                                         $totalAvailableChairs++;
                                     }
                                 } else {
@@ -118,10 +118,7 @@ class FloorPlanController extends Controller
                                     ],
                                     'rotation' => $chair->rotation,
                                     'color' => $chair->color,
-                                    'booking_startdate' => $chair->booking_startdate,
-                                    'booking_enddate' => $chair->booking_enddate,
-                                    'booked' => $chair->booked,
-                                    'duration' => $chair->duration,
+                                    'time_slot' => $chair->time_slot,
                                 ];
                             }),
                         ];
@@ -199,7 +196,7 @@ class FloorPlanController extends Controller
                 } elseif ($hasDay && $hasNight) {
                     $availableDurations = []; // No availability since both day and night are booked
                 } else {
-                    $availableDurations = ['day', 'night', '24']; // All durations available if only null chairs
+                    $availableDurations = ['day', 'night', 'full_day']; // All durations available if only null chairs
                 }
             } else {
                 if ($hasDay && !$hasNight) {

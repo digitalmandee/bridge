@@ -15,15 +15,17 @@ class Booking extends Model
         'branch_id',
         'floor_id',
         'plan_id',
-        'chairs',
+        'chair_ids',
         'name',
         'phone_no',
         'type',
-        'duration',
         'start_date',
         'start_time',
         'end_date',
         'end_time',
+        'package_end_time',
+        'duration',
+        'time_slot',
         'total_price',
         'package_detail',
         'plan',
@@ -37,7 +39,7 @@ class Booking extends Model
         'status',
     ];
     protected $casts = [
-        'chairs' => 'array',
+        'chair_ids' => 'array',
         'plan' => 'array',
     ];
 

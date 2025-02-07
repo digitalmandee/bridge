@@ -176,7 +176,7 @@ class InvoicesController extends Controller
 
             // Notify the admin about the created invoice
             $adminNotificationData = [
-                'title' => "Invoice Created - UserId: {$user->id}",
+                'title' => "Invoice Created - User: {$user->name}",
                 'message' => "An invoice (#{$invoice->id}) has been created for User ID {$user->id} in {$admin->branch->name}.",
                 'type' => 'invoice_created',
                 'invoice_id' => $invoice->id,

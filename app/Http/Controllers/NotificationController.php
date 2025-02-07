@@ -14,18 +14,23 @@ class NotificationController extends Controller
     public function getNotifications(Request $request)
     {
         $limit = $request->input('limit', 10); // Default limit
-        $notifications = auth()->user()->notifications()->paginate($limit);
+        $notifications = auth()->user()->unreadNotifications()->paginate($limit);
 
-        return $notifications->map(function ($notification) {
-            return [
-                'id' => $notification->id,
-                'title' => $notification->data['title'],
-                'message' => $notification->data['message'],
-                'type' => $notification->data['type'],
-                'created_by' => $notification->data['created_by'] ?? 'System',
-                'created_at' => Carbon::parse($notification->created_at)->diffForHumans(), // Converts to "2 mins ago"
-            ];
-        });
+        $unreadNotificationsCount = auth()->user()->unreadNotifications()->count();
+
+        return response()->json([
+            'notifications' => $notifications->map(function ($notification) {
+                return [
+                    'id' => $notification->id,
+                    'title' => $notification->data['title'],
+                    'message' => $notification->data['message'],
+                    'type' => $notification->data['type'],
+                    'created_by' => $notification->data['created_by'] ?? 'System',
+                    'created_at' => Carbon::parse($notification->created_at)->diffForHumans(), // Converts to "2 mins ago"
+                ];
+            }),
+            'unread' => $unreadNotificationsCount,
+        ]);
     }
     public function markAsRead($id)
     {
@@ -69,7 +74,7 @@ class NotificationController extends Controller
         $user->notify(new GeneralNotification($userNotificationData));
 
         $adminNotificationData = [
-            'title' => "Invoice {$invoiceStatus} - UserId: {$user->id}",
+            'title' => "Invoice {$invoiceStatus} - User: {$user->name}",
             'message' => "Invoice #{$request->invoice_id} for User ID {$user->id} is {$invoiceStatus}.",
             'type' => "invoice_{$invoiceStatus}",
         ];

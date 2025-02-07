@@ -35,9 +35,6 @@ class BookingController extends Controller
             $selectedPlan = json_decode($validated['selectedPlan'], true);
             $selectedChairs = json_decode($validated['selectedChairs'], true);
 
-            $totalChairs = collect($selectedChairs)->flatten(1)->count();
-
-
             $branchId = auth()->user()->branch->id;
 
             DB::beginTransaction();
@@ -50,12 +47,7 @@ class BookingController extends Controller
                     'name' => $bookingDetails['name'],
                     'email' => $bookingDetails['email'],
                     'type' => $type,
-                    'role' => $type == 'user' ? 1 : 1,
                     'password' => Hash::make('password'),
-                    'booking_quota' => $totalChairs * 20,
-                    'total_booking_quota' => $totalChairs * 20,
-                    'printing_quota' => $totalChairs * 100,
-                    'total_printing_quota' => $totalChairs * 100,
                     'created_by_branch_id' => $branchId
                 ]);
                 $user->assignRole('user');
@@ -75,19 +67,42 @@ class BookingController extends Controller
                 $receiptPath = $request->file('receipt')->store('invoices', 'public');
             }
 
+            $startDate = Carbon::parse($bookingDetails['start_date']); // Start Date
+            $startTime = Carbon::parse($bookingDetails['start_time']); // Start Time
+
+            if ($bookingDetails['duration'] === 'full_day') {
+                // Full day package: End time is 24 hours after start time
+                $bookingEndTime = $startTime->copy()->addDay();
+            } else {
+                // Monthly package: Check if start date is within last 5 days of the month
+                $monthDays = $startDate->daysInMonth;  // Total days in month
+                $lastDayOfMonth = Carbon::create($startDate->year, $startDate->month, $monthDays); // Last day of month
+
+                if ($startDate->day >= ($monthDays - 5)) {
+                    // If start date is within the last 5 days of the month, extend to the next month's end
+                    $nextMonth = $startDate->copy()->addMonth();
+                    $bookingEndTime = Carbon::create($nextMonth->year, $nextMonth->month, $nextMonth->daysInMonth);
+                } else {
+                    // Otherwise, package ends at the end of the current month
+                    $bookingEndTime = $lastDayOfMonth;
+                }
+            }
+
             // Create booking
             $booking = Booking::create([
                 "user_id" => $userId,
                 "branch_id" => $branchId,
                 "floor_id" => $validated['floor_id'],
                 "plan_id" => $selectedPlan['id'],
-                "chairs" => $selectedChairs,
+                "chair_ids" => $selectedChairs,
                 "name" => $bookingDetails['name'],
                 "phone_no" => $bookingDetails['phone_no'],
                 "type" => $bookingDetails['type'],
-                "duration" => $bookingDetails['duration'],
                 "start_date" => $bookingDetails['start_date'],
                 "start_time" => $bookingDetails['start_time'],
+                "package_end_time" => $bookingEndTime,
+                "duration" => $bookingDetails['duration'],
+                "time_slot" => $bookingDetails['time_slot'],
                 "total_price" => $bookingDetails['total_price'],
                 "package_detail" => $bookingDetails['package_detail'],
                 "payment_method" => $bookingDetails['payment_method'],
@@ -132,7 +147,7 @@ class BookingController extends Controller
 
             // Admin Notifications for Booking and Invoice
             $adminBookingNotificationData = [
-                'title' => "New Booking - UserId: {$user->id}",
+                'title' => "New Booking - User: {$user->name}",
                 'message' => "Booking #{$booking->id} created by {$admin->name}.",
                 'type' => 'booking_created',
                 'booking_id' => $booking->id,
@@ -140,7 +155,7 @@ class BookingController extends Controller
             ];
 
             $adminInvoiceNotificationData = [
-                'title' => "Invoice Created - UserId: {$user->id}",
+                'title' => "Invoice Created - User: {$user->name}",
                 'message' => "An invoice (#{$invoice->id}) has been created for User ID {$user->id} in {$admin->branch->name}.",
                 'type' => 'invoice_created',
                 'invoice_id' => $invoice->id,
@@ -165,42 +180,61 @@ class BookingController extends Controller
         try {
             $branchId = auth()->user()->branch->id;
 
-            // Fetch bookings with user relationships
-            $bookingPlans = Booking::where('branch_id', $branchId)->with(['user', 'floor'])->orderBy('created_at', 'desc')->get();
+            // Fetch bookings with user and floor relationships
+            $bookings = Booking::where('branch_id', $branchId)->with(['user:id,name,email', 'floor:id,name'])->orderBy('created_at', 'desc')->get();
 
-            // Fetch all rooms (assuming you have a Room model)
-            $rooms = Room::all()->keyBy('id'); // Create a map of rooms by room_id
+            // Fetch all chairs that are associated with any booking
+            $allChairIds = $bookings->pluck('chair_ids')->flatten()->unique()->toArray();
+            $chairs = Chair::whereIn('id', $allChairIds)->with(['table', 'room'])->get()->keyBy('id');
 
-            // Transform the bookings to include room names and total chairs count
-            $bookingPlans = $bookingPlans->map(function ($booking) use ($rooms) {
-                $chairsData = collect($booking->chairs); // Assuming chairs is JSON
+            // Format bookings with related chair, table, and room details
+            $formattedBookings = $bookings->map(function ($booking) use ($chairs) {
+                $chairIds = $booking->chair_ids ?? [];
 
-                // Calculate the total number of chairs
-                $totalChairs = $chairsData->flatMap(function ($chairs) {
-                    return $chairs;
-                })->count();
-
-                // Extract unique room IDs
-                $roomIds = $chairsData->flatMap(function ($chairs) {
-                    return collect($chairs)->pluck('room_id'); // Extract room_ids
-                })->unique();
-
-                // Map room IDs to room names
-                $roomNames = $roomIds->map(function ($roomId) use ($rooms) {
-                    return $rooms->get($roomId)?->name; // Fetch room name by room_id
-                })->filter(); // Remove null values in case of missing room_ids
-
-                // Add room names and total chairs count to the booking object
-                $booking->rooms = $roomNames->values(); // Reset indices for rooms
-                $booking->total_chairs = $totalChairs; // Add total chairs count
-                return $booking;
+                return [
+                    'id' => $booking->id,
+                    'name' => $booking->name,
+                    'user' => $booking->user,
+                    'floor' => $booking->floor,
+                    'plan' => $booking->plan,
+                    'chairs' => collect($chairIds)->map(function ($chairId) use ($chairs) {
+                        $chair = $chairs[$chairId] ?? null;
+                        return $chair ? [
+                            'id' => $chair->id,
+                            'chair_id' => $chair->chair_id,
+                            'table_id' => $chair->table->table_id ?? null,
+                            'table_name' => $chair->table->name ?? 'N/A',
+                            'room_id' => $chair->room->id ?? null,
+                            'room_name' => $chair->room->name ?? 'N/A',
+                        ] : null;
+                    })->filter()->values(), // Remove null values
+                    'start_date' => $booking->start_date,
+                    'start_time' => $booking->start_time,
+                    'end_date' => $booking->end_date,
+                    'end_time' => $booking->end_time,
+                    'duration' => $booking->duration,
+                    'time_slot' => $booking->time_slot,
+                    'package_end_time' => $booking->package_end_time,
+                    'total_price' => $booking->total_price,
+                    'package_detail' => $booking->package_detail,
+                    'payment_method' => $booking->payment_method,
+                    'status' => $booking->status,
+                ];
             });
 
-            return response()->json(['success' => true, 'message' => 'Bookings retrieved successfully', 'bookings' => $bookingPlans], 200);
+            return response()->json([
+                'success' => true,
+                'message' => 'Bookings retrieved successfully',
+                'bookings' => $formattedBookings
+            ], 200);
         } catch (\Throwable $th) {
-            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage()
+            ], 500);
         }
     }
+
 
     public function updateBooking(Request $request)
     {
@@ -211,46 +245,94 @@ class BookingController extends Controller
                 'price' => 'required|numeric',
             ]);
 
+            $admin = auth()->user();
+
             DB::beginTransaction();
 
             // Retrieve the booking from the database
             $booking = Booking::findOrFail($request->booking_id);
 
-            // Get the chair data from the request (grouped by C, D, etc.)
-            $chairsData = $booking->chairs;
-            $color = $this->getColorBasedOnDuration($booking->duration);
+            // Get all chairs related to this booking
 
-            // Loop through each chair group (C, D, etc.) in the chairs data
-            foreach ($chairsData as $group => $chairList) {
-                foreach ($chairList as &$chairData) {
-                    // Assuming the chair ID is in the data, we need to update it
-                    $chair = Chair::findOrFail($chairData['chair_id']);
+            foreach ($booking->chair_ids as $chairId) {
+                $chair = Chair::find($chairId);
 
-                    // Update chair details based on the booking status
-                    if ($request->status === 'accepted') {
-                        $chair->update([
-                            'booking_startdate' => $request->start_date . ' ' . $request->start_time,
-                            'booking_enddate' => $request->end_date . ' ' . $request->end_time,
-                            'booked' => true,
-                            'duration' => $booking->duration,
-                            'color' => $color, // Set the color based on duration
-                        ]);
+                if ($request->status === 'confirmed' && $booking->status !== 'confirmed') {
+                    // Prevent duplicate time_slot assignment
+                    if ($chair->time_slot === $booking->time_slot) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Floor {$booking->floor->name} Chair {$chair->table->name}{$chair->id} is already assigned to same time slot"
+                        ], 400);
                     }
-                    // else if ($request->status === 'vacate') {
-                    //     if ($booking->status === 'accepted') {
-                    //     $chair->update([
-                    //         'booking_startdate' => null,
-                    //         'booking_enddate' => null,
-                    //         'booked' => false,
-                    //         'color' => null,
-                    //         'duration' => null,
-                    //     ])
-                    // }
-                    // }
+
+                    // Assign the chair's time slot
+                    if ($chair->time_slot === 'available') {
+                        $chair->time_slot = $booking->time_slot;
+                    } elseif (
+                        ($chair->time_slot === 'day' && $booking->time_slot === 'night') ||
+                        ($chair->time_slot === 'night' && $booking->time_slot === 'day')
+                    ) {
+                        // If chair already booked for day, and now booked for night → Set to full_day
+                        $chair->time_slot = 'full_day';
+                    }
+
+                    // Set color based on time_slot
+                    $chair->color = $this->getColorBasedOnDuration($chair->time_slot);
+                    $chair->save();
+                } else if ($request->status === 'vacated' && $booking->status === 'confirmed') {
+                    // Handle vacating a booking
+                    if ($chair->time_slot === 'full_day') {
+                        // If full_day is vacated, check which slot remains
+                        if ($booking->time_slot === 'day') {
+                            $chair->time_slot = 'night'; // Keep night booking
+                            $chair->color = $this->getColorBasedOnDuration('night');
+                        } elseif ($booking->time_slot === 'night') {
+                            $chair->time_slot = 'day'; // Keep day booking
+                            $chair->color = $this->getColorBasedOnDuration('day');
+                        } else {
+                            $chair->time_slot = 'available'; // Otherwise, chair is fully vacated
+                            $chair->color = null;
+                        }
+                    } else {
+                        // If it was only booked for a single slot, free the chair
+                        $chair->time_slot = 'available';
+                        $chair->color = null;
+                    }
+
+                    $chair->save();
                 }
             }
 
-            // Update the booking details
+            if ($request->status === 'confirmed' && $booking->status !== 'confirmed') {
+                $totalChairs = count($booking->chair_ids);
+                $user = User::find($booking->user_id);
+
+                $user->update([
+                    'booking_quota' => $totalChairs * 20,
+                    'total_booking_quota' => $totalChairs * 20,
+                    'printing_quota' => $totalChairs * 100,
+                    'total_printing_quota' => $totalChairs * 100,
+                ]);
+
+                $user->notify(new GeneralNotification([
+                    'title' => "Booking Confirmation - {$user->branch->name}",
+                    'message' => "Booking #{$booking->id} has been confirmed.",
+                    'type' => 'booking_confirmed',
+                    'booking_id' => $booking->id,
+                    'created_by' => auth()->user()->name,
+                ]));
+
+                $admin->notify(new GeneralNotification([
+                    'title' => "Booking Confirmed - User: {$user->name}",
+                    'message' => "Booking #{$booking->id} has been confirmed.",
+                    'type' => 'admin_booking_notification',
+                    'booking_id' => $booking->id,
+                    'created_by' => auth()->user()->name,
+                ]));
+            }
+
+            // Update booking details
             $booking->update([
                 'status' => $request->status,
                 'total_price' => $request->price,
@@ -258,7 +340,6 @@ class BookingController extends Controller
                 'start_time' => $request->start_time,
                 'end_date' => $request->end_date,
                 'end_time' => $request->end_time,
-                'chair' => $chairsData
             ]);
 
             DB::commit();
@@ -270,6 +351,7 @@ class BookingController extends Controller
         }
     }
 
+
     private function getColorBasedOnDuration($duration)
     {
         // Set color based on duration
@@ -278,7 +360,7 @@ class BookingController extends Controller
                 return '#F59E0B';
             case 'night':
                 return '#6366F1';
-            case '24':
+            case 'full_day':
                 return 'green';
             default:
                 return 'gray';

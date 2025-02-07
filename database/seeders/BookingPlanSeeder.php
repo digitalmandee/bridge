@@ -16,10 +16,14 @@ class BookingPlanSeeder extends Seeder
     public function run()
     {
         $plans = [
-            ['name' => 'Seat 1', 'type' => 'basic', 'price' => 446.61],
-            ['name' => 'Seat 2', 'type' => 'basic', 'price' => 406.27],
-            ['name' => 'Seat 3', 'type' => 'basic', 'price' => 475.22],
-            ['name' => 'Dedicated Office', 'type' => 'premium', 'price' => 30000],
+            ['name' => 'Seat 1', 'type' => 'monthly', 'price' => 446.61],
+            ['name' => 'Seat 2', 'type' => 'monthly', 'price' => 406.27],
+            ['name' => 'Seat 3', 'type' => 'monthly', 'price' => 475.22],
+            ['name' => 'Dedicated Office', 'type' => 'monthly', 'price' => 30000],
+            ['name' => 'Seat 1', 'type' => 'full_day', 'price' => 60],
+            ['name' => 'Seat 2', 'type' => 'full_day', 'price' => 70],
+            ['name' => 'Seat 3', 'type' => 'full_day', 'price' => 100],
+            ['name' => 'Dedicated Office', 'type' => 'full_day', 'price' => 1000],
         ];
 
         $branches = Branch::all();
