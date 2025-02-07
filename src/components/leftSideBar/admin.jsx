@@ -22,7 +22,7 @@ const menuItems = [
 			{ to: "/branch/booking/plans", label: "Price Plan" },
 			{ to: "/branch/booking/requests", label: "Booking Request" },
 			{ to: "/branch/booking/seats-allocation", label: "Seat Card" },
-			{ to: "/branch/booking/invoices", label: "Booking Invoice" },
+			// { to: "/branch/booking/invoices", label: "Booking Invoice" },
 		],
 	},
 	{

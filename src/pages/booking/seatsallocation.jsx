@@ -146,11 +146,11 @@ const SeatsAllocation = () => {
 									seat.chairs.map((chair) => (
 										<SeatCard
 											key={chair.id}
-											seatNumber={`${chair.room?.name}-${chair.table_name}${chair.id}`} // Use table_name for prefixing
+											seatNumber={`${chair.room_name}-${chair.table_id}${chair.chair_id}`} // Use table_name for prefixing
 											userName={seat.name}
 											planName={seat.plan.name}
 											status={"Booked"}
-											location={seat.branch.location}
+											location={seat.branch.name}
 											floor={seat.floor.name}
 											profile_image={seat.user.profile_image}
 										/>

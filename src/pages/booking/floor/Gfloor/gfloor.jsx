@@ -98,10 +98,10 @@ const GFloorPlan = () => {
 												top: `${(chair.position.y / 100) * floorSize.height}px`,
 												left: `${(chair.position.x / 100) * floorSize.width}px`,
 												transform: `rotate(${chair.rotation}deg)`,
-												cursor: chair.duration === "24" ? "not-allowed" : "pointer",
+												cursor: chair.time_slot === "full_day" ? "not-allowed" : "pointer",
 												fontSize: "30px",
 											}}
-											onClick={() => chair.duration != "24" && toggleChairColor(table.id, chair.id)}
+											onClick={() => chair.time_slot != "full_day" && toggleChairColor(table.id, chair.id)}
 										/>
 									))
 							)}

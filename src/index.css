@@ -231,6 +231,7 @@ body {
 }
 
 .status.accepted,
+.status.confirmed,
 .status.approved,
 .status.overdue,
 .status.paid {

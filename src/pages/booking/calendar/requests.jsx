@@ -208,7 +208,6 @@ const Requests = () => {
 												<td>
 													<span className={`status ${booking.status}`}>{booking.status}</span>
 												</td>
-												<MenuItem onClick={() => handleEditClick(booking)}>Edit</MenuItem>
 												{user.type === "user" && (
 													<td>
 														<IconButton onClick={() => handleEditClick(booking)}>
@@ -221,7 +220,9 @@ const Requests = () => {
 														<IconButton onClick={(e) => handleMenuOpen(e)}>
 															<MoreVertIcon />
 														</IconButton>
-														<Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => handleMenuClose()}></Menu>
+														<Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => handleMenuClose()}>
+															<MenuItem onClick={() => handleEditClick(booking)}>Edit{booking.event_id}</MenuItem>
+														</Menu>
 													</td>
 												)}
 											</tr>

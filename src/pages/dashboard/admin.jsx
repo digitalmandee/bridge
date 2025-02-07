@@ -4,17 +4,15 @@ import Sidebar from "@/components/leftSideBar";
 import { ArrowDownIcon, ArrowUpIcon, Bell, Building2, FileText, Building } from "lucide-react";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import axiosInstance from "../../utils/axiosInstance";
-
-dayjs.extend(relativeTime); // Enable relative time formatting
+import axiosInstance from "@/utils/axiosInstance";
+import colors from "@/assets/styles/color";
 
 // Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const AdminDashboard = () => {
 	const [notifications, setNotifications] = useState([]);
+	const [unreadNotifications, setUnreadNotifications] = useState(0);
 
 	const chartData = {
 		labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
@@ -136,7 +134,8 @@ const AdminDashboard = () => {
 		try {
 			const res = await axiosInstance.get(import.meta.env.VITE_BASE_API + "notifications?limit=4");
 
-			setNotifications(res.data);
+			setNotifications(res.data.notifications);
+			setUnreadNotifications(res.data.unread);
 		} catch (error) {
 			console.error("Error fetching notifications:", error.response.data);
 		}
@@ -193,8 +192,10 @@ const AdminDashboard = () => {
 							<div style={notificationsStyle}>
 								<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
 									<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Notifications</h2>
-									<div style={{ backgroundColor: "#0A2156", padding: "0.5rem", borderRadius: "0.375rem" }}>
+									<div style={{ position: "relative", backgroundColor: "#0A2156", padding: "0.5rem", borderRadius: "0.375rem" }}>
 										<Bell style={{ width: "1.25rem", height: "1.25rem", color: "white" }} />
+										<span style={{ position: "absolute", top: "4px", right: "4px", backgroundColor: "white", padding: "1px 5px", borderRadius: "50%", fontSize: "9px", color: colors.primary, marginLeft: "0.25rem" }}>{unreadNotifications >= 100 ? "99+" : unreadNotifications}</span>
+										<sup> </sup>
 									</div>
 								</div>
 								<div style={{ marginTop: "0.5rem" }}>

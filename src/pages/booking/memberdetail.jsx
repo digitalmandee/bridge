@@ -67,7 +67,7 @@ const MemberDetail = ({ handleNext }) => {
 			...prevDetails,
 			start_date: date,
 			start_time: formatTimeForInput(time),
-			duration: available_durations.length > 0 ? available_durations[0] : "day",
+			time_slot: available_durations.length > 0 ? available_durations[0] : "day",
 		}));
 	};
 
