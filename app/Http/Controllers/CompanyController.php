@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Chair;
 use App\Models\Table;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -20,17 +21,10 @@ class CompanyController extends Controller
 
             $bookingSchedules = $company->bookingSchedulesByCompany()->with(['floor:id,name', 'room:id,name', 'user:id,name'])->latest()->take(10)->get();
 
-            $chairs = $company->booking()->get()->map(function ($booking) {
-                // Decode chairs JSON (handles multiple keys like 'P', 'F')
-                $decodedChairs = collect($booking->chairs)->flatten(1); // Flatten all chair arrays inside the 'P' and 'F' keys
-                return $decodedChairs ? $decodedChairs : []; // Return the flattened chairs array
-            })->flatten(1);
+            $totalSeats = count($company->booking()->get()->pluck('chair_ids')->flatten(1));
 
             // Get all chair_ids from User table's allocated_seat_id column
-            $existingSeats = User::where('company_id', $company->id)
-                ->whereNotNull('allocated_seat_id') // Ensure only users with available seats are considered
-                ->pluck('allocated_seat_id') // Get available seat ids
-                ->flatten(); // Flatten the result into a single array
+            $existingSeats = User::where('company_id', $company->id)->whereNotNull('allocated_seat_id')->pluck('allocated_seat_id')->flatten();
 
             // $availableSeats = $user->booking->chairs;
             // $occupiedSeats = $user->available_seats;
@@ -38,7 +32,7 @@ class CompanyController extends Controller
             return response()->json([
                 'success' => true,
                 'bookingSchedules' => $bookingSchedules,
-                'totalSeats' => $chairs->count(),
+                'totalSeats' => $totalSeats,
                 'occupiedSeats' => $existingSeats->count(),
                 'totalBookings' => $company->total_booking_quota,
                 'remainingBookings' => $company->booking_quota,
@@ -55,42 +49,35 @@ class CompanyController extends Controller
             $company = auth()->user();
 
             // Get all approved bookings and extract chairs from JSON
-            $chairs = $company->booking()->where('status', 'accepted')->get()->map(function ($booking) {
-                // Decode chairs JSON (handles multiple keys like 'P', 'F')
-                $decodedChairs = collect($booking->chairs)->flatten(1); // Flatten all chair arrays inside the 'P' and 'F' keys
-                return $decodedChairs ? $decodedChairs : []; // Return the flattened chairs array
-            })->flatten(1); // Flatten the array of chairs from all bookings
+            $chairIds = $company->booking()->where('status', 'confirmed')->get()->pluck('chair_ids')->flatten(1)->unique();
 
-            // Get all chair_ids from User table's allocated_seat_id column
-            $existingSeats = User::where('company_id', $company->id)
-                ->whereNotNull('allocated_seat_id') // Ensure only users with available seats are considered
-                ->pluck('allocated_seat_id') // Get available seat ids
-                ->flatten(); // Flatten the result into a single array
+            // Fetch chairs with related table and room data
+            $chairs = Chair::whereIn('id', $chairIds)->with(['table:id,table_id,name', 'room:id,name'])->get()->keyBy('id');
 
-            // Filter out chairs that are already in the allocated_seat_id
-            $filteredChairs = $chairs->filter(function ($chair) use ($existingSeats) {
-                return !$existingSeats->contains($chair['chair_id']); // Check if chair.id is not already in the existing seats
-            });
+            // Format the chairs data as requested
+            $formattedChairs = collect($chairIds)->map(function ($chairId) use ($chairs) {
+                $chair = $chairs[$chairId] ?? null;
+                return $chair ? [
+                    'id' => $chair->id,
+                    'chair_id' => $chair->chair_id,
+                    'table_id' => $chair->table->table_id ?? null,
+                    'table_name' => $chair->table->name ?? 'N/A',
+                    'room_id' => $chair->room->id ?? null,
+                    'room_name' => $chair->room->name ?? 'N/A',
+                ] : null;
+            })->filter()->values(); // Remove null values and reset indexes
 
-            // Optionally, map the filtered chairs with additional relation data
-            $chairsByTable = $filteredChairs->map(function ($chair) {
-                // Include the table_id in each chair (assuming 'table_id' exists in the chair data)
-                $chair['table'] = Table::where('id', $chair['table_id'])->pluck('table_id')->first();
-                return $chair;
-            });
-
-            // Return chairs as an array (cast to array if necessary)
+            // Return the response
             return response()->json([
                 'success' => true,
                 'bookingQuota' => $company->booking_quota,
                 'printingQuota' => $company->printing_quota,
-                'chairs' => $chairsByTable->values()->all() // Cast to array and reset keys (to ensure numeric indexing)
+                'chairs' => $formattedChairs
             ]);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
     }
-
 
     public function createStaff(Request $request)
     {
@@ -148,6 +135,7 @@ class CompanyController extends Controller
                 'printing_quota' => $request->printing_quota,
                 'booking_quota' => $request->booking_quota,
                 'total_booking_quota' => $request->booking_quota,
+                'total_printing_quota' => $request->printing_quota,
                 'created_by_branch_id' => $company->created_by_branch_id
             ]);
 

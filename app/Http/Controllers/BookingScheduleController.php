@@ -91,7 +91,7 @@ class BookingScheduleController extends Controller
                 $userBookingNotificationData = [
                     'title' => "Booking Created - {$LoggedInUser->branch->name}",
                     'message' => "Booking #{$booking->id} for Meeting Room {$roomName} has been created.",
-                    'type' => 'booking_created',
+                    'type' => 'booking_schedule',
                     'booking_id' => $booking->id,
                 ];
                 $user->notify(new GeneralNotification($userBookingNotificationData));
@@ -99,7 +99,7 @@ class BookingScheduleController extends Controller
                 $adminBookingNotificationData = [
                     'title' => "New Booking - UserId: #{$user->id}",
                     'message' => "Booking #{$booking->id} for Meeting Room {$roomName} created by {$LoggedInUser->name}.",
-                    'type' => 'booking_created',
+                    'type' => 'booking_schedule',
                     'booking_id' => $booking->id,
                     'created_by' => $LoggedInUser->name,
                 ];
@@ -110,7 +110,7 @@ class BookingScheduleController extends Controller
                 $adminBookingNotificationData = [
                     'title' => "New Booking - UserId: #{$LoggedInUser->id}",
                     'message' => "Booking #{$booking->id} for Meeting Room {$roomName} created by {$LoggedInUser->name}.",
-                    'type' => 'booking_created',
+                    'type' => 'booking_schedule',
                     'booking_id' => $booking->id,
                     'created_by' => $LoggedInUser->name,
                 ];
@@ -168,9 +168,7 @@ class BookingScheduleController extends Controller
         if (!empty($locationId) && !empty($roomId)) {
             $branchId = $user->type === 'admin' ? $user->branch->id : $user->created_by_branch_id;
 
-            $query = BookingSchedule::where('branch_id', $branchId)
-                ->where('schedule_room_id', $roomId)
-                ->where('status', 'approved');
+            $query = BookingSchedule::where('branch_id', $branchId)->where('schedule_room_id', $roomId)->where('status', 'approved');
 
             // Apply date filter if provided
             if (!empty($date)) {
@@ -181,9 +179,6 @@ class BookingScheduleController extends Controller
                 // Admins get full booking schedule details
                 $bookingSchedules = $query->with(['branch:id,name', 'room:id,name', 'floor:id,name', 'user:id,name,email'])->get()->makeHidden(['created_at', 'updated_at']);
             } else {
-                // Regular users:
-                // - Get full details for **their own bookings** (with branch, floor, and user)
-                // - Get only `id`, `startTime`, and `endTime` for **other users' bookings**
                 $bookingSchedules = $query->with(['branch:id,name', 'room:id,name', 'floor:id,name', 'user:id,name,email'])->get()->makeHidden(['created_at', 'updated_at'])->map(function ($schedule) use ($user) {
                     // Hide timestamps for relationships
 

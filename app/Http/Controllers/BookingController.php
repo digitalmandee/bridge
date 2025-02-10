@@ -129,7 +129,7 @@ class BookingController extends Controller
             $userBookingNotificationData = [
                 'title' => "Booking Created - {$admin->branch->name}",
                 'message' => "Booking #{$booking->id} has been created.",
-                'type' => 'booking_created',
+                'type' => 'booking',
                 'booking_id' => $booking->id,
                 'created_by' => $admin->name,
             ];
@@ -137,7 +137,7 @@ class BookingController extends Controller
             $userInvoiceNotificationData = [
                 'title' => "Invoice Created - {$admin->branch->name}",
                 'message' => "Your invoice #{$invoice->id} for {$invoice->invoice_type} has been created and is due on {$invoice->due_date}.",
-                'type' => 'invoice_created',
+                'type' => 'invoice',
                 'invoice_id' => $invoice->id,
                 'created_by' => $admin->name,
             ];
@@ -150,7 +150,7 @@ class BookingController extends Controller
             $adminBookingNotificationData = [
                 'title' => "New Booking - User: {$user->name}",
                 'message' => "Booking #{$booking->id} created by {$admin->name}.",
-                'type' => 'booking_created',
+                'type' => 'booking',
                 'booking_id' => $booking->id,
                 'created_by' => $admin->name,
             ];
@@ -158,7 +158,7 @@ class BookingController extends Controller
             $adminInvoiceNotificationData = [
                 'title' => "Invoice Created - User: {$user->name}",
                 'message' => "An invoice (#{$invoice->id}) has been created for User ID {$user->id} in {$admin->branch->name}.",
-                'type' => 'invoice_created',
+                'type' => 'invoice',
                 'invoice_id' => $invoice->id,
                 'created_by' => $admin->name,
             ];
@@ -186,7 +186,7 @@ class BookingController extends Controller
 
             // Fetch all chairs that are associated with any booking
             $allChairIds = $bookings->pluck('chair_ids')->flatten()->unique()->toArray();
-            $chairs = Chair::whereIn('id', $allChairIds)->with(['table', 'room'])->get()->keyBy('id');
+            $chairs = Chair::whereIn('id', $allChairIds)->with(['table:id,name', 'room:id,name'])->get()->keyBy('id');
 
             // Format bookings with related chair, table, and room details
             $formattedBookings = $bookings->map(function ($booking) use ($chairs) {
@@ -223,11 +223,7 @@ class BookingController extends Controller
                 ];
             });
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Bookings retrieved successfully',
-                'bookings' => $formattedBookings
-            ], 200);
+            return response()->json(['success' => true, 'message' => 'Bookings retrieved successfully', 'bookings' => $formattedBookings], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
@@ -317,9 +313,9 @@ class BookingController extends Controller
                 ]);
 
                 $user->notify(new GeneralNotification([
-                    'title' => "Booking Confirmation - {$user->branch->name}",
+                    'title' => "Booking Confirmation - {$admin->branch->name}",
                     'message' => "Booking #{$booking->id} has been confirmed.",
-                    'type' => 'booking_confirmed',
+                    'type' => 'booking',
                     'booking_id' => $booking->id,
                     'created_by' => auth()->user()->name,
                 ]));
@@ -327,7 +323,7 @@ class BookingController extends Controller
                 $admin->notify(new GeneralNotification([
                     'title' => "Booking Confirmed - User: {$user->name}",
                     'message' => "Booking #{$booking->id} has been confirmed.",
-                    'type' => 'admin_booking_notification',
+                    'type' => 'booking',
                     'booking_id' => $booking->id,
                     'created_by' => auth()->user()->name,
                 ]));

@@ -13,8 +13,18 @@ class NotificationController extends Controller
     //
     public function getNotifications(Request $request)
     {
+        $status = $request->input('status', 'unread');
         $limit = $request->input('limit', 10); // Default limit
-        $notifications = auth()->user()->unreadNotifications()->paginate($limit);
+
+        $query = auth()->user()->notifications();
+
+        if ($status === 'All') {
+            $notifications = $query->paginate($limit);
+        } elseif ($status === 'Read') {
+            $notifications = $query->whereNotNull('read_at')->paginate($limit);
+        } else {
+            $notifications = $query->whereNull('read_at')->paginate($limit);
+        }
 
         $unreadNotificationsCount = auth()->user()->unreadNotifications()->count();
 
@@ -26,10 +36,13 @@ class NotificationController extends Controller
                     'message' => $notification->data['message'],
                     'type' => $notification->data['type'],
                     'created_by' => $notification->data['created_by'] ?? 'System',
-                    'created_at' => Carbon::parse($notification->created_at)->diffForHumans(), // Converts to "2 mins ago"
+                    'created_at' => Carbon::parse($notification->created_at)->diffForHumans(),
+                    'is_read' => $notification->read_at ? true : false,
                 ];
             }),
             'unread' => $unreadNotificationsCount,
+            'last_page' => $notifications->lastPage(),
+            'current_page' => $notifications->currentPage(),
         ]);
     }
     public function markAsRead($id)

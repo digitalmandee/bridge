@@ -196,7 +196,7 @@ class AuthController extends Controller
         // Prepare response data
         $data = array_merge($userData, [
             'token' => $token,
-            'role' => $role ? $role->name : null,
+            'role' => $role ? $user->type : null,
             'permissions' => $permissions,
         ]);
 
@@ -227,7 +227,7 @@ class AuthController extends Controller
         $data = $user->only(['id', 'name', 'email', 'phone_no', 'type']);
 
         // Role and permissions
-        $data['role'] = $role ? $role->name : null;
+        $data['role'] = $role ? $user->type : null;
         $data['permissions'] = $permissions;
 
         // Add branch-related data based on user type
