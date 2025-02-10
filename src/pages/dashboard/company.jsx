@@ -10,6 +10,7 @@ import { ArrowDownIcon, ArrowUpIcon, Bell, Building2, FileText, Building } from 
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import axiosInstance from "../../utils/axiosInstance";
+import colors from "@/assets/styles/color";
 
 const notificationsStyle = {
 	// marginTop:'1rem',
@@ -142,7 +143,9 @@ const CompanyDashboard = () => {
 							{/* Notifications Section */}
 							<div style={notificationsStyle}>
 								<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-									<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Notifications</h2>
+									<h2 onClick={() => navigate("/company/notifications")} style={{ cursor: "pointer", fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>
+										Notifications
+									</h2>
 									<div style={{ position: "relative", backgroundColor: "#0A2156", padding: "0.5rem", borderRadius: "0.375rem" }}>
 										<Bell style={{ width: "1.25rem", height: "1.25rem", color: "white" }} />
 										<span style={{ position: "absolute", top: "4px", right: "4px", backgroundColor: "white", padding: "1px 5px", borderRadius: "50%", fontSize: "9px", color: colors.primary, marginLeft: "0.25rem" }}>{unreadNotifications >= 100 ? "99+" : unreadNotifications}</span>

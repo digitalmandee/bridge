@@ -7,11 +7,13 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import PaymentsIcon from "@mui/icons-material/Payments";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Bell, FileText } from "lucide-react";
 import axiosInstance from "../../utils/axiosInstance";
 
 const UserDashboard = () => {
+	const navigate = useNavigate();
+
 	const [isLoading, setIsLoading] = useState(true);
 	const [data, setData] = useState([]);
 	const [notifications, setNotifications] = useState([]);
@@ -41,15 +43,6 @@ const UserDashboard = () => {
 	useEffect(() => {
 		getNotifications();
 	}, []);
-
-	//   const markAsRead = (notificationId) => {
-	//     axios.post(import.meta.env.VITE_BASE_API + `notifications/${notificationId}/read`, {}, {
-	//         headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` }
-	//     }).then(() => {
-	//         setNotifications(notifications.filter(n => n.id !== notificationId)); // Remove from list
-	//     })
-	//     .catch(error => console.error("Error marking as read:", error));
-	// };
 
 	const notificationsStyle = {
 		backgroundColor: "#FFFFFF",
@@ -176,7 +169,9 @@ const UserDashboard = () => {
 
 								<div style={notificationsStyle}>
 									<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-										<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Notifications</h2>
+										<h2 onClick={() => navigate("/user/notifications")} style={{ cursor: "pointer", fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>
+											Notifications
+										</h2>
 										<div style={{ position: "relative", backgroundColor: "#0A2156", padding: "0.5rem", borderRadius: "0.375rem" }}>
 											<Bell style={{ width: "1.25rem", height: "1.25rem", color: "white" }} />
 											<span style={{ position: "absolute", top: "4px", right: "4px", backgroundColor: "white", padding: "1px 5px", borderRadius: "50%", fontSize: "9px", color: colors.primary, marginLeft: "0.25rem" }}>{unreadNotifications >= 100 ? "99+" : unreadNotifications}</span>

@@ -6,11 +6,13 @@ import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import axiosInstance from "@/utils/axiosInstance";
 import colors from "@/assets/styles/color";
+import { useNavigate } from "react-router-dom";
 
 // Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const AdminDashboard = () => {
+	const navigate = useNavigate();
 	const [notifications, setNotifications] = useState([]);
 	const [unreadNotifications, setUnreadNotifications] = useState(0);
 
@@ -120,7 +122,6 @@ const AdminDashboard = () => {
 		height: "30rem",
 		width: "21rem",
 		padding: "1.5rem",
-		overflow: "hidden",
 	};
 
 	const statsGridStyle = {
@@ -191,7 +192,9 @@ const AdminDashboard = () => {
 
 							<div style={notificationsStyle}>
 								<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-									<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Notifications</h2>
+									<h2 onClick={() => navigate("/branch/notifications")} style={{ cursor: "pointer", fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>
+										Notifications
+									</h2>
 									<div style={{ position: "relative", backgroundColor: "#0A2156", padding: "0.5rem", borderRadius: "0.375rem" }}>
 										<Bell style={{ width: "1.25rem", height: "1.25rem", color: "white" }} />
 										<span style={{ position: "absolute", top: "4px", right: "4px", backgroundColor: "white", padding: "1px 5px", borderRadius: "50%", fontSize: "9px", color: colors.primary, marginLeft: "0.25rem" }}>{unreadNotifications >= 100 ? "99+" : unreadNotifications}</span>

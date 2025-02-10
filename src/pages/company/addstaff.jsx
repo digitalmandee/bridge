@@ -348,8 +348,9 @@ const AddStaff = () => {
 											<option value="">Select Seat</option>
 											{bookingSeats.length > 0 &&
 												bookingSeats.map((seat, index) => (
-													<option key={index} value={seat.chair_id}>
-														{seat.table} {seat.id}
+													<option key={index} value={seat.id}>
+														{seat.table_id}
+														{seat.chair_id}
 													</option>
 												))}
 										</select>
