@@ -12,6 +12,9 @@ import AdminDashboard from './Dashboard/AdminDashboard';
 import CompanyDashboard from './Dashboard/companydashboard';
 import Staff from './Dashboard/staff';
 import NewInvoice from './invoice/newinvoice';
+import Company from './member/company';
+import MemberContract from './member/contract';
+import MemberUser from './member/memberuser';
 import StaffArchive from './Dashboard/staffarchive';
 import BookingCalender from './calender';
 import InvoiceSlip from './invoice/invoiceslip';
@@ -40,6 +43,9 @@ function App() {
         <Routes>
           {/* Define your routes */}
           <Route path="/" element={<Welcome />} />
+          <Route path="/member-contract" element={<MemberContract />} />
+          <Route path="/member-user" element={<MemberUser />} />
+          <Route path="/member-company" element={<Company />} />
           <Route path="/invoice-slip" element={<InvoiceSlip />} />
           <Route path="/invoice-detail" element={<InvoiceDetail />} />
           <Route path="/show-invoice" element={<ShowInvoice />} />

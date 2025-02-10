@@ -20,6 +20,7 @@ const Sidebar = () => {
 
   const [isSeatBookingOpen, setIsSeatBookingOpen] = useState(false);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [isMemberOpen, setIsMemberOpen] = useState(false);
 
   // const toggleDropdown = () => {
   //   setIsDropdownOpen(!isDropdownOpen);
@@ -33,6 +34,11 @@ const Sidebar = () => {
   const toggleInvoiceDropdown = () => {
     setIsInvoiceOpen(!isInvoiceOpen);
     if (isSeatBookingOpen) setIsSeatBookingOpen(false); // Close Seat Booking dropdown if it's open
+  };
+
+  const toggleMemberDropdown = () => {
+    setIsMemberOpen(!isMemberOpen);
+    if (isMemberOpen) setIsMemberOpen(false); // Close Member dropdown if it's open
   };
 
   const location = useLocation();
@@ -132,13 +138,28 @@ const Sidebar = () => {
         </ul>
         <ul>
           <li>
-            <Link to="">
-              <Button className='w-100'>
-                <span className='icon'><BsGraphUpArrow /></span>
-                Revenue Check
-                <span className='arrow'><FaAngleRight /></span>
-              </Button>
-            </Link>
+            <Button className={`w-100 ${isMemberOpen ? 'active-button' : ''}`}
+              onClick={toggleMemberDropdown}>
+              <span className='icon'><BsGraphUpArrow /></span>
+              Member
+              <span className={`arrow ${isMemberOpen ? 'rotate' : ''}`}><FaAngleRight /></span>
+            </Button>
+            {isMemberOpen && (
+              <ul className="submenu">
+                <li>
+                  <Link to="">Add New</Link>
+                </li>
+                <li>
+                  <Link to="/member-company">Company</Link>
+                </li>
+                <li>
+                  <Link to="/member-user">Users</Link>
+                </li>
+                <li>
+                  <Link to="/member-contract">Contract</Link>
+                </li>
+              </ul>
+            )}
           </li>
         </ul>
         <ul>

@@ -141,7 +141,7 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
                             }}
                             onClick={handlePrevious}
                         >
-                            Cancel
+                            Back
                         </button>
                         <button
                             type="button"
