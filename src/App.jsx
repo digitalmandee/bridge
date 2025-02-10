@@ -95,6 +95,14 @@ function App() {
 						</ProtectedRoute>
 					}
 				/>
+				<Route
+					path="/user/notifications"
+					element={
+						<ProtectedRoute role="user">
+							<Notifications />
+						</ProtectedRoute>
+					}
+				/>
 
 				{/* Company Routes */}
 				<Route
@@ -134,6 +142,14 @@ function App() {
 					element={
 						<ProtectedRoute role="company">
 							<ScheduleRequests />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/company/notifications"
+					element={
+						<ProtectedRoute role="company">
+							<Notifications />
 						</ProtectedRoute>
 					}
 				/>
