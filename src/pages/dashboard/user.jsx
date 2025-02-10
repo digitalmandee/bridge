@@ -183,7 +183,7 @@ const UserDashboard = () => {
 										</div>
 									</div>
 									<div style={{ marginTop: "0.5rem" }}>
-										{notifications.length > 0 &&
+										{notifications.length > 0 ? (
 											notifications.map((notification, i) => (
 												<div key={i} style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
 													<div style={{ marginTop: "0.05rem" }}>
@@ -197,7 +197,10 @@ const UserDashboard = () => {
 														<p style={{ fontSize: "0.875rem", color: "#4B5563", marginTop: "0.25rem", lineHeight: "1.25" }}>{notification.message}</p>
 													</div>
 												</div>
-											))}
+											))
+										) : (
+											<p style={{ color: "#6B7280", fontSize: "0.875rem", textAlign: "center" }}>No notifications</p>
+										)}
 									</div>
 								</div>
 							</div>
