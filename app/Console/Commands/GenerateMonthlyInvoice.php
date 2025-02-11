@@ -46,14 +46,14 @@ class GenerateMonthlyInvoice extends Command
 
                 $user->update([
                     'booking_quota' => 0,
-                    'total_booking_quota' => 0,
+                    // 'total_booking_quota' => 0,
                     'printing_quota' => 0,
-                    'total_printing_quota' => 0,
+                    // 'total_printing_quota' => 0,
                 ]);
 
                 $userInvoiceNotificationData = [
                     'title' => "Invoice Created - {$branch->name}",
-                    'message' => "Your invoice #{$invoice->id} for {$invoice->invoice_type} has been created and is due on {$invoice->due_date}.",
+                    'message' => "Your invoice #nastp-{$invoice->id} for {$invoice->invoice_type} has been created and is due on {$invoice->due_date}.",
                     'type' => 'invoice_created',
                     'invoice_id' => $invoice->id,
                     'created_by' => $branch->name,
@@ -63,7 +63,7 @@ class GenerateMonthlyInvoice extends Command
 
                 $adminInvoiceNotificationData = [
                     'title' => "Invoice Created - User: {$user->name}",
-                    'message' => "An invoice (#{$invoice->id}) has been created for User ID {$user->id} in {$branch->name}.",
+                    'message' => "An invoice (#nastp-{$invoice->id}) has been created for User {$user->name} in {$branch->name}.",
                     'type' => 'invoice_created',
                     'invoice_id' => $invoice->id,
                     'created_by' => $admin->name,

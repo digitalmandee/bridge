@@ -225,10 +225,7 @@ class BookingController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Bookings retrieved successfully', 'bookings' => $formattedBookings], 200);
         } catch (\Throwable $th) {
-            return response()->json([
-                'success' => false,
-                'message' => $th->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
     }
 
