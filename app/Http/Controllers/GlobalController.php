@@ -17,14 +17,14 @@ class GlobalController extends Controller
 
         // If searching for members (type = 'user')
         if ($type == 'user') {
-            $members = User::where(['created_by_branch_id' => $branchId, 'type' => 'user', 'status' => 'active', 'company_id' => null])->where('name', 'like', "%$query%")->select('id', 'name', 'email')->get();
+            $members = User::where(['created_by_branch_id' => $branchId, 'type' => 'user', 'status' => 'active', 'company_id' => null])->where('name', 'like', "%$query%")->select('id', 'name', 'email', 'phone_no')->get();
 
             return response()->json(['success' => true, 'results' => $members], 200);
         }
 
         // If searching for companies (type = 'company')
         if ($type == 'company') {
-            $companies = User::where(['created_by_branch_id' => $branchId, 'type' => 'company', 'status' => 'active'])->where('name', 'like', "%$query%")->select('id', 'name', 'email')->get();
+            $companies = User::where(['created_by_branch_id' => $branchId, 'type' => 'company', 'status' => 'active'])->where('name', 'like', "%$query%")->select('id', 'name', 'email', 'phone_no')->get();
 
             return response()->json(['success' => true, 'results' => $companies], 200);
         }

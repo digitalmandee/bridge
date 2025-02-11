@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Chair;
 use App\Models\Floor;
 use App\Models\Room;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -140,15 +141,32 @@ class FloorPlanController extends Controller
         }
     }
 
-    public function checkChairAvailability(Request $request)
+    public function checkAvailability(Request $request)
     {
         try {
             // Validate the incoming request
             $request->validate([
-                'data' => 'required|array',
+                'chairs' => 'required|array',
+                'member' => 'required|array',
             ]);
 
-            $chairIds = collect($request->data)->pluck('chair_id'); // Extract chair IDs
+            $memberEmail = $request->member['email'];
+
+            $member = User::where('email', $memberEmail)->first();
+
+            if (!$member) {
+                if ($request->member['type'] === 'company') {
+                    $company = User::where(['name' => $request->member['name'], 'type' => 'company'])->first();
+                    if ($company) {
+                        return response()->json(['success' => false, 'company_exists' => 'This company name is already registered'], 400);
+                    }
+                }
+            } elseif ($member->type !== $request->member['type']) {
+                return response()->json(['success' => false, 'type_exists' => 'This user type is not ' . $request->member['type']], 400);
+            }
+
+
+            $chairIds = collect($request->chairs)->pluck('chair_id'); // Extract chair IDs
 
             // Fetch chairs with their booking details
             $chairs = Chair::whereIn('id', $chairIds)->get();

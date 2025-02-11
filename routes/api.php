@@ -63,20 +63,25 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     // Bookings
     Route::get('bookings', [BookingController::class, 'getBookings']);
-    Route::post('booking/create', [BookingController::class, 'createBooking']);
-    Route::post('bookings/update', [BookingController::class, 'updateBooking']);
-    // Check Chair Availability
-    Route::post('check-chair-availability', [FloorPlanController::class, 'checkChairAvailability']);
+    Route::group(['prefix' => 'booking'], function () {
+        Route::post('create', [BookingController::class, 'createBooking']);
+        Route::post('update', [BookingController::class, 'updateBooking']);
+        // Check Availability
+        Route::post('check-availability', [FloorPlanController::class, 'checkAvailability']);
+        // Booking Users
+        Route::get('users', [UserController::class, 'getBookingUsers']);
+    });
+
 
     // Booking Schedule Calendar
     Route::get('booking-schedules', [BookingScheduleController::class, 'index']);
-    Route::post('booking-schedule/create', [BookingScheduleController::class, 'create']);
-    Route::get('booking-schedule/filter', [BookingScheduleController::class, 'filter']);
-    Route::get('booking-schedule/availability-rooms', [BookingScheduleController::class, 'getAvailabilityRooms']);
-    Route::get('booking-schedule/requests', [BookingScheduleController::class, 'getRequests']);
-    Route::post('booking-schedule/update', [BookingScheduleController::class, 'update']);
-    // Booking Users
-    Route::get('booking/users', [UserController::class, 'getBookingUsers']);
+    Route::group(['prefix' => 'booking-schedule'], function () {
+        Route::post('create', [BookingScheduleController::class, 'create']);
+        Route::get('filter', [BookingScheduleController::class, 'filter']);
+        Route::get('availability-rooms', [BookingScheduleController::class, 'getAvailabilityRooms']);
+        Route::get('requests', [BookingScheduleController::class, 'getRequests']);
+        Route::post('update', [BookingScheduleController::class, 'update']);
+    });
 
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'getNotifications']);
