@@ -68,12 +68,7 @@ class CompanyController extends Controller
             })->filter()->values(); // Remove null values and reset indexes
 
             // Return the response
-            return response()->json([
-                'success' => true,
-                'bookingQuota' => $company->booking_quota,
-                'printingQuota' => $company->printing_quota,
-                'chairs' => $formattedChairs
-            ]);
+            return response()->json(['success' => true, 'bookingQuota' => $company->booking_quota, 'printingQuota' => $company->printing_quota, 'chairs' => $formattedChairs]);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }

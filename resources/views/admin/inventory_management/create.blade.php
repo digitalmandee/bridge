@@ -1,1 +1,0 @@
-<h1>Inventory Create</h1>

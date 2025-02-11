@@ -12,10 +12,6 @@ use Illuminate\Support\Facades\Log;
 
 class FloorPlanController extends Controller
 {
-    public function index()
-    {
-        return view('admin.floor_plan.index');
-    }
 
     public function getSeatAllocations(Request $request)
     {
@@ -68,7 +64,6 @@ class FloorPlanController extends Controller
         }
     }
 
-
     public function getFloorPlan(Request $request)
     {
         try {
@@ -81,65 +76,66 @@ class FloorPlanController extends Controller
             $branchId = auth()->user()->branch->id;
 
             // Fetch the floor with its related rooms, tables, and chairs
-            $floor = Floor::with(['rooms.tables.chairs'])->where('id', $floorId)->where('branch_id', $branchId)->first();
+            $floor = Floor::with(['rooms.tables.chairs'])
+                ->where('id', $floorId)
+                ->where('branch_id', $branchId)
+                ->first();
 
-            // Initialize counters for available and occupied chairs
+            if (!$floor) {
+                return response()->json(['message' => 'Floor not found'], 404);
+            }
+
+            // Process tables and chairs
             $totalAvailableChairs = 0;
             $totalOccupiedChairs = 0;
 
-            if ($floor) {
-                // Collect all tables (and their chairs) into a single array
-                $tables = $floor->rooms->flatMap(function ($room) use (&$totalAvailableChairs, &$totalOccupiedChairs) {
-                    return $room->tables->map(function ($table) use (&$totalAvailableChairs, &$totalOccupiedChairs) {
-                        return [
-                            'id' => $table->table_id,
-                            'name' => $table->name,
-                            'chairs' => $table->chairs->map(function ($chair) use (&$totalAvailableChairs, &$totalOccupiedChairs) {
+            $tables = $floor->rooms->flatMap(function ($room) use (&$totalAvailableChairs, &$totalOccupiedChairs) {
+                return $room->tables->map(function ($table) use (&$totalAvailableChairs, &$totalOccupiedChairs) {
+                    $chairs = $table->chairs->map(function ($chair) use (&$totalAvailableChairs, &$totalOccupiedChairs) {
+                        $isOccupied = $chair->time_slot !== 'available';
+                        $isFullDay = $chair->time_slot === 'full_day';
 
-                                if ($chair->time_slot !== 'available') {
-                                    $totalOccupiedChairs++;
-                                    if ($chair->time_slot != 'full_day') {
-                                        // If booked and duration is not full_day, count as available
-                                        $totalAvailableChairs++;
-                                    }
-                                } else {
-                                    // If not booked, count as available
-                                    $totalAvailableChairs++;
-                                }
-                                return [
-                                    'floor_id' => $chair->floor_id,
-                                    'room_id' => $chair->room_id,
-                                    'table_id' => $chair->table_id,
-                                    'chair_id' => $chair->id,
-                                    'id' => $chair->chair_id,
-                                    'position' => [
-                                        'x' => $chair->positionx,
-                                        'y' => $chair->positiony,
-                                    ],
-                                    'rotation' => $chair->rotation,
-                                    'color' => $chair->color,
-                                    'time_slot' => $chair->time_slot,
-                                ];
-                            }),
+                        if ($isOccupied) {
+                            $totalOccupiedChairs++;
+                            if (!$isFullDay) {
+                                $totalAvailableChairs++;
+                            }
+                        } else {
+                            $totalAvailableChairs++;
+                        }
+
+                        return [
+                            'floor_id' => $chair->floor_id,
+                            'room_id' => $chair->room_id,
+                            'table_id' => $chair->table_id,
+                            'chair_id' => $chair->id,
+                            'id' => $chair->chair_id,
+                            'position' => [
+                                'x' => $chair->positionx,
+                                'y' => $chair->positiony,
+                            ],
+                            'rotation' => $chair->rotation,
+                            'color' => $chair->color,
+                            'time_slot' => $chair->time_slot,
                         ];
                     });
+
+                    return [
+                        'id' => $table->table_id,
+                        'name' => $table->name,
+                        'chairs' => $chairs,
+                    ];
                 });
+            });
 
-                $result = [
-                    'floor_id' => $floor->id,
-                    'branch_id' => $floor->branch_id,
-                    'tables' => $tables->values(), // Convert collection to array
-                    'totalAvailableChairs' => $totalAvailableChairs,
-                    'totalOccupiedChairs' => $totalOccupiedChairs,
-                ];
-            } else {
-                $result = []; // Handle case where floor is not found
-            }
-
-            // Return the structured data as JSON
-            return response()->json($result);
+            return response()->json([
+                'floor_id' => $floor->id,
+                'branch_id' => $floor->branch_id,
+                'tables' => $tables->values(),
+                'totalAvailableChairs' => $totalAvailableChairs,
+                'totalOccupiedChairs' => $totalOccupiedChairs,
+            ]);
         } catch (\Throwable $th) {
-            // Handle any errors that may occur
             return response()->json(['error' => 'An error occurred while retrieving the floor plan'], 500);
         }
     }
@@ -165,17 +161,17 @@ class FloorPlanController extends Controller
 
             // Loop through the chairs and determine availability
             foreach ($chairs as $chair) {
-                if (!$chair->booked) {
-                    $hasNull = true; // Unbooked chairs (null duration)
+                if ($chair->time_slot === 'available') {
+                    $hasNull = true; // Unbooked chairs (null time_slot)
                     continue; // Unbooked chair is available immediately
-                } elseif ($chair->duration === 'day') {
+                } elseif ($chair->time_slot === 'day') {
                     $hasDay = true;
                     $bookingStart = Carbon::parse($chair->booking_startdate);
                     // If the chair is booked, check the booking start time for availability
                     if ($bookingStart->isFuture() && $bookingStart->lt($earliestAvailableTime)) {
                         $earliestAvailableTime = $bookingStart;
                     }
-                } elseif ($chair->duration === 'night') {
+                } elseif ($chair->time_slot === 'night') {
                     $hasNight = true;
                     $bookingStart = Carbon::parse($chair->booking_startdate);
                     // If the chair is booked, check the booking start time for availability

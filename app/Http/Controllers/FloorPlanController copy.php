@@ -3,20 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
-use App\Models\BookingPlan;
-use App\Models\Branch;
 use App\Models\Floor;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class FloorPlanController extends Controller
 {
-    public function index()
-    {
-        return view('admin.floor_plan.index');
-    }
+
     public function getSeatAllocations(Request $request)
     {
         try {
@@ -36,9 +30,7 @@ class FloorPlanController extends Controller
                 ];
             }
 
-            return response()->json([
-                'chairs' => $chairAllocations,
-            ]);
+            return response()->json(['chairs' => $chairAllocations]);
         } catch (\Throwable $th) {
             return response()->json(['error' => 'An error occurred while retrieving the floor plan'], 500);
         }
@@ -103,27 +95,6 @@ class FloorPlanController extends Controller
             return response()->json(['error' => 'An error occurred while retrieving the floor plan'], 500);
         }
     }
-
-    private function getRoomsData($floor)
-    {
-        // Initialize an empty array to hold room data
-        $roomsData = [];
-
-        // Loop through each room in the floor's rooms and decode the room data
-        foreach ($floor->rooms as $room) {
-            $roomData = json_decode($room->data, true); // Decode JSON to PHP array
-
-            // Add each room's data to roomsData without extra nesting
-            foreach ($roomData as $data) {
-                $roomsData[] = $data;  // Append each entry to the roomsData array
-            }
-        }
-
-        // Return the array containing all rooms' data in a single, flat array
-        return $roomsData;
-    }
-
-
 
     public function checkChairAvailability(Request $request)
     {

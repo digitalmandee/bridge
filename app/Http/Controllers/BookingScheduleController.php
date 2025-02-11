@@ -90,17 +90,17 @@ class BookingScheduleController extends Controller
             if ($LoggedInUser->type === 'admin') {
                 $userBookingNotificationData = [
                     'title' => "Booking Created - {$LoggedInUser->branch->name}",
-                    'message' => "Booking #{$booking->id} for Meeting Room {$roomName} has been created.",
+                    'message' => "Booking #{$booking->event_id} for Meeting Room {$roomName} has been created.",
                     'type' => 'booking_schedule',
-                    'booking_id' => $booking->id,
+                    'booking_id' => $booking->event_id,
                 ];
                 $user->notify(new GeneralNotification($userBookingNotificationData));
 
                 $adminBookingNotificationData = [
                     'title' => "New Booking - UserId: #{$user->id}",
-                    'message' => "Booking #{$booking->id} for Meeting Room {$roomName} created by {$LoggedInUser->name}.",
+                    'message' => "Booking #{$booking->event_id} for Meeting Room {$roomName} created by {$LoggedInUser->name}.",
                     'type' => 'booking_schedule',
-                    'booking_id' => $booking->id,
+                    'booking_id' => $booking->event_id,
                     'created_by' => $LoggedInUser->name,
                 ];
                 $LoggedInUser->notify(new GeneralNotification($adminBookingNotificationData));
@@ -109,9 +109,9 @@ class BookingScheduleController extends Controller
             else {
                 $adminBookingNotificationData = [
                     'title' => "New Booking - UserId: #{$LoggedInUser->id}",
-                    'message' => "Booking #{$booking->id} for Meeting Room {$roomName} created by {$LoggedInUser->name}.",
+                    'message' => "Booking #{$booking->event_id} for Meeting Room {$roomName} created by {$LoggedInUser->name}.",
                     'type' => 'booking_schedule',
-                    'booking_id' => $booking->id,
+                    'booking_id' => $booking->event_id,
                     'created_by' => $LoggedInUser->name,
                 ];
                 $admin = User::find($LoggedInUser->created_by); // Get the admin user
@@ -296,9 +296,9 @@ class BookingScheduleController extends Controller
 
                 $userNotificationData = [
                     'title' => "Booking Status Updated - {$roomName}",
-                    'message' => "Your booking #{$bookingSchedule->id} for Meeting Room {$roomName} is now {$validated['status']}.",
+                    'message' => "Your booking #{$bookingSchedule->event_id} for Meeting Room {$roomName} is now {$validated['status']}.",
                     'type' => 'booking_status_updated',
-                    'booking_id' => $bookingSchedule->id,
+                    'booking_id' => $bookingSchedule->event_id,
                     'status' => $validated['status'],
                 ];
                 $user->notify(new GeneralNotification($userNotificationData));
@@ -308,9 +308,9 @@ class BookingScheduleController extends Controller
 
                 $adminNotificationData = [
                     'title' => "Booking Status Updated - User: {$user->name}",
-                    'message' => "Booking #{$bookingSchedule->id} for Meeting Room {$roomName} has been updated to {$validated['status']} by {$admin->name}.",
+                    'message' => "Booking #{$bookingSchedule->event_id} for Meeting Room {$roomName} has been updated to {$validated['status']} by {$admin->name}.",
                     'type' => 'booking_status_updated',
-                    'booking_id' => $bookingSchedule->id,
+                    'booking_id' => $bookingSchedule->event_id,
                     'status' => $validated['status'],
                     'updated_by' => $admin->name,
                 ];

@@ -65,6 +65,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('bookings', [BookingController::class, 'getBookings']);
     Route::post('booking/create', [BookingController::class, 'createBooking']);
     Route::post('bookings/update', [BookingController::class, 'updateBooking']);
+    // Check Chair Availability
+    Route::post('check-chair-availability', [FloorPlanController::class, 'checkChairAvailability']);
 
     // Booking Schedule Calendar
     Route::get('booking-schedules', [BookingScheduleController::class, 'index']);
@@ -84,5 +86,3 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     // Booking Plans
     Route::resource('booking-plans', BookingPlanController::class)->except(['create', 'show', 'edit']);
 });
-
-Route::post('check-chair-availability', [FloorPlanController::class, 'checkChairAvailability']);
