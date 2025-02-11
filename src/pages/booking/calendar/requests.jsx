@@ -11,6 +11,7 @@ import axios from "axios";
 import colors from "@/assets/styles/color";
 import { AuthContext } from "@/contexts/AuthContext";
 import { Grid } from "@mui/system";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Requests = () => {
 	const { user } = useContext(AuthContext);
@@ -27,15 +28,20 @@ const Requests = () => {
 	const [snackbarMessage, setSnackbarMessage] = useState("");
 	const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-	const handleMenuOpen = (event) => {
-		setAnchorEl(event.currentTarget);
+	const [menuAnchor, setMenuAnchor] = useState(null);
+	const [selectedBookingId, setSelectedBookingId] = useState(null);
+
+	const handleMenuOpen = (event, bookingId) => {
+		setMenuAnchor(event.currentTarget);
+		setSelectedBookingId(bookingId);
 	};
 
-	const handleMenuClose = () => setAnchorEl(null);
+	const handleMenuClose = () => {
+		setMenuAnchor(null);
+		setSelectedBookingId(null);
+	};
 
 	const handleEditClick = (booking) => {
-		console.log(booking);
-
 		setOpenEditModal(true);
 		setSelectedBooking(booking);
 		setNewStatus(booking.status);
@@ -45,14 +51,10 @@ const Requests = () => {
 
 	const handleUpdateBooking = async () => {
 		try {
-			const response = await axios.post(
-				`${import.meta.env.VITE_BASE_API}booking-schedule/update`,
-				{
-					booking_id: selectedBooking.event_id,
-					status: newStatus,
-				},
-				{ headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } }
-			);
+			const response = await axiosInstance.post(`${import.meta.env.VITE_BASE_API}booking-schedule/update`, {
+				booking_id: selectedBooking.event_id,
+				status: newStatus,
+			});
 
 			if (response.data.success) {
 				setBookings((prev) => prev.map((booking) => (booking.event_id === selectedBooking.event_id ? { ...booking, status: newStatus } : booking)));
@@ -217,11 +219,11 @@ const Requests = () => {
 												)}
 												{user.type === "admin" && (
 													<td>
-														<IconButton onClick={(e) => handleMenuOpen(e)}>
+														<IconButton onClick={(e) => handleMenuOpen(e, booking.event_id)}>
 															<MoreVertIcon />
 														</IconButton>
-														<Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => handleMenuClose()}>
-															<MenuItem onClick={() => handleEditClick(booking)}>Edit{booking.event_id}</MenuItem>
+														<Menu anchorEl={menuAnchor} open={Boolean(menuAnchor) && selectedBookingId === booking.event_id} onClose={handleMenuClose}>
+															<MenuItem onClick={() => handleEditClick(booking)}>Edit</MenuItem>
 														</Menu>
 													</td>
 												)}

@@ -3,12 +3,11 @@ import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
-import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Menu, MenuItem, IconButton, Avatar, Select, CircularProgress, Snackbar } from "@mui/material";
-import { MoreVert as MoreVertIcon, Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon, ArrowBack as ArrowBackIcon, Download as DownloadIcon, Notifications as NotificationsIcon } from "@mui/icons-material";
-import { styled } from "@mui/material/styles";
+import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, MenuItem, Avatar, Select, CircularProgress, Snackbar } from "@mui/material";
+import { Search as SearchIcon, Download as DownloadIcon, Notifications as NotificationsIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
-import axiosInstance from "../../utils/axiosInstance";
-import { AuthContext } from "../../contexts/AuthContext";
+import axiosInstance from "@/utils/axiosInstance";
+import { AuthContext } from "@/contexts/AuthContext";
 
 const InvoiceManagement = () => {
 	const { user } = useContext(AuthContext);

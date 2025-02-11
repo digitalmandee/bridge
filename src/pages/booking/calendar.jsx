@@ -1,7 +1,7 @@
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import React, { useContext, useEffect, useState } from "react";
-import { TextField, Select, MenuItem, Modal, Box, Typography, Button, FormControl, InputLabel, ListSubheader, Autocomplete } from "@mui/material";
+import { TextField, Select, MenuItem, Modal, Box, Typography, Button, FormControl, InputLabel, ListSubheader, Autocomplete, FormHelperText, Snackbar, Alert } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -9,6 +9,7 @@ import colors from "@/assets/styles/color";
 import axios from "axios";
 import { AuthContext } from "@/contexts/AuthContext";
 import Loader from "@/components/Loader";
+import axiosInstance from "@/utils/axiosInstance";
 
 const BookingCalender = () => {
 	const { user } = useContext(AuthContext);
@@ -36,6 +37,13 @@ const BookingCalender = () => {
 	const [tempBooking, setTempBooking] = useState(null);
 	const [selectedEvent, setSelectedEvent] = useState(null);
 	const [eventDetailsModalOpen, setEventDetailsModalOpen] = useState(false);
+	const [errors, setErrors] = useState({});
+	const [saveLoading, setSaveLoading] = useState(false);
+
+	// Alert
+	const [snackbarOpen, setSnackbarOpen] = useState(false);
+	const [snackbarMessage, setSnackbarMessage] = useState("");
+	const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
 	// Generate time slots from 1 AM to 11 PM
 	const timeSlots = Array.from({ length: 23 }, (_, i) => {
@@ -75,23 +83,47 @@ const BookingCalender = () => {
 		});
 	};
 
-	const handleSaveEvent = () => {
-		if (newEvent.title && newEvent.startTime && newEvent.endTime && newEvent.persons > 0 && selectedMember) {
-			setTimeExist("");
-			setUserLimitError("");
+	const handleSnackbarClose = () => setSnackbarOpen(false);
 
-			axios
-				.post(`${import.meta.env.VITE_BASE_API}booking-schedule/create`, { ...newEvent, date: selectedDate, location_id: Number(location), room_id: Number(room), user_id: selectedMember.id }, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } })
-				.then((res) => {
-					setModalOpen(false);
-					setNewEvent({ title: "", description: "", startTime: null, persons: 0, endTime: null });
-					setTempBooking(null);
-				})
-				.catch((err) => {
-					console.log(err.response.data);
-					if (err.response.data.already_exist) setTimeExist(err.response.data.already_exist);
-					else if (err.response.data.user_limit_error) setUserLimitError(err.response.data.user_limit_error);
-				});
+	const handleSaveEvent = async () => {
+		const errors = {};
+
+		if (!newEvent.title) errors.title = "Booking Title is required";
+		if (!newEvent.startTime) errors.startTime = "Start time is required";
+		if (!newEvent.endTime) errors.endTime = "End time is required";
+		if (newEvent.persons <= 0) errors.persons = "Number of persons must be greater than 0";
+		if (!location) errors.location = "Location is required";
+		if (!room) errors.room = "Room is required";
+
+		if (!selectedMember) errors.selectedMember = "Member is required";
+
+		if (Object.keys(errors).length > 0) {
+			setErrors(errors);
+			return;
+		}
+
+		setTimeExist("");
+		setUserLimitError("");
+
+		setSaveLoading(true);
+		try {
+			const res = await axiosInstance.post(`booking-schedule/create`, { ...newEvent, date: selectedDate, location_id: Number(location), room_id: Number(room), user_id: selectedMember.id });
+
+			if (res.data.success) {
+				setModalOpen(false);
+				setNewEvent({ title: "", description: "", startTime: null, persons: 0, endTime: null });
+				setTempBooking(null);
+				setSnackbarMessage("Booking created successfully!");
+				setSnackbarSeverity("success");
+			}
+		} catch (error) {
+			if (error.response && error.response.data) {
+				if (error.response.data.already_exist) setTimeExist(error.response.data.already_exist);
+				else if (error.response.data.user_limit_error) setUserLimitError(error.response.data.user_limit_error);
+			}
+		} finally {
+			setSaveLoading(false);
+			setSnackbarOpen(true);
 		}
 	};
 
@@ -138,15 +170,15 @@ const BookingCalender = () => {
 	const changeLocation = async (value) => {
 		setLocation(value);
 		try {
-			const res = await axios.get(`${import.meta.env.VITE_BASE_API}booking-schedule/filter`, {
+			const res = await axiosInstance.get(`booking-schedule/filter`, {
 				params: { location_id: Number(value) },
-				headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
 			});
+
 			if (res.data.rooms) {
 				setRooms(res.data.rooms);
 			}
 		} catch (error) {
-			console.log(error.response.data);
+			// console.log(error.response.data);
 		}
 	};
 
@@ -155,13 +187,12 @@ const BookingCalender = () => {
 			setIsLoading(true);
 
 			try {
-				const res = await axios.get(`${import.meta.env.VITE_BASE_API}booking-schedule/filter`, {
+				const res = await axiosInstance.get(`booking-schedule/filter`, {
 					params: {
 						location_id: Number(location),
 						room_id: Number(room),
 						date: selectedDate,
 					},
-					headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
 				});
 
 				if (res.data.locations) {
@@ -192,9 +223,7 @@ const BookingCalender = () => {
 		} else {
 			const fetchMembers = async () => {
 				try {
-					const res = await axios.get(`${import.meta.env.VITE_BASE_API}booking/users`, {
-						headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
-					});
+					const res = await axiosInstance.get(`booking/users`);
 					if (res.data.users) {
 						setMembers(res.data.users);
 					}
@@ -415,7 +444,12 @@ const BookingCalender = () => {
 										getOptionLabel={(option) => option.name} // Display member name
 										value={selectedMember} // Controlled value
 										onChange={(event, newValue) => setSelectedMember(newValue)} // Update selected member
-										renderInput={(params) => <TextField {...params} label="Member" variant="outlined" />}
+										renderInput={(params) => (
+											<>
+												<TextField {...params} label="Select Member" variant="outlined" />
+												{errors.selectedMember && <FormHelperText error>{errors.selectedMember}</FormHelperText>}
+											</>
+										)}
 									/>
 								)}
 								<LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -431,7 +465,12 @@ const BookingCalender = () => {
 													}
 													return false;
 												}}
-												renderInput={(params) => <TextField {...params} fullWidth />}
+												renderInput={(params) => (
+													<>
+														<TextField {...params} variant="outlined" />
+														{errors.startTime && <FormHelperText error>{errors.startTime}</FormHelperText>}
+													</>
+												)}
 											/>
 										</div>
 										<div className="mb-3">
@@ -445,7 +484,12 @@ const BookingCalender = () => {
 													}
 													return false;
 												}}
-												renderInput={(params) => <TextField {...params} fullWidth />}
+												renderInput={(params) => (
+													<>
+														<TextField {...params} variant="outlined" />
+														{errors.endTime && <FormHelperText error>{errors.endTime}</FormHelperText>}
+													</>
+												)}
 											/>
 										</div>
 									</div>
@@ -455,9 +499,23 @@ const BookingCalender = () => {
 										Selected Hours: {getTimeDifference(newEvent.startTime, newEvent.endTime)}
 									</Typography>
 								)}
-								<TextField fullWidth label="Booking Title" value={newEvent.title} onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })} className="mb-3" />
-								<TextField fullWidth label="Persons" type="number" value={newEvent.persons} onChange={(e) => setNewEvent({ ...newEvent, persons: e.target.value })} className="mb-3" />
-								<FormControl fullWidth className="mb-3">
+								<FormControl component="fieldset" error={Boolean(errors.title)} className="mb-3" fullWidth>
+									<TextField fullWidth label="Booking Title" value={newEvent.title} onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })} />
+									{errors.title && (
+										<FormHelperText className="ms-0" error>
+											{errors.title}
+										</FormHelperText>
+									)}
+								</FormControl>
+								<FormControl component="fieldset" error={Boolean(errors.persons)} className="mb-3" fullWidth>
+									<TextField fullWidth label="Persons" type="number" value={newEvent.persons} onChange={(e) => setNewEvent({ ...newEvent, persons: e.target.value })} />
+									{errors.persons && (
+										<FormHelperText className="ms-0" error>
+											{errors.persons}
+										</FormHelperText>
+									)}
+								</FormControl>
+								<FormControl fullWidth className="mb-3" error={Boolean(errors.location)}>
 									<InputLabel>Select Location</InputLabel>
 									<Select value={location} onChange={(e) => changeLocation(e.target.value)} label="Select Location">
 										{locations.length > 0 ? (
@@ -472,20 +530,33 @@ const BookingCalender = () => {
 											</MenuItem>
 										)}
 									</Select>
-								</FormControl>
-								<Select value={room} onChange={(e) => setRoom(e.target.value)} label="Meeting Room" id="select-status" className="mb-3" fullWidth>
-									{rooms.length > 0 ? (
-										rooms.flatMap((room) => [
-											<MenuItem key={`room-${room.id}`} value={room.id}>
-												{room.name}
-											</MenuItem>,
-										])
-									) : (
-										<MenuItem value="" disabled>
-											No Rooms
-										</MenuItem>
+									{errors.location && (
+										<FormHelperText className="ms-0" error>
+											{errors.location}
+										</FormHelperText>
 									)}
-								</Select>
+								</FormControl>
+								<FormControl fullWidth className="mb-3" error={Boolean(errors.room)}>
+									<InputLabel>Meeting Room</InputLabel>
+									<Select value={room} onChange={(e) => setRoom(e.target.value)} label="Meeting Room" error={Boolean(errors.room)}>
+										{rooms.length > 0 ? (
+											rooms.flatMap((room) => [
+												<MenuItem key={`room-${room.id}`} value={room.id}>
+													{room.name}
+												</MenuItem>,
+											])
+										) : (
+											<MenuItem value="" disabled>
+												No Rooms
+											</MenuItem>
+										)}
+									</Select>
+									{errors.room && (
+										<FormHelperText className="ms-0" error>
+											{errors.room}
+										</FormHelperText>
+									)}
+								</FormControl>
 								<div className="d-flex justify-content-end gap-2">
 									<Button
 										variant="outlined"
@@ -495,7 +566,7 @@ const BookingCalender = () => {
 										}}>
 										Cancel
 									</Button>
-									<Button variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }} onClick={handleSaveEvent} disabled={getTimeDifference(newEvent.startTime, newEvent.endTime) == "Invalid time range"}>
+									<Button loading={saveLoading} variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }} onClick={handleSaveEvent} disabled={getTimeDifference(newEvent.startTime, newEvent.endTime) == "Invalid time range"}>
 										Save Event
 									</Button>
 								</div>
@@ -554,6 +625,12 @@ const BookingCalender = () => {
 								)}
 							</Box>
 						</Modal>
+
+						<Snackbar open={snackbarOpen} autoHideDuration={1500} onClose={handleSnackbarClose}>
+							<Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
+								{snackbarMessage}
+							</Alert>
+						</Snackbar>
 
 						<style jsx>{`
         .calendar-grid {

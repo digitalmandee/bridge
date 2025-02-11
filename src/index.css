@@ -282,6 +282,13 @@ body {
   border-top: 4px solid #0D2B4E;
 }
 
+.loader-backdrop.isbutton .custom-loader {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #0D2B4E;
+}
+
 .loader-backdrop.isselected {
   position: absolute;
   inset: 0;

@@ -6,11 +6,13 @@ import axios from "axios";
 import { FloorPlanContext } from "@/contexts/floorplan.context";
 import colors from "@/assets/styles/color";
 import axiosInstance from "../../utils/axiosInstance";
+import Loader from "@/components/Loader";
 
 const Payment = () => {
 	const { selectedChairs, selectedFloor, bookingPlans, bookingdetails, setBookingDetails } = useContext(FloorPlanContext);
 	const [showModal, setShowModal] = useState(false);
-	const [receiptFile, setReceiptFile] = useState(null); // State to store the uploaded file
+	const [receiptFile, setReceiptFile] = useState(null); // uploaded file
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleFileUpload = (e) => {
 		const file = e.target.files[0];
@@ -41,7 +43,7 @@ const Payment = () => {
 					.map((chair) => chair.chair_id)
 			)
 		);
-
+		setIsLoading(true);
 		try {
 			const res = await axiosInstance.post(import.meta.env.VITE_BASE_API + "booking/create", formData);
 			if (res.data.success) {
@@ -49,6 +51,8 @@ const Payment = () => {
 			}
 		} catch (error) {
 			console.error("Error creating booking:", error.response.data);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -162,10 +166,10 @@ const Payment = () => {
 							border: "none",
 							borderRadius: "5px",
 							fontSize: "16px",
-							cursor: "pointer",
 						}}
+						disabled={isLoading}
 						onClick={handleConfirm}>
-						Confirm
+						{isLoading ? <Loader variant="D" /> : "Confirm"}
 					</button>
 					{showModal && <Modal handleClose={handleClose} />}
 				</div>
