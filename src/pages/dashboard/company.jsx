@@ -6,11 +6,8 @@ import EventSeatIcon from "@mui/icons-material/EventSeat";
 import PeopleIcon from "@mui/icons-material/People";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PrintIcon from "@mui/icons-material/Print";
-import { ArrowDownIcon, ArrowUpIcon, Bell, Building2, FileText, Building } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import axiosInstance from "../../utils/axiosInstance";
-import colors from "@/assets/styles/color";
 import DashboardNotifications from "@/components/notifications";
 
 const CompanyDashboard = () => {
@@ -22,7 +19,6 @@ const CompanyDashboard = () => {
 	useEffect(() => {
 		const getData = async () => {
 			await axiosInstance.get(import.meta.env.VITE_BASE_API + "company/dashboard").then((res) => {
-				console.log(res.data);
 				setData(res.data);
 			});
 			setIsLoading(false);

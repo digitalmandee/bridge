@@ -4,6 +4,7 @@ import Loader from "../../components/Loader";
 import profile from "../../assets/Profile user.png";
 import colors from "../../assets/styles/color";
 import { FloorPlanContext } from "../../contexts/floorplan.context";
+import axiosInstance from "@/utils/axiosInstance";
 
 const MemberDetail = ({ handleNext }) => {
 	const { bookingdetails, setBookingDetails, formErrors, validateMemeberDetails, selectedChairs, setCheckAvailability } = useContext(FloorPlanContext);
@@ -41,7 +42,7 @@ const MemberDetail = ({ handleNext }) => {
 			try {
 				setIsLoading(true);
 
-				const response = await axios.post(import.meta.env.VITE_BASE_API + "check-chair-availability", {
+				const response = await axiosInstance.post("check-chair-availability", {
 					data: allChairs,
 				});
 

@@ -301,7 +301,7 @@ const InvoiceCreate = () => {
 										<FormControl fullWidth error={Boolean(errors.invoiceType)}>
 											<InputLabel id="invoiceType">Invoice Type</InputLabel>
 											<Select label="Invoice Type" name="invoiceType" labelId="invoiceType" value={formData.invoiceType} onChange={handleChange}>
-												<MenuItem value="Monthly">Monthly</MenuItem>
+												{/* <MenuItem value="Monthly">Monthly</MenuItem> */}
 												<MenuItem value="Printing Papers">Printing Papers</MenuItem>
 												<MenuItem value="Meeting Rooms">Meeting Rooms</MenuItem>
 											</Select>
@@ -401,20 +401,11 @@ const InvoiceCreate = () => {
 
 											{/* Receipt Upload (Optional) */}
 											<Grid item xs={12}>
-												<div
-													style={{
-														display: "flex",
-														flexDirection: "column",
-														alignItems: "center",
-														border: "2px dotted #ccc",
-														padding: "10px",
-														borderRadius: "10px",
-														textAlign: "center",
-													}}>
+												<div style={{ display: "flex", flexDirection: "column", alignItems: "center", border: "2px dotted #ccc", padding: "10px", borderRadius: "10px", textAlign: "center" }}>
 													<label htmlFor="file-upload" style={{ cursor: "pointer" }}>
 														Upload Receipt (Optional)
 													</label>
-													<input id="file-upload" type="file" style={{ display: "none" }} onChange={handleFileChange} />
+													<input id="file-upload" type="file" accept="image/*" style={{ display: "none" }} onChange={handleFileChange} />
 												</div>
 												{formData.file && (
 													<Typography variant="body2" style={{ marginTop: "10px" }}>
