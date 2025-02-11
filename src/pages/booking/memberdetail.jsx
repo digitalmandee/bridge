@@ -1,15 +1,20 @@
 import React, { useContext, useEffect, useState } from "react";
-import axios from "axios";
-import Loader from "../../components/Loader";
-import profile from "../../assets/Profile user.png";
-import colors from "../../assets/styles/color";
-import { FloorPlanContext } from "../../contexts/floorplan.context";
+import Loader from "@/components/Loader";
+import profile from "@/assets/Profile user.png";
+import colors from "@/assets/styles/color";
+import { FloorPlanContext } from "@/contexts/floorplan.context";
 import axiosInstance from "@/utils/axiosInstance";
+import "./style.css";
+import { FormHelperText } from "@mui/material";
 
 const MemberDetail = ({ handleNext }) => {
 	const { bookingdetails, setBookingDetails, formErrors, validateMemeberDetails, selectedChairs, setCheckAvailability } = useContext(FloorPlanContext);
 	const [isLoading, setIsLoading] = useState(false);
-	const [imagePreview, setImagePreview] = useState(null); // State to store image preview
+	const [imagePreview, setImagePreview] = useState(null); // image preview
+	const [searchQuery, setSearchQuery] = useState("");
+	const [searchResults, setSearchResults] = useState([]);
+	const [loadingSearch, setLoadingSearch] = useState(false);
+	const [errors, setErrors] = useState({});
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -17,6 +22,45 @@ const MemberDetail = ({ handleNext }) => {
 			...prevDetails,
 			[name]: value,
 		}));
+	};
+
+	// Handle user input and search query
+	const handleSearchChange = async (e) => {
+		const query = e.target.value;
+		setSearchQuery(query);
+		setBookingDetails((prev) => ({ ...prev, name: query }));
+
+		// Fetch search results
+		if (query.length > 2) {
+			setLoadingSearch(true);
+			try {
+				const response = await axiosInstance.get("search", {
+					params: { query, type: bookingdetails.type === "individual" ? "user" : "company" },
+				});
+				setSearchResults(response.data.success ? response.data.results : []);
+			} catch (error) {
+				console.error("Search error:", error);
+				setSearchResults([]);
+			} finally {
+				setLoadingSearch(false);
+			}
+		} else {
+			setSearchResults([]);
+		}
+	};
+
+	// Handle user selection from search results
+	const handleSelectUser = async (user) => {
+		console.log(user);
+
+		setBookingDetails({
+			...bookingdetails,
+			name: user.name,
+			email: user.email,
+			phone_no: user.phone_no || "",
+		});
+		setSearchQuery(user.name);
+		setSearchResults([]);
 	};
 
 	const handleImageChange = (e) => {
@@ -39,11 +83,14 @@ const MemberDetail = ({ handleNext }) => {
 		const allChairs = Object.values(selectedChairs).flat();
 
 		if (validateMemeberDetails()) {
+			setErrors({});
+			const newErrors = {};
 			try {
 				setIsLoading(true);
 
-				const response = await axiosInstance.post("check-chair-availability", {
-					data: allChairs,
+				const response = await axiosInstance.post("booking/check-availability", {
+					chairs: allChairs,
+					member: { name: bookingdetails.name, email: bookingdetails.email, type: bookingdetails.type === "individual" ? "user" : "company" },
 				});
 
 				if (response.data.success) {
@@ -52,7 +99,10 @@ const MemberDetail = ({ handleNext }) => {
 					handleNext();
 				}
 			} catch (error) {
-				console.log(error);
+				if (error.response.data.company_exists) newErrors.company_exists = error.response.data.company_exists;
+				else if (error.response.data.type_exists) newErrors.type_exists = error.response.data.type_exists;
+
+				setErrors(newErrors);
 			} finally {
 				setIsLoading(false);
 			}
@@ -83,8 +133,6 @@ const MemberDetail = ({ handleNext }) => {
 	};
 
 	const totalSelectedChairs = Object.values(selectedChairs).flat().length;
-
-	useEffect(() => setBookingDetails((prevDetails) => ({ ...prevDetails, type: totalSelectedChairs > 1 ? "company" : "individual" })), [totalSelectedChairs]);
 
 	return (
 		<>
@@ -122,22 +170,20 @@ const MemberDetail = ({ handleNext }) => {
 						}}>
 						{bookingdetails.type === "individual" ? "Name" : "Company Name"}
 					</label>
-					<div style={{ marginBottom: "15px" }}>
-						<input
-							type="text"
-							name="name"
-							value={bookingdetails.name}
-							onChange={handleChange}
-							style={{
-								width: "100%",
-								padding: "10px",
-								borderRadius: "5px",
-								border: "1px solid #ccc",
-								boxSizing: "border-box", // Ensures padding doesn't mess with dimensions
-								margin: 0,
-							}}
-						/>
+					<div style={{ position: "relative", marginBottom: "15px" }}>
+						<input type="text" name="name" value={bookingdetails.name} onChange={handleSearchChange} style={{ width: "100%", padding: "10px", borderRadius: "5px", margin: 0, border: "1px solid #ccc" }} />
+						{loadingSearch && <Loader variant="D" />}
+						{searchResults.length > 0 && (
+							<ul className="member-search-results">
+								{searchResults.map((option) => (
+									<li key={option.id} style={{ padding: "10px", cursor: "pointer" }} onClick={() => handleSelectUser(option)}>
+										{option.name} <span style={{ color: "gray", fontSize: "0.875rem" }}> ({option.email})</span>
+									</li>
+								))}
+							</ul>
+						)}
 						{formErrors.name && <span style={{ color: "red" }}>{formErrors.name}</span>}
+						{errors.company_exists && <FormHelperText error>{errors.company_exists}</FormHelperText>}
 					</div>
 
 					{/* Email Field */}
@@ -195,22 +241,24 @@ const MemberDetail = ({ handleNext }) => {
 					</div>
 
 					{/* Individual/Company Dropdown */}
-					<label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Individual/Company</label>
-					<select
-						name="type"
-						value={bookingdetails.type}
-						onChange={handleChange}
-						style={{
-							width: "100%",
-							padding: "10px",
-							borderRadius: "5px",
-							border: "1px solid #ccc",
-							boxSizing: "border-box",
-							marginBottom: "15px",
-						}}>
-						{totalSelectedChairs === 1 && <option value="individual">Individual</option>}
-						<option value="company">Company</option>
-					</select>
+					<div style={{ marginBottom: "15px" }}>
+						<label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Individual/Company</label>
+						<select
+							name="type"
+							value={bookingdetails.type}
+							onChange={handleChange}
+							style={{
+								width: "100%",
+								padding: "10px",
+								borderRadius: "5px",
+								border: "1px solid #ccc",
+								boxSizing: "border-box",
+							}}>
+							{totalSelectedChairs === 1 && <option value="individual">Individual</option>}
+							<option value="company">Company</option>
+						</select>
+						{errors.type_exists && <FormHelperText error>{errors.type_exists}</FormHelperText>}
+					</div>
 
 					{/* Image Upload Field */}
 					<label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>{bookingdetails.type === "individual" ? "Profile Picture" : "Company Logo"} (Optional)</label>

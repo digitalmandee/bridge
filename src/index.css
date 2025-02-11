@@ -293,6 +293,7 @@ body {
   position: absolute;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.4);
+  z-index: 20;
 }
 
 .loader-backdrop {

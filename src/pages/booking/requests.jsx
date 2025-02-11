@@ -51,7 +51,7 @@ const Requests = () => {
 
 	const handleUpdateBooking = async () => {
 		try {
-			const response = await axiosInstance.post(`${import.meta.env.VITE_BASE_API}bookings/update`, {
+			const response = await axiosInstance.post(`${import.meta.env.VITE_BASE_API}booking/update`, {
 				booking_id: selectedBooking.id,
 				price: newPrice,
 				status: newStatus,
