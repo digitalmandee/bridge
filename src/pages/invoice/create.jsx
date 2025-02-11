@@ -301,7 +301,7 @@ const InvoiceCreate = () => {
 										<FormControl fullWidth error={Boolean(errors.invoiceType)}>
 											<InputLabel id="invoiceType">Invoice Type</InputLabel>
 											<Select label="Invoice Type" name="invoiceType" labelId="invoiceType" value={formData.invoiceType} onChange={handleChange}>
-												{/* <MenuItem value="Monthly">Monthly</MenuItem> */}
+												<MenuItem value="Monthly">Monthly</MenuItem>
 												<MenuItem value="Printing Papers">Printing Papers</MenuItem>
 												<MenuItem value="Meeting Rooms">Meeting Rooms</MenuItem>
 											</Select>
@@ -309,22 +309,6 @@ const InvoiceCreate = () => {
 										</FormControl>
 									</Grid>
 
-									{formData.invoiceType === "Monthly" && (
-										<Grid item xs={12}>
-											<Autocomplete
-												options={bookingPlans}
-												getOptionLabel={(option) => `${option.name} - Rs. ${option.price}`}
-												value={formData.plan}
-												onChange={(event, value) => handleAutocompleteChange(event, value, "plan")}
-												renderInput={(params) => (
-													<>
-														<TextField {...params} label="Booking Plan" variant="outlined" />
-														{errors.plan && <FormHelperText error>{errors.plan}</FormHelperText>}
-													</>
-												)}
-											/>
-										</Grid>
-									)}
 									{/* Dynamic Fields: Quantity or Hours */}
 									{formData.invoiceType === "Printing Papers" && (
 										<Grid item xs={12}>

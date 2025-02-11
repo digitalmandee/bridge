@@ -292,8 +292,8 @@ const Requests = () => {
 					<h3 style={{ marginBottom: 20 }}>Edit Booking</h3>
 					<TextField label="Price" fullWidth value={newPrice} onChange={(e) => setNewPrice(e.target.value)} style={{ marginBottom: 20 }} />
 					<Select fullWidth value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
-						{selectedBooking.status === "pending" && <MenuItem value="pending">Pending</MenuItem>}
-						{selectedBooking.status !== "vacated" && <MenuItem value="confirmed">Confirmed</MenuItem>}
+						{selectedBooking?.status === "pending" && <MenuItem value="pending">Pending</MenuItem>}
+						{selectedBooking?.status !== "vacated" && <MenuItem value="confirmed">Confirmed</MenuItem>}
 						<MenuItem value="vacated">Vacated</MenuItem>
 						<MenuItem value="rejected">Rejected</MenuItem>
 					</Select>
