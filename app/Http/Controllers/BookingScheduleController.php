@@ -148,7 +148,7 @@ class BookingScheduleController extends Controller
         $locationId = $request->get('location_id');
         $roomId = $request->get('room_id');
         $timestamp = $request->get('date'); // Get the timestamp from the request
-        $view = $request->get('view'); // View type (day, week, month)
+        $view = $request->get('view', 'day'); // View type (day, week, month)
 
         $user = auth()->user();
 
