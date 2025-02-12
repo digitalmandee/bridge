@@ -14,6 +14,7 @@ const LoginPage = () => {
 	const navigate = useNavigate();
 
 	const handleLogin = async (e) => {
+		e.preventDefault();  // prevent from reloading
 		try {
 			const response = await axios.post(import.meta.env.VITE_BASE_API + "login", { email, password }, { headers: { "Content-Type": "application/json" } });
 			localStorage.setItem("authToken", response.data.data.token);
@@ -43,7 +44,7 @@ const LoginPage = () => {
 						<img src={profile} alt="User" className="avatar-icon" />
 					</div>
 					<h2 className="login-heading">Log In</h2>
-					<form className="login-form">
+					<form className="login-form" onSubmit={handleLogin}>
 						<label htmlFor="email">Email</label>
 						<input type="email" id="email" name="email" placeholder="Enter your email" onChange={(e) => setEmail(e.target.value)} />
 						<label htmlFor="password">
@@ -52,7 +53,7 @@ const LoginPage = () => {
 						<input type="password" id="password" name="password" placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
 						<div className="forgot-password">Forgot password?</div>
 
-						<button type="button" className="login-button" onClick={() => handleLogin()}>
+						<button type="submit" className="login-button">
 							Log in
 						</button>
 					</form>

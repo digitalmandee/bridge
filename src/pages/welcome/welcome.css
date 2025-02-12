@@ -9,7 +9,7 @@
 }
 
 .container-img{
-    width: 40%;
+    width: 25%;
     margin: 1rem;
 }
 
@@ -21,13 +21,14 @@
 
 .subHeading {
     font-Size: 1.5rem;
+    margin-top: 2rem;
     margin-Bottom: 3rem;
 }
 
 .accountTypeContainer {
     display: flex;
     justify-Content: center;
-    gap: 5rem;
+    gap: 7rem;
     margin-Bottom: 2rem;
 }
 
@@ -38,10 +39,11 @@
 }
 
 .accountImage {
-    width: 100%;
-    height: 80%;
+    width: 105%;
+    /* height: 70%; */
+    aspect-ratio: 3/2.9;
     object-Fit: center;
-    /* margin-Bottom: 10px; */
+    margin-Bottom: 15px;
 }
 
 .footerLink {

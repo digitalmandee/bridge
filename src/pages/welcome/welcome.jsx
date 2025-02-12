@@ -1,7 +1,7 @@
 import React from "react";
 import admin from "../../assets/admin.png";
 import branch from "../../assets/branch.png";
-import invester from "../../assets/invester.png";
+import invester from "../../assets/investor.png";
 import user from "../../assets/user.png";
 import logopic from "../../assets/logopic.png"
 import { Link } from "react-router-dom";
@@ -40,9 +40,9 @@ const Welcome = () => {
           </div>
         ))}
       </div>
-      <a href="/admin-login" className="footerLink">
+      {/* <a href="/admin-login" className="footerLink">
       <Link to="/login">Already have an Admin account? Login</Link>
-      </a>
+      </a> */}
     </div>
   );
 };
