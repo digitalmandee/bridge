@@ -145,6 +145,7 @@ class InvoicesController extends Controller
                         'total_price' => $request->amount,
                         'package_detail' => $request->packageDetail,
                         'package_end_time' => $packageEndTime,
+                        'payment_method' => $request->paymentType,
                         'reciept' => $InvoiceReciept
                     ];
 
@@ -163,6 +164,7 @@ class InvoicesController extends Controller
                         'total_price'       => $request->amount,
                         'package_detail'    => $request->packageDetail,
                         'package_end_time'  => $packageEndTime,
+                        'payment_method' => $request->paymentType,
                         'reciept' => $InvoiceReciept
                     ]);
 
