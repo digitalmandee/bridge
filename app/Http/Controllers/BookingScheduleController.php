@@ -48,10 +48,12 @@ class BookingScheduleController extends Controller
             // Directly parse timestamps as they are
             $startTime = Carbon::parse($request->startTime);
             $endTime = Carbon::parse($request->endTime);
-            $date = Carbon::parse($request->date);
+            $date = Carbon::parse($request->date)->setTimezone('Asia/Karachi');
 
             // Check if the room's schedule overlaps with the requested time
             $overlap = $this->checkBookingAvailability($request->room_id, $startTime, $endTime);
+            Log::info($startTime);
+            Log::info($endTime);
             if ($overlap) {
                 return response()->json(['success' => false, 'already_exist' => 'The room is already booked during the selected time range.'], 409);
             }
@@ -81,7 +83,6 @@ class BookingScheduleController extends Controller
                 'persons' => $request->persons,
             ]);
 
-            DB::commit();
 
             $room = ScheduleRoom::find($request->room_id);  // Adjust according to your model
             $roomName = $room ? $room->name : 'Unknown Room';
@@ -97,7 +98,7 @@ class BookingScheduleController extends Controller
                 $user->notify(new GeneralNotification($userBookingNotificationData));
 
                 $adminBookingNotificationData = [
-                    'title' => "New Booking - UserId: #{$user->id}",
+                    'title' => "New Booking - User: {$user->name}",
                     'message' => "Booking #{$booking->event_id} for Meeting Room {$roomName} created by {$LoggedInUser->name}.",
                     'type' => 'booking_schedule',
                     'booking_id' => $booking->event_id,
@@ -108,15 +109,17 @@ class BookingScheduleController extends Controller
             // If the logged-in user is a regular user, notify the admin
             else {
                 $adminBookingNotificationData = [
-                    'title' => "New Booking - UserId: #{$LoggedInUser->id}",
+                    'title' => "New Booking - User: {$LoggedInUser->name}",
                     'message' => "Booking #{$booking->event_id} for Meeting Room {$roomName} created by {$LoggedInUser->name}.",
                     'type' => 'booking_schedule',
                     'booking_id' => $booking->event_id,
                     'created_by' => $LoggedInUser->name,
                 ];
-                $admin = User::find($LoggedInUser->created_by); // Get the admin user
+                $admin = User::find($LoggedInUser->userBranch->user_id); // Get the admin user
                 $admin->notify(new GeneralNotification($adminBookingNotificationData));
             }
+
+            DB::commit();
 
             return response()->json(['success' => true, 'message' => 'Booking created successfully'], 201);
         } catch (\Throwable $th) {
@@ -144,12 +147,13 @@ class BookingScheduleController extends Controller
     {
         $locationId = $request->get('location_id');
         $roomId = $request->get('room_id');
-        $timestamp = $request->get('date');  // Get the timestamp from the request
+        $timestamp = $request->get('date'); // Get the timestamp from the request
+        $view = $request->get('view'); // View type (day, week, month)
 
         $user = auth()->user();
 
         // Parse the timestamp to a Carbon instance if provided
-        $date = $timestamp ? Carbon::parse($timestamp)->setTimezone('Asia/Karachi')->toDateString() : null;
+        $date = $timestamp ? Carbon::parse($timestamp)->setTimezone('Asia/Karachi') : null;
 
         // Fetch all branches if no branch and room ID are provided
         if (empty($locationId) && empty($roomId)) {
@@ -160,40 +164,57 @@ class BookingScheduleController extends Controller
         // Fetch branch with floors and rooms if only branch ID is provided
         if (!empty($locationId) && empty($roomId)) {
             $floors = ScheduleRoom::where('schedule_floor_id', $locationId)->select('id', 'name')->get();
-
             return response()->json(['success' => true, 'location_id' => $locationId, 'rooms' => $floors], 200);
         }
 
-        // Fetch booking schedules based on branch ID, room ID, and optionally filter by date
+        // Fetch booking schedules based on branch ID, room ID, and apply filters based on view
         if (!empty($locationId) && !empty($roomId)) {
             $branchId = $user->type === 'admin' ? $user->branch->id : $user->created_by_branch_id;
 
-            $query = BookingSchedule::where('branch_id', $branchId)->where('schedule_room_id', $roomId)->where('status', 'approved');
+            $query = BookingSchedule::where('branch_id', $branchId)
+                ->where('schedule_room_id', $roomId)
+                ->where('status', 'approved');
 
-            // Apply date filter if provided
+            // Apply date filter based on view
             if (!empty($date)) {
-                $query->whereDate('date', '=', $date);
+                if ($view === 'day') {
+                    Log::info($date->toDateString());
+                    $query->whereDate('date', '=', $date->toDateString());
+                } elseif ($view === 'week') {
+                    // Set the week to start on Sunday and end on Saturday
+                    $startOfWeek = $date->copy()->startOfWeek(Carbon::SUNDAY);
+                    $endOfWeek = $date->copy()->endOfWeek(Carbon::SATURDAY);
+                    $query->whereBetween('date', [$startOfWeek, $endOfWeek]);
+                } elseif ($view === 'month') {
+                    $startOfMonth = $date->copy()->startOfMonth(); // First day of the month
+                    $endOfMonth = $date->copy()->endOfMonth(); // Last day of the month
+                    $query->whereBetween('date', [$startOfMonth, $endOfMonth]);
+                }
             }
 
             if ($user->type === 'admin') {
                 // Admins get full booking schedule details
-                $bookingSchedules = $query->with(['branch:id,name', 'room:id,name', 'floor:id,name', 'user:id,name,email'])->get()->makeHidden(['created_at', 'updated_at']);
+                $bookingSchedules = $query->with(['branch:id,name', 'room:id,name', 'floor:id,name', 'user:id,name,email'])
+                    ->get()
+                    ->makeHidden(['created_at', 'updated_at']);
             } else {
-                $bookingSchedules = $query->with(['branch:id,name', 'room:id,name', 'floor:id,name', 'user:id,name,email'])->get()->makeHidden(['created_at', 'updated_at'])->map(function ($schedule) use ($user) {
-                    // Hide timestamps for relationships
+                $bookingSchedules = $query->with(['branch:id,name', 'room:id,name', 'floor:id,name', 'user:id,name,email'])
+                    ->get()
+                    ->makeHidden(['created_at', 'updated_at'])
+                    ->map(function ($schedule) use ($user) {
+                        // Hide timestamps for relationships
+                        if ($schedule->user_id === $user->id) {
+                            return $schedule; // Full details for own bookings
+                        }
 
-                    if (($user->type === 'company' && $schedule->company_id === $user->id) || $schedule->user_id === $user->id) {
-                        return $schedule;  // Full details for own bookings
-                    }
-
-                    // Limited details for other users
-                    return [
-                        'event_id' => $schedule->event_id,
-                        'startTime' => $schedule->startTime,
-                        'endTime' => $schedule->endTime,
-                        'date' => $schedule->date
-                    ];
-                });
+                        // Limited details for other users
+                        return [
+                            'event_id' => $schedule->event_id,
+                            'startTime' => $schedule->startTime,
+                            'endTime' => $schedule->endTime,
+                            'date' => $schedule->date,
+                        ];
+                    });
             }
 
             return response()->json(['success' => true, 'location_id' => $locationId, 'room_id' => $roomId, 'schedules' => $bookingSchedules], 200);
