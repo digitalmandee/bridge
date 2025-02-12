@@ -52,7 +52,7 @@
     justify-content: flex-start !important;
     width: 100%;
     border-radius: 5px !important;
-    padding: 10px 5px !important;
+    padding: 15px 5px !important;
     background: none;
     border: none;
     text-transform: capitalize !important;
@@ -100,21 +100,31 @@
 
 .submenu {
     margin: 0;
-    padding-left: 20px;
+    padding: 0;
     /* Indent submenu items */
     background-color: #f9f9f9;
 }
 
 .submenu li {
     list-style: none;
-    padding: 5px 10px;
+    /* background-color: aqua; */
+    width: '100%';
+    /* padding: 5px 2rem; */
 }
 
 .submenu li a {
     text-decoration: none;
-    color: #333;
+    display: block;
+    color: #000;
+    /* background-color: aqua; */
+    width: '100%';
+    padding: 10px 20px;
+    box-sizing: border-box;
+    border-radius: 0.3rem;
 }
 
 .submenu li a:hover {
-    color: var(--primary);
+    background-color: var(--primary);
+    color: white;
+    width: '100%';
 }
