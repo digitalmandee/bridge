@@ -48,15 +48,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::delete('staffs/{id}', [CompanyController::class, 'deleteStaff']);
     });
 
-    // Invoices
-    Route::group(['prefix' => 'invoices'], function () {
-        Route::get('', [InvoicesController::class, 'index']);
-        Route::get('customer-detail/{id}', [InvoicesController::class, 'customerDetail']);
-        Route::post('create', [InvoicesController::class, 'store']);
-        Route::post('update', [InvoicesController::class, 'update']);
-        Route::get('dashboard', [InvoicesController::class, 'dashboard']);
-    });
-
     // Booking Seats
     Route::get('floor-plan', [FloorPlanController::class, 'getFloorPlan']);
     Route::get('seat-allocations', [FloorPlanController::class, 'getSeatAllocations']);
@@ -72,6 +63,17 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('users', [UserController::class, 'getBookingUsers']);
     });
 
+
+    // Invoices
+    Route::group(['prefix' => 'invoices'], function () {
+        Route::get('', [InvoicesController::class, 'index']);
+        Route::get('customer-detail/{id}', [InvoicesController::class, 'customerDetail']);
+        Route::post('create', [InvoicesController::class, 'store']);
+        Route::post('update', [InvoicesController::class, 'update']);
+        Route::get('dashboard', [InvoicesController::class, 'dashboard']);
+        // Get realted user booking data
+        Route::get('user-booking', [InvoicesController::class, 'userBooking']);
+    });
 
     // Booking Schedule Calendar
     Route::get('booking-schedules', [BookingScheduleController::class, 'index']);

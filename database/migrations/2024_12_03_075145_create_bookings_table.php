@@ -41,7 +41,7 @@ class CreateBookingsTable extends Migration
             $table->string('cvv')->nullable();
             $table->string('receipt')->nullable();
             $table->boolean('save_card_details')->default(false);
-            $table->enum('status', ['pending', 'confirmed', 'vacated', 'rejected', 'completed'])->default('pending');
+            $table->enum('status', ['pending', 'confirmed', 'vacated', 'rejected', 'completed', 'upcoming'])->default('pending');
             $table->timestamps();
             $table->softDeletes();
 

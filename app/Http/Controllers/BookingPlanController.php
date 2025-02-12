@@ -21,7 +21,7 @@ class BookingPlanController extends Controller
 
             if (!$branchId) return response()->json(['message' => 'Branch ID parameter is required'], 400);
 
-            $bookingPlans = BookingPlan::where('branch_id', $branchId)->select('id', 'branch_id', 'name', 'type', 'price')->with('branch:id,user_id,name,location')->get();
+            $bookingPlans = BookingPlan::where('branch_id', $branchId)->select('id', 'branch_id', 'name', 'type', 'price')->with('branch:id,name')->get();
 
             return response()->json(['success' => true, 'message' => 'Booking Plans retrieved successfully', 'data' => $bookingPlans], 200);
         } catch (\Throwable $th) {

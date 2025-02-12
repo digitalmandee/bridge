@@ -12,13 +12,13 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'api/check-chair-availability', // Add your API route here
-        'api/floor-plan', // Add your API route here
-        'api/booking-plans', // Add your API route here
-        'api/booking/create',
-        'api/seat-allocations',
-        'api/bookings/update',
-        'api/booking-schedule/create'
+        // 'api/check-chair-availability', // Add your API route here
+        // 'api/floor-plan', // Add your API route here
+        // 'api/booking-plans', // Add your API route here
+        // 'api/booking/create',
+        // 'api/seat-allocations',
+        // 'api/bookings/update',
+        // 'api/booking-schedule/create'
         //
     ];
 }
