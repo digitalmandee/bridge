@@ -18,7 +18,7 @@ const CompanyDashboard = () => {
 
 	useEffect(() => {
 		const getData = async () => {
-			await axiosInstance.get(import.meta.env.VITE_BASE_API + "company/dashboard").then((res) => {
+			await axiosInstance.get("company/dashboard").then((res) => {
 				setData(res.data);
 			});
 			setIsLoading(false);

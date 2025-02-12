@@ -27,7 +27,7 @@ const InvoiceCreate = () => {
 		amount: "",
 		file: null,
 		status: "pending",
-		paidMonth: null,
+		paidMonth: new Date().toLocaleString("default", { month: "long" }),
 		paidYear: new Date().getFullYear(),
 	});
 
@@ -36,6 +36,11 @@ const InvoiceCreate = () => {
 	const [bookingPlans, setBookingPlans] = useState([]);
 	const [errors, setErrors] = useState({});
 	const [loading, setLoading] = useState(false);
+	const [userBooking, setUserBooking] = useState(null);
+	const [userBookingError, setUserBookingError] = useState({
+		success: false,
+		message: "",
+	});
 	const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar state
 	const [snackbarMessage, setSnackbarMessage] = useState(""); // Snackbar message
 
@@ -55,15 +60,18 @@ const InvoiceCreate = () => {
 
 	useEffect(() => {
 		const fetchUserBooking = async () => {
-			console.log("yes");
 			try {
-				const bookingPlansRes = await axiosInstance.get(`booking-plans`);
-				// setBookingPlans(bookingPlansRes.data.data);
+				const res = await axiosInstance.get("invoices/user-booking", {
+					params: { user_id: selectedTab == "individual" ? formData.member.id : formData.company.id },
+				});
+				if (res.data.success) {
+					setUserBooking(res.data);
+				}
 			} catch (error) {
-				// console.error("Error fetching data:", error);
+				console.error("Error fetching data:", error.response.data);
+				if (error.response.data.message === "No booking found") setUserBookingError({ success: false, message: error.response.data.message });
 			}
 		};
-		console.log("no");
 
 		if ((formData.member || formData.company) && formData.invoiceType == "Monthly") fetchUserBooking();
 	}, [formData.member, formData.company, formData.invoiceType]);
@@ -72,7 +80,7 @@ const InvoiceCreate = () => {
 		if (!query) return []; // Don't make a request if the query is empty.
 		setLoading(true);
 		try {
-			const response = await axiosInstance.get(import.meta.env.VITE_BASE_API + "search", {
+			const response = await axiosInstance.get("search", {
 				params: {
 					query: query,
 					type: type,
@@ -162,9 +170,11 @@ const InvoiceCreate = () => {
 		}
 
 		// Check dynamic fields
-		if (formData.invoiceType === "Monthly" && !formData.plan) {
-			newErrors.plan = "Plan is required for Monthly invoices";
-		}
+
+		// if (formData.invoiceType === "Monthly" && !formData.plan) {
+		// 	newErrors.plan = "Plan is required for Monthly invoices";
+		// }
+
 		if (formData.invoiceType === "Monthly" && !formData.paidMonth) {
 			newErrors.paidMonth = "Paid Month is required for Monthly invoices";
 		}
@@ -199,17 +209,17 @@ const InvoiceCreate = () => {
 		const formDataToSend = new FormData();
 		formDataToSend.append("selectedTab", selectedTab);
 		formDataToSend.append("invoiceType", formData.invoiceType);
+		formDataToSend.append("paidMonth", new Date(formData.dueDate).toLocaleString("default", { month: "long" }));
+		formDataToSend.append("paidYear", formData.paidYear);
 		formDataToSend.append("dueDate", dayjs(formData.dueDate).format("YYYY-MM-DD"));
 		formDataToSend.append("paidDate", formData.paidDate ? dayjs(formData.paidDate).format("YYYY-MM-DD") : null);
 		formDataToSend.append("paymentType", formData.paymentType);
 		formDataToSend.append("company_id", formData.company?.id);
 		formDataToSend.append("member_id", formData.member?.id);
-		formDataToSend.append("plan", JSON.stringify(formData.plan));
 		formDataToSend.append("quantity", formData.quantity);
 		formDataToSend.append("hours", formData.hours);
 		formDataToSend.append("amount", formData.amount);
-		formDataToSend.append("paidMonth", formData.paidMonth);
-		formDataToSend.append("paidYear", formData.paidYear);
+		formDataToSend.append("packageDetail", formData.packageDetail);
 		formDataToSend.append("status", formData.status);
 
 		// Append file if selected
@@ -219,7 +229,7 @@ const InvoiceCreate = () => {
 
 		// Submit the form if no errors
 		try {
-			const response = await axiosInstance.post(import.meta.env.VITE_BASE_API + "invoices/create", formDataToSend, {
+			const response = await axiosInstance.post("invoices/create", formDataToSend, {
 				headers: {
 					"Content-Type": "multipart/form-data",
 				},
@@ -234,6 +244,73 @@ const InvoiceCreate = () => {
 			console.error("Error submitting invoice:", error.response.data);
 		}
 	};
+
+	const totalBookingPrice = (price) => {
+		const planPrice = Number(price) || 0;
+		let totalPrice = 0;
+		let packageDetail = "";
+		let dueDate = null; // Store adjusted due date
+
+		if (formData.invoiceType === "Monthly" && userBooking) {
+			const today = new Date();
+			const currentYear = Number(formData.paidYear);
+			const currentMonth = new Date(`${formData.paidMonth} 1, ${formData.paidYear}`).getMonth();
+			const selectedMonth = new Date(currentYear, currentMonth, 1);
+
+			const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+			const totalChairs = userBooking.booking.chairs.length;
+			const dailyRate = planPrice / lastDayOfMonth;
+
+			let extraPricePerChair = 0;
+
+			if (currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+				// If the selected month is the current month
+				const remainingDays = lastDayOfMonth - today.getDate();
+
+				if (remainingDays >= lastDayOfMonth) {
+					// If a full month is booked
+					extraPricePerChair = planPrice;
+					packageDetail = "1 month";
+				} else if (remainingDays > 0) {
+					extraPricePerChair = dailyRate * remainingDays;
+					packageDetail = `${remainingDays} days`;
+				} else {
+					extraPricePerChair = planPrice;
+					packageDetail = "1 month";
+				}
+
+				totalPrice = (totalChairs * extraPricePerChair).toFixed(2);
+
+				// Due date: today + 5 days
+				dueDate = dayjs(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5));
+			} else {
+				// If the selected month is a future month, charge full month
+				totalPrice = (totalChairs * planPrice).toFixed(2);
+				packageDetail = "1 month";
+
+				// Due date is always the 5th of the selected month
+				dueDate = dayjs(new Date(currentYear, currentMonth, 5));
+			}
+		} else {
+			// Default due date: 5th of the selected month
+			dueDate = dayjs(new Date(formData.paidYear, new Date(`${formData.paidMonth} 1, ${formData.paidYear}`).getMonth(), 5));
+		}
+
+		return { totalPrice, packageDetail, dueDate };
+	};
+
+	useEffect(() => {
+		if (userBooking && formData.invoiceType === "Monthly") {
+			const totalBookingPriceResult = totalBookingPrice(userBooking?.booking?.plan?.price || 0);
+
+			setFormData((prev) => ({
+				...prev,
+				dueDate: totalBookingPriceResult.dueDate,
+				amount: totalBookingPriceResult.totalPrice,
+				packageDetail: totalBookingPriceResult.packageDetail,
+			}));
+		}
+	}, [formData.paidMonth, userBooking]);
 
 	return (
 		<>
@@ -275,12 +352,15 @@ const InvoiceCreate = () => {
 														{errors.member && <FormHelperText error>{errors.member}</FormHelperText>}
 													</>
 												)}
-												renderOption={(props, option) => (
-													<li {...props}>
-														<span>{option.name}</span>
-														<span style={{ color: "gray", fontSize: "0.875rem" }}> ({option.email})</span>
-													</li>
-												)}
+												renderOption={(props, option) => {
+													const { key, ...restProps } = props; // Extract key from props
+													return (
+														<li key={key} {...restProps}>
+															<span>{option.name}</span>
+															<span style={{ color: "gray", fontSize: "0.875rem" }}> ({option.email})</span>
+														</li>
+													);
+												}}
 											/>
 										</Grid>
 									) : (
@@ -297,12 +377,15 @@ const InvoiceCreate = () => {
 														{errors.company && <FormHelperText error>{errors.company}</FormHelperText>}
 													</>
 												)}
-												renderOption={(props, option) => (
-													<li {...props}>
-														<span>{option.name}</span>
-														<span style={{ color: "gray", fontSize: "0.875rem" }}> ({option.email})</span>
-													</li>
-												)}
+												renderOption={(props, option) => {
+													const { key, ...restProps } = props; // Extract key from props
+													return (
+														<li key={key} {...restProps}>
+															<span>{option.name}</span>
+															<span style={{ color: "gray", fontSize: "0.875rem" }}> ({option.email})</span>
+														</li>
+													);
+												}}
 											/>
 										</Grid>
 									)}
@@ -319,6 +402,21 @@ const InvoiceCreate = () => {
 											{errors.invoiceType && <FormHelperText error>{errors.invoiceType}</FormHelperText>}
 										</FormControl>
 									</Grid>
+
+									{formData.invoiceType === "Monthly" && userBooking && (
+										<Grid item xs={12}>
+											Booking Status: {userBooking.message} <br />
+											{userBooking.unavailable_chairs && (
+												<>
+													Unavailable Chairs: {userBooking.unavailable_chairs.map((chair) => chair).join(", ")} <br />
+												</>
+											)}
+											Booking Chairs: {userBooking.booking.chairs.map((chair) => chair).join(", ")} <br />
+											Booking Plan: {userBooking.booking.plan.name} - Rs. {userBooking.booking.plan.price} <br />
+											Package Detail: {formData.packageDetail} <br />
+											TotalPrice: Rs. {formData.amount} <br />
+										</Grid>
+									)}
 
 									{/* Dynamic Fields: Quantity or Hours */}
 									{formData.invoiceType === "Printing Papers" && (
@@ -354,7 +452,7 @@ const InvoiceCreate = () => {
 									{formData.invoiceType === "Monthly" && (
 										<Grid item xs={12}>
 											<FormControl fullWidth error={Boolean(errors.paidMonth)}>
-												<TextField select label="Select Month You Paid" name="paidMonth" value={formData.paidMonth} onChange={handleChange} variant="outlined" fullWidth>
+												<TextField select label="Select Booking Month" name="paidMonth" value={formData.paidMonth} onChange={handleChange} variant="outlined" fullWidth>
 													{["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((month, index) => (
 														<MenuItem key={index} value={month}>
 															{month}

@@ -13,7 +13,7 @@ const AuthProvider = ({ children }) => {
 	useEffect(() => {
 		const fetchUser = async () => {
 			try {
-				const response = await axiosInstance.get(import.meta.env.VITE_BASE_API + "user");
+				const response = await axiosInstance.get("user");
 				setUser(response.data);
 				setRole(response.data.role);
 				setPermissions(response.data.permissions);
@@ -31,7 +31,7 @@ const AuthProvider = ({ children }) => {
 
 	const logout = async () => {
 		try {
-			await axiosInstance.post(import.meta.env.VITE_BASE_API + "logout", {});
+			await axiosInstance.post("logout", {});
 			setUser(null);
 			setRole("");
 			setPermissions([]);

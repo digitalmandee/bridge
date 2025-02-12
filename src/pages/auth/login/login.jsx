@@ -14,7 +14,7 @@ const LoginPage = () => {
 	const navigate = useNavigate();
 
 	const handleLogin = async (e) => {
-		e.preventDefault();  // prevent from reloading
+		e.preventDefault(); // prevent from reloading
 		try {
 			const response = await axios.post(import.meta.env.VITE_BASE_API + "login", { email, password }, { headers: { "Content-Type": "application/json" } });
 			localStorage.setItem("authToken", response.data.data.token);
@@ -51,7 +51,6 @@ const LoginPage = () => {
 							Password <span className="required">*</span>
 						</label>
 						<input type="password" id="password" name="password" placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
-						<div className="forgot-password">Forgot password?</div>
 
 						<button type="submit" className="login-button">
 							Log in

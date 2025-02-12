@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import user from "@/assets/user2.png";
 import axios from "axios";
+import axiosInstance from "@/utils/axiosInstance";
 
 const AddStaff = () => {
 	const navigate = useNavigate();
@@ -29,12 +30,7 @@ const AddStaff = () => {
 	useEffect(() => {
 		const fetchStaffData = async () => {
 			try {
-				const res = await axios.get(import.meta.env.VITE_BASE_API + "company/dashboard/staff", {
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-						"Content-Type": "application/json",
-					},
-				});
+				const res = await axiosInstance.get("company/dashboard/staff");
 				setAvaiablePrintingQuota(res.data.printingQuota);
 				setAvaiableBookingQuota(Number(res.data.bookingQuota));
 				setBookingSeats(res.data.chairs);
@@ -108,12 +104,7 @@ const AddStaff = () => {
 				formData.append("profile_image", profileImage);
 			}
 
-			const res = await axios.post(import.meta.env.VITE_BASE_API + "company/staff/create", formData, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-					"Content-Type": "multipart/form-data",
-				},
-			});
+			const res = await axiosInstance.post("company/staff/create", formData);
 
 			// If the response indicates success
 			if (res.data.success) {

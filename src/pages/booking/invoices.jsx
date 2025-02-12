@@ -53,16 +53,12 @@ const Invoices = () => {
 
 	const handleUpdateInvoice = async () => {
 		try {
-			const response = await axios.post(
-				`${import.meta.env.VITE_BASE_API}invoices/update`,
-				{
-					invoice_id: selectedInvoice.id,
-					amount: newPrice,
-					status: newStatus,
-					paid_date: paidDate,
-				},
-				{ headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } }
-			);
+			const response = await axiosInstance.post(`invoices/update`, {
+				invoice_id: selectedInvoice.id,
+				amount: newPrice,
+				status: newStatus,
+				paid_date: paidDate,
+			});
 
 			if (response.data.success) {
 				setInvoices((prev) =>
@@ -99,7 +95,7 @@ const Invoices = () => {
 		const fetchInvoices = async () => {
 			setIsLoading(true);
 			try {
-				const response = await axiosInstance.get(`${import.meta.env.VITE_BASE_API}invoices`);
+				const response = await axiosInstance.get(`invoices`);
 
 				if (response.data && Array.isArray(response.data.invoices)) {
 					setInvoices(response.data.invoices);

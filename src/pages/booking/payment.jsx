@@ -45,7 +45,7 @@ const Payment = () => {
 		);
 		setIsLoading(true);
 		try {
-			const res = await axiosInstance.post(import.meta.env.VITE_BASE_API + "booking/create", formData);
+			const res = await axiosInstance.post("booking/create", formData);
 			if (res.data.success) {
 				setShowModal(true); // Show the modal
 			}

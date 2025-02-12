@@ -14,7 +14,7 @@ const DashboardNotifications = () => {
 
 	const getNotifications = async () => {
 		try {
-			const res = await axiosInstance.get(import.meta.env.VITE_BASE_API + "notifications?limit=4");
+			const res = await axiosInstance.get("notifications?limit=4");
 
 			setNotifications(res.data.notifications);
 			setUnreadNotifications(res.data.unread);

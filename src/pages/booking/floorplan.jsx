@@ -13,6 +13,7 @@ import colors from "../../assets/styles/color";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
 import { FloorPlanContext } from "../../contexts/floorplan.context";
 import axios from "axios";
+import axiosInstance from "@/utils/axiosInstance";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
@@ -115,7 +116,7 @@ const Floorplan = () => {
 		const fetchFloorPlanData = async () => {
 			setIsLoading(true);
 			try {
-				const response = await axios.get(import.meta.env.VITE_BASE_API + `floor-plan?floor_id=${selectedFloor}`, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } });
+				const response = await axiosInstance.get(`floor-plan?floor_id=${selectedFloor}`);
 
 				if (response.data && Array.isArray(response.data.tables)) {
 					setTotalAvailableChairs(response.data.totalAvailableChairs);

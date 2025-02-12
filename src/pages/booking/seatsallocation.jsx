@@ -6,6 +6,7 @@ import ChairIcon from "@mui/icons-material/Chair";
 import { Menu, MenuItem, IconButton, Box } from "@mui/material";
 import colors from "../../assets/styles/color";
 import axios from "axios";
+import axiosInstance from "@/utils/axiosInstance";
 
 const SeatCard = ({ seatNumber, userName, planName, status, location, floor, profile_image }) => {
 	return (
@@ -112,7 +113,7 @@ const SeatsAllocation = () => {
 		const fetchFloorPlanData = async () => {
 			setIsLoading(true);
 			try {
-				const response = await axios.get(import.meta.env.VITE_BASE_API + `seat-allocations`, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } });
+				const response = await axiosInstance.get(`seat-allocations`);
 				console.log(response.data.seats);
 
 				if (response.data.success) {

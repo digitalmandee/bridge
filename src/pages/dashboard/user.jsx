@@ -18,7 +18,7 @@ const UserDashboard = () => {
 
 	useEffect(() => {
 		const getData = async () => {
-			await axiosInstance.get(import.meta.env.VITE_BASE_API + "user/dashboard").then((res) => {
+			await axiosInstance.get("user/dashboard").then((res) => {
 				// console.log(res.data);
 				setData(res.data);
 			});

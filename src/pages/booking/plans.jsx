@@ -163,7 +163,7 @@ const BookingPlans = () => {
 											<td className="px-3">
 												<b>{plan.name}</b>
 												<br />
-												<small>{plan.branch?.location || "No location available"}</small>
+												<small>{plan.branch?.name || "No location available"}</small>
 											</td>
 											<td className="px-3" style={{ textTransform: "capitalize" }}>
 												{plan.type}
@@ -207,8 +207,8 @@ const BookingPlans = () => {
 				<DialogContent>
 					<TextField className="mb-3" margin="dense" label="Name" name="name" fullWidth value={editData.name} onChange={handleInputChange} />
 					<Select className="mb-3" margin="dense" id="select-status" name="type" fullWidth value={editData.type} onChange={handleInputChange}>
-						<MenuItem value="basic">Basic</MenuItem>
-						<MenuItem value="premium">Premium</MenuItem>
+						<MenuItem value="full_day">Full Day</MenuItem>
+						<MenuItem value="monthly">Monthly</MenuItem>
 					</Select>
 					<TextField margin="dense" label="Price" name="price" type="number" fullWidth value={editData.price} onChange={handleInputChange} />
 				</DialogContent>

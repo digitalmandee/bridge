@@ -45,7 +45,7 @@ const NotificationManagement = () => {
 
 	const markAsRead = (notificationId) => {
 		axiosInstance
-			.post(import.meta.env.VITE_BASE_API + `notifications/${notificationId}/read`, {})
+			.post(`notifications/${notificationId}/read`, {})
 			.then(() => {
 				setNotifications(
 					notifications.map((n) => {
@@ -60,7 +60,7 @@ const NotificationManagement = () => {
 	const getNotifications = async (page = 1) => {
 		setIsLoading(true);
 		try {
-			const res = await axiosInstance.get(import.meta.env.VITE_BASE_API + "notifications", {
+			const res = await axiosInstance.get("notifications", {
 				params: { page, limit, status: statusFilter },
 			});
 			setNotifications(res.data.notifications);

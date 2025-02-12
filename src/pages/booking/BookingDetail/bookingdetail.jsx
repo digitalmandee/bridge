@@ -4,6 +4,7 @@ import colors from "../../../assets/styles/color";
 import axios from "axios";
 import { FloorPlanContext } from "../../../contexts/floorplan.context";
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from "@mui/material";
+import axiosInstance from "@/utils/axiosInstance";
 
 const BookingDetail = ({ handlePrevious, handleNext }) => {
 	const { bookingdetails, setBookingDetails, formErrors, bookingPlans, setBookingPlans, validateBookingDetails, checkAvailability, selectedChairs } = useContext(FloorPlanContext);
@@ -11,9 +12,7 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 	useEffect(() => {
 		const fetchBookingPlanData = async () => {
 			try {
-				const response = await axios.get(`${import.meta.env.VITE_BASE_API}booking-plans`, {
-					headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
-				});
+				const response = await axiosInstance.get("booking-plans");
 
 				if (response.data && Array.isArray(response.data.data)) {
 					setBookingPlans(response.data.data);

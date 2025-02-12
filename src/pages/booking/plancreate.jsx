@@ -6,11 +6,12 @@ import { Link } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { Button, Snackbar, Alert } from "@mui/material";
 import colors from "@/assets/styles/color";
+import axiosInstance from "@/utils/axiosInstance";
 
 const PlanCreate = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [name, setName] = useState("");
-	const [type, setType] = useState("basic");
+	const [type, setType] = useState("monthly");
 	const [price, setPrice] = useState(0);
 	const [nameError, setNameError] = useState("");
 	const [typeError, setTypeError] = useState("");
@@ -22,13 +23,7 @@ const PlanCreate = () => {
 	const createBookingPlan = async () => {
 		setIsLoading(true);
 		try {
-			const branchId = 1;
-			const response = await axios.post(`${import.meta.env.VITE_BASE_API}booking-plans`, {
-				name,
-				type,
-				price,
-				branch_id: branchId,
-			});
+			const response = await axiosInstance.post("booking-plans", { name, type, price });
 
 			if (response.data.success) {
 				setSnackbarMessage("Plan created successfully!");
@@ -97,7 +92,7 @@ const PlanCreate = () => {
 					<div className="d-flex justify-content-between align-items-center flex-wrap grid-margin py-4">
 						<Link to={"/branch/booking/plans"} className="d-flex align-items-center gap-2" style={{ textDecoration: "none", color: "black" }}>
 							<ChevronLeftIcon fontSize="large" />
-							<h3 className="mb-3 mb-md-0">Branch Manager Create</h3>
+							<h3 className="mb-3 mb-md-0">Branch Plan Create</h3>
 						</Link>
 					</div>
 					<div className="card shadow-sm mx-auto">
@@ -117,8 +112,8 @@ const PlanCreate = () => {
 								</label>
 								<div className="form-group">
 									<select name="type" id="type" className="form-control" value={type} onChange={(e) => setType(e.target.value)}>
-										<option value="basic">Basic</option>
-										<option value="premium">Premium</option>
+										<option value="full_day">Full Day</option>
+										<option value="monthly">Monthly</option>
 									</select>
 									{typeError && <span className="text-danger">{typeError}</span>}
 								</div>
