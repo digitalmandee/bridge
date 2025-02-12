@@ -21,10 +21,12 @@ const Sidebar = () => {
   const [isSeatBookingOpen, setIsSeatBookingOpen] = useState(false);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [isMemberOpen, setIsMemberOpen] = useState(false);
+  const [isInvestorOpen, setIsInvestorOpen] = useState(false);
 
-  // const toggleDropdown = () => {
-  //   setIsDropdownOpen(!isDropdownOpen);
-  // };
+  const toggleInvestorDropdown = () => {
+    setIsInvestorOpen(!isInvestorOpen);
+    if (isInvestorOpen) setIsInvestorOpen(false); // Close Invoice dropdown if it's open
+  };
 
   const toggleSeatBookingDropdown = () => {
     setIsSeatBookingOpen(!isSeatBookingOpen);
@@ -84,13 +86,22 @@ const Sidebar = () => {
         </ul>
         <ul>
           <li>
-            <Link to="">
-              <Button className='w-100'>
-                <span className='icon'><MdOutlineInventory /></span>
-                Inventory Management
-                <span className='arrow'><FaAngleRight /></span>
-              </Button>
-            </Link>
+            <Button className={`w-100 ${isInvestorOpen ? 'active-button' : ''}`}
+              onClick={toggleInvestorDropdown}>
+              <span className='icon'><MdOutlineInventory /></span>
+              Inventory Management
+              <span className={`arrow ${isInvestorOpen ? 'rotate' : ''}`}><FaAngleRight /></span>
+            </Button>
+            {isInvestorOpen && (
+              <ul className="submenu">
+                <li>
+                  <Link to="/investor-dashboard">Inventory Dashboard</Link>
+                </li>
+                <li>
+                  <Link to="">Inventory Report</Link>
+                </li>
+              </ul>
+            )}
           </li>
         </ul>
         <ul>

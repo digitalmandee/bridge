@@ -13,6 +13,7 @@ import CompanyDashboard from './Dashboard/companydashboard';
 import Staff from './Dashboard/staff';
 import NewInvoice from './invoice/newinvoice';
 import Company from './member/company';
+import InvestorDashboard from './inventory/investordashboard';
 import MemberContract from './member/contract';
 import MemberUser from './member/memberuser';
 import StaffArchive from './Dashboard/staffarchive';
@@ -43,6 +44,7 @@ function App() {
         <Routes>
           {/* Define your routes */}
           <Route path="/" element={<Welcome />} />
+          <Route path="/investor-dashboard" element={<InvestorDashboard />} />
           <Route path="/member-contract" element={<MemberContract />} />
           <Route path="/member-user" element={<MemberUser />} />
           <Route path="/member-company" element={<Company />} />
