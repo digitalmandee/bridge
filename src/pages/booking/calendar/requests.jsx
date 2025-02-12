@@ -51,7 +51,7 @@ const Requests = () => {
 
 	const handleUpdateBooking = async () => {
 		try {
-			const response = await axiosInstance.post(`${import.meta.env.VITE_BASE_API}booking-schedule/update`, {
+			const response = await axiosInstance.post(`booking-schedule/update`, {
 				booking_id: selectedBooking.event_id,
 				status: newStatus,
 			});
@@ -82,8 +82,8 @@ const Requests = () => {
 	const fetchBookings = async () => {
 		setIsLoading(true);
 		try {
-			const res = await axios.get(`${import.meta.env.VITE_BASE_API}booking-schedule/requests`, { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" } });
-			console.log(res.data);
+			const res = await axiosInstance.get(`booking-schedule/requests`);
+			// console.log(res.data);
 
 			if (res.data && Array.isArray(res.data.schedules)) {
 				setBookings(res.data.schedules);

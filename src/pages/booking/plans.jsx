@@ -47,7 +47,7 @@ const BookingPlans = () => {
 
 	const confirmDelete = async () => {
 		try {
-			await axiosInstance.delete(`${import.meta.env.VITE_BASE_API}booking-plans/${currentPlan.id}`);
+			await axiosInstance.delete(`booking-plans/${currentPlan.id}`);
 			setBookingPlans((prev) => prev.filter((plan) => plan.id !== currentPlan.id));
 			setSnackbarMessage("Plan deleted successfully!");
 			setSnackbarSeverity("success");
@@ -64,7 +64,7 @@ const BookingPlans = () => {
 
 	const handleEditSubmit = async () => {
 		try {
-			const response = await axiosInstance.put(`${import.meta.env.VITE_BASE_API}booking-plans/${currentPlan.id}`, editData);
+			const response = await axiosInstance.put(`booking-plans/${currentPlan.id}`, editData);
 
 			setBookingPlans((prev) => prev.map((plan) => (plan.id === currentPlan.id ? response.data.data : plan)));
 
@@ -95,7 +95,7 @@ const BookingPlans = () => {
 			setIsLoading(true);
 			try {
 				const branchId = 1;
-				const response = await axiosInstance.get(`${import.meta.env.VITE_BASE_API}booking-plans`);
+				const response = await axiosInstance.get(`booking-plans`);
 
 				if (response.data && Array.isArray(response.data.data)) {
 					setBookingPlans(response.data.data);

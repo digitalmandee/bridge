@@ -43,12 +43,8 @@ const InvoiceCreate = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				// const membersRes = await axiosInstance.get(import.meta.env.VITE_BASE_API + "members");
-				// const companiesRes = await axiosInstance.get(import.meta.env.VITE_BASE_API + "companies");
-				const bookingPlansRes = await axiosInstance.get(`${import.meta.env.VITE_BASE_API}booking-plans`);
+				const bookingPlansRes = await axiosInstance.get("booking-plans");
 
-				// setMembers(membersRes.data.members);
-				// setCompanies(companiesRes.data.companies);
 				setBookingPlans(bookingPlansRes.data.data);
 			} catch (error) {
 				console.error("Error fetching data:", error);
@@ -56,6 +52,21 @@ const InvoiceCreate = () => {
 		};
 		fetchData();
 	}, []);
+
+	useEffect(() => {
+		const fetchUserBooking = async () => {
+			console.log("yes");
+			try {
+				const bookingPlansRes = await axiosInstance.get(`booking-plans`);
+				// setBookingPlans(bookingPlansRes.data.data);
+			} catch (error) {
+				// console.error("Error fetching data:", error);
+			}
+		};
+		console.log("no");
+
+		if ((formData.member || formData.company) && formData.invoiceType == "Monthly") fetchUserBooking();
+	}, [formData.member, formData.company, formData.invoiceType]);
 
 	const fetchSearchResults = useCallback(async (query, type) => {
 		if (!query) return []; // Don't make a request if the query is empty.

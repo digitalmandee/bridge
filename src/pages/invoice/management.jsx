@@ -38,7 +38,7 @@ const InvoiceManagement = () => {
 	const getInvoices = async (page = 1) => {
 		setIsLoading(true);
 		try {
-			const res = await axiosInstance.get(`${import.meta.env.VITE_BASE_API}invoices`, {
+			const res = await axiosInstance.get(`invoices`, {
 				params: { page, limit, status: statusFilter },
 			});
 
@@ -56,7 +56,7 @@ const InvoiceManagement = () => {
 
 	const sendNotification = async (invoiceId, userId, status) => {
 		try {
-			const res = await axiosInstance.post(`${import.meta.env.VITE_BASE_API}notifications/send`, {
+			const res = await axiosInstance.post(`notifications/send`, {
 				user_id: userId,
 				invoice_id: invoiceId,
 				type: "invoice_conformation",

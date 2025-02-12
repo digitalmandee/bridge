@@ -51,7 +51,7 @@ const Requests = () => {
 
 	const handleUpdateBooking = async () => {
 		try {
-			const response = await axiosInstance.post(`${import.meta.env.VITE_BASE_API}booking/update`, {
+			const response = await axiosInstance.post(`booking/update`, {
 				booking_id: selectedBooking.id,
 				price: newPrice,
 				status: newStatus,
@@ -99,7 +99,7 @@ const Requests = () => {
 		const fetchBookings = async () => {
 			setIsLoading(true);
 			try {
-				const response = await axiosInstance.get(`${import.meta.env.VITE_BASE_API}bookings`);
+				const response = await axiosInstance.get(`bookings`);
 
 				if (response.data && Array.isArray(response.data.bookings)) {
 					setBookings(response.data.bookings);

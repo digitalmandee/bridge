@@ -31,7 +31,7 @@ const InvoiceDashboard = () => {
 
 	const sendNotification = async (invoiceId, userId, status) => {
 		try {
-			const res = await axiosInstance.post(`${import.meta.env.VITE_BASE_API}notifications/send`, {
+			const res = await axiosInstance.post(`notifications/send`, {
 				user_id: userId,
 				invoice_id: invoiceId,
 				type: "invoice_conformation",
@@ -51,7 +51,7 @@ const InvoiceDashboard = () => {
 
 	const getDashboardStats = async () => {
 		try {
-			const res = await axiosInstance.get(`${import.meta.env.VITE_BASE_API}invoices/dashboard`);
+			const res = await axiosInstance.get(`invoices/dashboard`);
 			if (res.data.success) {
 				setDashboardStats({
 					totalInvoices: res.data.totalInvoices,
@@ -72,7 +72,7 @@ const InvoiceDashboard = () => {
 	const getInvoices = async (page = 1) => {
 		setIsLoading(true);
 		try {
-			const res = await axiosInstance.get(`${import.meta.env.VITE_BASE_API}invoices?page=${page}&limit=${limit}`);
+			const res = await axiosInstance.get(`invoices?page=${page}&limit=${limit}`);
 			if (res.data.success) {
 				setInvoices(res.data.invoices.data);
 				setTotalPages(res.data.invoices.last_page);

@@ -33,7 +33,7 @@ const InvoiceDetail = () => {
 
 	const sendNotification = async (invoiceId, userId, status) => {
 		try {
-			const res = await axiosInstance.post(`${import.meta.env.VITE_BASE_API}notifications/send`, {
+			const res = await axiosInstance.post(`notifications/send`, {
 				user_id: userId,
 				invoice_id: invoiceId,
 				type: "invoice_conformation",
@@ -55,7 +55,7 @@ const InvoiceDetail = () => {
 		setIsLoading(true);
 		const fetchInvoiceDetail = async () => {
 			try {
-				const res = await axiosInstance.get(`${import.meta.env.VITE_BASE_API}invoices/customer-detail/${customerId}`);
+				const res = await axiosInstance.get(`invoices/customer-detail/${customerId}`);
 				if (res.data.success) {
 					setCustomer(res.data.costomer);
 				}

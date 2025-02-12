@@ -7,6 +7,7 @@ import { FaPrint, FaTrashAlt, FaSearch, FaEdit, FaEye } from "react-icons/fa";
 import axios from "axios";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, MenuItem, Select, Snackbar, TextField } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
+import axiosInstance from "@/utils/axiosInstance";
 
 const StaffManagement = () => {
 	const [status, setStatus] = useState("all");
@@ -31,9 +32,7 @@ const StaffManagement = () => {
 
 	const fetchStaffData = async () => {
 		try {
-			const res = await axios.get(import.meta.env.VITE_BASE_API + "company/staffs?filter=" + status, {
-				headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}`, "Content-Type": "application/json" },
-			});
+			const res = await axiosInstance.get("company/staffs?filter=" + status);
 			setAvaiablePrintingQuota(res.data.printingQuota);
 			setAvaiableBookingQuota(Number(res.data.bookingQuota));
 			setTotalAll(res.data.totalAll);
@@ -48,12 +47,7 @@ const StaffManagement = () => {
 	useEffect(() => {
 		const fetchStaffData = async () => {
 			try {
-				const res = await axios.get(import.meta.env.VITE_BASE_API + "company/dashboard/staff", {
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-						"Content-Type": "application/json",
-					},
-				});
+				const res = await axiosInstance.get("company/dashboard/staff");
 				setAvaiablePrintingQuota(res.data.printingQuota);
 				setAvaiableBookingQuota(Number(res.data.bookingQuota));
 				setBookingSeats(res.data.chairs);
@@ -96,9 +90,7 @@ const StaffManagement = () => {
 		}
 
 		try {
-			await axios.put(`${import.meta.env.VITE_BASE_API}company/staffs/${selectedStaff.id}`, selectedStaff, {
-				headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
-			});
+			await axiosInstance.put(`company/staffs/${selectedStaff.id}`, selectedStaff);
 			setSnackbarMessage("Staff details updated successfully!");
 			setOpenSnackbar(true);
 			setOpenEdit(false);
@@ -117,9 +109,7 @@ const StaffManagement = () => {
 	// Delete Staff
 	const handleDeleteConfirm = async () => {
 		try {
-			await axios.delete(`${import.meta.env.VITE_BASE_API}company/staffs/${selectedStaff.id}`, {
-				headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
-			});
+			await axiosInstance.delete(`company/staffs/${selectedStaff.id}`);
 			setSnackbarMessage("Staff deleted successfully!");
 			setOpenSnackbar(true);
 			setOpenDelete(false);
