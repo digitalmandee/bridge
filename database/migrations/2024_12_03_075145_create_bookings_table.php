@@ -26,7 +26,7 @@ class CreateBookingsTable extends Migration
             $table->string('start_time')->nullable();
             $table->date('end_date')->nullable();
             $table->string('end_time')->nullable();
-            $table->timestamp('package_end_time');
+            $table->timestamp('package_end_time', 0)->nullable();
             $table->enum('duration', ['full_day', 'monthly']);
             $table->enum('time_slot', ['day', 'night', 'full_day']);
             $table->string('package_detail')->nullable();

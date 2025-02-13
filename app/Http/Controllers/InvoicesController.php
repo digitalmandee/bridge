@@ -116,6 +116,14 @@ class InvoicesController extends Controller
             // Determine user ID based on selected tab
             $userId = $request->selectedTab === 'individual' ? $request->member_id : $request->company_id;
 
+            if ($request->invoiceType === 'Monthly') {
+                $invoice = Invoice::where('user_id', $userId)->where('paid_month', $request->paidMonth)->where('paid_year', $request->paidYear)->where('status', 'paid')->where('invoice_type', 'Monthly')->first();
+
+                if ($invoice) {
+                    return response()->json(['success' => false, 'message' => 'This month invoice already paid'], 422);
+                }
+            }
+
             // Handle receipt upload
             $InvoiceReciept = $request->hasFile('reciept') && in_array($request->status, ['paid', 'overdue'])
                 ? $request->file('reciept')->store('invoices', 'public')
@@ -132,7 +140,9 @@ class InvoicesController extends Controller
                 $bookingPlan = $booking->plan;
 
                 $isCurrentMonth = $request->paidMonth === Carbon::now()->format('F') && $request->paidYear == Carbon::now()->year;
-                $packageEndTime = Carbon::createFromDate($request->paidYear, $request->paidMonth, 1)->endOfMonth();
+
+                $packageEndTime = Carbon::createFromDate($request->paidYear, date('m', strtotime($request->paidMonth)), 1)->endOfMonth();
+                Log::info($packageEndTime);
 
                 if ($booking->status !== 'confirmed') {
                     $newBookingData = $booking->only(['user_id', 'branch_id', 'floor_id', 'plan_id', 'chair_ids', 'name', 'phone_no', 'type', 'duration', 'time_slot', 'plan']);
@@ -141,7 +151,12 @@ class InvoicesController extends Controller
                         'start_time'  => Carbon::createFromDate($request->paidYear, $request->paidMonth, 1)->format('H:i:s'),
                         'end_date'    => null,
                         'end_time'    => null,
-                        'status'      => in_array($request->status, ['paid', 'overdue']) && $isCurrentMonth ? 'confirmed' : 'upcoming',
+                        'status'      => (
+                            in_array($request->status, ['paid', 'overdue'])
+                            && $isCurrentMonth
+                            ? 'confirmed'
+                            : ($request->status === 'pending' ? 'pending' : 'upcoming')
+                        ),
                         'total_price' => $request->amount,
                         'package_detail' => $request->packageDetail,
                         'package_end_time' => $packageEndTime,

@@ -69,6 +69,13 @@ class BookingScheduleController extends Controller
 
             $branchId = $LoggedInUser->type === 'admin' ? $LoggedInUser->branch->id : $LoggedInUser->created_by_branch_id;
 
+            $quotaDecrement = $this->checkBookingHours($startTime, $endTime);
+
+            if ($user->booking_quota < $quotaDecrement) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'user_limit_error' => 'User has insufficient booking quota.'], 403);
+            }
+
             // Create the booking
             $booking = BookingSchedule::create([
                 'branch_id' => $branchId,
@@ -288,12 +295,7 @@ class BookingScheduleController extends Controller
                 $user = User::findOrFail($bookingSchedule->user_id);
 
                 // Calculate booking duration in hours
-                $startTime = new Carbon($bookingSchedule->startTime);
-                $endTime = new Carbon($bookingSchedule->endTime);
-                $durationInHours = $startTime->diffInMinutes($endTime) / 60;
-
-                // Round to 2 decimal places for duration
-                $quotaDecrement = round($durationInHours, 2);
+                $quotaDecrement = $this->checkBookingHours($bookingSchedule->startTime, $bookingSchedule->endTime);
 
                 // Check if the user has enough booking quota
                 if ($user->booking_quota >= $quotaDecrement) {
@@ -345,5 +347,19 @@ class BookingScheduleController extends Controller
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
+    }
+
+    // c
+    private function checkBookingHours($bookingStartTime, $bookingEndTime)
+    {
+        // Calculate booking duration in hours
+        $startTime = new Carbon($bookingStartTime);
+        $endTime = new Carbon($bookingEndTime);
+        $durationInHours = $startTime->diffInMinutes($endTime) / 60;
+
+        // Round to 2 decimal places for duration
+        $quotaDecrement = round($durationInHours, 2);
+
+        return $quotaDecrement;
     }
 }

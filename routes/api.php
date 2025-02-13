@@ -63,7 +63,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('users', [UserController::class, 'getBookingUsers']);
     });
 
-
     // Invoices
     Route::group(['prefix' => 'invoices'], function () {
         Route::get('', [InvoicesController::class, 'index']);

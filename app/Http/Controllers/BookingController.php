@@ -78,6 +78,7 @@ class BookingController extends Controller
                 // Monthly package: Check if start date is within last 5 days of the month
                 $monthDays = $startDate->daysInMonth;  // Total days in month
                 $lastDayOfMonth = Carbon::create($startDate->year, $startDate->month, $monthDays); // Last day of month
+                Log::info($lastDayOfMonth);
 
                 if ($startDate->day >= ($monthDays - 5)) {
                     // If start date is within the last 5 days of the month, extend to the next month's end
@@ -119,6 +120,8 @@ class BookingController extends Controller
                 'due_date' => Carbon::parse($booking->start_date)->addDay()->format('Y-m-d'),
                 'amount' => $booking->total_price,
                 'payment_type' => $booking->payment_method,
+                'paid_month' => Carbon::now()->format('F'),
+                'paid_year' => Carbon::now()->year,
                 "plan" => ["id" => $selectedPlan['id'], "name" => $selectedPlan['name'], "price" => $selectedPlan['price']],
                 'receipt' => $receiptPath,
             ]);
