@@ -8,6 +8,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FloorPlanController;
 use App\Http\Controllers\GlobalController;
 use App\Http\Controllers\InvoicesController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -31,12 +32,23 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Members and Companies
+    // only Individual user
     Route::get('/members', [GlobalController::class, 'getMembers']);
+    // only Company with id, name
     Route::get('/companies', [GlobalController::class, 'getCompanies']);
+    // show all members and companies based on query
     Route::get('/search', [GlobalController::class, 'search']);
 
     Route::group(['prefix' => 'user'], function () {
         Route::get('dashboard', [UserController::class, 'index']);
+    });
+
+    // Member Module for admin
+    Route::group(['prefix' => 'member'], function () {
+        // get all users
+        Route::get('users', [MemberController::class, 'getUsers']);
+        // get all companies
+        Route::get('companies', [MemberController::class, 'getCompanies']);
     });
 
     Route::group(['prefix' => 'company'], function () {

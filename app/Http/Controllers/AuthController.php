@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -166,14 +167,12 @@ class AuthController extends Controller
     {
         // Validate the incoming request
         $validatedData = $request->validate([
-            'email' => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required|string|min:6',
         ]);
 
         // Attempt to find the user
-        $user = User::where('email', $validatedData['email'])
-            ->select(['id', 'name', 'email', 'phone_no', 'type', 'password'])
-            ->first();
+        $user = User::where('email', $validatedData['email'])->select(['id', 'name', 'email', 'phone_no', 'profile_image', 'type', 'password', 'last_login_at'])->first();
 
         // Verify user existence and password
         if (!$user || !Hash::check($validatedData['password'], $user->password)) {
@@ -183,29 +182,32 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Generate token
+        // Generate authentication token
         $token = $user->createToken('my-app-token')->plainTextToken;
 
-        // Fetch the user's role and permissions
-        $role = $user->roles()->first(); // Assuming the user has one role
+        // Fetch user role & permissions (if applicable)
+        $role = $user->roles()->first(); // Assuming the user has a single role
         $permissions = $role ? $role->permissions->pluck('name')->toArray() : [];
 
-        // Convert User model to an array & hide password
-        $userData = $user->makeHidden(['password'])->toArray();
+        // Update last login time
+        $user->update(['last_login_at' => Carbon::now()]);
 
         // Prepare response data
-        $data = array_merge($userData, [
-            'token' => $token,
-            'role' => $role ? $user->type : null,
-            'permissions' => $permissions,
-        ]);
+        $responseData = [
+            'id'           => $user->id,
+            'name'         => $user->name,
+            'email'        => $user->email,
+            'phone_no'     => $user->phone_no,
+            'profile_image'     => $user->profile_image,
+            'last_login_human' => $user->last_login_human,
+            'type'         => $user->type,
+            'role'         => $role ? $user->type : null,
+            'permissions'  => $permissions,
+            'token'        => $token,
+        ];
 
-        // Return success response
-        return response()->json([
-            'success' => true,
-            'message' => 'User logged in successfully.',
-            'data' => $data,
-        ], 200);
+        // Return successful response
+        return response()->json(['success' => true, 'message' => 'User logged in successfully.', 'data'    => $responseData], 200);
     }
 
     public function getUser()
@@ -213,10 +215,7 @@ class AuthController extends Controller
         $user = auth()->user();
 
         if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found.'
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'User not found.'], 404);
         }
 
         // Fetch user role and permissions
@@ -224,7 +223,7 @@ class AuthController extends Controller
         $permissions = $role ? $role->permissions->pluck('name')->toArray() : [];
 
         // Basic user data without password
-        $data = $user->only(['id', 'name', 'email', 'phone_no', 'type']);
+        $data = $user->only(['id', 'name', 'email', 'phone_no', 'profile_image', 'type', 'last_login_human']);
 
         // Role and permissions
         $data['role'] = $role ? $user->type : null;
