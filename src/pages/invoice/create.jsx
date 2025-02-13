@@ -43,6 +43,7 @@ const InvoiceCreate = () => {
 	});
 	const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar state
 	const [snackbarMessage, setSnackbarMessage] = useState(""); // Snackbar message
+	const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
 	// Fetch Members & Companies on Load
 	useEffect(() => {
@@ -237,11 +238,21 @@ const InvoiceCreate = () => {
 
 			if (response.data.success) {
 				setSnackbarMessage("Invoice successfully created!"); // Set success message
+				setSnackbarSeverity("success");
 				setSnackbarOpen(true); // Show the snackbar
 				navigate("/branch/invoice/management");
 			}
 		} catch (error) {
-			console.error("Error submitting invoice:", error.response.data);
+			console.log(error.response.data);
+
+			switch (error.response.data.message) {
+				case "This month invoice already paid":
+					setSnackbarMessage("This month invoice already paid!"); // Set error message
+					setSnackbarSeverity("error");
+					setSnackbarOpen(true); // Show the snackbar
+					break;
+				default:
+			}
 		}
 	};
 
@@ -512,7 +523,7 @@ const InvoiceCreate = () => {
 
 								{/* Save Button */}
 								<div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-									<Button variant="contained" type="submit" sx={{ bgcolor: "#0D2B4E", "&:hover": { bgcolor: "#0B1E3E" } }}>
+									<Button disabled={formData.invoiceType === "Monthly" ? (userBooking && userBooking.success === true ? false : true) : false} variant="contained" type="submit" sx={{ bgcolor: "#0D2B4E", "&:hover": { bgcolor: "#0B1E3E" } }}>
 										Save Invoice
 									</Button>
 								</div>
@@ -523,7 +534,7 @@ const InvoiceCreate = () => {
 			</div>
 			{/* Snackbar for success/failure message */}
 			<Snackbar open={snackbarOpen} onClose={() => setSnackbarOpen(false)} autoHideDuration={6000}>
-				<Alert onClose={() => setSnackbarOpen(false)} severity="success">
+				<Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity}>
 					{snackbarMessage}
 				</Alert>
 			</Snackbar>
