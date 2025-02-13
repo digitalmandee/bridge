@@ -189,7 +189,7 @@ class BookingController extends Controller
 
             // Fetch all chairs that are associated with any booking
             $allChairIds = $bookings->pluck('chair_ids')->flatten()->unique()->toArray();
-            $chairs = Chair::whereIn('id', $allChairIds)->with(['table:id,name', 'room:id,name'])->get()->keyBy('id');
+            $chairs = Chair::whereIn('id', $allChairIds)->with(['table:id,table_id,name', 'room:id,name'])->get()->keyBy('id');
 
             // Format bookings with related chair, table, and room details
             $formattedBookings = $bookings->map(function ($booking) use ($chairs) {
