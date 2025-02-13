@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Typography, Avatar, Chip, Box, IconButton, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, createTheme, InputAdornment } from "@mui/material";
+import { TextField, Typography, Avatar, Chip, Box, IconButton, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, createTheme, InputAdornment, CircularProgress } from "@mui/material";
 import { ArrowBack, Search } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TopNavbar from "@/components/topNavbar";
@@ -14,6 +14,7 @@ const MemberUser = () => {
 	const [limit, setLimit] = useState(10);
 
 	const getUsers = async (page = 1) => {
+		setIsLoading(true);
 		try {
 			const res = await axiosInstance.get("member/users", {
 				params: { page, limit },
@@ -26,6 +27,8 @@ const MemberUser = () => {
 			}
 		} catch (error) {
 			console.error(error);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -52,8 +55,6 @@ const MemberUser = () => {
 									User
 								</Typography>
 							</Box>
-
-							{JSON.stringify(users)}
 
 							{/* Search */}
 							<Box sx={{ mb: 3 }}>
@@ -89,49 +90,56 @@ const MemberUser = () => {
 
 							{/* User List */}
 							<TableContainer component={Paper} sx={{ mb: 3 }}>
-								<Table>
-									<TableHead>
-										<TableRow>
-											<TableCell>Company</TableCell>
-											<TableCell>Last login</TableCell>
-											<TableCell>Status</TableCell>
-											<TableCell>Profile</TableCell>
-											<TableCell>Terms & Condition</TableCell>
-										</TableRow>
-									</TableHead>
-									<TableBody>
-										{users.map((user) => (
-											<TableRow key={user.id}>
-												<TableCell>
-													<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-														<Avatar src={user.avatar} />
-														<Box>
-															<Typography>
-																{user.username} <span style={{ color: "#6C757D", fontSize: "0.875rem" }}>{user.suffix}</span>
-															</Typography>
-															<Typography variant="body2" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-																<span style={{ fontSize: "10px" }}>●</span> {user.location}
-															</Typography>
-														</Box>
-													</Box>
-												</TableCell>
-												<TableCell>
-													<Typography variant="body2">{user.lastLogin}</Typography>
-												</TableCell>
-												<TableCell>
-													<Chip
-														label="Active"
-														size="small"
-														sx={{
-															backgroundColor: "#002B5B",
-															color: "#fff",
-															borderRadius: "4px",
-															height: "24px",
-															fontSize: "0.75rem",
-														}}
-													/>
-												</TableCell>
-												<TableCell>
+								{isLoading ? (
+									<Box display="flex" justifyContent="center" alignItems="center" p={3}>
+										<CircularProgress sx={{ color: "#0F172A" }} />
+									</Box>
+								) : (
+									<Table>
+										<TableHead>
+											<TableRow>
+												<TableCell>Company</TableCell>
+												<TableCell>Last login</TableCell>
+												<TableCell>Status</TableCell>
+												{/* <TableCell>Profile</TableCell> */}
+												<TableCell>Terms & Condition</TableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{users.length > 0 ? (
+												users.map((user) => (
+													<TableRow key={user.id}>
+														<TableCell>
+															<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+																<Avatar src={user.profile_image ? import.meta.env.VITE_ASSET_API + user.profile_image : ""} />
+																<Box>
+																	<Typography>
+																		{user.name} <span style={{ color: "#6C757D", fontSize: "0.875rem" }}>{user.company ? "at " + user.company.name : ""}</span>
+																	</Typography>
+																	<Typography variant="body2" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+																		<span style={{ fontSize: "10px" }}>●</span> {user.user_branch.name}
+																	</Typography>
+																</Box>
+															</Box>
+														</TableCell>
+														<TableCell>
+															<Typography variant="body2">{user.last_login_human}</Typography>
+														</TableCell>
+														<TableCell>
+															<Chip
+																label={user.status}
+																size="small"
+																sx={{
+																	backgroundColor: "#002B5B",
+																	color: "#fff",
+																	borderRadius: "4px",
+																	height: "24px",
+																	fontSize: "0.75rem",
+																	textTransform: "capitalize",
+																}}
+															/>
+														</TableCell>
+														{/* <TableCell>
 													<Chip
 														label="Public"
 														size="small"
@@ -143,19 +151,27 @@ const MemberUser = () => {
 															fontSize: "0.75rem",
 														}}
 													/>
-												</TableCell>
-												<TableCell>
-													<Typography variant="body2">{user.terms}</Typography>
-												</TableCell>
-											</TableRow>
-										))}
-									</TableBody>
-								</Table>
+												</TableCell> */}
+														<TableCell>
+															<Typography variant="body2">{user.terms}</Typography>
+														</TableCell>
+													</TableRow>
+												))
+											) : (
+												<TableRow>
+													<TableCell colSpan={7} align="center">
+														No user found.
+													</TableCell>
+												</TableRow>
+											)}
+										</TableBody>
+									</Table>
+								)}
 							</TableContainer>
 
 							{/* Pagination */}
 							<Box sx={{ display: "flex", justifyContent: "end", mt: 3 }}>
-								<Pagination count={10} />
+								<Pagination count={totalPages} page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
 							</Box>
 						</div>
 					</ThemeProvider>
@@ -217,60 +233,60 @@ const theme = createTheme({
 });
 
 // Sample user data
-const users = [
-	{
-		id: 1,
-		username: "Username",
-		suffix: "at digit",
-		location: "Lahore",
-		avatar: "/placeholder.svg?height=40&width=40",
-		lastLogin: "Today",
-		status: "Active",
-		profile: "Public",
-		terms: "Agree",
-	},
-	{
-		id: 2,
-		username: "Username",
-		suffix: "at digit",
-		location: "Lahore",
-		avatar: "/placeholder.svg?height=40&width=40",
-		lastLogin: "Today",
-		status: "Active",
-		profile: "Public",
-		terms: "Agree",
-	},
-	{
-		id: 3,
-		username: "Username",
-		suffix: "at digit",
-		location: "Lahore",
-		avatar: "/placeholder.svg?height=40&width=40",
-		lastLogin: "Today",
-		status: "Active",
-		profile: "Public",
-		terms: "Agree",
-	},
-	{
-		id: 4,
-		username: "Username",
-		suffix: "at digit",
-		location: "Lahore",
-		avatar: "/placeholder.svg?height=40&width=40",
-		lastLogin: "Today",
-		status: "Active",
-		profile: "Public",
-		terms: "Agree",
-	},
-	{
-		id: 5,
-		username: "Username",
-		suffix: "at digit",
-		location: "Lahore",
-		avatar: "/placeholder.svg?height=40&width=40",
-		lastLogin: "Today",
-		status: "Active",
-		profile: "Public",
-		terms: "Agree",
-	},
-];
+// const users = [
+// 	{
+// 		id: 1,
+// 		username: "Username",
+// 		suffix: "at digit",
+// 		location: "Lahore",
+// 		avatar: "/placeholder.svg?height=40&width=40",
+// 		lastLogin: "Today",
+// 		status: "Active",
+// 		profile: "Public",
+// 		terms: "Agree",
+// 	},
+// 	{
+// 		id: 2,
+// 		username: "Username",
+// 		suffix: "at digit",
+// 		location: "Lahore",
+// 		avatar: "/placeholder.svg?height=40&width=40",
+// 		lastLogin: "Today",
+// 		status: "Active",
+// 		profile: "Public",
+// 		terms: "Agree",
+// 	},
+// 	{
+// 		id: 3,
+// 		username: "Username",
+// 		suffix: "at digit",
+// 		location: "Lahore",
+// 		avatar: "/placeholder.svg?height=40&width=40",
+// 		lastLogin: "Today",
+// 		status: "Active",
+// 		profile: "Public",
+// 		terms: "Agree",
+// 	},
+// 	{
+// 		id: 4,
+// 		username: "Username",
+// 		suffix: "at digit",
+// 		location: "Lahore",
+// 		avatar: "/placeholder.svg?height=40&width=40",
+// 		lastLogin: "Today",
+// 		status: "Active",
+// 		profile: "Public",
+// 		terms: "Agree",
+// 	},
+// 	{
+// 		id: 5,
+// 		username: "Username",
+// 		suffix: "at digit",
+// 		location: "Lahore",
+// 		avatar: "/placeholder.svg?height=40&width=40",
+// 		lastLogin: "Today",
+// 		status: "Active",
+// 		profile: "Public",
+// 		terms: "Agree",
+// 	},
+// ];
