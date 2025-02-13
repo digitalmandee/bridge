@@ -412,7 +412,7 @@ const BookingCalender = () => {
 					<div className="container-fluid p-4">
 						<div className="row mb-4 align-items-center">
 							<div className="col">
-								<h1 className="mb-0">Booking Calendar</h1>
+								<h1 className="mb-0">Room Booking</h1>
 							</div>
 							<div className="col-auto">
 								<Button variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }}>

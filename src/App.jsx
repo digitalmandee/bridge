@@ -36,6 +36,12 @@ import SeatsAllocation from "@/pages/booking/seatsallocation";
 import BookingCalendar from "@/pages/booking/calendar";
 import BookingInvoices from "@/pages/booking/invoices";
 
+// Members
+import MemberCreate from "@/pages/members/create";
+import MemberCompanies from "@/pages/members/companies";
+import MemberUsers from "@/pages/members/users";
+import MemberContracts from "@/pages/members/contracts";
+
 // Notification
 import Notifications from "@/pages/notificaitons";
 function App() {
@@ -163,19 +169,23 @@ function App() {
 						</ProtectedRoute>
 					}
 				/>
-				<Route
-					path="/branch/booking"
-					element={
-						<ProtectedRoute role="admin">
-							<Booking />
-						</ProtectedRoute>
-					}
-				/>
+
+				{/* Floor Plan */}
 				<Route
 					path="/branch/floorplan"
 					element={
 						<ProtectedRoute role="admin">
 							<Floorplan />
+						</ProtectedRoute>
+					}
+				/>
+
+				{/* Booking Requests */}
+				<Route
+					path="/branch/booking"
+					element={
+						<ProtectedRoute role="admin">
+							<Booking />
 						</ProtectedRoute>
 					}
 				/>
@@ -195,6 +205,7 @@ function App() {
 						</ProtectedRoute>
 					}
 				/>
+				{/* Booking Price Plan */}
 				<Route
 					path="/branch/booking/plans"
 					element={
@@ -211,6 +222,7 @@ function App() {
 						</ProtectedRoute>
 					}
 				/>
+				{/* Booking Seats Allocation */}
 				<Route
 					path="/branch/booking/seats-allocation"
 					element={
@@ -219,6 +231,7 @@ function App() {
 						</ProtectedRoute>
 					}
 				/>
+				{/* Room Booking */}
 				<Route
 					path="/branch/booking-schedule"
 					element={
@@ -269,6 +282,42 @@ function App() {
 						</ProtectedRoute>
 					}
 				/>
+
+				{/* Members */}
+				<Route
+					path="/branch/member/create"
+					element={
+						<ProtectedRoute role="admin">
+							<MemberCreate />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/member/companies"
+					element={
+						<ProtectedRoute role="admin">
+							<MemberCompanies />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/member/users"
+					element={
+						<ProtectedRoute role="admin">
+							<MemberUsers />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/member/contracts"
+					element={
+						<ProtectedRoute role="admin">
+							<MemberContracts />
+						</ProtectedRoute>
+					}
+				/>
+
+				{/* Notifications */}
 				<Route
 					path="/branch/notifications"
 					element={

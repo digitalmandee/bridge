@@ -42,6 +42,16 @@ const menuItems = [
 			{ to: "/branch/invoice/management", label: "Invoice Management" },
 		],
 	},
+	{
+		label: "Member",
+		icon: <SlCalender />,
+		dropdown: [
+			{ to: "/branch/floorplan", label: "Add New" },
+			{ to: "/branch/member/companies", label: "Company" },
+			{ to: "/branch/member/users", label: "Users" },
+			{ to: "/branch/member/contracts", label: "Contract" },
+		],
+	},
 	{ to: "", label: "Inventory Management", icon: <MdOutlineInventory /> },
 	{ to: "", label: "Expense Management", icon: <LuListTodo /> },
 	{ to: "", label: "Financial Report", icon: <GoDatabase /> },
