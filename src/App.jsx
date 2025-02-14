@@ -44,6 +44,7 @@ import MemberContracts from "@/pages/members/contracts";
 
 // Notification
 import Notifications from "@/pages/notificaitons";
+import MemberCompanyDetail from "./pages/members/detail";
 function App() {
 	const [showSplash, setShowSplash] = useState(true);
 
@@ -297,6 +298,14 @@ function App() {
 					element={
 						<ProtectedRoute role="admin">
 							<MemberCompanies />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/member/companies/:companyId"
+					element={
+						<ProtectedRoute role="admin">
+							<MemberCompanyDetail />
 						</ProtectedRoute>
 					}
 				/>
