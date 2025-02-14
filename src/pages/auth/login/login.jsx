@@ -19,6 +19,8 @@ const LoginPage = () => {
 			const response = await axios.post(import.meta.env.VITE_BASE_API + "login", { email, password }, { headers: { "Content-Type": "application/json" } });
 			localStorage.setItem("authToken", response.data.data.token);
 
+			console.log(response.data);
+
 			setUser(response.data.data);
 			setRole(response.data.data.role);
 			setPermissions(response.data.data.permissions);

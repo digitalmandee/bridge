@@ -18,16 +18,16 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { FileText, Building2, Building } from "lucide-react";
 
 const TopNavbar = () => {
-  const { user, logout } = useContext(AuthContext);
+	const { user, logout } = useContext(AuthContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [isOpennotificationDrop, setisOpennotificationDrop] = useState(false);
   const openMyAcc = Boolean(anchorEl);
   const openNotifications = Boolean(isOpennotificationDrop);
 
-  const handleOpenMyAccDr = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+	const handleOpenMyAccDr = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
 
   const handleCloseMyAccDr = () => {
     setAnchorEl(null);
