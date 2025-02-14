@@ -15,6 +15,10 @@ import AdminDashboard from "@/pages/dashboard/admin";
 import UserDashboard from "@/pages/dashboard/user";
 import CompanyDashboard from "@/pages/dashboard/company";
 
+//Employee Management
+import EmployeeDashboard from "./pages/employee/dashboard";
+import EmployeeCreate from "./pages/employee/create";
+
 // Invoice Management
 import InvoiceDashboard from "@/pages/invoice/dashboard";
 import InvoiceCreate from "@/pages/invoice/create";
@@ -323,6 +327,25 @@ function App() {
 					element={
 						<ProtectedRoute role="admin">
 							<Notifications />
+						</ProtectedRoute>
+					}
+				/>
+
+				{/* Employee Management Routes */}
+
+				<Route
+					path="/branch/employee/dashboard"
+					element={
+						<ProtectedRoute role="admin">
+							<EmployeeDashboard />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/employee/create"
+					element={
+						<ProtectedRoute role="admin">
+							<EmployeeCreate />
 						</ProtectedRoute>
 					}
 				/>

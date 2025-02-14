@@ -96,3 +96,12 @@ header button.square {
     opacity: 0.7;
     margin-top: 0px;
 }
+
+#notifications .MuiPaper-elevation {
+    right: 16% !important;
+    width: 450px !important;
+    max-height: 400px !important;
+    overflow: auto;
+    left: auto !important;
+    padding: 1rem !important;
+}

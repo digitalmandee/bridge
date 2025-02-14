@@ -60,11 +60,13 @@
     font: Nunito Sans;
     font-weight: 400;
     font-size: 14px;
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
 .sidebar ul li button:hover {
-    background-color: var(--primary);
-    color: white;
+    transform: scale(1.01);
+    /* background-color: var(--primary); */
+    /* color: white; */
 }
 
 .sidebar ul li button.active-button {
@@ -118,7 +120,7 @@
     color: #000;
     /* background-color: aqua; */
     width: '100%';
-    padding: 10px 20px;
+    padding: 0px 20px;
     box-sizing: border-box;
     border-radius: 0.3rem;
 }
