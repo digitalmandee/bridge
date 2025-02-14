@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
 import { RxDashboard } from "react-icons/rx";
@@ -13,10 +13,11 @@ import { FaAngleRight } from "react-icons/fa6";
 import "./style.css";
 
 const menuItems = [
-	{ to: "/branch/dashboard", label: "Dashboard", icon: <RxDashboard /> },
+	{ to: "/branch/dashboard", label: "Dashboard", icon: <RxDashboard />, hasDropdown: false },
 	{
 		label: "Seat Booking",
 		icon: <RxDashboard />,
+		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/floorplan", label: "Floor Plan" },
 			{ to: "/branch/booking/plans", label: "Price Plan" },
@@ -28,6 +29,7 @@ const menuItems = [
 	{
 		label: "Booking Management",
 		icon: <SlCalender />,
+		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/booking-schedule", label: "Room Booking" },
 			{ to: "/branch/booking-schedule/requests", label: "Booking Requests" },
@@ -36,6 +38,7 @@ const menuItems = [
 	{
 		label: "Invoice",
 		icon: <SlCalender />,
+		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/invoice/dashboard", label: "Dashboard" },
 			{ to: "/branch/invoice/create", label: "New Invoice" },
@@ -45,6 +48,7 @@ const menuItems = [
 	{
 		label: "Member",
 		icon: <SlCalender />,
+		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/floorplan", label: "Add New" },
 			{ to: "/branch/member/companies", label: "Company" },
@@ -52,29 +56,61 @@ const menuItems = [
 			{ to: "/branch/member/contracts", label: "Contract" },
 		],
 	},
-	{ to: "", label: "Inventory Management", icon: <MdOutlineInventory /> },
-	{ to: "", label: "Expense Management", icon: <LuListTodo /> },
-	{ to: "", label: "Financial Report", icon: <GoDatabase /> },
-	{ to: "", label: "Revenue Check", icon: <BsGraphUpArrow /> },
-	{ to: "", label: "Contact", icon: <IoMdContact /> },
-	{ to: "", label: "Settings", icon: <RxDashboard /> },
+	{ to: "", label: "Inventory Management", icon: <MdOutlineInventory />, hasDropdown: true },
+	{ to: "", label: "Expense Management", icon: <LuListTodo />, hasDropdown: true },
+	{ to: "", label: "Financial Report", icon: <GoDatabase />, hasDropdown: true },
+	{
+		label: "Employee Management",
+		icon: <SlCalender />,
+		hasDropdown: true,
+		dropdown: [
+			{ to: "/branch/employee/dashboard", label: "Employee Dashboard" },
+			{ to: "", label: "Personal Detail" },
+		],
+	},
+	// { to: "", label: "Employee Management", icon: <BsGraphUpArrow /> },
+	{ to: "", label: "Contact", icon: <IoMdContact />, hasDropdown: false },
+	{ to: "", label: "Settings", icon: <RxDashboard />, hasDropdown: false },
 ];
 
 const Admin = () => {
-	const [openDropdown, setOpenDropdown] = useState(null);
 	const location = useLocation();
+	const [selectedButton, setSelectedButton] = useState("");
+	const [openDropdown, setOpenDropdown] = useState("");
+	
 
-	const toggleDropdown = (label) => {
-		setOpenDropdown(openDropdown === label ? null : label);
+	useEffect(() => {
+		const activeItem = menuItems.find((item) => item.to === location.pathname);
+		if (activeItem) {
+			setSelectedButton(activeItem.label);
+		}
+	}, [location.pathname]);
+
+	const handleButtonClick = (label, to, hasDropdown) => {
+		if (hasDropdown) {
+			setOpenDropdown(openDropdown === label ? "" : label); // Toggle dropdown
+		} else {
+			setSelectedButton(label);
+			setOpenDropdown(""); // Close any open dropdowns when navigating
+		}
 	};
+
+
+	// const toggleDropdown = (label) => {
+	// 	setOpenDropdown(openDropdown === label ? null : label);
+	// 	// setSelectedButton(label); // Ensure dropdown buttons also update selected state
+	// };
 
 	return (
 		<ul>
 			{menuItems.map((item, index) => (
 				<li key={index}>
-					{item.dropdown ? (
+					{item.hasDropdown ? (
 						<>
-							<Button className={`w-100 ${openDropdown === item.label ? "active-button" : ""}`} onClick={() => toggleDropdown(item.label)}>
+							<Button
+								className={`w-100 dropdown-button ${selectedButton === item.label ? "active-button" : ""}`}
+								onClick={() => handleButtonClick(item.label, item.to, item.hasDropdown)}
+							>
 								<span className="icon">{item.icon}</span>
 								{item.label}
 								<span className={`arrow ${openDropdown === item.label ? "rotate" : ""}`}>
@@ -85,7 +121,14 @@ const Admin = () => {
 								<ul className="submenu">
 									{item.dropdown.map((subItem, subIndex) => (
 										<li key={subIndex}>
-											<Link to={subItem.to}>{subItem.label}</Link>
+											<Link to={subItem.to}>
+												<Button
+													className={`w-100 ${selectedButton === subItem.label ? "active-button" : ""}`}
+													onClick={() => handleButtonClick(subItem.label, subItem.to, false)}
+												>
+													{subItem.label}
+												</Button>
+											</Link>
 										</li>
 									))}
 								</ul>
@@ -93,12 +136,12 @@ const Admin = () => {
 						</>
 					) : (
 						<Link to={item.to}>
-							<Button className={`w-100 ${location.pathname === item.to ? "active-button" : ""}`}>
+							<Button
+								className={`w-100 ${selectedButton === item.label ? "active-button" : ""}`}
+								onClick={() => handleButtonClick(item.label, item.to, item.hasDropdown)}
+							>
 								<span className="icon">{item.icon}</span>
 								{item.label}
-								<span className="arrow">
-									<FaAngleRight />
-								</span>
 							</Button>
 						</Link>
 					)}

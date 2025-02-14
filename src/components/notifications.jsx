@@ -70,6 +70,7 @@ const notificationsStyle = {
 	borderRadius: "0.2rem",
 	boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
 	border: "1px solid #E5E7EB",
+	overflowY: "auto",
 	height: "30rem",
 	width: "21rem",
 	padding: "1.5rem",
