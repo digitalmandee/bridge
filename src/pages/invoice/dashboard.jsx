@@ -6,6 +6,7 @@ import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
+import colors from "@/assets/styles/color";
 
 const InvoiceDashboard = () => {
 	const navigate = useNavigate();
@@ -114,7 +115,7 @@ const InvoiceDashboard = () => {
 										<MenuItem value="January">January</MenuItem>
 										{/* Add more months */}
 									</Select>
-									<Button variant="contained" sx={{ bgcolor: "#0D2b4e", "&:hover": { bgcolor: "#1E293B" } }} onClick={() => navigate("/branch/invoice/create")}>
+									<Button variant="contained" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: "#1E293B" } }} onClick={() => navigate("/branch/invoice/create")}>
 										Create Invoice
 									</Button>
 								</Box>
@@ -132,7 +133,7 @@ const InvoiceDashboard = () => {
 													<Typography color="text.secondary">{stat.title}</Typography>
 													<Typography variant="h4">{stat.value}</Typography>
 												</Box>
-												<Avatar sx={{ bgcolor: "#0F172A" }}>{stat.icon}</Avatar>
+												<Avatar sx={{ bgcolor: colors.primary }}>{stat.icon}</Avatar>
 											</Box>
 										</CardContent>
 									</Card>

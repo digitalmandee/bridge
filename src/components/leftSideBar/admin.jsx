@@ -50,7 +50,7 @@ const menuItems = [
 		icon: <SlCalender />,
 		hasDropdown: true,
 		dropdown: [
-			{ to: "/branch/floorplan", label: "Add New" },
+			{ to: "", label: "Add New" },
 			{ to: "/branch/member/companies", label: "Company" },
 			{ to: "/branch/member/users", label: "Users" },
 			{ to: "/branch/member/contracts", label: "Contract" },
@@ -77,29 +77,50 @@ const Admin = () => {
 	const location = useLocation();
 	const [selectedButton, setSelectedButton] = useState("");
 	const [openDropdown, setOpenDropdown] = useState("");
-	
+
 
 	useEffect(() => {
-		const activeItem = menuItems.find((item) => item.to === location.pathname);
+		if (!menuItems || !Array.isArray(menuItems)) return; // Ensure menuItems is defined
+
+		let activeLabel = "";
+
+		// Check if a top-level menu item matches the current route
+		const activeItem = menuItems.find((item) => item.to && item.to === location.pathname);
+
 		if (activeItem) {
-			setSelectedButton(activeItem.label);
+			activeLabel = activeItem.label;
+		} else {
+			// Check dropdown items to see if a child matches the route
+			menuItems.forEach((item) => {
+				if (item.hasDropdown && item.dropdown) {
+					const activeSubItem = item.dropdown.find((subItem) => subItem.to === location.pathname);
+					if (activeSubItem) {
+						activeLabel = item.label; // Set the parent button as active
+					}
+				}
+			});
 		}
+
+		setSelectedButton(activeLabel); // Update the state with the active button
 	}, [location.pathname]);
 
 	const handleButtonClick = (label, to, hasDropdown) => {
 		if (hasDropdown) {
-			setOpenDropdown(openDropdown === label ? "" : label); // Toggle dropdown
+			// If clicking an already open dropdown, close it and deselect the button
+			if (openDropdown === label) {
+				setOpenDropdown("");
+				setSelectedButton(""); // Unselect everything when collapsing
+			} else {
+				setOpenDropdown(label); // Open new dropdown
+				setSelectedButton(label); // Set the parent button as active
+			}
 		} else {
-			setSelectedButton(label);
-			setOpenDropdown(""); // Close any open dropdowns when navigating
+			setSelectedButton(label); // Select the button
+			setOpenDropdown(""); // Close any open dropdown
 		}
 	};
 
 
-	// const toggleDropdown = (label) => {
-	// 	setOpenDropdown(openDropdown === label ? null : label);
-	// 	// setSelectedButton(label); // Ensure dropdown buttons also update selected state
-	// };
 
 	return (
 		<ul>
