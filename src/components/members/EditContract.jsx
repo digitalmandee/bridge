@@ -76,13 +76,9 @@ const EditContract = ({ contract, open, onClose }) => {
 	}, []);
 
 	const handleInputChange = (field) => (event) => {
-		if (field === "signature") {
-			setFormData({
-				...formData,
-				[field]: event.target.type === "checkbox" ? event.target.checked : event.target.value,
-			});
-		}
-		if (isReadOnly) return;
+		console.log(event.target.value);
+
+		if (isReadOnly && field !== "signature") return;
 		setFormData({
 			...formData,
 			[field]: event.target.type === "checkbox" ? event.target.checked : event.target.value,
@@ -105,11 +101,6 @@ const EditContract = ({ contract, open, onClose }) => {
 		}
 	};
 
-	const handleClose = () => {
-		setOpen(false);
-		setActiveStep(0);
-	};
-
 	const handleNext = () => {
 		if (activeStep === steps.length - 1) {
 			handleSubmit();
@@ -124,9 +115,10 @@ const EditContract = ({ contract, open, onClose }) => {
 		setLoading(true);
 		const updatedFormData = { ...formData, contractId: contract.id };
 
+		console.log(updatedFormData);
+
 		try {
 			const res = await axiosInstance.put("member/contract/update", updatedFormData);
-			console.log(res.data);
 
 			if (res.data.success) {
 				setAlertOpen(true);
@@ -269,14 +261,14 @@ const EditContract = ({ contract, open, onClose }) => {
 			case 3:
 				return (
 					<Box sx={{ mt: 2 }}>
-						<TextField fullWidth label="Contract Team" value={formData.contract} onChange={handleInputChange("contract")} sx={{ mb: 2 }} required disabled={isReadOnly} />
+						<TextField fullWidth label="Contract" value={formData.contract} onChange={handleInputChange("contract")} sx={{ mb: 2 }} required disabled={isReadOnly} />
 						<FormControlLabel control={<Checkbox checked={formData.agreement} onChange={handleInputChange("agreement")} disabled={isReadOnly} />} label="Agree to Terms & Conditions" />
 						<br />
 						{user.type === "admin" && (
 							<FormControl fullWidth className="mb-2">
 								<InputLabel id="status-label">Status</InputLabel>
-								<Select labelId="status-label" label="Status" onChange={(event) => handleInputChange("status", event)} disabled={isReadOnly}>
-									<MenuItem value=" " selected>
+								<Select labelId="status-label" label="Status" value={formData.status} onChange={handleInputChange("status")} disabled={isReadOnly}>
+									<MenuItem value="" selected>
 										Select status
 									</MenuItem>
 									<MenuItem value="cancelled">Cancelled</MenuItem>

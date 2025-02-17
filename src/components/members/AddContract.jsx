@@ -12,6 +12,7 @@ const AddContract = () => {
 	const [companies, setCompanies] = useState([]);
 	const [members, setMembers] = useState([]);
 	const [bookingPlans, setBookingPlans] = useState([]);
+	const [errorMsg, setErrorMsg] = useState("");
 
 	const initialFormData = {
 		company: "",
@@ -137,6 +138,7 @@ const AddContract = () => {
 	};
 
 	const handleSubmit = async () => {
+		setErrorMsg("");
 		setLoading(true);
 		// Update formData with user_id
 		const UserId = contractType === "individual" ? formData.members?.id : formData.company?.id;
@@ -149,7 +151,8 @@ const AddContract = () => {
 				handleClose();
 			}
 		} catch (error) {
-			console.error(error);
+			// console.error(error.response.data);
+			setErrorMsg(error.response.data.message);
 		} finally {
 			setLoading(false);
 		}
@@ -343,7 +346,7 @@ const AddContract = () => {
 			case 3:
 				return (
 					<Box sx={{ mt: 2 }}>
-						<TextField fullWidth label="Contract Team" value={formData.contract} onChange={handleInputChange("contract")} sx={{ mb: 2 }} required />
+						<TextField fullWidth label="Contract" value={formData.contract} onChange={handleInputChange("contract")} sx={{ mb: 2 }} required />
 						<FormControlLabel control={<Checkbox checked={formData.agreement} onChange={handleInputChange("agreement")} />} label="Agree to Terms & Conditions" />
 					</Box>
 				);
@@ -355,7 +358,15 @@ const AddContract = () => {
 
 	return (
 		<>
-			<Button variant="contained" color="primary" onClick={handleOpen}>
+			<Button
+				variant="contained"
+				color="primary"
+				sx={{
+					textTransform: "none",
+					bgcolor: "#1a3353",
+					"&:hover": { bgcolor: "#142942" },
+				}}
+				onClick={handleOpen}>
 				Add Contract
 			</Button>
 			<Modal open={open} onClose={handleClose}>
@@ -364,11 +375,16 @@ const AddContract = () => {
 						<Typography variant="h6" sx={{ fontWeight: "bold" }}>
 							Add Contract
 						</Typography>
-						<IconButton onClick={handleClose} size="small">
+						<IconButton
+							onClick={() => {
+								handleClose();
+								setErrorMsg("");
+							}}
+							size="small">
 							<CloseIcon />
 						</IconButton>
 					</Box>
-					<Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+					<Stepper activeStep={activeStep} sx={{ mb: 3 }}>
 						{steps.map((label) => (
 							<Step key={label}>
 								<StepLabel>{label}</StepLabel>
@@ -376,15 +392,21 @@ const AddContract = () => {
 						))}
 					</Stepper>
 
+					{errorMsg && (
+						<p className="mb-4" style={{ color: "red" }}>
+							{errorMsg}
+						</p>
+					)}
+
 					{getStepContent(activeStep)}
 
 					<Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, gap: 2 }}>
 						{activeStep > 0 && (
-							<Button onClick={handleBack} variant="outlined">
+							<Button onClick={handleBack} variant="outlined" sx={{ textTransform: "none" }}>
 								Back
 							</Button>
 						)}
-						<Button variant="contained" onClick={handleNext} disabled={!isStepValid() || loading}>
+						<Button variant="contained" onClick={handleNext} disabled={!isStepValid() || loading} sx={{ textTransform: "none" }}>
 							{loading ? <CircularProgress size={24} /> : activeStep === steps.length - 1 ? "Submit" : "Next"}
 						</Button>
 					</Box>

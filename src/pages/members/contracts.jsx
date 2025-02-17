@@ -56,6 +56,7 @@ const MemberContract = () => {
 		setEditModalOpen(false);
 		getContracts(currentPage); // Refresh table after editing
 	};
+
 	const handleCloseViewModal = () => {
 		setViewModalOpen(false);
 		getContracts(currentPage); // Refresh table after editing
@@ -75,106 +76,116 @@ const MemberContract = () => {
 							<IconButton sx={{ mr: 2, color: "primary.main" }}>
 								<ArrowBack />
 							</IconButton>
-							<Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600, color: "primary.main" }}>
+							<Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
 								Contracts
 							</Typography>
 							<Box sx={{ display: "flex", gap: 1 }}>
 								{/* Add Contract */}
 								{user.type === "admin" && <AddContract />}
 								{/* Download Contracts */}
-								<Button variant="outlined" color="primary" startIcon={<Download />} />
+								<Button
+									variant="outlined"
+									color="primary"
+									startIcon={<Download />}
+									sx={{
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+										padding: "10px 0px 10px 10px",
+									}}
+								/>
 							</Box>
 						</Box>
 
 						<Paper sx={{ mt: 3, boxShadow: 3 }}>
 							{/* Contracts Table */}
 							<TableContainer component={Paper} sx={{ boxShadow: "none" }}>
-								{isLoading ? (
-									<Box display="flex" justifyContent="center" alignItems="center" p={3}>
-										<CircularProgress sx={{ color: "#0F172A" }} />
-									</Box>
-								) : (
-									<Table>
-										<TableHead>
+								<Table>
+									<TableHead>
+										<TableRow>
+											<TableCell>Number</TableCell>
+											<TableCell>Documents</TableCell>
+											<TableCell>Stage</TableCell>
+											<TableCell>Company</TableCell>
+											<TableCell>Period</TableCell>
+											<TableCell>Value</TableCell>
+										</TableRow>
+									</TableHead>
+									<TableBody>
+										{isLoading ? (
 											<TableRow>
-												<TableCell>Number</TableCell>
-												<TableCell>Documents</TableCell>
-												<TableCell>Stage</TableCell>
-												<TableCell>Company</TableCell>
-												<TableCell>Period</TableCell>
-												<TableCell>Value</TableCell>
+												<TableCell colSpan={6} align="center">
+													<CircularProgress sx={{ color: "#0F172A" }} />
+												</TableCell>
 											</TableRow>
-										</TableHead>
-										<TableBody>
-											{contracts.length > 0 ? (
-												contracts.map((contract) => (
-													<TableRow key={contract.id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-														<TableCell>{contract.id}</TableCell>
-														<TableCell>
-															<Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-																<Typography variant="body2" sx={{ fontWeight: 500 }}>
-																	Agreement
+										) : contracts.length > 0 ? (
+											contracts.map((contract) => (
+												<TableRow key={contract.id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+													<TableCell>#{contract.id}</TableCell>
+													<TableCell>
+														<Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+															<Typography variant="body2" sx={{ fontWeight: 500 }}>
+																Agreement
+															</Typography>
+															<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+																<Typography variant="caption" sx={{ color: "text.secondary" }}>
+																	{contract.user.name}
 																</Typography>
-																<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-																	<Typography variant="caption" sx={{ color: "text.secondary" }}>
-																		{contract.user.name}
-																	</Typography>
-																	<Typography variant="caption" sx={{ color: "text.secondary" }}>
-																		{contract.start_date}
-																	</Typography>
-																</Box>
+																<Typography variant="caption" sx={{ color: "text.secondary" }}>
+																	{contract.start_date}
+																</Typography>
 															</Box>
-														</TableCell>
-														<TableCell>
-															<Box sx={{ display: "flex", gap: 1 }}>
-																<Chip
-																	label={contract.status}
-																	size="small"
-																	sx={{
-																		textTransform: "capitalize",
-																		bgcolor: contract.status === "Signed" ? "#E8E8E8" : "#1a3353",
-																		color: contract.status === "Signed" ? "#666" : "white",
-																	}}
-																/>
-																{contract.status === "not signed" && user.type === "admin" && (
-																	<>
-																		<Chip label="New" size="small" sx={{ bgcolor: "#E3F5FF", color: "#2196F3" }} />
-																		<Button variant="contained" size="small" color="primary" onClick={() => handleEditContract(contract)}>
-																			Edit
-																		</Button>
-																	</>
-																)}
-																<Button variant="contained" size="small" color="primary" onClick={() => handleViewContract(contract)}>
-																	View
-																</Button>
-															</Box>
-														</TableCell>
-
-														<TableCell>
-															<Typography variant="body2">{contract.user.name}</Typography>
-															<Typography variant="caption" sx={{ color: "text.secondary" }}>
-																{contract.branch.name}
-															</Typography>
-														</TableCell>
-														<TableCell>
-															<Typography variant="body2">{contract.duration}</Typography>
-															<Typography variant="caption" sx={{ color: "text.secondary" }}>
-																{contract.notice_period} {contract.duration} period
-															</Typography>
-														</TableCell>
-														<TableCell>Rs. {contract.amount}</TableCell>
-													</TableRow>
-												))
-											) : (
-												<TableRow>
-													<TableCell colSpan={7} align="center">
-														No contracts found.
+														</Box>
 													</TableCell>
+													<TableCell>
+														<Box sx={{ display: "flex", gap: 1 }}>
+															<Chip
+																label={contract.status}
+																size="small"
+																sx={{
+																	textTransform: "capitalize",
+																	bgcolor: contract.status === "Signed" ? "#E8E8E8" : "#1a3353",
+																	color: contract.status === "Signed" ? "#666" : "white",
+																}}
+															/>
+															{contract.status === "not signed" && user.type === "admin" && (
+																<>
+																	<Chip label="New" size="small" sx={{ bgcolor: "#E3F5FF", color: "#2196F3" }} />
+																	<Button variant="contained" size="small" color="primary" onClick={() => handleEditContract(contract)}>
+																		Edit
+																	</Button>
+																</>
+															)}
+															<Button variant="contained" size="small" color="primary" onClick={() => handleViewContract(contract)}>
+																View
+															</Button>
+														</Box>
+													</TableCell>
+
+													<TableCell>
+														<Typography variant="body2">{contract.user.name}</Typography>
+														<Typography variant="caption" sx={{ color: "text.secondary" }}>
+															{contract.branch.name}
+														</Typography>
+													</TableCell>
+													<TableCell>
+														<Typography variant="body2">{contract.duration}</Typography>
+														<Typography variant="caption" sx={{ color: "text.secondary" }}>
+															{contract.notice_period} {contract.duration} period
+														</Typography>
+													</TableCell>
+													<TableCell>Rs. {contract.amount}</TableCell>
 												</TableRow>
-											)}
-										</TableBody>
-									</Table>
-								)}
+											))
+										) : (
+											<TableRow>
+												<TableCell colSpan={6} align="center">
+													No contracts found.
+												</TableCell>
+											</TableRow>
+										)}
+									</TableBody>
+								</Table>
 							</TableContainer>
 
 							{/* Pagination */}

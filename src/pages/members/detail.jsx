@@ -3,10 +3,12 @@ import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
-import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Select, MenuItem, styled, CircularProgress, Chip, Pagination } from "@mui/material";
+import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Select, MenuItem, styled, CircularProgress, Chip, Pagination, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { Download as DownloadIcon, FilterAlt as FilterIcon, Notifications as NotificationsIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "../../utils/axiosInstance";
+import StaffLists from "@/components/members/company/StaffLists";
+import BillingLists from "@/components/members/company/BillingLists";
 
 const MemberCompanyDetail = () => {
 	const navigate = useNavigate();
@@ -15,22 +17,16 @@ const MemberCompanyDetail = () => {
 
 	const { companyId } = useParams(); // Get invoice ID from URL
 	const [company, setCompany] = useState({});
-	const [companyUsers, setCompanyUsers] = useState({});
-	const [currentPage, setCurrentPage] = useState(1);
-	const [totalPages, setTotalPages] = useState(1);
-	const [limit, setLimit] = useState(10);
+	const [currentTab, setCurrentTab] = useState("staff");
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
 		setIsLoading(true);
 		const details = async () => {
 			try {
-				const res = await axiosInstance.get(`member/company-detail/${companyId}`);
+				const res = await axiosInstance.get(`member/detail/${companyId}`);
 				if (res.data.success) {
-					setCompany(res.data.company);
-					setCompanyUsers(res.data.company_users.data);
-					setCurrentPage(res.data.company_users.current_page);
-					setTotalPages(res.data.company_users.last_page);
+					setCompany(res.data.user);
 				}
 			} catch (error) {
 				console.error("Error fetching company details:", error);
@@ -39,7 +35,7 @@ const MemberCompanyDetail = () => {
 			}
 		};
 		details();
-	}, [companyId, currentPage, limit]);
+	}, []);
 
 	return (
 		<>
@@ -111,82 +107,24 @@ const MemberCompanyDetail = () => {
 										</Typography>
 										<Typography variant="body1">{company.email}</Typography>
 									</Box>
+									<Box display="flex" gap={2}>
+										<Typography color="text.secondary" variant="body2">
+											Branch:
+										</Typography>
+										<Typography variant="body1">{company.user_branch?.name}</Typography>
+									</Box>
 								</Box>
 							</Box>
 						</Paper>
 
-						{/* Table */}
-						<TableContainer component={Paper} sx={{ boxShadow: "none" }}>
-							{isLoading ? (
-								<Box display="flex" justifyContent="center" alignItems="center" p={3}>
-									<CircularProgress sx={{ color: "#0F172A" }} />
-								</Box>
-							) : (
-								<Table>
-									<TableHead>
-										<TableRow>
-											<TableCell>Company</TableCell>
-											<TableCell>Last login</TableCell>
-											<TableCell>Status</TableCell>
-											{/* <TableCell>Profile</TableCell> */}
-											<TableCell>Terms & Condition</TableCell>
-										</TableRow>
-									</TableHead>
-									<TableBody>
-										{companyUsers && companyUsers.length > 0 ? (
-											companyUsers.map((user) => (
-												<TableRow key={user.id}>
-													<TableCell>
-														<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-															<Avatar src={user.profile_image ? import.meta.env.VITE_ASSET_API + user.profile_image : ""} />
-															<Box>
-																<Typography>
-																	{user.name} <span style={{ color: "#6C757D", fontSize: "0.875rem" }}>at {company.name}</span>
-																</Typography>
-																<Typography variant="body2" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-																	<span style={{ fontSize: "10px" }}>●</span> {company.user_branch.name}
-																</Typography>
-															</Box>
-														</Box>
-													</TableCell>
-													<TableCell>
-														<Typography variant="body2">{user.last_login_human}</Typography>
-													</TableCell>
-													<TableCell>
-														<Chip
-															label={user.status}
-															size="small"
-															sx={{
-																backgroundColor: "#002B5B",
-																color: "#fff",
-																borderRadius: "4px",
-																height: "24px",
-																fontSize: "0.75rem",
-																textTransform: "capitalize",
-															}}
-														/>
-													</TableCell>
-													<TableCell>
-														<Typography variant="body2">{user.terms}</Typography>
-													</TableCell>
-												</TableRow>
-											))
-										) : (
-											<TableRow>
-												<TableCell colSpan={7} align="center">
-													No user found.
-												</TableCell>
-											</TableRow>
-										)}
-									</TableBody>
-								</Table>
-							)}
-						</TableContainer>
+						<ToggleButtonGroup sx={{ mb: 2 }} value={currentTab} onChange={(e, newTab) => setCurrentTab(newTab)} exclusive>
+							<ToggleButton value="staff">Staff</ToggleButton>
+							<ToggleButton value="billing">Billing</ToggleButton>
+						</ToggleButtonGroup>
 
-						{/* Pagination */}
-						<Box sx={{ display: "flex", justifyContent: "end", mt: 3 }}>
-							<Pagination count={totalPages} page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
-						</Box>
+						{/* Table */}
+						{currentTab === "staff" && <StaffLists companyId={companyId} />}
+						{currentTab === "billing" && <BillingLists companyId={companyId} />}
 					</div>
 				</div>
 			</div>

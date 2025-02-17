@@ -7,7 +7,7 @@ import { MdArrowBackIos } from "react-icons/md";
 import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Select, MenuItem, styled, CircularProgress } from "@mui/material";
 import { ArrowBack as ArrowBackIcon, Download as DownloadIcon, FilterAlt as FilterIcon, Notifications as NotificationsIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "@/utils/axiosInstance";
 
 const InvoiceDetail = () => {
 	const navigate = useNavigate();
