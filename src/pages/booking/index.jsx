@@ -6,6 +6,7 @@ import BookingDetail from "./BookingDetail/bookingdetail";
 import Payment from "./payment";
 import { useNavigate } from "react-router-dom";
 import { FloorPlanContext } from "../../contexts/floorplan.context";
+import { FaCheck } from "react-icons/fa";
 // import './style.css';
 const Booking = () => {
 	const navigate = useNavigate();
@@ -16,14 +17,8 @@ const Booking = () => {
 	const [paymentMethod, setPaymentMethod] = useState(null);
 	const [receipt, setReceipt] = useState(null);
 
-	const handleNext = () => {
-		setCurrentStep(currentStep + 1); // Move to the next step
-	};
-
-	// Function to handle the "Previous" button click
-	const handlePrevious = () => {
-		setCurrentStep(currentStep - 1); // Move to the previous step
-	};
+	const handleNext = () => setCurrentStep((prev) => prev + 1);
+	const handlePrevious = () => setCurrentStep((prev) => prev - 1);
 
 	const handleFileUpload = (event) => {
 		const file = event.target.files[0];
@@ -49,6 +44,13 @@ const Booking = () => {
 	//     alert(`Payment confirmed with ${paymentMethod} and receipt uploaded.`);
 	// };
 
+	const steps = [
+		{ id: 1, label: "Step 1" },
+		{ id: 2, label: "Step 2" },
+		{ id: 3, label: "Step 3" },
+	];
+
+
 	return (
 		<>
 			<TopNavbar />
@@ -57,7 +59,7 @@ const Booking = () => {
 					<Sidebar />
 				</div>
 				<div className="content">
-					<div
+					<div //stepper-container
 						style={{
 							width: "100%",
 							display: "flex",
@@ -66,7 +68,7 @@ const Booking = () => {
 							backgroundColor: "transparent",
 							padding: "20px 0",
 						}}>
-						<div
+						<div //step-heading
 							style={{
 								width: "100%",
 								display: "flex",
@@ -86,71 +88,68 @@ const Booking = () => {
                                 Today <span style={{ color: "#007bff" }}>03 Aug 2024</span>
                             </h3> */}
 						</div>
-						<div
+						<div //stepper
 							style={{
-								width: "50%",
+								// width: "50%",
 								display: "flex",
-								justifyContent: "space-between",
+								justifyContent: "center",
 								alignItems: "center",
 								marginBottom: "20px",
+								gap: '30px',
 							}}>
-							<div
-								style={{
-									flex: 1,
-									textAlign: "center",
-									fontWeight: "600",
-									fontSize: "18px",
-									color: currentStep >= 1 ? "#000" : "#ccc",
-									cursor: "pointer",
-								}}
-								onClick={() => setCurrentStep(1)}>
-								<span>Step-1</span>
-							</div>
-							<div
-								style={{
-									flex: 1,
-									height: "1px",
-									backgroundColor: currentStep >= 2 ? "#000" : "#ccc",
-									margin: "0 10px",
-								}}></div>
-							<div
-								style={{
-									flex: 1,
-									textAlign: "center",
-									fontWeight: "600",
-									fontSize: "18px",
-									color: currentStep >= 2 ? "#000" : "#ccc",
-									cursor: "pointer",
-								}}
-								onClick={() => setCurrentStep(2)}>
-								<span>Step-2</span>
-							</div>
-							<div
-								style={{
-									flex: 1,
-									height: "1px",
-									backgroundColor: currentStep >= 3 ? "#000" : "#ccc",
-									margin: "0 10px",
-								}}></div>
-							<div
-								style={{
-									flex: 1,
-									textAlign: "center",
-									fontWeight: "600",
-									fontSize: "18px",
-									color: currentStep === 3 ? "#000" : "#ccc",
-									cursor: "pointer",
-								}}
-								onClick={() => setCurrentStep(3)}>
-								<span>Step-3</span>
-							</div>
+							{steps.map((step, index) => (
+								<div key={step.id} style={{
+									display: "flex",
+									// width:'30%',
+									// flexDirection: "column",
+									alignItems: "center",
+									// textAlign: "center",
+								}}>
+									<div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+										<div style={{
+											width: "40px",
+											height: "40px",
+											borderRadius: "50%",
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "center",
+											fontWeight: "bold",
+											fontSize: "16px",
+											color: "white",
+											backgroundColor: currentStep > step.id ? "#002855" : currentStep === step.id ? "#002855" : "#ccc",
+											cursor: "pointer",
+											position:'relative',
+											zIndex:2
+										}}
+											onClick={() => setCurrentStep(step.id)}
+										>
+											{currentStep > step.id ? <FaCheck size={14} /> : step.id}
+										</div>
+										<p style={{ marginTop: "5px", fontSize: "14px", fontWeight: "500", textAlign: "center", minWidth: '60px' }}>{step.label}</p>
+									</div>
+									{index < steps.length - 1 && (
+										<div
+											style={{
+												width: "120px",
+												height: "3px",
+												backgroundColor: currentStep > step.id ? "#002855" : "#ccc",
+												position: "relative",
+												top:'-20px',
+												left:'10px',
+												zIndex:'1'
+											}}
+										/>
+									)}
+
+								</div>
+							))}
 						</div>
 					</div>
 					{currentStep === 1 && <MemberDetail handleNext={handleNext} />}
 					{currentStep === 2 && <BookingDetail handleNext={handleNext} handlePrevious={handlePrevious} />}
 					{currentStep === 3 && <Payment />}
 				</div>
-			</div>
+			</div >
 		</>
 	);
 };

@@ -114,19 +114,24 @@
     /* padding: 5px 2rem; */
 }
 
+
+
 .submenu li a {
     text-decoration: none;
     display: block;
-    color: #000;
+    /* color: #000; */
     /* background-color: aqua; */
     width: '100%';
-    padding: 0px 20px;
+    padding-left: 2rem;
     box-sizing: border-box;
     border-radius: 0.3rem;
 }
 
-.submenu li a:hover {
+.sidebar ul .submenu li a:hover {
     background-color: var(--primary);
-    color: white;
-    width: '100%';
+    color: white !important;
+}
+
+.sidebar ul .submenu li a:hover * {
+    color: white !important;
 }

@@ -27,22 +27,20 @@ const Welcome = () => {
           { name: "Investor Login", img: invester, path: "/investor/dashboard" },
           { name: "User", img: user, path: "/user/dashboard" },
         ].map((account, index) => (
-          <div key={index} 
-          className="accountType"
-          onClick={() => handleNavigation(account.path)} 
-          >
-            <img
-              src={account.img}
-              alt={account.name}
-              className="accountImage"
-            />
+          <div key={index} className="account-wrapper">
+            <div className="accountType"
+              onClick={() => handleNavigation(account.path)}
+            >
+              <img
+                src={account.img}
+                alt={account.name}
+                className="accountImage"
+              />
+            </div>
             <p>{account.name}</p>
           </div>
         ))}
       </div>
-      {/* <a href="/admin-login" className="footerLink">
-      <Link to="/login">Already have an Admin account? Login</Link>
-      </a> */}
     </div>
   );
 };
