@@ -17,16 +17,16 @@ const AddContract = () => {
 		company: "",
 		members: "",
 		type: "",
-		number: "",
-		startDate: "",
-		endDate: "",
-		noticePeriod: 1,
-		periodUnit: "week",
-		recurringPlan: "",
-		planStartDate: "",
-		planEndDate: "",
-		deposit: "",
-		contractTeam: "",
+		company_number: "",
+		start_date: "",
+		end_date: "",
+		notice_period: 1,
+		duration: "week",
+		plan: "",
+		plan_start_date: "",
+		plan_end_date: "",
+		amount: "",
+		contract: "",
 		agreement: false,
 	};
 
@@ -160,11 +160,11 @@ const AddContract = () => {
 			case 0:
 				return contractType === "individual" ? formData.members !== "" : formData.company !== "";
 			case 1:
-				return formData.type !== "" && formData.number !== "" && formData.startDate !== "" && formData.endDate !== "" && formData.noticePeriod > 0;
+				return formData.type !== "" && formData.company_number !== "" && formData.start_date !== "" && formData.end_date !== "" && formData.notice_period > 0;
 			case 2:
-				return formData.recurringPlan !== "" && formData.deposit !== "" && formData.planStartDate !== "";
+				return formData.plan !== "" && formData.amount !== "" && formData.plan_start_date !== "";
 			case 3:
-				return formData.contractTeam !== "" && formData.agreement;
+				return formData.contract !== "" && formData.agreement;
 			default:
 				return false;
 		}
@@ -180,7 +180,7 @@ const AddContract = () => {
 							exclusive
 							onChange={(e, newType) => {
 								setContractType(newType);
-								setFormData({ ...formData, periodUnit: newType === "individual" ? "week" : "month" });
+								setFormData({ ...formData, duration: newType === "individual" ? "week" : "month" });
 							}}>
 							<ToggleButton value="individual">Individual</ToggleButton>
 							<ToggleButton value="company">Company</ToggleButton>
@@ -236,19 +236,19 @@ const AddContract = () => {
 				return (
 					<Box sx={{ mt: 2 }}>
 						<TextField fullWidth label="Type" value={formData.type} onChange={handleInputChange("type")} sx={{ mb: 2 }} required />
-						<TextField fullWidth label="Registration Number" value={formData.number} onChange={handleInputChange("number")} sx={{ mb: 2 }} required />
+						<TextField fullWidth label="Registration Number" value={formData.company_number} onChange={handleInputChange("company_number")} sx={{ mb: 2 }} required />
 						<div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
 							<TextField
 								label="Start Date"
 								type="date"
 								InputLabelProps={{ shrink: true }}
-								value={formData.startDate}
+								value={formData.start_date}
 								onChange={(e) => {
 									const newStartDate = e.target.value;
 									setFormData({
 										...formData,
-										startDate: newStartDate,
-										endDate: formData.endDate && formData.endDate < newStartDate ? "" : formData.endDate, // Reset end date if it's before start date
+										start_date: newStartDate,
+										end_date: formData.end_date && formData.end_date < newStartDate ? "" : formData.end_date, // Reset end date if it's before start date
 									});
 								}}
 								fullWidth
@@ -259,9 +259,9 @@ const AddContract = () => {
 								label="End Date"
 								type="date"
 								InputLabelProps={{ shrink: true }}
-								value={formData.endDate}
-								onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-								inputProps={{ min: formData.startDate || "" }} // Restrict to only allow dates after Start Date
+								value={formData.end_date}
+								onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+								inputProps={{ min: formData.start_date || "" }} // Restrict to only allow dates after Start Date
 								fullWidth
 								required
 							/>
@@ -271,13 +271,13 @@ const AddContract = () => {
 						<div style={{ display: "flex", alignItems: "center", border: "1px solid #ccc", borderRadius: "8px" }}>
 							<Typography style={{ padding: "8px 12px", fontWeight: "bold" }}>Notice Period</Typography>
 
-							<IconButton onClick={() => setFormData({ ...formData, noticePeriod: Math.max(1, formData.noticePeriod - 1) })} style={{ backgroundColor: "#0c2c51", color: "white", borderRadius: 0, padding: "8px", "&:hover": { backgroundColor: "#0a2443" } }}>
+							<IconButton onClick={() => setFormData({ ...formData, notice_period: Math.max(1, formData.notice_period - 1) })} style={{ backgroundColor: "#0c2c51", color: "white", borderRadius: 0, padding: "8px", "&:hover": { backgroundColor: "#0a2443" } }}>
 								<RemoveIcon />
 							</IconButton>
 
-							<Typography style={{ backgroundColor: "#f5f7fb", padding: "8px 20px", minWidth: "300px", textAlign: "center", fontWeight: "bold" }}>{formData.noticePeriod}</Typography>
+							<Typography style={{ backgroundColor: "#f5f7fb", padding: "8px 20px", minWidth: "300px", textAlign: "center", fontWeight: "bold" }}>{formData.notice_period}</Typography>
 
-							<IconButton onClick={() => setFormData({ ...formData, noticePeriod: formData.noticePeriod + 1 })} style={{ backgroundColor: "#0c2c51", color: "white", borderRadius: 0, padding: "8px", "&:hover": { backgroundColor: "#0a2443" } }}>
+							<IconButton onClick={() => setFormData({ ...formData, notice_period: formData.notice_period + 1 })} style={{ backgroundColor: "#0c2c51", color: "white", borderRadius: 0, padding: "8px", "&:hover": { backgroundColor: "#0a2443" } }}>
 								<AddIcon />
 							</IconButton>
 
@@ -293,9 +293,9 @@ const AddContract = () => {
 							sx={{ mb: 2 }}
 							options={bookingPlans}
 							getOptionLabel={(option) => option.name || ""} // Return just the name
-							value={formData.recurringPlan}
+							value={formData.plan}
 							onInputChange={handlePlanSearch} // Trigger search on input change
-							onChange={(event, value) => handleAutocompleteChange(event, value, "recurringPlan")}
+							onChange={(event, value) => handleAutocompleteChange(event, value, "plan")}
 							renderInput={(params) => <TextField {...params} label="Recurring Plan" variant="outlined" />}
 							renderOption={(props, option) => {
 								const { key, ...restProps } = props; // Extract key from props
@@ -306,20 +306,20 @@ const AddContract = () => {
 								);
 							}}
 						/>
-						<TextField fullWidth label="Deposit Amount" value={formData.deposit} onChange={handleInputChange("deposit")} sx={{ mb: 2 }} required />
+						<TextField fullWidth label="Deposit Amount" value={formData.amount} onChange={handleInputChange("amount")} sx={{ mb: 2 }} required />
 
 						<div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
 							<TextField
 								label="Start Date"
 								type="date"
 								InputLabelProps={{ shrink: true }}
-								value={formData.planStartDate}
+								value={formData.plan_start_date}
 								onChange={(e) => {
 									const newStartDate = e.target.value;
 									setFormData({
 										...formData,
-										planStartDate: newStartDate,
-										planEndDate: formData.planEndDate && formData.planEndDate < newStartDate ? "" : formData.planEndDate, // Reset end date if it's before start date
+										plan_start_date: newStartDate,
+										plan_end_date: formData.plan_end_date && formData.plan_end_date < newStartDate ? "" : formData.plan_end_date, // Reset end date if it's before start date
 									});
 								}}
 								fullWidth
@@ -330,9 +330,9 @@ const AddContract = () => {
 								label="End Date (Optional)"
 								type="date"
 								InputLabelProps={{ shrink: true }}
-								value={formData.planEndDate}
-								onChange={(e) => setFormData({ ...formData, planEndDate: e.target.value })}
-								inputProps={{ min: formData.planStartDate || "" }} // Restrict to only allow dates after Start Date
+								value={formData.plan_end_date}
+								onChange={(e) => setFormData({ ...formData, plan_end_date: e.target.value })}
+								inputProps={{ min: formData.plan_start_date || "" }} // Restrict to only allow dates after Start Date
 								fullWidth
 								required
 							/>
@@ -343,7 +343,7 @@ const AddContract = () => {
 			case 3:
 				return (
 					<Box sx={{ mt: 2 }}>
-						<TextField fullWidth label="Contract Team" value={formData.contractTeam} onChange={handleInputChange("contractTeam")} sx={{ mb: 2 }} required />
+						<TextField fullWidth label="Contract Team" value={formData.contract} onChange={handleInputChange("contract")} sx={{ mb: 2 }} required />
 						<FormControlLabel control={<Checkbox checked={formData.agreement} onChange={handleInputChange("agreement")} />} label="Agree to Terms & Conditions" />
 					</Box>
 				);

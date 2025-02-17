@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'Bastliga One';
+    src: url('/signature-one/Bastliga-One.ttf') format('truetype');
+    font-style: normal;
+}
+
+.font-signature {
+    font-family: 'Bastliga One';
+}

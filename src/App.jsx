@@ -114,6 +114,14 @@ function App() {
 						</ProtectedRoute>
 					}
 				/>
+				<Route
+					path="/user/contracts"
+					element={
+						<ProtectedRoute role="user">
+							<MemberContracts />
+						</ProtectedRoute>
+					}
+				/>
 
 				{/* Company Routes */}
 				<Route
@@ -161,6 +169,14 @@ function App() {
 					element={
 						<ProtectedRoute role="company">
 							<Notifications />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/company/contracts"
+					element={
+						<ProtectedRoute role="company">
+							<MemberContracts />
 						</ProtectedRoute>
 					}
 				/>

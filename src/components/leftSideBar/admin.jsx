@@ -50,7 +50,7 @@ const menuItems = [
 		icon: <SlCalender />,
 		hasDropdown: true,
 		dropdown: [
-			{ to: "", label: "Add New" },
+			{ to: "/branch/floorplan", label: "Add New" },
 			{ to: "/branch/member/companies", label: "Company" },
 			{ to: "/branch/member/users", label: "Users" },
 			{ to: "/branch/member/contracts", label: "Contract" },
@@ -77,7 +77,6 @@ const Admin = () => {
 	const location = useLocation();
 	const [selectedButton, setSelectedButton] = useState("");
 	const [openDropdown, setOpenDropdown] = useState("");
-
 
 	useEffect(() => {
 		if (!menuItems || !Array.isArray(menuItems)) return; // Ensure menuItems is defined
@@ -120,18 +119,13 @@ const Admin = () => {
 		}
 	};
 
-
-
 	return (
 		<ul>
 			{menuItems.map((item, index) => (
 				<li key={index}>
 					{item.hasDropdown ? (
 						<>
-							<Button
-								className={`w-100 dropdown-button ${selectedButton === item.label ? "active-button" : ""}`}
-								onClick={() => handleButtonClick(item.label, item.to, item.hasDropdown)}
-							>
+							<Button className={`w-100 dropdown-button ${selectedButton === item.label ? "active-button" : ""}`} onClick={() => handleButtonClick(item.label, item.to, item.hasDropdown)}>
 								<span className="icon">{item.icon}</span>
 								{item.label}
 								<span className={`arrow ${openDropdown === item.label ? "rotate" : ""}`}>
@@ -140,27 +134,22 @@ const Admin = () => {
 							</Button>
 							{openDropdown === item.label && (
 								<ul className="submenu">
-									{item.dropdown.map((subItem, subIndex) => (
-										<li key={subIndex}>
-											<Link to={subItem.to}>
-												<Button
-													className={`w-100 ${selectedButton === subItem.label ? "active-button" : ""}`}
-													onClick={() => handleButtonClick(subItem.label, subItem.to, false)}
-												>
-													{subItem.label}
-												</Button>
-											</Link>
-										</li>
-									))}
+									{item.dropdown &&
+										item.dropdown.map((subItem, subIndex) => (
+											<li key={subIndex}>
+												<Link to={subItem.to}>
+													<Button className={`w-100 ${selectedButton === subItem.label ? "active-button" : ""}`} onClick={() => handleButtonClick(subItem.label, subItem.to, false)}>
+														{subItem.label}
+													</Button>
+												</Link>
+											</li>
+										))}
 								</ul>
 							)}
 						</>
 					) : (
 						<Link to={item.to}>
-							<Button
-								className={`w-100 ${selectedButton === item.label ? "active-button" : ""}`}
-								onClick={() => handleButtonClick(item.label, item.to, item.hasDropdown)}
-							>
+							<Button className={`w-100 ${selectedButton === item.label ? "active-button" : ""}`} onClick={() => handleButtonClick(item.label, item.to, item.hasDropdown)}>
 								<span className="icon">{item.icon}</span>
 								{item.label}
 							</Button>
