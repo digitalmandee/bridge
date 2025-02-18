@@ -64,9 +64,10 @@ const Payment = () => {
 		<>
 			<div
 				style={{
+					width: '100%',
 					display: "flex",
 					justifyContent: "center",
-					alignItems: "center",
+					// alignItems: "center",
 				}}>
 				<div
 					style={{
@@ -75,7 +76,7 @@ const Payment = () => {
 						borderRadius: "10px",
 						// boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
 						width: "80%",
-						maxWidth: "500px",
+						maxWidth: "600px",
 						margin: "0 auto",
 					}}>
 					<h3
@@ -91,12 +92,19 @@ const Payment = () => {
 					<div
 						style={{
 							display: "flex",
-							// backgroundColor:'black',
+							backgroundColor: 'transparent',
 							justifyContent: "space-between",
-							gap: "2rem",
+							gap: "1rem",
 							marginBottom: "20px",
 						}}>
-						<div
+						<div style={{
+							flex: 1,
+							textAlign: "center",
+							padding: "20px",
+							borderRadius: "10px",
+							cursor: "pointer",
+							backgroundColor: '#FFFFFF',
+						}}
 							className={`payment-methods ${bookingdetails.payment_method === "cash" ? "active" : ""}`}
 							onClick={() =>
 								setBookingDetails((prevDetails) => ({
@@ -114,7 +122,14 @@ const Payment = () => {
 								Cash
 							</p>
 						</div>
-						<div
+						<div style={{
+							flex: 1,
+							textAlign: "center",
+							padding: "20px",
+							borderRadius: "10px",
+							cursor: "pointer",
+							backgroundColor: '#FFFFFF',
+						}}
 							className={`payment-methods ${bookingdetails.payment_method === "bank" ? "active" : ""}`}
 							onClick={() =>
 								setBookingDetails((prevDetails) => ({
@@ -173,17 +188,53 @@ const Payment = () => {
 					</button>
 					{showModal && <Modal handleClose={handleClose} />}
 				</div>
-				<div style={{ backgroundColor: "white", padding: "10px" }}>
-					<span style={{ fontSize: "18px", fontWeight: 600 }}>
-						Plan name: {bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan)?.name} <br />
-						Plan price: Rs. {bookingdetails.total_price} <br />
-						Plan Details: {bookingdetails.package_detail}
-					</span>
-					{/* Display Selected Chairs */}
+				<div style={{
+					width: '100%',
+					maxWidth: '250px',
+					marginTop: '4rem',
+					marginLeft: '1rem',
+					backgroundColor: '#fff',
+					// width: '200px',
+					height: '40vh',
+					padding: '10px',
+					borderRadius: '10px',
+					boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.1)',
+					display: 'flex',
+					flexDirection: 'column',
+					justifyContent: 'flex-start',
+					overflowY: 'auto',
+					// scrollbarWidth: 'none',
+				}} className="scroll-container"
+				>
+					<style>
+						{`
+      /* Hide scrollbar by default */
+      .scroll-container::-webkit-scrollbar {
+        width: 6px;
+        background: transparent; 
+      }
+      .scroll-container::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: 10px;
+      }
+      .scroll-container::-webkit-scrollbar-thumb {
+        background: #b3b3b3; /* Subtle gray color */
+        border-radius: 4px;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      }
+      /* Show scrollbar when hovering */
+      .scroll-container:hover::-webkit-scrollbar-thumb {
+        opacity: 1;
+      }
+    `}
+					</style>
 					{Object.entries(selectedChairs).length > 0 && (
 						<div className="selected-chairs" style={{ width: "100%" }}>
-							<h3>Selected Chairs:</h3>
-							<ul>
+							<h3 style={{
+								marginTop: '-15px', fontSize: "26px", color: "#002855"
+							}}>Selected Chairs:</h3>
+							<ul style={{ padding: 0, marginTop: "5px", listStyle: "none" }}>
 								{Object.entries(selectedChairs).map(([tableId, chairs]) =>
 									chairs.map((chair) => (
 										<li key={chair.id}>
@@ -195,6 +246,11 @@ const Payment = () => {
 							</ul>
 						</div>
 					)}
+					<span style={{ fontSize: "18px", color: "#444", lineHeight: "1.6" }}>
+						Plan name: {bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan)?.name} <br />
+						Plan price: Rs. {bookingdetails.total_price} <br />
+						Plan Details: {bookingdetails.package_detail}
+					</span>
 				</div>
 			</div>
 		</>

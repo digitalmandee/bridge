@@ -18,6 +18,7 @@ import CompanyDashboard from "@/pages/dashboard/company";
 //Employee Management
 import EmployeeDashboard from "./pages/employee/dashboard";
 import EmployeeCreate from "./pages/employee/create";
+import EmployeeDetails from "./pages/employee/employeedetails";
 
 // Invoice Management
 import InvoiceDashboard from "@/pages/invoice/dashboard";
@@ -371,6 +372,15 @@ function App() {
 					element={
 						<ProtectedRoute role="admin">
 							<EmployeeCreate />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/branch/employee/details"
+					element={
+						<ProtectedRoute role="admin">
+							<EmployeeDetails />
 						</ProtectedRoute>
 					}
 				/>
