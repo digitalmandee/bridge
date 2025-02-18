@@ -56,9 +56,6 @@ const menuItems = [
 			{ to: "/branch/member/contracts", label: "Contract" },
 		],
 	},
-	{ to: "", label: "Inventory Management", icon: <MdOutlineInventory />, hasDropdown: true },
-	{ to: "", label: "Expense Management", icon: <LuListTodo />, hasDropdown: true },
-	{ to: "", label: "Financial Report", icon: <GoDatabase />, hasDropdown: true },
 	{
 		label: "Employee Management",
 		icon: <SlCalender />,
@@ -68,7 +65,9 @@ const menuItems = [
 			{ to: "", label: "Personal Detail" },
 		],
 	},
-	// { to: "", label: "Employee Management", icon: <BsGraphUpArrow /> },
+	{ to: "", label: "Inventory Management", icon: <MdOutlineInventory />, hasDropdown: true },
+	{ to: "", label: "Expense Management", icon: <LuListTodo />, hasDropdown: true },
+	{ to: "", label: "Financial Report", icon: <GoDatabase />, hasDropdown: true },
 	{ to: "", label: "Contact", icon: <IoMdContact />, hasDropdown: false },
 	{ to: "", label: "Settings", icon: <RxDashboard />, hasDropdown: false },
 ];
