@@ -10,14 +10,14 @@ import { ArrowDownIcon, ArrowUpIcon, Bell, Building2, FileText, Building } from 
 import { useNavigate } from "react-router-dom";
 
 const bookingData = [
-    { id: '#123', name: 'Ali', department: 'Digital Marketing', designation: 'Assistant', startDate: 'Jan 01, 2024', email: 'ali@gmail.com', branch:'Gulberg', status: 'Confirmed' },
-    { id: '#123', name: 'Anas', department: 'Web Development', designation: 'Associate', startDate: 'Jan 15, 2024', email: 'ali@gmail.com', branch:'Gulberg', status: 'Confirmed' },
-    { id: '#123', name: 'Arif', department: 'Manager', designation: 'Manager', startDate: 'Feb 01, 2024', email: 'ali@gmail.com', branch:'DHA', status: 'Cancelled' },
-    { id: '#123', name: 'Ali', department: 'HR Management', designation: 'HR Officer', startDate: 'Feb 05, 2024', email: 'ali@gmail.com', branch:'Gulberg', status: 'Pending' },
-    { id: '#123', name: 'Faraz', department: 'Social Media', designation: 'Associate', startDate: 'Feb 10, 2024', email: 'ali@gmail.com', branch:'DHA', status: 'Confirmed' },
-    { id: '#123', name: 'Aisha', department: 'Office', designation: 'Office Boy', startDate: 'Feb 12, 2024', email: 'ali@gmail.com', branch:'DHA', status: 'Confirmed' },
-    { id: '#123', name: 'Ash', department: 'Finance', designation: 'CFO', startDate: 'Feb 20, 2024', email: 'ali@gmail.com', branch:'Gulberg', status: 'Confirmed' },
-    { id: '#123', name: 'Winnie', department: 'Admin', designation: 'Manager', startDate: 'Feb 25, 2024', email: 'ali@gmail.com', branch:'Gulberg', status: 'Confirmed' },
+    { id: '#123', name: 'Ali Ansari', department: 'Digital Marketing', designation: 'Assistant', startDate: 'Jan 01, 2024', email: 'ali@gmail.com', branch: 'Gulberg', status: 'Confirmed' },
+    { id: '#123', name: 'Anas Sheikh', department: 'Web Development', designation: 'Associate', startDate: 'Jan 15, 2024', email: 'ali@gmail.com', branch: 'Gulberg', status: 'Confirmed' },
+    { id: '#123', name: 'Arif Hameed', department: 'Manager', designation: 'Manager', startDate: 'Feb 01, 2024', email: 'ali@gmail.com', branch: 'DHA', status: 'Cancelled' },
+    { id: '#123', name: 'Ali Afghan', department: 'HR Management', designation: 'HR Officer', startDate: 'Feb 05, 2024', email: 'ali@gmail.com', branch: 'Gulberg', status: 'Pending' },
+    { id: '#123', name: 'Faraz Naseem', department: 'Social Media', designation: 'Associate', startDate: 'Feb 10, 2024', email: 'ali@gmail.com', branch: 'DHA', status: 'Confirmed' },
+    { id: '#123', name: 'Aisha Afzal', department: 'Office', designation: 'Office Boy', startDate: 'Feb 12, 2024', email: 'ali@gmail.com', branch: 'DHA', status: 'Confirmed' },
+    { id: '#123', name: 'Ash Sodi', department: 'Finance', designation: 'CFO', startDate: 'Feb 20, 2024', email: 'ali@gmail.com', branch: 'Gulberg', status: 'Confirmed' },
+    { id: '#123', name: 'Winnie Peter', department: 'Admin', designation: 'Manager', startDate: 'Feb 25, 2024', email: 'ali@gmail.com', branch: 'Gulberg', status: 'Confirmed' },
 ];
 
 const EmployeeDashboard = () => {
@@ -41,7 +41,7 @@ const EmployeeDashboard = () => {
                         </div>
 
                         {/* Metric Cards */}
-                        <div style={{ display: 'flex', width:'98%', justifyContent: 'space-between', gap:'1rem', marginBottom: '24px' }}>
+                        <div style={{ display: 'flex', width: '98%', justifyContent: 'space-between', gap: '1rem', marginBottom: '24px' }}>
                             {[
                                 { title: 'Total Employees', value: '60', icon: EventSeatIcon, color: '#0D2B4E' },
                                 { title: 'Total Present', value: '45', icon: PeopleIcon, color: '#0D2B4E' },
@@ -81,7 +81,10 @@ const EmployeeDashboard = () => {
                                     <TableBody>
                                         {bookingData.map((row, index) => (
                                             <TableRow key={index}>
-                                                <TableCell>{row.id}</TableCell>
+                                                <TableCell
+                                                    style={{ cursor: 'pointer', fontWeight:'bold' }}
+                                                    onClick={() => navigate(`/branch/employee/details/${row.id}`, { state: { employee: row } })}
+                                                >{row.id}</TableCell>
                                                 <TableCell>{row.name}</TableCell>
                                                 <TableCell>{row.department}</TableCell>
                                                 <TableCell>{row.designation}</TableCell>
