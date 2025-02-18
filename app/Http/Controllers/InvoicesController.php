@@ -68,7 +68,7 @@ class InvoicesController extends Controller
             $query->orderBy('created_at', 'desc')->paginate($limit);
         }])->select('id', 'name', 'email', 'type', 'profile_image', 'phone_no')->firstOrFail();
 
-        return response()->json(['success' => true, 'costomer' => $customer]);
+        return response()->json(['success' => true, 'customer' => $customer]);
     }
 
     public function update(Request $request)

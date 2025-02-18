@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b091b122b381750df0dc2a2786b44cc1",
+    "content-hash": "35ec4e83e6a70a0aa34bcdabee96be62",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3004,6 +3004,43 @@
                 }
             ],
             "time": "2021-09-25T23:10:38+00:00"
+        },
+        {
+            "name": "rats/zkteco",
+            "version": "V002",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/raihanafroz/zkteco.git",
+                "reference": "6e17024370ec56c89d87c85a54a1c55079304834"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/raihanafroz/zkteco/zipball/6e17024370ec56c89d87c85a54a1c55079304834",
+                "reference": "6e17024370ec56c89d87c85a54a1c55079304834",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Rats\\Zkteco\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Raihan Afroz",
+                    "email": "raihanafroz9@gmail.com"
+                }
+            ],
+            "description": "ZKTeco Laravel Library",
+            "support": {
+                "issues": "https://github.com/raihanafroz/zkteco/issues",
+                "source": "https://github.com/raihanafroz/zkteco/tree/V002"
+            },
+            "time": "2021-11-21T17:53:28+00:00"
         },
         {
             "name": "spatie/laravel-permission",
@@ -7949,12 +7986,12 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^7.3|^8.0"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }

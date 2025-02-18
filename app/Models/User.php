@@ -42,6 +42,8 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
     ];
 
+    protected $appends = ['last_login_human']; // This ensures it appears in API responses
+
     public function role()
     {
         return $this->belongsTo(Role::class);
@@ -100,6 +102,15 @@ class User extends Authenticatable
         return $this->belongsTo(Chair::class, 'allocated_seat_id', 'id');
     }
 
+    public function companyUsers()
+    {
+        return $this->hasMany(User::class, 'company_id', 'id');
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'id', 'user_id');
+    }
 
     // Define notifications relationship (optional, but explicit)
     // public function notifications()

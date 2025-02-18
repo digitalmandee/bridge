@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\BookingPlan;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -30,6 +31,16 @@ class GlobalController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'Invalid type'], 400);
+    }
+
+    public function searchPlan(Request $request)
+    {
+        $branchId = auth()->user()->branch->id;
+        $query = $request->input('query');
+
+        $plans = BookingPlan::where(['branch_id' => $branchId])->where('name', 'like', "%$query%")->select('id', 'name', 'price', 'type')->get();
+
+        return response()->json(['success' => true, 'results' => $plans], 200);
     }
 
     public function getMembers()

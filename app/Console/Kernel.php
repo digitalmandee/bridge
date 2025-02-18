@@ -22,6 +22,12 @@ class Kernel extends ConsoleKernel
 
         // Full-day invoice: Runs every hour
         $schedule->command('invoice:generate-fullday')->hourly();
+
+        // Monthly attendance: Runs at the end of the month
+        $schedule->command('sync:attendance')->cron('*/5 9-21 * * *');  // Every 5 minutes from 9 AM to 9 PM
+        // */5: Every 5 minutes.
+        // 9-21: From 9 AM (9) to 9 PM (21).
+        // * * *: Every day of the month, every month, and every day of the week.
     }
 
 
