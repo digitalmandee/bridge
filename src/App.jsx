@@ -377,7 +377,7 @@ function App() {
 				/>
 
 				<Route
-					path="/branch/employee/details"
+					path="/branch/employee/details/:employeeId"
 					element={
 						<ProtectedRoute role="admin">
 							<EmployeeDetails />
