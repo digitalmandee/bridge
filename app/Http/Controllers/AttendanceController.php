@@ -133,4 +133,19 @@ class AttendanceController extends Controller
 
         return response()->json(['success' => true, 'leave_applications' => $leaveApplications]);
     }
+
+    public function profileReport(Request $request, $employeeId)
+    {
+        $branchId = auth()->user()->branch->id;
+
+        // Get the start and end dates of the current month by default
+        $month = $request->query('month', now()->format('Y-m')); // Default to current month
+        $startDate = Carbon::parse($month . '-01')->startOfMonth();
+        $endDate = Carbon::parse($month . '-01')->endOfMonth();
+
+        // Fetch attendance records for all employees in the branch for the selected month
+        $attendance = Attendance::where('branch_id', $branchId)->where('employee_id', $employeeId)->whereBetween('date', [$startDate, $endDate])->get();
+
+        return response()->json(['success' => true, 'report' => $attendance]);
+    }
 }

@@ -117,17 +117,20 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::group(['prefix' => 'employees'], function () {
         Route::get('', [EmployeeController::class, 'index']);
+        Route::get('dashboard', [EmployeeController::class, 'dashboard']);
         Route::post('create', [EmployeeController::class, 'store']);
+        Route::get('show/{id}', [EmployeeController::class, 'show']);
         Route::put('update/{id}', [EmployeeController::class, 'update']);
 
         Route::resource('leavecategories', LeaveCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
 
         Route::group(['prefix' => 'attendances'], function () {
-            Route::post('get', [AttendanceController::class, 'index']);
-            Route::post('/all/report', [AttendanceController::class, 'allEmployeesReport']);
-            Route::post('/leave/create', [AttendanceController::class, 'createLeave']);
-            Route::put('/leave/update/{id}', [AttendanceController::class, 'updateLeave']);
-            Route::post('/leave/report', [AttendanceController::class, 'leaveReport']);
+            Route::get('', [AttendanceController::class, 'index']);
+            Route::get('profile/report/{employeeId}', [AttendanceController::class, 'profileReport']);
+            Route::post('all/report', [AttendanceController::class, 'allEmployeesReport']);
+            Route::post('leave/create', [AttendanceController::class, 'createLeave']);
+            Route::put('leave/update/{id}', [AttendanceController::class, 'updateLeave']);
+            Route::post('leave/report', [AttendanceController::class, 'leaveReport']);
         });
     });
 
