@@ -11,17 +11,6 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/utils/axiosInstance";
 import { Box } from "@mui/system";
 
-// const bookingData = [
-// 	{ id: "#123", name: "Ali Ansari", department: "Digital Marketing", designation: "Assistant", startDate: "Jan 01, 2024", email: "ali@gmail.com", branch: "Gulberg", status: "Confirmed" },
-// 	{ id: "#123", name: "Anas Sheikh", department: "Web Development", designation: "Associate", startDate: "Jan 15, 2024", email: "ali@gmail.com", branch: "Gulberg", status: "Confirmed" },
-// 	{ id: "#123", name: "Arif Hameed", department: "Manager", designation: "Manager", startDate: "Feb 01, 2024", email: "ali@gmail.com", branch: "DHA", status: "Cancelled" },
-// 	{ id: "#123", name: "Ali Afghan", department: "HR Management", designation: "HR Officer", startDate: "Feb 05, 2024", email: "ali@gmail.com", branch: "Gulberg", status: "Pending" },
-// 	{ id: "#123", name: "Faraz Naseem", department: "Social Media", designation: "Associate", startDate: "Feb 10, 2024", email: "ali@gmail.com", branch: "DHA", status: "Confirmed" },
-// 	{ id: "#123", name: "Aisha Afzal", department: "Office", designation: "Office Boy", startDate: "Feb 12, 2024", email: "ali@gmail.com", branch: "DHA", status: "Confirmed" },
-// 	{ id: "#123", name: "Ash Sodi", department: "Finance", designation: "CFO", startDate: "Feb 20, 2024", email: "ali@gmail.com", branch: "Gulberg", status: "Confirmed" },
-// 	{ id: "#123", name: "Winnie Peter", department: "Admin", designation: "Manager", startDate: "Feb 25, 2024", email: "ali@gmail.com", branch: "Gulberg", status: "Confirmed" },
-// ];
-
 const EmployeeDashboard = () => {
 	const navigate = useNavigate();
 

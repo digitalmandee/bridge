@@ -20,6 +20,11 @@ import EmployeeDashboard from "./pages/employee/dashboard";
 import EmployeeCreate from "./pages/employee/create";
 import EmployeeDetails from "./pages/employee/employeedetails";
 
+// Leave Category
+import LeaveCategory from "./pages/attendance/leavecategory/management";
+import LeaveCategoryCreate from "./pages/attendance/leavecategory/create";
+import LeaveCategoryEdit from "./pages/attendance/leavecategory/edit";
+
 // Invoice Management
 import InvoiceDashboard from "@/pages/invoice/dashboard";
 import InvoiceCreate from "@/pages/invoice/create";
@@ -49,7 +54,6 @@ import MemberContracts from "@/pages/members/contracts";
 
 // Attendance
 import AttendanceDashboard from "./pages/attendance/dashboard";
-import LeaveCategory from "./pages/attendance/leave";
 import LeaveApplication from "./pages/attendance/leaveapplication";
 import NewApplication from "./pages/attendance/newapplication";
 import LeaveManage from "./pages/attendance/leavemanage";
@@ -61,6 +65,7 @@ import MonthlyReport from "./pages/attendance/monthlyreport";
 // Notification
 import Notifications from "@/pages/notificaitons";
 import MemberCompanyDetail from "./pages/members/detail";
+
 function App() {
 	const [showSplash, setShowSplash] = useState(true);
 
@@ -411,6 +416,23 @@ function App() {
 					element={
 						<ProtectedRoute role="admin">
 							<LeaveCategory />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/branch/employee/leave/category/create"
+					element={
+						<ProtectedRoute role="admin">
+							<LeaveCategoryCreate />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/employee/leave/category/edit/:id"
+					element={
+						<ProtectedRoute role="admin">
+							<LeaveCategoryEdit />
 						</ProtectedRoute>
 					}
 				/>

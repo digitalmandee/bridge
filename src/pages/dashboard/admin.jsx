@@ -68,7 +68,7 @@ const AdminDashboard = () => {
 	const metrics = [
 		{ label: "Total Revenue", value: "100,000", unit: "Pkr", change: 2.5, increase: true },
 		{ label: "Members Revenue", value: "90,000", unit: "Pkr", change: 5, increase: false },
-		{ label: "On off Revenue", value: "0.00", unit: "Pkr", change: 2.5, increase: true },
+		{ label: "Total PNL", value: "0.00", unit: "Pkr", change: 2.5, increase: true },
 		{ label: "Desk Occupancy", value: "20", unit: "%", change: 5, increase: false },
 		{ label: "Occupied Desk Rate", value: "20,000", unit: "Pkr", change: 21.5, increase: true },
 		{ label: "Members Revenue", value: "30,000", unit: "Pkr", change: 5, increase: false },
