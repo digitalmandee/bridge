@@ -67,6 +67,7 @@ class AttendanceController extends Controller
             'employee_id' => 'required',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
+            'leave_category_id' => 'required',
             'reason' => 'required|string',
         ]);
 
@@ -89,6 +90,7 @@ class AttendanceController extends Controller
                 'employee_id' => $request->employee_id,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
+                'leave_category_id' => $request->leave_category_id,
                 'number_of_days' => $startDate->diffInDays($endDate) + 1,
                 'reason' => $request->reason,
             ]);
@@ -105,6 +107,7 @@ class AttendanceController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'required|string',
+            'leave_category_id' => 'required',
             'status' => 'required|in:pending,approved,rejected',
         ]);
 
@@ -113,6 +116,7 @@ class AttendanceController extends Controller
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'reason' => $request->reason,
+                'leave_category_id' => $request->leave_category_id,
                 'status' => $request->status
             ]);
 

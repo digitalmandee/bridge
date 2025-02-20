@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
-use App\Models\BookingInvoice;
 use App\Models\Chair;
 use App\Models\Invoice;
 use App\Models\Room;

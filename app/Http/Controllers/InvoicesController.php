@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
-use App\Models\BookingInvoice;
 use App\Models\Chair;
 use App\Models\Invoice;
 use App\Models\User;
@@ -73,18 +72,43 @@ class InvoicesController extends Controller
 
     public function update(Request $request)
     {
+        $validatedData = $request->validate([
+            'invoice_id'   => 'required|exists:invoices,id',
+            'status'       => 'required|string',
+            'due_date'     => 'required|date',
+            'paid_date'    => 'required_if:status,paid,overdue|date',
+            'payment_type' => 'required_if:status,paid,overdue|string',
+        ]);
 
-        $invoice = BookingInvoice::find($request->invoice_id);
+        $admin   = auth()->user();
+
+        $invoice = Invoice::find($validatedData['invoice_id']);
 
         if (!$invoice) {
-            return response()->json(['success' => false, 'message' => 'Invoice not found or not match with user',], 404);
+            return response()->json(['success' => false, 'message' => 'Invoice not found or does not match with user'], 404);
         }
 
+        $invoiceReceipt = $request->hasFile('receipt') && in_array($validatedData['status'], ['paid', 'overdue'])
+            ? $request->file('receipt')->store('invoices', 'public')
+            : $invoice->receipt;
+
         $invoice->update([
-            'amount' => $request->amount,
-            'status' => $request->status,
-            'paid_date' => $request->paid_date,
+            'status'       => $validatedData['status'],
+            'due_date'     => $validatedData['due_date'],
+            'paid_date'    => in_array($validatedData['status'], ['paid', 'overdue']) ? $validatedData['paid_date'] : $invoice->paid_date,
+            'payment_type' => in_array($validatedData['status'], ['paid', 'overdue']) ? $validatedData['payment_type'] : $invoice->payment_type,
+            'receipt'      => $invoiceReceipt
         ]);
+
+        $isCurrentMonth = $request->paidMonth === Carbon::now()->format('F') && $request->paidYear == Carbon::now()->year;
+
+        // Update user quotas based on invoice type
+        if ($isCurrentMonth) {
+            $this->updateUserQuotaByInvoice($invoice);
+        }
+
+        // Notify user & admin
+        $this->sendNotifications($admin, $invoice, 'Updated');
 
         return response()->json(['success' => true, 'message' => 'Invoice updated successfully']);
     }
@@ -210,7 +234,7 @@ class InvoicesController extends Controller
             $this->updateUserQuotaByInvoice($invoice);
 
             // Notify user & admin
-            $this->sendNotifications($admin, $invoice);
+            $this->sendNotifications($admin, $invoice, 'Created');
 
             return response()->json(['success' => true, 'message' => 'Invoice created successfully', 'invoice' => $invoice]);
         } catch (\Throwable $th) {
@@ -288,7 +312,7 @@ class InvoicesController extends Controller
     /**
      * Send invoice notifications to user & admin
      */
-    private function sendNotifications($admin, $invoice)
+    private function sendNotifications($admin, $invoice, $type)
     {
         $user = User::find($invoice->user_id);
 
@@ -296,18 +320,18 @@ class InvoicesController extends Controller
 
         // Notify user
         $user->notify(new GeneralNotification([
-            'title'     => "Invoice Created - {$admin->branch->name}",
+            'title'     => "Invoice $type - {$admin->branch->name}",
             'message'   => "Your invoice #{$invoice->id} for {$invoice->invoice_type} is due on {$invoice->due_date}.",
-            'type'      => 'invoice_created',
+            'type'      => 'invoice',
             'invoice_id' => $invoice->id,
             'status'    => $invoice->status,
         ]));
 
         // Notify admin
         $admin->notify(new GeneralNotification([
-            'title'     => "Invoice Created - User: {$user->name}",
-            'message'   => "An invoice (#{$invoice->id}) has been created for User ID {$user->id}.",
-            'type'      => 'invoice_created',
+            'title'     => "Invoice $type - User: {$user->name}",
+            'message'   => "An invoice (#{$invoice->id}) has been $type for User ID {$user->id}.",
+            'type'      => 'invoice',
             'invoice_id' => $invoice->id,
             'created_by' => $admin->branch->name,
         ]));

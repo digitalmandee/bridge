@@ -18,7 +18,7 @@ class CreateInvoicesTable extends Migration
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('booking_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->string('invoice_type');
+            $table->enum('invoice_type', ['Monthly', 'Printing Papers', 'Meeting Rooms']);
             $table->integer('quantity')->nullable();
             $table->decimal('hours', 10, 2)->nullable();
             $table->decimal('amount', 10, 2)->nullable();

@@ -30,10 +30,10 @@ class EmployeeController extends Controller
         // Get total employees in the branch (excluding deleted)
         $totalEmployees = Employee::where('branch_id', $branchId)->whereNull('deleted_at')->count();
 
-        // Get attendance statistics for the current month
-        $currentMonth = now()->format('Y-m');
+        // Get attendance statistics for the current day
+        $currentDay = now()->format('Y-m-d');
         $attendanceStats = Attendance::where('branch_id', $branchId)
-            ->whereRaw("DATE_FORMAT(date, '%Y-%m') = ?", [$currentMonth])
+            ->where('date', $currentDay)
             ->selectRaw("
                 SUM(CASE WHEN status = 'absent' THEN 1 ELSE 0 END) as total_absent,
                 SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) as total_present,
