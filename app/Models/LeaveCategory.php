@@ -10,5 +10,5 @@ class LeaveCategory extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['branch_id', 'name', 'description', 'status'];
+    protected $fillable = ['branch_id', 'name', 'color', 'description', 'status'];
 }

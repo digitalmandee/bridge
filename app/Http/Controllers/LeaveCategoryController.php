@@ -15,11 +15,11 @@ class LeaveCategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $limit =  $request->query('limit', 10);
+        // $limit =  $request->query('limit', 10);
 
         $branchId = auth()->user()->branch->id;
 
-        $leaveCategories = LeaveCategory::where('branch_id', $branchId)->orderByDesc('created_at')->paginate($limit);
+        $leaveCategories = LeaveCategory::where('branch_id', $branchId)->orderByDesc('created_at')->get();
 
         return response()->json(['success' => true, 'leave_categories' => $leaveCategories]);
     }
@@ -34,6 +34,7 @@ class LeaveCategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
+            'color' => 'required|string',
             'description' => 'required|string',
         ]);
 
@@ -41,6 +42,7 @@ class LeaveCategoryController extends Controller
             LeaveCategory::create([
                 'branch_id' => auth()->user()->branch->id,
                 'name' => $request->name,
+                'color' => $request->color,
                 'description' => $request->description,
             ]);
 
@@ -74,6 +76,7 @@ class LeaveCategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
+            'color' => 'required|string',
             'description' => 'required|string',
             'status' => 'required|in:published,draft',
         ]);
@@ -81,6 +84,7 @@ class LeaveCategoryController extends Controller
         try {
             LeaveCategory::find($id)->update([
                 'name' => $request->name,
+                'color' => $request->color,
                 'description' => $request->description,
                 'status' => $request->status,
             ]);

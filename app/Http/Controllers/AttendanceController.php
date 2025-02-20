@@ -14,12 +14,21 @@ class AttendanceController extends Controller
     //
     public function index(Request $request)
     {
+        $limit = $request->query('limit') ?? 10;
         $branchId = auth()->user()->branch->id;
-
         $date = $request->query('date', now()->format('Y-m-d'));
-        $attendance = Attendance::where('branch_id', $branchId)->with('employee')->where('date', $date)->get();
 
-        return response()->json($attendance);
+        // Load Employee with User
+        $attendance = Attendance::where('branch_id', $branchId)
+            ->with([
+                'employee:id,user_id,branch_id',
+                'employee.user:id,name,designation',
+                'leaveCategory:id,name',
+            ])
+            ->where('date', $date)
+            ->paginate($limit);
+
+        return response()->json(['success' => true, 'attendance' => $attendance], 200);
     }
 
     public function allEmployeesReport(Request $request)

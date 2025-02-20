@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Services\ZKTecoService;
 use App\Models\Attendance;
 use App\Models\Employee;
+use App\Models\LeaveApplication;
 use Carbon\Carbon;
 
 class SyncAttendance extends Command
@@ -23,53 +24,90 @@ class SyncAttendance extends Command
     public function handle()
     {
         // Fetch attendance data from ZKTeco
-        $logs = $this->zkService->getAttendance(); // Assuming this is how you fetch the logs from ZKTeco
+        // $logs = $this->zkService->getAttendance();
+
+        $logs = [
+            [
+                "uid" => 1,
+                "id" => "12",
+                "timestamp" => "2025-02-20 6:10:00",
+                "type" => 'check-out'
+            ],
+            [
+                "uid" => 1,
+                "id" => "13",
+                "timestamp" => "2025-02-20 9:10:00",
+                "type" => 'check-in'
+            ]
+        ];
+
         if (!$logs) {
             $this->info("No attendance data found.");
-            return;
         }
 
         // Define the standard working time (e.g., 9:00 AM) for late arrival check
         $standardTime = Carbon::createFromFormat('H:i', '09:00');
+        $today = Carbon::today()->format('Y-m-d');
+
+        // Get all employees
+        $employees = Employee::all();
+
+        // Track employees who have attendance logs today
+        $employeesWithAttendance = [];
 
         foreach ($logs as $log) {
-            // Fetch the employee data based on the employee ID
             $employee = Employee::where('employee_id', $log['id'])->first();
+
             if ($employee) {
-                // Prepare attendance data
+                $employeesWithAttendance[] = $employee->id;
+
                 $attendanceData = [
+                    'branch_id' => $employee->branch_id,
                     'employee_id' => $employee->id,
+                    'attendance' => true,
                     'date' => Carbon::parse($log['timestamp'])->format('Y-m-d'),
                     'check_in' => $log['type'] === 'check-in' ? Carbon::parse($log['timestamp'])->format('H:i:s') : null,
                     'check_out' => $log['type'] === 'check-out' ? Carbon::parse($log['timestamp'])->format('H:i:s') : null,
                 ];
 
-                // If the check-in time exists, check if it's late and update status
                 if ($attendanceData['check_in']) {
                     $checkInTime = Carbon::parse($attendanceData['check_in']);
-
-                    // If the check-in time is later than the standard time (e.g., 9:00 AM), mark as late
-                    if ($checkInTime->gt($standardTime)) {
-                        $attendanceData['status'] = 'late'; // Mark the status as late
-                    } else {
-                        $attendanceData['status'] = 'present'; // If on time, mark as present
-                    }
+                    $attendanceData['status'] = $checkInTime->gt($standardTime) ? 'late' : 'present';
                 }
 
-                // Check if an attendance record already exists for the employee on this date
-                $attendance = Attendance::where('employee_id', $attendanceData['employee_id'])->where('date', $attendanceData['date'])->first();
+                $attendance = Attendance::where('employee_id', $attendanceData['employee_id'])
+                    ->where('date', $attendanceData['date'])
+                    ->first();
 
-                // If the attendance exists but doesn't have a check-in time, update all fields
-                if ($attendance && !$attendance->check_in && $attendanceData['check_in']) {
-                    // Update all fields: check_in and check_out (if available)
-                    $attendance->update($attendanceData);
-                } elseif ($attendance && $attendance->check_in && !$attendance->check_out && $attendanceData['check_out']) {
-                    // If attendance already has check-in but doesn't have check-out, only update check-out
-                    $attendance->update(['check_out' => $attendanceData['check_out']]);
-                } elseif (!$attendance) {
-                    // If no attendance record exists for the employee on that day, create a new one
+                if ($attendance) {
+                    if (!$attendance->check_in && $attendanceData['check_in']) {
+                        $attendance->update($attendanceData);
+                    } elseif ($attendance->check_in && !$attendance->check_out && $attendanceData['check_out']) {
+                        $attendance->update(['check_out' => $attendanceData['check_out']]);
+                    }
+                } else {
                     Attendance::create($attendanceData);
                 }
+            }
+        }
+
+        // Check for employees who have no attendance records
+        foreach ($employees as $employee) {
+            if (!in_array($employee->id, $employeesWithAttendance)) {
+                // Check if the employee is on leave today
+                $onLeave = LeaveApplication::where('employee_id', $employee->id)
+                    ->whereDate('start_date', '<=', $today)
+                    ->whereDate('end_date', '>=', $today)
+                    ->where('status', 'approved') // Ensure leave is approved
+                    ->exists();
+
+                // Set status based on leave status
+                $status = $onLeave ? 'leave' : 'absent';
+
+                Attendance::updateOrCreate(
+                    ['branch_id' => $employee->branch_id, 'employee_id' => $employee->id, 'date' => $today],
+                    ['attendance' => false, 'status' => $status]
+                );
             }
         }
 

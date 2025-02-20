@@ -17,6 +17,7 @@ class CreateLeaveCategoriesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->string('name');
+            $table->string('color');
             $table->string('description');
             $table->enum('status', ['published', 'draft'])->default('published');
             $table->softDeletes();

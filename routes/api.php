@@ -122,7 +122,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('show/{id}', [EmployeeController::class, 'show']);
         Route::put('update/{id}', [EmployeeController::class, 'update']);
 
-        Route::resource('leavecategories', LeaveCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('leavecategories', LeaveCategoryController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 
         Route::group(['prefix' => 'attendances'], function () {
             Route::get('', [AttendanceController::class, 'index']);
