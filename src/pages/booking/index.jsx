@@ -90,18 +90,21 @@ const Booking = () => {
 						</div>
 						<div //stepper
 							style={{
-								// width: "50%",
+								// width: "40%",
+								// maxWidth:'600px',
+								// backgroundColor:'black',
 								display: "flex",
 								justifyContent: "center",
 								alignItems: "center",
 								marginBottom: "20px",
-								gap: '30px',
+								// marginLeft:'12rem',
+								gap: '3rem',
 							}}>
 							{steps.map((step, index) => (
 								<div key={step.id} style={{
 									display: "flex",
-									// width:'30%',
-									// flexDirection: "column",
+									// width:'50%',
+									// backgroundColor: "black",
 									alignItems: "center",
 									// textAlign: "center",
 								}}>
@@ -113,12 +116,12 @@ const Booking = () => {
 											display: "flex",
 											alignItems: "center",
 											justifyContent: "center",
-											fontWeight: "bold",
+											fontWeight: "100",
 											fontSize: "16px",
 											color: "white",
 											backgroundColor: currentStep > step.id ? "#002855" : currentStep === step.id ? "#002855" : "#ccc",
 											cursor: "pointer",
-											position:'relative',
+											// position:'relative',
 											zIndex:2
 										}}
 											onClick={() => setCurrentStep(step.id)}
@@ -131,11 +134,12 @@ const Booking = () => {
 										<div
 											style={{
 												width: "120px",
-												height: "3px",
+												height: "2px",
 												backgroundColor: currentStep > step.id ? "#002855" : "#ccc",
 												position: "relative",
 												top:'-20px',
-												left:'10px',
+												right:'-20px',
+												// left:'10px',
 												zIndex:'1'
 											}}
 										/>

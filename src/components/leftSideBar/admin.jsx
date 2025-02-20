@@ -62,7 +62,7 @@ const menuItems = [
 		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/employee/dashboard", label: "Employee Dashboard" },
-			{ to: "", label: "Personal Detail" },
+			{ to: "/branch/employee/attendance", label: "Attendance" },
 		],
 	},
 	{ to: "", label: "Inventory Management", icon: <MdOutlineInventory />, hasDropdown: true },

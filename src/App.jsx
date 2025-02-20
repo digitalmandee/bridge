@@ -47,6 +47,17 @@ import MemberCompanies from "@/pages/members/companies";
 import MemberUsers from "@/pages/members/users";
 import MemberContracts from "@/pages/members/contracts";
 
+// Attendance
+import AttendanceDashboard from "./pages/attendance/dashboard";
+import LeaveCategory from "./pages/attendance/leave";
+import LeaveApplication from "./pages/attendance/leaveapplication";
+import NewApplication from "./pages/attendance/newapplication";
+import LeaveManage from "./pages/attendance/leavemanage";
+import LeaveReport from "./pages/attendance/leavereport";
+import ManageAttendance from "./pages/attendance/manageattendance";
+import AttendanceReport from "./pages/attendance/attendancereport";
+import MonthlyReport from "./pages/attendance/monthlyreport";
+
 // Notification
 import Notifications from "@/pages/notificaitons";
 import MemberCompanyDetail from "./pages/members/detail";
@@ -381,6 +392,88 @@ function App() {
 					element={
 						<ProtectedRoute role="admin">
 							<EmployeeDetails />
+						</ProtectedRoute>
+					}
+				/>
+				{/* Attendance */}
+
+				<Route
+					path="/branch/employee/attendance"
+					element={
+						<ProtectedRoute role="admin">
+							<AttendanceDashboard />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/branch/employee/leave/category"
+					element={
+						<ProtectedRoute role="admin">
+							<LeaveCategory />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/branch/employee/leave/application"
+					element={
+						<ProtectedRoute role="admin">
+							<LeaveApplication />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/branch/employee/leave/new/application"
+					element={
+						<ProtectedRoute role="admin">
+							<NewApplication />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/branch/employee/leave/management"
+					element={
+						<ProtectedRoute role="admin">
+							<LeaveManage />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/branch/employee/leave/report"
+					element={
+						<ProtectedRoute role="admin">
+							<LeaveReport />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/branch/employee/manage/attendance"
+					element={
+						<ProtectedRoute role="admin">
+							<ManageAttendance />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/branch/employee/attendance/report"
+					element={
+						<ProtectedRoute role="admin">
+							<AttendanceReport />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/branch/employee/attendance/monthly/report"
+					element={
+						<ProtectedRoute role="admin">
+							<MonthlyReport />
 						</ProtectedRoute>
 					}
 				/>

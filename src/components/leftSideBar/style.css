@@ -103,17 +103,21 @@
 .submenu {
     margin: 0;
     padding: 0;
-    /* Indent submenu items */
     background-color: #f9f9f9;
+    transition: max-height 0.3s ease-in-out;
+}
+
+.submenu li button {
+    padding: 8px 10px !important; /* Reduce padding inside the buttons */
+    font-size: 10px; /* Adjust font size if needed */
+    line-height: 0.2; /* Reduce line height */
 }
 
 .submenu li {
     list-style: none;
-    /* background-color: aqua; */
     width: '100%';
-    /* padding: 5px 2rem; */
+    padding: 0px;
 }
-
 
 
 .submenu li a {
@@ -125,6 +129,7 @@
     padding-left: 2rem;
     box-sizing: border-box;
     border-radius: 0.3rem;
+    height: auto;
 }
 
 .sidebar ul .submenu li a:hover {

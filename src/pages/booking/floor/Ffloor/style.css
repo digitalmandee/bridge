@@ -7,7 +7,7 @@
     /* Ensures child elements are positioned relative to this div */
     background-image: url("../../../../assets/firstfloor.png");
     background-size: contain;
-    /* Ensures proportional scaling */
+    border-radius: 0.5rem;
     background-repeat: no-repeat;
     background-position: 'flex-center';
     /* background-color: black; */
