@@ -31,6 +31,39 @@ class AttendanceController extends Controller
         return response()->json(['success' => true, 'attendance' => $attendance], 200);
     }
 
+    public function updateAttendance(Request $request, $attendanceId)
+    {
+        // Validate
+        $request->validate([
+            'leave_category_id' => 'nullable|integer|exists:leave_categories,id',
+            'check_in' => 'nullable|date_format:H:i:s|before:check_out',
+            'check_out' => 'nullable|date_format:H:i:s|after:check_in',
+            'status' => [
+                'required',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->leave_category_id && $value !== 'leave') {
+                        $fail("Status must be 'leave' when a leave category is selected.");
+                    }
+                },
+            ],
+        ]);
+
+        // Find attendance or fail
+        $attendance = Attendance::findOrFail($attendanceId);
+
+        // Update attendance fields
+        $attendance->fill([
+            'leave_category_id' => $request->leave_category_id,
+            'check_in' => $request->check_in,
+            'check_out' => $request->check_out,
+            'status' => $request->status,
+        ])->save();
+
+        // Return success response
+        return response()->json(['success' => true, 'message' => 'Attendance updated successfully'], 200);
+    }
+
+
     public function allEmployeesReport(Request $request)
     {
         $branchId = auth()->user()->branch->id;
@@ -73,10 +106,10 @@ class AttendanceController extends Controller
     public function createLeave(Request $request)
     {
         $request->validate([
-            'employee_id' => 'required',
+            'employee_id' => 'required|exists:employees,id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'leave_category_id' => 'required',
+            'leave_category_id' => 'required|exists:leave_categories,id',
             'reason' => 'required|string',
         ]);
 

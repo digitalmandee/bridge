@@ -126,6 +126,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
         Route::group(['prefix' => 'attendances'], function () {
             Route::get('', [AttendanceController::class, 'index']);
+            Route::put('{attendanceId}', [AttendanceController::class, 'updateAttendance']);
             Route::get('profile/report/{employeeId}', [AttendanceController::class, 'profileReport']);
             Route::post('all/report', [AttendanceController::class, 'allEmployeesReport']);
             Route::post('leave/create', [AttendanceController::class, 'createLeave']);

@@ -30,13 +30,13 @@ class SyncAttendance extends Command
             [
                 "uid" => 1,
                 "id" => "12",
-                "timestamp" => "2025-02-20 6:10:00",
-                "type" => 'check-out'
+                "timestamp" => "2025-02-21 9:00:00",
+                "type" => 'check-in'
             ],
             [
                 "uid" => 1,
                 "id" => "13",
-                "timestamp" => "2025-02-20 9:10:00",
+                "timestamp" => "2025-02-21 9:10:00",
                 "type" => 'check-in'
             ]
         ];
@@ -64,7 +64,6 @@ class SyncAttendance extends Command
                 $attendanceData = [
                     'branch_id' => $employee->branch_id,
                     'employee_id' => $employee->id,
-                    'attendance' => true,
                     'date' => Carbon::parse($log['timestamp'])->format('Y-m-d'),
                     'check_in' => $log['type'] === 'check-in' ? Carbon::parse($log['timestamp'])->format('H:i:s') : null,
                     'check_out' => $log['type'] === 'check-out' ? Carbon::parse($log['timestamp'])->format('H:i:s') : null,
@@ -106,7 +105,7 @@ class SyncAttendance extends Command
 
                 Attendance::updateOrCreate(
                     ['branch_id' => $employee->branch_id, 'employee_id' => $employee->id, 'date' => $today],
-                    ['attendance' => false, 'status' => $status]
+                    ['status' => $status]
                 );
             }
         }

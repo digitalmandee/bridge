@@ -10,7 +10,7 @@ class Attendance extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['branch_id', 'employee_id', 'leave_category_id', 'date', 'check_in', 'check_out', 'attendance', 'status'];
+    protected $fillable = ['branch_id', 'employee_id', 'leave_category_id', 'date', 'check_in', 'check_out', 'status'];
 
     public function employee()
     {
