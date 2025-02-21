@@ -62,6 +62,9 @@ import ManageAttendance from "./pages/attendance/manageattendance";
 import AttendanceReport from "./pages/attendance/attendancereport";
 import MonthlyReport from "./pages/attendance/monthlyreport";
 
+// User Roles
+import RoleManagement from "./pages/users/roles/management";
+
 // Notification
 import Notifications from "@/pages/notificaitons";
 import MemberCompanyDetail from "./pages/members/detail";
@@ -496,6 +499,17 @@ function App() {
 					element={
 						<ProtectedRoute role="admin">
 							<MonthlyReport />
+						</ProtectedRoute>
+					}
+				/>
+
+				{/* Manage User Roles */}
+
+				<Route
+					path="/branch/users/roles"
+					element={
+						<ProtectedRoute role="admin">
+							<RoleManagement />
 						</ProtectedRoute>
 					}
 				/>

@@ -75,7 +75,12 @@ const menuItems = [
 	{ to: "", label: "Inventory Management", icon: <MdOutlineInventory />, hasDropdown: true },
 	{ to: "", label: "Expense Management", icon: <LuListTodo />, hasDropdown: true },
 	{ to: "", label: "Financial Report", icon: <GoDatabase />, hasDropdown: true },
-	{ to: "", label: "Contact", icon: <IoMdContact />, hasDropdown: false },
+	{
+		label: "Users Role Management",
+		icon: <SlCalender />,
+		hasDropdown: true,
+		dropdown: [{ to: "/branch/users/roles", label: "Role" }],
+	},
 	{ to: "", label: "Settings", icon: <RxDashboard />, hasDropdown: false },
 ];
 
