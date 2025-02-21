@@ -6,47 +6,60 @@ import { MdArrowBackIos } from "react-icons/md";
 import { Button, TextField, Checkbox, Pagination, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper } from '@mui/material';
 
 const AttendanceReport = () => {
-    const navigate = useNavigate();
     const currentDate = new Date();
     const [month, setMonth] = useState(currentDate.getMonth() + 1);
     const [year, setYear] = useState(currentDate.getFullYear());
-    const [selectedDate, setSelectedDate] = useState("");
 
     const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
 
-    // Generate attendance dynamically
-    const generateAttendance = (days) => {
-        return Array(days).fill().map((_, index) => {
-            const day = index % 7;
-            if (day === 5 || day === 6) {
-                return ""; // Weekend
+    const getWeekdayIndex = (day, month, year) => {
+        return new Date(year, month - 1, day).getDay(); // 0 = Sunday, 6 = Saturday
+    };
+
+    const generateAttendance = (days, month, year) => {
+        let attendance = Array(days).fill("");
+
+        let weekdayIndexes = [];
+        for (let i = 1; i <= days; i++) {
+            let dayOfWeek = getWeekdayIndex(i, month, year);
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                // Only consider weekdays (Monday to Friday)
+                weekdayIndexes.push(i - 1);
             }
-            return ["P", "S", "C", "B", "M", "U"][Math.floor(Math.random() * 6)];
+        }
+
+        let totalWeekdays = weekdayIndexes.length;
+        let presentDays = Math.floor(totalWeekdays * 0.9); // 90% Present
+
+        let shuffledIndexes = weekdayIndexes.sort(() => 0.5 - Math.random());
+        shuffledIndexes.slice(0, presentDays).forEach(idx => (attendance[idx] = "P"));
+        shuffledIndexes.slice(presentDays).forEach(idx => {
+            attendance[idx] = ["S", "C", "B", "M", "U"][Math.floor(Math.random() * 5)];
         });
+
+        return attendance;
     };
 
     const [employees, setEmployees] = useState([
-        { id: "01", name: "John Doe", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "02", name: "Jane Doe", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "03", name: "Mike Smith", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "04", name: "John Doe", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "05", name: "Jane Doe", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "06", name: "Mike Smith", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "07", name: "John Doe", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "08", name: "Jane Doe", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "09", name: "Mike Smith", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "10", name: "John Doe", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "11", name: "Jane Doe", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "12", name: "Mike Smith", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "13", name: "John Doe", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "14", name: "Jane Doe", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "15", name: "Mike Smith", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "16", name: "John Doe", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "17", name: "Jane Doe", attendance: generateAttendance(getDaysInMonth(month, year)) },
-        { id: "18", name: "Mike Smith", attendance: generateAttendance(getDaysInMonth(month, year)) },
+        { id: "01", name: "John Doe", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "02", name: "Jane Doe", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "03", name: "Mike Smith", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "04", name: "John Doe", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "05", name: "Jane Doe", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "06", name: "Mike Smith", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "07", name: "John Doe", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "08", name: "Jane Doe", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "09", name: "Mike Smith", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "10", name: "John Doe", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "11", name: "Jane Doe", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "12", name: "Mike Smith", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "13", name: "John Doe", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "14", name: "Jane Doe", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "15", name: "Mike Smith", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "16", name: "John Doe", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "17", name: "Jane Doe", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
+        { id: "18", name: "Mike Smith", attendance: generateAttendance(getDaysInMonth(month, year), month, year) },
     ]);
-
-    const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
     const legend = [
         { label: "Present", color: "#6FC3AF", code: "P" },
@@ -59,27 +72,21 @@ const AttendanceReport = () => {
 
     const calculateTotalPresent = (attendance) => attendance.filter(status => status === "P").length;
 
-    // Handle month change
     const handleMonthChange = (event) => {
         const newMonth = parseInt(event.target.value);
         setMonth(newMonth);
-
-        // Update employees with new attendance for the selected month
         setEmployees(employees.map(emp => ({
             ...emp,
-            attendance: generateAttendance(getDaysInMonth(newMonth, year))
+            attendance: generateAttendance(getDaysInMonth(newMonth, year), newMonth, year)
         })));
     };
 
-    // Handle year change
     const handleYearChange = (event) => {
         const newYear = parseInt(event.target.value);
         setYear(newYear);
-
-        // Update attendance based on new year
         setEmployees(employees.map(emp => ({
             ...emp,
-            attendance: generateAttendance(getDaysInMonth(month, newYear))
+            attendance: generateAttendance(getDaysInMonth(month, newYear), month, newYear)
         })));
     };
 
@@ -125,10 +132,10 @@ const AttendanceReport = () => {
                         </div>
 
                         {/* Legend */}
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop:'1rem', marginBottom: "16px" }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem", marginTop: '1rem', marginBottom: "16px" }}>
                             {legend.map((item) => (
                                 <div key={item.code} className="d-flex align-items-center px-3 py-1"
-                                    style={{ backgroundColor: item.color, borderRadius: "6px", minWidth: "fit-content", gap: "8px" }}>
+                                    style={{ width:'100%', maxWidth:'148px', backgroundColor: item.color, borderRadius: "6px", minWidth: "fit-content", gap: "10px" }}>
                                     <span style={{ fontSize: "14px" }}>{item.label}</span>
                                     <span style={{ fontSize: "14px", fontWeight: "500", marginLeft: "4px" }}>{item.code}</span>
                                 </div>
@@ -136,34 +143,107 @@ const AttendanceReport = () => {
                         </div>
 
                         {/* Table */}
-                        <div style={{ overflowX: "auto" }}>
-                            <Table bordered hover className="mb-0" style={{ minWidth: '1200px' }}>
+                        <div style={{ overflowX: "auto", width: '100%' }}>
+                            <Table bordered hover className="mb-0" style={{
+                                width: "100%",
+                                backgroundColor: "#C5D9F0",
+                                borderCollapse: "separate",
+                                // borderSpacing: "2px",
+                                border: "1px solid #B9B9B9", // Light grey border around the table
+                                // borderRadius: "5px"
+                            }}>
                                 <thead>
-                                    <tr className="bg-light">
-                                        <th style={{ width: "60px" }}>ID</th>
-                                        <th style={{ width: "150px" }}>Employ Name</th>
+                                    <tr>
+                                        <th rowSpan={2} style={{
+                                            width: "60px",
+                                            backgroundColor: "#C5D9F0",
+                                            padding: "10px",
+                                            boxShadow: "0 0 0 1px #B9B9B9",
+                                            textAlign: "center",
+                                            verticalAlign: "middle"
+                                        }}>ID</th>
+
+                                        <th rowSpan={2} style={{
+                                            // width: '100%',
+                                            maxWidth: "200px",
+                                            backgroundColor: "#C5D9F0",
+                                            padding: '10px',
+                                            boxShadow: "0 0 0 1px #B9B9B9",
+                                            textAlign: "center",
+                                            verticalAlign: "middle",
+                                            whiteSpace: "nowrap",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis"
+                                        }}>Employee Name</th>
+
+                                        {/* Dates Row */}
                                         {[...Array(getDaysInMonth(month, year))].map((_, i) => (
                                             <th key={i} className="text-center"
-                                                style={{ width: "40px", padding: "8px 4px", backgroundColor: i % 7 === 5 || i % 7 === 6 ? "#f0f0f0" : "inherit" }}>
-                                                <div style={{ fontSize: "14px" }}>{(i + 1).toString().padStart(2, "0")}</div>
-                                                <div style={{ fontSize: "12px", color: "#6c757d" }}>{weekdays[i % 7]}</div>
+                                                style={{
+                                                    width: "40px",
+                                                    padding: "8px 4px",
+                                                    boxShadow: "0 0 0 1px #B9B9B9",
+                                                    backgroundColor: "#C5D9F0"
+                                                }}>
+                                                {(i + 1).toString().padStart(2, "0")}
                                             </th>
                                         ))}
-                                        <th className="text-center" style={{ width: "100px" }}>Total Present</th>
+
+                                        <th rowSpan={2} className="text-center" style={{
+                                            maxWidth: "100px",
+                                            backgroundColor: "#C5D9F0",
+                                            boxShadow: "0 0 0 1px #B9B9B9",
+                                            textAlign: "center",
+                                            verticalAlign: "middle",
+                                            whiteSpace: "nowrap",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis"
+                                        }}>
+                                            Total Present
+                                        </th>
+                                    </tr>
+
+                                    {/* Second Row - Weekdays */}
+                                    <tr>
+                                        {[...Array(getDaysInMonth(month, year))].map((_, i) => {
+                                            let dayIndex = getWeekdayIndex(i + 1, month, year);
+                                            return (
+                                                <th key={i} className="text-center"
+                                                    style={{
+                                                        width: "40px",
+                                                        padding: "8px 4px",
+                                                        boxShadow: "0 0 0 1px #B9B9B9",
+                                                        backgroundColor: dayIndex === 0 || dayIndex === 6 ? "#E0E8F0" : "inherit"
+                                                    }}>
+                                                    {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][dayIndex]}
+                                                </th>
+                                            );
+                                        })}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {employees.map((employee, idx) => (
                                         <tr key={idx}>
-                                            <td>{employee.id}</td>
-                                            <td>{employee.name}</td>
+                                            <td style={{
+                                                padding: '10px',
+                                                backgroundColor: 'white',
+                                                boxShadow: "0 0 0 1px #B9B9B9"
+                                            }}>{employee.id}</td>
+                                            <td style={{
+                                                padding: '10px',
+                                                backgroundColor: 'white',
+                                                boxShadow: "0 0 0 1px #B9B9B9"
+                                            }}>{employee.name}</td>
                                             {employee.attendance.map((status, i) => (
                                                 <td key={i} className="text-center"
-                                                    style={{ backgroundColor: legend.find(item => item.code === status)?.color || "white" }}>
+                                                    style={{ boxShadow: "0 0 0 1px #B9B9B9", backgroundColor: legend.find(item => item.code === status)?.color || "white" }}>
                                                     {status}
                                                 </td>
                                             ))}
-                                            <td className="text-center">{calculateTotalPresent(employee.attendance)}</td>
+                                            <td style={{
+                                                backgroundColor: 'white',
+                                                boxShadow: "0 0 0 1px #B9B9B9"
+                                            }} className="text-center">{calculateTotalPresent(employee.attendance)}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -171,7 +251,7 @@ const AttendanceReport = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     )
 }
