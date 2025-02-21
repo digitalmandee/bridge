@@ -447,7 +447,7 @@ function App() {
 				/>
 
 				<Route
-					path="/branch/employee/leave/new/application"
+					path="/branch/employee/leave/application/new"
 					element={
 						<ProtectedRoute role="admin">
 							<NewApplication />

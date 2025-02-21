@@ -4,14 +4,21 @@ import Sidebar from "../../components/leftSideBar";
 import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button, TextField, Checkbox, Pagination, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Select, MenuItem } from "@mui/material";
+import { Button, TextField, Checkbox, Pagination, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Select, MenuItem, Snackbar, Alert } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+// import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const ManageAttendance = () => {
 	const navigate = useNavigate();
 	const [searchQuery, setSearchQuery] = useState("");
 	const [page, setPage] = useState(1);
-	const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+	const [date, setDate] = useState(dayjs());
 
 	const [attendances, setAttendances] = useState([]);
 	const [leavecategories, setLeaveCategories] = useState([]);
@@ -19,12 +26,18 @@ const ManageAttendance = () => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
 	const [limit, setLimit] = useState(10);
+	const [loadingRows, setLoadingRows] = useState({});
+	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+
+	const handleCloseSnackbar = () => {
+		setSnackbar({ ...snackbar, open: false });
+	};
 
 	const getAttendances = async (page = 1) => {
 		setIsLoading(true);
 		try {
 			const res = await axiosInstance.get("employees/attendances", {
-				params: { page, limit, date },
+				params: { page, limit, date: date.format("YYYY-MM-DD") },
 			});
 
 			if (res.data.success) {
@@ -41,7 +54,7 @@ const ManageAttendance = () => {
 
 	useEffect(() => {
 		getAttendances(currentPage);
-	}, [currentPage, limit]);
+	}, [currentPage, limit, date]);
 
 	const getLeaveCatgories = async () => {
 		try {
@@ -62,17 +75,18 @@ const ManageAttendance = () => {
 		console.log("Searching:", searchQuery);
 	};
 
-	const handlePageChange = (event, value) => {
-		setPage(value);
-	};
-
 	// Handle check-in, check-out, and leave category updates
 	const handleUpdate = async (id, updatedData) => {
+		setLoadingRows((prev) => ({ ...prev, [id]: true })); // loading for the specific row
 		try {
 			await axiosInstance.put(`employees/attendances/${id}`, updatedData);
-			getAttendances(currentPage);
+			// getAttendances(currentPage);
+			setSnackbar({ open: true, message: "Attendance updated successfully!", severity: "success" });
 		} catch (error) {
-			console.log("Error updating attendance:", error);
+			// console.log("Error updating attendance:", error);
+			setSnackbar({ open: true, message: error.response.data.message ?? "Something went wrong", severity: "error" });
+		} finally {
+			setLoadingRows((prev) => ({ ...prev, [id]: false })); // Reset only that row’s loading state
 		}
 	};
 
@@ -80,27 +94,18 @@ const ManageAttendance = () => {
 		setAttendances((prev) =>
 			prev.map((att) => {
 				if (att.id === id) {
-					let updatedAttendance = att.attendance;
 					let updatedStatus = att.status;
 
 					if (field === "attendance") {
 						// If checked, set "present" by default, allow "late" later
-						updatedAttendance = value;
 						updatedStatus = value ? "present" : "absent";
 					}
 
-					if (field === "status") {
-						// If status is "late" or "present", attendance must be true
-						updatedStatus = ["present", "late"].includes(value) ? value : updatedStatus;
-						updatedAttendance = ["present", "late"].includes(value);
-					}
-
 					if (field === "leave_category_id") {
-						updatedAttendance = false; // Uncheck attendance
 						updatedStatus = value ? "leave" : "absent"; // If leave is selected, status = "leave", else "absent"
 					}
 
-					return { ...att, [field]: value, attendance: updatedAttendance, status: updatedStatus };
+					return { ...att, [field]: value, status: updatedStatus };
 				}
 				return att;
 			})
@@ -123,11 +128,25 @@ const ManageAttendance = () => {
 					</div>
 
 					{/* Search Input */}
-					<div className="d-flex mb-4">
-						<TextField size="small" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="me-2" style={{ backgroundColor: "white" }} />
-						<Button variant="contained" onClick={handleSearch} style={{ backgroundColor: "#0A2647", color: "white", textTransform: "none", minWidth: "80px" }}>
-							Go
-						</Button>
+					<div className="d-flex mb-4" style={{ alignItems: "center", justifyContent: "space-between" }}>
+						{/* Search Field */}
+						<div style={{ display: "flex", gap: "10px" }}>
+							<TextField size="small" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ backgroundColor: "white" }} />
+							<Button variant="contained" onClick={handleSearch} style={{ backgroundColor: "#0A2647", color: "white", textTransform: "none", minWidth: "80px" }}>
+								Go
+							</Button>
+						</div>
+
+						{/* Date Picker on the Right */}
+						<LocalizationProvider dateAdapter={AdapterDayjs}>
+							<DatePicker label="Select Date" value={date} onChange={(newValue) => setDate(newValue)} renderInput={(params) => <TextField {...params} size="small" />} />
+						</LocalizationProvider>
+
+						{/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+							<DemoContainer components={["DatePicker"]}>
+								<DatePicker label="Select Date" value={date} onChange={(newDate) => setDate(newDate.toISOString().split("T")[0])} renderInput={(params) => <TextField {...params} size="small" />} />
+							</DemoContainer>
+						</LocalizationProvider> */}
 					</div>
 
 					<TableContainer component={Paper}>
@@ -187,19 +206,21 @@ const ManageAttendance = () => {
 												<Button
 													onClick={() =>
 														handleUpdate(row.id, {
-															leave_category_id: row.leave_category_id,
+															leave_category_id: row.leave_category_id ?? "",
 															check_in: row.check_in,
 															check_out: row.check_out,
+															status: row.status,
 														})
 													}
 													variant="contained"
 													size="small"
+													disabled={loadingRows[row.id] || false} // Disable only if that row is loading
 													style={{
 														backgroundColor: row.check_in && row.check_out ? "#e3f2fd" : "#0A2647",
 														color: row.check_in && row.check_out ? "#0A2647" : "white",
 														textTransform: "none",
 													}}>
-													{row.check_in && row.check_out ? "Updated" : "Save"}
+													{loadingRows[row.id] ? <CircularProgress size={20} color="inherit" /> : row.check_in && row.check_out ? "Update" : "Save"}
 												</Button>
 											</TableCell>
 										</TableRow>
@@ -221,6 +242,12 @@ const ManageAttendance = () => {
 					</div>
 				</div>
 			</div>
+
+			<Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+				<Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+					{snackbar.message}
+				</Alert>
+			</Snackbar>
 		</>
 	);
 };

@@ -60,7 +60,7 @@ const AttendanceDashboard = () => {
 							<Typography variant="text" style={{ fontWeight: "500", fontSize: "24px" }}>
 								Application Dashboard
 							</Typography>
-							<Button style={{ color: "white", backgroundColor: "#0D2B4E" }} onClick={() => navigate("/branch/employee/leave/new/application")}>
+							<Button style={{ color: "white", backgroundColor: "#0D2B4E" }} onClick={() => navigate("/branch/employee/leave/application/new")}>
 								New Application
 							</Button>
 						</div>
