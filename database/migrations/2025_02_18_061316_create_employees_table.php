@@ -27,7 +27,6 @@ class CreateEmployeesTable extends Migration
             $table->string('account_no')->nullable();
             $table->bigInteger('salary')->default(0);
             $table->date('joining_date');
-            $table->enum('status', ['leave', 'inactive'])->default('active');
             $table->softDeletes();
             $table->timestamps();
 

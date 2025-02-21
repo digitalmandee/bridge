@@ -20,7 +20,6 @@ class CreateLeaveCategoriesTable extends Migration
             $table->string('color');
             $table->string('description');
             $table->enum('status', ['published', 'draft'])->default('published');
-            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('branch_id')->references('id')->on('branches');

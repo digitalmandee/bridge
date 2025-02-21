@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingPlanController;
 use App\Http\Controllers\BookingScheduleController;
+use App\Http\Controllers\BranchUserController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\DepartmentController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\LeaveCategoryController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\UserController;
 use App\Models\LeaveCategory;
 use Illuminate\Http\Request;
@@ -34,6 +36,14 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'userlogin']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
+    // -------------- Roles Management
+    Route::get('/permissions', [RolePermissionController::class, 'getPermissions']);
+    // -------------- Roles
+    Route::resource('roles', RolePermissionController::class)->except(['create', 'edit']);
+    // -------------- Branch Users
+    Route::resource('branch-users', BranchUserController::class)->except(['create', 'edit']);
+
+    // -------------- Webs
     Route::get('/user', [AuthController::class, 'getUser']);
     Route::post('/logout', [AuthController::class, 'logout']);
 

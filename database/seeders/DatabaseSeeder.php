@@ -22,7 +22,8 @@ class DatabaseSeeder extends Seeder
             BookingPlanSeeder::class,
             RoomsTableSeeder::class,
             ChairsTableSeeder::class,
-            PermissionsSeeder::class
+            PermissionsSeeder::class,
+            LeaveCategorySeeder::class
         ]);
     }
 }
