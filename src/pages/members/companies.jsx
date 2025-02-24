@@ -6,9 +6,14 @@ import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import axiosInstance from "@/utils/axiosInstance";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 const Company = () => {
+	const navigate = useNavigate();
+
 	const [companies, setCompanies] = useState([]);
+	const [simpleCompanies, setSimpleCompanies] = useState([]);
+	const [selectedCompany, setSelectedCompany] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
@@ -18,7 +23,7 @@ const Company = () => {
 		setIsLoading(true);
 		try {
 			const res = await axiosInstance.get("member/companies", {
-				params: { page, limit },
+				params: { page, limit, company_id: selectedCompany },
 			});
 
 			if (res.data.success) {
@@ -35,7 +40,23 @@ const Company = () => {
 
 	useEffect(() => {
 		getCompanies(currentPage);
-	}, [currentPage, limit]);
+	}, [currentPage, limit, selectedCompany]);
+
+	const getSimpleCompanies = async () => {
+		try {
+			const res = await axiosInstance.get("member/companies/simple");
+
+			if (res.data.success) {
+				setSimpleCompanies(res.data.companies);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	useEffect(() => {
+		getSimpleCompanies();
+	}, [""]);
 	return (
 		<>
 			<TopNavbar />
@@ -77,7 +98,7 @@ const Company = () => {
 									}}
 								/>
 								<Select
-									value=""
+									value={selectedCompany ? selectedCompany.id : ""}
 									displayEmpty
 									size="small"
 									sx={{
@@ -87,11 +108,15 @@ const Company = () => {
 											borderColor: "#dee2e6",
 										},
 									}}>
-									<MenuItem disabled value="">
+									<MenuItem value="" onClick={() => setSelectedCompany(null)}>
 										Select Company
 									</MenuItem>
-									<MenuItem value="digital">Digital</MenuItem>
-									<MenuItem value="tech">Tech</MenuItem>
+									{simpleCompanies.length > 0 &&
+										simpleCompanies.map((item) => (
+											<MenuItem key={item.id} value={item.id} onClick={() => setSelectedCompany(item)}>
+												{item.name}
+											</MenuItem>
+										))}
 								</Select>
 							</Box>
 
@@ -115,7 +140,7 @@ const Company = () => {
 												companies.map((company) => (
 													<TableRow key={company.id}>
 														<TableCell>
-															<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+															<Box sx={{ display: "flex", alignItems: "center", gap: 2, cursor: "pointer" }} onClick={() => navigate(`/branch/member/companies/${company.id}`)}>
 																<Avatar src={company.profile_image ? import.meta.env.VITE_ASSET_API + company.profile_image : ""} />
 																<Box>
 																	<Typography>{company.name}</Typography>

@@ -6,7 +6,6 @@ import { MdArrowBackIos } from "react-icons/md";
 import { Button, TextField, Checkbox, Pagination, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper } from '@mui/material';
 
 const AttendanceReport = () => {
-    const navigate = useNavigate();
     const currentDate = new Date();
     const [month, setMonth] = useState(currentDate.getMonth() + 1);
     const [year, setYear] = useState(currentDate.getFullYear());

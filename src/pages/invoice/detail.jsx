@@ -7,17 +7,7 @@ import { MdArrowBackIos } from "react-icons/md";
 import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Select, MenuItem, styled, CircularProgress } from "@mui/material";
 import { ArrowBack as ArrowBackIcon, Download as DownloadIcon, FilterAlt as FilterIcon, Notifications as NotificationsIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
-import axiosInstance from "../../utils/axiosInstance";
-
-// Styled components
-const StatusBadge = styled(Box)(({ status }) => ({
-	padding: "4px 12px",
-	borderRadius: "4px",
-	display: "inline-block",
-	fontSize: "12px",
-	backgroundColor: status === "Paid" ? "#0F172A" : "#E5E7EB",
-	color: status === "Paid" ? "#FFFFFF" : "#6B7280",
-}));
+import axiosInstance from "@/utils/axiosInstance";
 
 const InvoiceDetail = () => {
 	const navigate = useNavigate();
@@ -57,7 +47,7 @@ const InvoiceDetail = () => {
 			try {
 				const res = await axiosInstance.get(`invoices/customer-detail/${customerId}`);
 				if (res.data.success) {
-					setCustomer(res.data.costomer);
+					setCustomer(res.data.customer);
 				}
 			} catch (error) {
 				console.error("Error fetching invoice details:", error);

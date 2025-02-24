@@ -19,6 +19,12 @@ import CompanyDashboard from "@/pages/dashboard/company";
 import EmployeeDashboard from "./pages/employee/dashboard";
 import EmployeeCreate from "./pages/employee/create";
 import EmployeeDetails from "./pages/employee/employeedetails";
+import Departments from "./pages/departments/management";
+
+// Leave Category
+import LeaveCategory from "./pages/attendance/leavecategory/management";
+import LeaveCategoryCreate from "./pages/attendance/leavecategory/create";
+import LeaveCategoryEdit from "./pages/attendance/leavecategory/edit";
 
 // Invoice Management
 import InvoiceDashboard from "@/pages/invoice/dashboard";
@@ -29,6 +35,7 @@ import InvoiceDetail from "@/pages/invoice/detail";
 // Company Staff Management
 import CompanyAddStaff from "@/pages/company/addstaff";
 import CompanyStaffManagement from "@/pages/company/staffmanagement";
+import MemberCompanyDetail from "@/pages/members/detail";
 
 // Booking System
 import Booking from "@/pages/booking";
@@ -39,7 +46,7 @@ import BookingPlans from "@/pages/booking/plans";
 import BookingPlanCreate from "@/pages/booking/plancreate";
 import SeatsAllocation from "@/pages/booking/seatsallocation";
 import BookingCalendar from "@/pages/booking/calendar";
-import BookingInvoices from "@/pages/booking/invoices";
+// import BookingInvoices from "@/pages/booking/invoices";
 
 // Members
 import MemberCreate from "@/pages/members/create";
@@ -49,7 +56,6 @@ import MemberContracts from "@/pages/members/contracts";
 
 // Attendance
 import AttendanceDashboard from "./pages/attendance/dashboard";
-import LeaveCategory from "./pages/attendance/leave";
 import LeaveApplication from "./pages/attendance/leaveapplication";
 import NewApplication from "./pages/attendance/newapplication";
 import LeaveManage from "./pages/attendance/leavemanage";
@@ -58,9 +64,19 @@ import ManageAttendance from "./pages/attendance/manageattendance";
 import AttendanceReport from "./pages/attendance/attendancereport";
 import MonthlyReport from "./pages/attendance/monthlyreport";
 
+// User Roles
+import RoleManagement from "./pages/users/roles/management";
+import RoleForm from "@/pages/users/roles/roleform";
+import BranchUserManagement from "@/pages/users/management";
+import BranchUserCreate from "@/pages/users/userform";
+
 // Notification
 import Notifications from "@/pages/notificaitons";
+<<<<<<< HEAD
 
+=======
+import NoPermission from "./pages/nopermission";
+>>>>>>> 25db7dded7bb7afe619c3e4b18a67340eddf2015
 
 function App() {
 	// const [isToggleSideBar, setIsToggleSidebar] = useState(false);
@@ -128,6 +144,14 @@ function App() {
 						</ProtectedRoute>
 					}
 				/>
+				<Route
+					path="/user/contracts"
+					element={
+						<ProtectedRoute role="user">
+							<MemberContracts />
+						</ProtectedRoute>
+					}
+				/>
 
 				{/* Company Routes */}
 				<Route
@@ -178,12 +202,20 @@ function App() {
 						</ProtectedRoute>
 					}
 				/>
+				<Route
+					path="/company/contracts"
+					element={
+						<ProtectedRoute role="company">
+							<MemberContracts />
+						</ProtectedRoute>
+					}
+				/>
 
 				{/* Branch Routes */}
 				<Route
 					path="/branch/dashboard"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="admin-dashboard">
 							<AdminDashboard />
 						</ProtectedRoute>
 					}
@@ -193,7 +225,7 @@ function App() {
 				<Route
 					path="/branch/floorplan"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="floor-plan">
 							<Floorplan />
 						</ProtectedRoute>
 					}
@@ -203,7 +235,7 @@ function App() {
 				<Route
 					path="/branch/booking"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="floor-plan">
 							<Booking />
 						</ProtectedRoute>
 					}
@@ -211,24 +243,24 @@ function App() {
 				<Route
 					path="/branch/booking/requests"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="booking-request">
 							<BookingRequests />
 						</ProtectedRoute>
 					}
 				/>
-				<Route
+				{/* <Route
 					path="/branch/booking/invoices"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="seat-card">
 							<BookingInvoices />
 						</ProtectedRoute>
 					}
-				/>
+				/> */}
 				{/* Booking Price Plan */}
 				<Route
 					path="/branch/booking/plans"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="price-plan">
 							<BookingPlans />
 						</ProtectedRoute>
 					}
@@ -236,7 +268,7 @@ function App() {
 				<Route
 					path="/branch/booking/plans/create"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="price-plan">
 							<BookingPlanCreate />
 						</ProtectedRoute>
 					}
@@ -245,7 +277,7 @@ function App() {
 				<Route
 					path="/branch/booking/seats-allocation"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="seat-card">
 							<SeatsAllocation />
 						</ProtectedRoute>
 					}
@@ -254,7 +286,7 @@ function App() {
 				<Route
 					path="/branch/booking-schedule"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="room-booking">
 							<BookingCalendar />
 						</ProtectedRoute>
 					}
@@ -262,7 +294,7 @@ function App() {
 				<Route
 					path="/branch/booking-schedule/requests"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="booking-requests">
 							<ScheduleRequests />
 						</ProtectedRoute>
 					}
@@ -272,7 +304,7 @@ function App() {
 				<Route
 					path="/branch/invoice/dashboard"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="invoice-dashboard">
 							<InvoiceDashboard />
 						</ProtectedRoute>
 					}
@@ -280,7 +312,7 @@ function App() {
 				<Route
 					path="/branch/invoice/create"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="new-invoice">
 							<InvoiceCreate />
 						</ProtectedRoute>
 					}
@@ -288,7 +320,7 @@ function App() {
 				<Route
 					path="/branch/invoice/management"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="invoice-management">
 							<InvoiceManagement />
 						</ProtectedRoute>
 					}
@@ -296,33 +328,41 @@ function App() {
 				<Route
 					path="/branch/invoice/customer-detail/:customerId"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="invoice-management">
 							<InvoiceDetail />
 						</ProtectedRoute>
 					}
 				/>
 
 				{/* Members */}
-				<Route
+				{/* <Route
 					path="/branch/member/create"
 					element={
 						<ProtectedRoute role="admin">
 							<MemberCreate />
 						</ProtectedRoute>
 					}
-				/>
+				/> */}
 				<Route
 					path="/branch/member/companies"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="Company">
 							<MemberCompanies />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/member/companies/:companyId"
+					element={
+						<ProtectedRoute role="admin" permission="Company">
+							<MemberCompanyDetail />
 						</ProtectedRoute>
 					}
 				/>
 				<Route
 					path="/branch/member/users"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="users">
 							<MemberUsers />
 						</ProtectedRoute>
 					}
@@ -330,7 +370,7 @@ function App() {
 				<Route
 					path="/branch/member/contracts"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="contracts">
 							<MemberContracts />
 						</ProtectedRoute>
 					}
@@ -351,7 +391,7 @@ function App() {
 				<Route
 					path="/branch/employee/dashboard"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="employee-dashboard">
 							<EmployeeDashboard />
 						</ProtectedRoute>
 					}
@@ -359,16 +399,24 @@ function App() {
 				<Route
 					path="/branch/employee/create"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="employee-dashboard">
 							<EmployeeCreate />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/employee/departments"
+					element={
+						<ProtectedRoute role="admin" permission="employee-dashboard">
+							<Departments />
 						</ProtectedRoute>
 					}
 				/>
 
 				<Route
-					path="/branch/employee/details"
+					path="/branch/employee/details/:employeeId"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="employee-dashboard">
 							<EmployeeDetails />
 						</ProtectedRoute>
 					}
@@ -378,7 +426,7 @@ function App() {
 				<Route
 					path="/branch/employee/attendance"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="attendance">
 							<AttendanceDashboard />
 						</ProtectedRoute>
 					}
@@ -387,8 +435,25 @@ function App() {
 				<Route
 					path="/branch/employee/leave/category"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="leave-category">
 							<LeaveCategory />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/branch/employee/leave/category/create"
+					element={
+						<ProtectedRoute role="admin" permission="leave-category">
+							<LeaveCategoryCreate />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/employee/leave/category/edit/:id"
+					element={
+						<ProtectedRoute role="admin" permission="leave-category">
+							<LeaveCategoryEdit />
 						</ProtectedRoute>
 					}
 				/>
@@ -396,16 +461,16 @@ function App() {
 				<Route
 					path="/branch/employee/leave/application"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="leave-application">
 							<LeaveApplication />
 						</ProtectedRoute>
 					}
 				/>
 
 				<Route
-					path="/branch/employee/leave/new/application"
+					path="/branch/employee/leave/application/new"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="leave-application">
 							<NewApplication />
 						</ProtectedRoute>
 					}
@@ -414,7 +479,7 @@ function App() {
 				<Route
 					path="/branch/employee/leave/management"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="leave-management">
 							<LeaveManage />
 						</ProtectedRoute>
 					}
@@ -423,7 +488,7 @@ function App() {
 				<Route
 					path="/branch/employee/leave/report"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="leave-report">
 							<LeaveReport />
 						</ProtectedRoute>
 					}
@@ -432,7 +497,7 @@ function App() {
 				<Route
 					path="/branch/employee/manage/attendance"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="manage-attendance">
 							<ManageAttendance />
 						</ProtectedRoute>
 					}
@@ -441,7 +506,7 @@ function App() {
 				<Route
 					path="/branch/employee/attendance/report"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="manage-attendance">
 							<AttendanceReport />
 						</ProtectedRoute>
 					}
@@ -450,8 +515,70 @@ function App() {
 				<Route
 					path="/branch/employee/attendance/monthly/report"
 					element={
-						<ProtectedRoute role="admin">
+						<ProtectedRoute role="admin" permission="monthly-report">
 							<MonthlyReport />
+						</ProtectedRoute>
+					}
+				/>
+
+				{/* Manage User Roles */}
+
+				<Route
+					path="/branch/users/roles"
+					element={
+						<ProtectedRoute role="admin" permission="roles">
+							<RoleManagement />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/users/roles/new"
+					element={
+						<ProtectedRoute role="admin" permission="roles">
+							<RoleForm />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/users/roles/edit/:id"
+					element={
+						<ProtectedRoute role="admin" permission="roles">
+							<RoleForm />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/users/management"
+					element={
+						<ProtectedRoute role="admin" permission="employee-users">
+							<BranchUserManagement />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/users/new"
+					element={
+						<ProtectedRoute role="admin" permission="employee-users">
+							<BranchUserCreate />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/branch/users/edit/:id"
+					element={
+						<ProtectedRoute role="admin" permission="employee-users">
+							<BranchUserCreate />
+						</ProtectedRoute>
+					}
+				/>
+
+				{/* No Permission */}
+				<Route
+					path="/no-permission"
+					element={
+						<ProtectedRoute role="admin">
+							<NoPermission />
 						</ProtectedRoute>
 					}
 				/>

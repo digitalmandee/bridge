@@ -3,11 +3,14 @@ import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
-import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, MenuItem, Avatar, Select, CircularProgress, Snackbar } from "@mui/material";
+import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, MenuItem, Avatar, Select, CircularProgress, Snackbar, Dialog, DialogTitle, DialogContent, FormControl, InputLabel, RadioGroup, FormControlLabel, DialogActions, Radio } from "@mui/material";
 import { Search as SearchIcon, Download as DownloadIcon, Notifications as NotificationsIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "@/utils/axiosInstance";
 import { AuthContext } from "@/contexts/AuthContext";
+import dayjs from "dayjs";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const InvoiceManagement = () => {
 	const { user } = useContext(AuthContext);
@@ -19,20 +22,31 @@ const InvoiceManagement = () => {
 	const [totalPages, setTotalPages] = useState(1);
 	const [limit, setLimit] = useState(10);
 	const [statusFilter, setStatusFilter] = useState("");
-
-	const [anchorEl, setAnchorEl] = useState(null);
-	const [selectedInvoice, setSelectedInvoice] = useState(null);
 	const [snackbarOpen, setSnackbarOpen] = useState(false);
 	const [snackbarMessage, setSnackbarMessage] = useState("");
 
-	const handleMenuClick = (event, invoiceId) => {
-		setAnchorEl(event.currentTarget);
-		setSelectedInvoice(invoiceId);
-	};
+	const [openDialog, setOpenDialog] = useState(false);
+	const [selectedStatus, setSelectedStatus] = useState("");
+	const [dialogData, setDialogData] = useState({
+		due_date: null,
+		paid_date: null,
+		payment_type: "",
+		receipt: null,
+	});
 
-	const handleMenuClose = () => {
-		setAnchorEl(null);
-		setSelectedInvoice(null);
+	const handleStatusClick = (invoice) => {
+		if (invoice.status === "pending") {
+			const formattedDueDate = invoice.due_date ? dayjs(invoice.due_date) : null;
+
+			setDialogData((prevData) => ({
+				...prevData,
+				id: invoice.id,
+				due_date: formattedDueDate,
+			}));
+
+			setSelectedStatus(invoice.status);
+			setOpenDialog(true);
+		}
 	};
 
 	const getInvoices = async (page = 1) => {
@@ -75,6 +89,78 @@ const InvoiceManagement = () => {
 			setSnackbarMessage("An error occurred while sending the notification.");
 			setSnackbarOpen(true);
 		}
+	};
+
+	const [errors, setErrors] = useState({});
+
+	// Function to validate input fields
+	const validateFields = () => {
+		let tempErrors = {};
+
+		if (!selectedStatus === "pending") tempErrors.status = "Status is required.";
+		if (selectedStatus === "paid" || selectedStatus === "overdue") {
+			if (!dialogData.paid_date) tempErrors.paid_date = "Paid date is required.";
+			if (dialogData.paid_date && dayjs(dialogData.paid_date).isBefore(dialogData.due_date)) {
+				tempErrors.paid_date = "Paid date cannot be before the due date.";
+			}
+			if (!dialogData.payment_type) tempErrors.payment_type = "Payment type is required.";
+
+			if (dialogData.receipt) {
+				const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+				if (!allowedTypes.includes(dialogData.receipt.type)) {
+					tempErrors.receipt = "Invalid file type. Only PDF, JPG, and PNG are allowed.";
+				}
+			}
+		}
+		setErrors(tempErrors);
+		return Object.keys(tempErrors).length === 0;
+	};
+
+	// Function to handle update submission
+	const handleUpdateInvoice = async () => {
+		if (!validateFields()) return;
+
+		try {
+			const formData = new FormData();
+			formData.append("invoice_id", dialogData.id);
+			formData.append("status", selectedStatus);
+			formData.append("due_date", dayjs(dialogData.due_date).format("YYYY-MM-DD"));
+
+			if (selectedStatus === "paid" || selectedStatus === "overdue") {
+				if (selectedStatus === "paid") formData.append("paid_date", dayjs(dialogData.paid_date).format("YYYY-MM-DD"));
+				if (dialogData.payment_type) formData.append("payment_type", dialogData.payment_type);
+				if (dialogData.receipt) formData.append("receipt", dialogData.receipt);
+			}
+
+			const response = await axiosInstance.post(`/invoices/update`, formData, {
+				headers: { "Content-Type": "multipart/form-data" },
+			});
+
+			if (response.data.success) {
+				setSnackbarMessage("Invoice updated successfully!");
+				setSnackbarOpen(true);
+				setOpenDialog(false);
+				getInvoices(); // Refresh invoices list
+			} else {
+				setSnackbarMessage("Failed to update invoice.");
+				setSnackbarOpen(true);
+			}
+		} catch (error) {
+			console.error("Error updating invoice:", error);
+			setSnackbarMessage("An error occurred while updating the invoice.");
+			setSnackbarOpen(true);
+		}
+	};
+
+	const closeUpdateInvoiceDialog = async () => {
+		setOpenDialog(false);
+		setErrors({});
+		setDialogData({
+			due_date: null,
+			paid_date: null,
+			payment_type: "",
+			receipt: null,
+		});
 	};
 
 	// Run getInvoices when filter changes
@@ -168,77 +254,82 @@ const InvoiceManagement = () => {
 
 						{/* Table */}
 						<TableContainer component={Paper} sx={{ boxShadow: "none" }}>
-							{isLoading ? (
-								<Box display="flex" justifyContent="center" alignItems="center" p={3}>
-									<CircularProgress sx={{ color: "#0F172A" }} />
-								</Box>
-							) : (
-								<Table>
-									<TableHead sx={{ bgcolor: "#F8FAFC" }}>
+							<Table>
+								<TableHead sx={{ bgcolor: "#F8FAFC" }}>
+									<TableRow>
+										<TableCell>Invoice #</TableCell>
+										<TableCell>Type</TableCell>
+										{user.type === "admin" && <TableCell>Clients</TableCell>}
+										<TableCell>Issue date</TableCell>
+										<TableCell>Payment Date</TableCell>
+										<TableCell>Status</TableCell>
+										<TableCell>Amount</TableCell>
+										{user.type === "admin" && <TableCell>Action</TableCell>}
+									</TableRow>
+								</TableHead>
+								<TableBody>
+									{isLoading ? (
 										<TableRow>
-											<TableCell>Invoice #</TableCell>
-											<TableCell>Type</TableCell>
-											{user.type === "admin" && <TableCell>Clients</TableCell>}
-											<TableCell>Issue date</TableCell>
-											<TableCell>Payment Date</TableCell>
-											<TableCell>Status</TableCell>
-											<TableCell>Amount</TableCell>
-											{user.type === "admin" && <TableCell>Action</TableCell>}
+											<TableCell colSpan={7} align="center">
+												<CircularProgress sx={{ color: "#0F172A" }} />
+											</TableCell>
 										</TableRow>
-									</TableHead>
-									<TableBody>
-										{invoices.length > 0 ? (
-											invoices.map((invoice) => (
-												<TableRow key={invoice.id}>
-													<TableCell>#NASTP-{invoice.id}</TableCell>
-													<TableCell style={{ textTransform: "capitalize" }}>{invoice.user.type}</TableCell>
-													{user.type === "admin" && (
-														<TableCell>
-															<Box display="flex" alignItems="center" gap={1} onClick={() => navigate(`/branch/invoice/customer-detail/${invoice.user.id}`)} sx={{ cursor: "pointer" }}>
-																<Avatar sx={{ width: 32, height: 32 }} src={import.meta.env.VITE_ASSET_API + invoice.user.profile_image}></Avatar>
-																<Box>
-																	<Typography variant="body2">{invoice.user.name}</Typography>
-																	<Typography variant="caption" color="text.secondary">
-																		{invoice.user.email}
-																	</Typography>
-																</Box>
-															</Box>
-														</TableCell>
-													)}
-													<TableCell>{new Date(invoice.created_at).toISOString().split("T")[0]}</TableCell>
-													<TableCell>{invoice.due_date}</TableCell>
+									) : invoices.length > 0 ? (
+										invoices.map((invoice) => (
+											<TableRow key={invoice.id}>
+												<TableCell>#NASTP-{invoice.id}</TableCell>
+												<TableCell style={{ textTransform: "capitalize" }}>{invoice.invoice_type}</TableCell>
+												{user.type === "admin" && (
 													<TableCell>
-														<Button
-															size="small"
-															variant="contained"
-															sx={{
-																bgcolor: invoice.status === "paid" ? "#0F172A" : "#E5E7EB",
-																color: invoice.status === "paid" ? "white" : "#6B7280",
-																"&:hover": { bgcolor: invoice.status === "paid" ? "#1E293B" : "#D1D5DB" },
-															}}>
-															{invoice.status}
+														<Box display="flex" alignItems="center" gap={1} onClick={() => navigate(`/branch/invoice/customer-detail/${invoice.user.id}`)} sx={{ cursor: "pointer" }}>
+															<Avatar sx={{ width: 32, height: 32 }} src={import.meta.env.VITE_ASSET_API + invoice.user.profile_image}></Avatar>
+															<Box>
+																<Typography variant="body2">
+																	{invoice.user.name} <span style={{ color: "#6C757D", fontSize: "0.875rem" }}>({invoice.user.type})</span>
+																</Typography>
+																<Typography variant="caption" color="text.secondary">
+																	{invoice.user.email}
+																</Typography>
+															</Box>
+														</Box>
+													</TableCell>
+												)}
+												<TableCell>{new Date(invoice.created_at).toISOString().split("T")[0]}</TableCell>
+												<TableCell>{invoice.due_date}</TableCell>
+												<TableCell>
+													<Button
+														size="small"
+														variant="contained"
+														sx={{
+															bgcolor: invoice.status === "paid" ? "#0F172A" : invoice.status === "overdue" ? "#E53935" : "#0D2B4E",
+															color: "white",
+															"&:hover": { opacity: 0.8 },
+														}}
+														onClick={() => handleStatusClick(invoice)}
+														disabled={invoice.status === "paid" || invoice.status === "overdue"}>
+														{invoice.status}
+													</Button>
+												</TableCell>
+
+												<TableCell>Rs. {invoice.amount}</TableCell>
+												{user.type === "admin" && (
+													<TableCell>
+														<Button size="small" variant="outlined" startIcon={<NotificationsIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }} onClick={() => sendNotification(invoice.user.id, invoice.user.id, invoice.status)}>
+															Notify
 														</Button>
 													</TableCell>
-													<TableCell>Rs. {invoice.amount}</TableCell>
-													{user.type === "admin" && (
-														<TableCell>
-															<Button size="small" variant="outlined" startIcon={<NotificationsIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }} onClick={() => sendNotification(invoice.user.id, invoice.user.id, invoice.status)}>
-																Notify
-															</Button>
-														</TableCell>
-													)}
-												</TableRow>
-											))
-										) : (
-											<TableRow>
-												<TableCell colSpan={7} align="center">
-													No invoices found.
-												</TableCell>
+												)}
 											</TableRow>
-										)}
-									</TableBody>
-								</Table>
-							)}
+										))
+									) : (
+										<TableRow>
+											<TableCell colSpan={7} align="center">
+												No invoices found.
+											</TableCell>
+										</TableRow>
+									)}
+								</TableBody>
+							</Table>
 						</TableContainer>
 
 						{/* Pagination */}
@@ -263,6 +354,66 @@ const InvoiceManagement = () => {
 					</div>
 				</div>
 			</div>
+
+			<Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
+				<DialogTitle>Update Invoice Status</DialogTitle>
+				<DialogContent>
+					<FormControl fullWidth margin="normal">
+						<InputLabel>Status</InputLabel>
+						<Select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
+							<MenuItem value="pending">Pending</MenuItem>
+							<MenuItem value="paid">Paid</MenuItem>
+							<MenuItem value="overdue">Overdue</MenuItem>
+						</Select>
+						{errors.status && <Typography color="error">{errors.status}</Typography>}
+					</FormControl>
+
+					<div className="selectPicker">
+						<LocalizationProvider dateAdapter={AdapterDayjs}>
+							<DatePicker label="Due Date" value={dialogData.due_date} onChange={(newValue) => setDialogData({ ...dialogData, dueDate: newValue })} renderInput={(params) => <TextField fullWidth {...params} />} />
+						</LocalizationProvider>
+					</div>
+
+					{(selectedStatus === "paid" || selectedStatus === "overdue") && (
+						<>
+							<div className="selectPicker mt-2">
+								<LocalizationProvider dateAdapter={AdapterDayjs}>
+									<DatePicker label="Paid Date" value={dialogData.paid_date} onChange={(newValue) => setDialogData({ ...dialogData, paid_date: newValue })} renderInput={(params) => <TextField fullWidth {...params} />} />
+								</LocalizationProvider>
+								{errors.paid_date && <Typography color="error">{errors.paid_date}</Typography>}
+							</div>
+
+							<FormControl fullWidth margin="normal">
+								<RadioGroup row value={dialogData.payment_type} onChange={(e) => setDialogData({ ...dialogData, payment_type: e.target.value })}>
+									<FormControlLabel value="Cash" control={<Radio />} label="Cash" />
+									<FormControlLabel value="Bank" control={<Radio />} label="Bank" />
+								</RadioGroup>
+								{errors.payment_type && <Typography color="error">{errors.payment_type}</Typography>}
+							</FormControl>
+
+							<div style={{ marginTop: 10, border: "2px dashed #ccc", padding: 10, textAlign: "center" }}>
+								<label htmlFor="file-upload" style={{ cursor: "pointer" }}>
+									Upload Receipt (Optional)
+								</label>
+								<input id="file-upload" type="file" style={{ display: "none" }} onChange={(e) => setDialogData({ ...dialogData, receipt: e.target.files[0] })} />
+								{dialogData.receipt && (
+									<Typography variant="body2" style={{ marginTop: 10 }}>
+										{dialogData.receipt.name}
+									</Typography>
+								)}
+								{errors.receipt && <Typography color="error">{errors.receipt}</Typography>}
+							</div>
+						</>
+					)}
+				</DialogContent>
+
+				<DialogActions>
+					<Button onClick={() => closeUpdateInvoiceDialog()}>Cancel</Button>
+					<Button variant="contained" color="primary" onClick={handleUpdateInvoice}>
+						Update
+					</Button>
+				</DialogActions>
+			</Dialog>
 
 			{/* Snackbar */}
 			<Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} message={snackbarMessage} />

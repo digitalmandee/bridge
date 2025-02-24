@@ -35,6 +35,7 @@ const InvoiceCreate = () => {
 	const [companies, setCompanies] = useState([]);
 	const [bookingPlans, setBookingPlans] = useState([]);
 	const [errors, setErrors] = useState({});
+	const [searchloading, setSearchLoading] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [userBooking, setUserBooking] = useState(null);
 	const [userBookingError, setUserBookingError] = useState({
@@ -79,7 +80,7 @@ const InvoiceCreate = () => {
 
 	const fetchSearchResults = useCallback(async (query, type) => {
 		if (!query) return []; // Don't make a request if the query is empty.
-		setLoading(true);
+		setSearchLoading(true);
 		try {
 			const response = await axiosInstance.get("search", {
 				params: {
@@ -87,15 +88,15 @@ const InvoiceCreate = () => {
 					type: type,
 				},
 			});
-			setLoading(false);
+			setSearchLoading(false);
 			if (response.data.success) {
 				return response.data.results;
 			} else {
-				setLoading(false);
+				setSearchLoading(false);
 				return [];
 			}
 		} catch (error) {
-			setLoading(false);
+			setSearchLoading(false);
 			console.error("Error fetching search results:", error);
 			return [];
 		}
@@ -150,6 +151,8 @@ const InvoiceCreate = () => {
 	// Submit Form to API
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+
+		setLoading(true);
 
 		const newErrors = {};
 
@@ -253,6 +256,8 @@ const InvoiceCreate = () => {
 					break;
 				default:
 			}
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -523,7 +528,7 @@ const InvoiceCreate = () => {
 
 								{/* Save Button */}
 								<div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-									<Button disabled={formData.invoiceType === "Monthly" ? (userBooking && userBooking.success === true ? false : true) : false} variant="contained" type="submit" sx={{ bgcolor: "#0D2B4E", "&:hover": { bgcolor: "#0B1E3E" } }}>
+									<Button disabled={formData.invoiceType === "Monthly" ? (userBooking && userBooking.success === true ? false : true) : loading} variant="contained" type="submit" sx={{ bgcolor: "#0D2B4E", "&:hover": { bgcolor: "#0B1E3E" } }}>
 										Save Invoice
 									</Button>
 								</div>

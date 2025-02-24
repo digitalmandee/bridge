@@ -18,6 +18,7 @@ const menuItems = [
 		],
 	},
 	{ to: "/user/invoices/management", label: "Invoice Management", icon: <MdOutlineDateRange /> },
+	{ to: "/user/contracts", label: "Contracts", icon: <MdOutlineDateRange /> },
 ];
 
 const User = () => {
