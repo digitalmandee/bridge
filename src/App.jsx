@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, createContext, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -60,7 +60,10 @@ import MonthlyReport from "./pages/attendance/monthlyreport";
 
 // Notification
 import Notifications from "@/pages/notificaitons";
+
+
 function App() {
+	// const [isToggleSideBar, setIsToggleSidebar] = useState(false);
 	const [showSplash, setShowSplash] = useState(true);
 
 	if (showSplash) {

@@ -1,11 +1,11 @@
-@import "../../assets/styles/variable.css";
+/* @import "../../assets/styles/variable.css";
 
 .sidebar {
     width: 18%;
     height: 100vh;
     max-height: calc(100% - 70px);
     /* margin-left: 0px; */
-    position: fixed;
+    /* position: fixed;
     top: 70px;
     left: 0px;
     background: #fff;
@@ -17,18 +17,23 @@
     padding-bottom: 1rem;
     box-sizing: border-box;
     /* Ensures consistent width */
-    scrollbar-width: none;
+    /* scrollbar-width: none;
+    transition: all 0.3s ease-in-out; */
+/* } */
+
+/* .toggle .sidebar{
+    left: -100%;
 }
 
 .sidebar::-webkit-scrollbar {
     opacity: 0;
-}
+} */
 
 /* .sidebar::-webkit-scrollbar {
     opacity: 1;
 } */
 
-.sidebar ul {
+/* .sidebar ul {
     margin: 0;
     padding: 5px;
     width: 100%;
@@ -42,9 +47,9 @@
 
 .sidebar ul li a {
     text-decoration: none;
-}
+} */
 
-.sidebar ul li button {
+/* .sidebar ul li button {
     color: #000;
     text-align: left;
     display: flex;
@@ -61,21 +66,21 @@
     font-weight: 400;
     font-size: 14px;
     transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
-}
+} */
 
-.sidebar ul li button:hover {
+/* .sidebar ul li button:hover {
     transform: scale(1.01);
     /* background-color: var(--primary); */
     /* color: white; */
-}
+/* } */
 
-.sidebar ul li button.active-button {
+/* .sidebar ul li button.active-button {
     background-color: var(--primary);
     color: #fff;
     /* Optional: Change text color */
-}
+/* } */
 
-.sidebar ul li button .icon {
+/* .sidebar ul li button .icon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -83,9 +88,9 @@
     height: 25px;
     margin-right: 1rem;
     font-size: 20px;
-}
+} */
 
-.sidebar ul li button .arrow {
+/* .sidebar ul li button .arrow {
     margin-left: auto;
     display: flex;
     align-items: center;
@@ -93,50 +98,49 @@
     width: 25px;
     height: 25px;
     transition: transform 0.3s ease;
-}
+} */
 
-.sidebar ul li button .arrow.rotate {
+/* .sidebar ul li button .arrow.rotate {
     transform: rotate(90deg);
-    /* Arrow pointing down */
-}
+} */
 
-.submenu {
+/* .submenu {
     margin: 0;
     padding: 0;
     background-color: #f9f9f9;
     transition: max-height 0.3s ease-in-out;
-}
+} */
 
-.submenu li button {
+/* .submenu li button {
     padding: 8px 10px !important; /* Reduce padding inside the buttons */
-    font-size: 10px; /* Adjust font size if needed */
-    line-height: 0.2; /* Reduce line height */
-}
+    /* font-size: 10px; */
+    /* line-height: 0.2; */
+/* } */
 
-.submenu li {
+/* .submenu li {
     list-style: none;
     width: '100%';
     padding: 0px;
-}
+} */
 
 
-.submenu li a {
+/* .submenu li a {
     text-decoration: none;
     display: block;
     /* color: #000; */
     /* background-color: aqua; */
-    width: '100%';
-    padding-left: 2rem;
-    box-sizing: border-box;
-    border-radius: 0.3rem;
-    height: auto;
-}
+    /* width: '100%'; */
+    /* padding-left: 2rem; */
+    /* box-sizing: border-box; */
+    /* border-radius: 0.3rem; */
+    /* height: auto; */
+/* } */
 
-.sidebar ul .submenu li a:hover {
+/* .sidebar ul .submenu li a:hover {
     background-color: var(--primary);
     color: white !important;
-}
+} */
 
-.sidebar ul .submenu li a:hover * {
+/* .sidebar ul .submenu li a:hover * {
     color: white !important;
-}
+} */

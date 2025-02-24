@@ -1,3 +1,5 @@
+/* @import "../../assets/styles/variable.css"; */
+
 * {
   margin: 0px;
   padding: 0px
@@ -7,6 +9,12 @@ body {
   background: #F5F6FA;
 }
 
+/* .main {
+  display: flex;
+  width: 100%;
+  transition: all 0.3s ease-in-out;
+} */
+
 .main .sidebarWrapper {
   max-width: 20%;
   flex: 0 0 20%;
@@ -15,9 +23,186 @@ body {
   /* background: #000; */
 }
 
-/* .main .sidebarWrapper:hover .sidebar::-webkit-scrollbar {
+.main .sidebarWrapper.toggle {
+  width: 0%;
+  flex: 0 0 0%;
+  overflow: hidden;
+}
+
+.right-content {
+  display: flex;
+  width: '100%';
+  justify-content: space-between;
+  align-items: center;
+  background-color: transparent;
+}
+
+.main .content {
+  /* max-width: 80%; */
+  /* flex: 0 0 80%; */
+  flex: 1;
+  transition: all 0.3s ease-in-out;
+  background: transparent;
+  margin-top: 5rem;
+  margin-bottom: 1rem;
+  margin-right: 1rem;
+  margin-left: 20%;
+}
+
+.main .content.toggle {
+  margin-left: 1rem;
+  width: calc(100% - 2rem);
+  /* background-color: #41C588; */
+}
+
+.sidebar {
+  width: 18%;
+  height: 100vh;
+  max-height: calc(100% - 70px);
+  /* margin-left: 0px; */
+  position: fixed;
+  top: 70px;
+  left: 0px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding-bottom: 1rem;
+  box-sizing: border-box;
+  scrollbar-width: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.toggle .sidebar {
+  left: -120%;
+}
+
+.sidebar::-webkit-scrollbar {
+  opacity: 0;
+}
+
+/* .sidebar::-webkit-scrollbar {
     opacity: 1;
 } */
+
+.sidebar ul {
+  margin: 0;
+  padding: 5px;
+  width: 100%;
+}
+
+.sidebar ul li {
+  list-style: none;
+  left: 0px;
+  width: 100%;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+}
+
+.sidebar ul li button {
+  color: #000;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start !important;
+  width: 100%;
+  border-radius: 5px !important;
+  padding: 15px 5px !important;
+  background: none;
+  border: none;
+  text-transform: capitalize !important;
+  cursor: pointer;
+  font: Nunito Sans;
+  font-weight: 400;
+  font-size: 14px;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.sidebar ul li button:hover {
+  transform: scale(1.01);
+  /* background-color: var(--primary); */
+  /* color: white; */
+}
+
+.sidebar ul li button.active-button {
+  background-color: var(--primary);
+  color: #fff;
+  /* Optional: Change text color */
+}
+
+.sidebar ul li button .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  margin-right: 1rem;
+  font-size: 20px;
+}
+
+.sidebar ul li button .arrow {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  transition: transform 0.3s ease;
+}
+
+.sidebar ul li button .arrow.rotate {
+  transform: rotate(90deg);
+  /* Arrow pointing down */
+}
+
+.submenu {
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.submenu li button {
+  padding: 8px 10px !important;
+  /* Reduce padding inside the buttons */
+  font-size: 10px;
+  /* Adjust font size if needed */
+  line-height: 0.2;
+  /* Reduce line height */
+}
+
+.submenu li {
+  list-style: none;
+  width: '100%';
+  padding: 0px;
+}
+
+
+.submenu li a {
+  text-decoration: none;
+  display: block;
+  /* color: #000; */
+  /* background-color: aqua; */
+  width: '100%';
+  padding-left: 2rem;
+  box-sizing: border-box;
+  border-radius: 0.3rem;
+  height: auto;
+}
+
+.sidebar ul .submenu li a:hover {
+  background-color: var(--primary);
+  color: white !important;
+}
+
+.sidebar ul .submenu li a:hover * {
+  color: white !important;
+}
+
 
 .payment-methods {
   flex: 1;
@@ -35,25 +220,6 @@ body {
   border-color: #0D2B4E;
 }
 
-.main .content {
-  max-width: 80%;
-  flex: 0 0 80%;
-  background: transparent;
-  margin-top: 5rem;
-  margin-bottom: 1rem;
-  margin-right: 1rem;
-  margin-left: 20%;
-}
-
-.right-content {
-  padding: 10px;
-  display: flex;
-  width: '100%';
-  /* flex-direction: row; */
-  justify-content: space-between;
-  align-items: center;
-  background-color: transparent;
-}
 
 .title {
   font: Nunito Sans;
@@ -116,95 +282,6 @@ body {
   /* text-align: center; */
 }
 
-/* .btn-yellow {
-    background-color: #FFCC16;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 40px;
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: bold;
-    text-transform: capitalize;
-    height: 10%;
-  } */
-
-/* .btn-yellow:hover {
-    background-color: #FFCC16;
-  }
-  
-  .select-floor {
-    text-align: right;
-  } */
-
-/* .floor-label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 14px;
-    color: #333;
-    font-weight: bold;
-  } */
-
-/* .floor-dropdown {
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
-    width: 120px;
-  } */
-
-/* .info-cards {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .card {
-    flex: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  } */
-
-/* .card-content p {
-    margin: 0;
-    font-size: 14px;
-    color: #666;
-  }
-  
-  .card-content h2 {
-    margin: 5px 0 0 0;
-    font-size: 24px;
-    color: #333;
-  }
-  
-  .card-icon {
-    width: 40px;
-    height: 40px;
-    background-color: #FFCC16;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #fff;
-    font-size: 20px;
-  } */
-
-/* .icon-available-seats::before {
-    content: '\f233'; /* Replace with the actual icon code */
-/* font-family: 'Font Awesome 5 Free'; */
-/* font-weight: 900; */
-
-/* .icon-occupied-seats::before {
-    content: '\f0c0'; /* Replace with the actual icon code */
-/* font-family: 'Font Awesome 5 Free'; */
-/* font-weight: 900;  */
-
-/*  */
 .selected-booking-chair {
   display: flex;
   flex-wrap: wrap;

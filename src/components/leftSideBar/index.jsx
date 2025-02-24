@@ -6,14 +6,16 @@ import { AuthContext } from "@/contexts/AuthContext";
 import Admin from "./admin";
 import User from "./user";
 import Company from "./company";
+import { SidebarContext } from "@/contexts/sidebar.context";
 
 
 const Sidebar = () => {
 	const { user, logout } = useContext(AuthContext);
+	const context = useContext(SidebarContext);
 
 	return (
 		<>
-			<div className="sidebar">
+			<div className={`sidebar ${context.isToggleSidebar===true ? 'toggle' : ''}`}>
 				{user.type === "superadmin" && <Admin />}
 				{user.type === "admin" && <Admin />}
 				{user.type === "investor" && <Admin />}

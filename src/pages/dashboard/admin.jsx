@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { ArrowDownIcon, ArrowUpIcon, Bell, Building2, FileText, Building } from "lucide-react";
@@ -8,11 +8,14 @@ import axiosInstance from "@/utils/axiosInstance";
 import colors from "@/assets/styles/color";
 import { useNavigate } from "react-router-dom";
 import DashboardNotifications from "@/components/notifications";
+import { width } from "@mui/system";
+import { SidebarContext } from "../../contexts/sidebar.context"
 
 // Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ isSidebarOpen }) => {
+	const context = useContext(SidebarContext);
 	const navigate = useNavigate();
 
 	const chartData = {
@@ -85,11 +88,14 @@ const AdminDashboard = () => {
 		// padding: '1.5rem',
 		backgroundColor: "transparent",
 		minHeight: "100vh",
+		width: '100%',
+		transition: "all 0.3s ease-in-out",
 		marginLeft: "0px",
 	};
 
 	const cardStyle = {
 		backgroundColor: "#FFFFFF",
+		width: '100%',
 		borderRadius: "0.2rem",
 		padding: "1rem",
 		boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
@@ -97,25 +103,16 @@ const AdminDashboard = () => {
 	};
 
 	const metricsGridStyle = {
+		width: '100%',
 		display: "grid",
-		gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+		gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
 		gap: "0.5rem",
-	};
-
-	const analyticsStyle = {
-		marginTop: "1rem",
-		height: "30rem",
-		width: "45rem",
-		backgroundColor: "#FFFFFF",
-		borderRadius: "0.2rem",
-		boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
-		border: "1px solid #E5E7EB",
 	};
 
 	const statsGridStyle = {
 		marginTop: "1rem",
 		display: "grid",
-		gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+		gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
 		gap: "1rem",
 	};
 
@@ -123,10 +120,10 @@ const AdminDashboard = () => {
 		<>
 			<TopNavbar />
 			<div className="main">
-				<div className="sideBarWrapper">
+				<div className={`sideBarWrapper ${context.isToggleSidebar === true ? 'toggle' : ''}`}>
 					<Sidebar />
 				</div>
-				<div className="content">
+				<div className={`content ${context.isToggleSidebar === true ? 'toggle' : ''}`}>
 					<div style={containerStyle}>
 						{/* Metrics */}
 						<div style={metricsGridStyle}>
@@ -148,8 +145,25 @@ const AdminDashboard = () => {
 						</div>
 
 						{/* Analytics and Notifications */}
-						<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }}>
-							<div style={analyticsStyle}>
+						<div style={{
+							display: "grid",
+							gridTemplateColumns: "minmax(600px, 1fr) auto", 
+							// gridTemplateColumns: isSidebarOpen ? "minmax(500px, 1fr) 21rem" : "2fr 1fr",
+							gap: "0.5rem",
+							width: "100%",
+							transition: "grid-template-columns 0.3s ease-in-out",
+						}}>
+							<div style={{
+								marginTop: "1rem",
+								height: "30rem",
+								// width: '45rem',
+								transition: "width 0.3s ease-in-out",
+								width: isSidebarOpen ? "45rem" : "100%",
+								backgroundColor: "#FFFFFF",
+								borderRadius: "0.2rem",
+								boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+								border: "1px solid #E5E7EB",
+							}}>
 								<div style={{ padding: "1rem" }}>
 									<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
 										<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Analytics</h2>

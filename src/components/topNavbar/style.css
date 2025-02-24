@@ -98,7 +98,7 @@ header button.square {
 }
 
 #notifications .MuiPaper-elevation {
-    right: 16% !important;
+    right: 18rem !important;
     width: 450px !important;
     max-height: 400px !important;
     overflow: auto;

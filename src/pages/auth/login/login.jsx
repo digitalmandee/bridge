@@ -10,11 +10,12 @@ const LoginPage = () => {
 	const { setUser, setRole, setPermissions } = useContext(AuthContext);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-
+	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
 	const handleLogin = async (e) => {
 		e.preventDefault(); // prevent from reloading
+		setLoading(true);
 		try {
 			const response = await axios.post(import.meta.env.VITE_BASE_API + "login", { email, password }, { headers: { "Content-Type": "application/json" } });
 			localStorage.setItem("authToken", response.data.data.token);
@@ -32,6 +33,9 @@ const LoginPage = () => {
 		} catch (error) {
 			console.log(error.response.data);
 			alert("Login failed. Check credentials.");
+		}
+		finally {
+			setLoading(false); // ⬅️ Hide spinner after request completes
 		}
 	};
 
@@ -54,8 +58,8 @@ const LoginPage = () => {
 						</label>
 						<input type="password" id="password" name="password" placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
 
-						<button type="submit" className="login-button">
-							Log in
+						<button type="submit" className={`login-button ${loading ? "loading" : ""}`}>
+							{loading ? <div className="spinner"></div> : "Log in"}
 						</button>
 					</form>
 				</div>

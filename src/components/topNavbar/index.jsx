@@ -1,6 +1,5 @@
-import React, { useContext, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 import logo from "../../assets/logo.png";
-import { IoIosMenu } from "react-icons/io";
 import { FaRegBell } from "react-icons/fa6";
 import SearchBar from "./searchBar";
 import profile from "../../assets/profile.png";
@@ -13,21 +12,24 @@ import Logout from "@mui/icons-material/Logout";
 import "./style.css";
 import { Button } from "@mui/material";
 import { AuthContext } from "../../contexts/AuthContext";
+import { SidebarContext } from "../../contexts/sidebar.context"
 // import { Menu, MenuItem, Button } from "@mui/material";
 // import { FaRegBell } from "react-icons/fa";
 import { FileText, Building2, Building } from "lucide-react";
+import { MdMenuOpen, MdOutlineMenu } from "react-icons/md";
 
 const TopNavbar = () => {
-	const { user, logout } = useContext(AuthContext);
 
+  const { user, logout } = useContext(AuthContext);
+  const context = useContext(SidebarContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isOpennotificationDrop, setisOpennotificationDrop] = useState(false);
   const openMyAcc = Boolean(anchorEl);
   const openNotifications = Boolean(isOpennotificationDrop);
 
-	const handleOpenMyAccDr = (event) => {
-		setAnchorEl(event.currentTarget);
-	};
+  const handleOpenMyAccDr = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleCloseMyAccDr = () => {
     setAnchorEl(null);
@@ -39,7 +41,7 @@ const TopNavbar = () => {
 
   const handleClosenotificationsDr = () => {
     setisOpennotificationDrop(false)
-  }
+  };
 
   const notifications = [
     {
@@ -89,8 +91,11 @@ const TopNavbar = () => {
               />
             </div>
             <div className="col-sm-3 d-flex align-items-center part2 pl-4">
-              <Button className="square mr-3">
-                <IoIosMenu />
+              <Button className="square mr-3" 
+              onClick={() => context.setIsToggleSidebar(!context.isToggleSidebar)}>
+                {
+                  context.isToggleSidebar=== false ? <MdMenuOpen/> : <MdOutlineMenu/>
+                }
               </Button>
               {/* <SearchBar /> */}
             </div>
