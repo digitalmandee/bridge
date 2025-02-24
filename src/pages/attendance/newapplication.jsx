@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
 import { useNavigate } from "react-router-dom";
-import { Autocomplete, TextField, Button, Alert, Select, MenuItem, FormHelperText, FormControl, InputLabel } from "@mui/material";
+import { Autocomplete, TextField, Button, Alert, Select, MenuItem, FormHelperText, FormControl, InputLabel, Snackbar } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
 
 const NewApplication = () => {
@@ -14,11 +14,12 @@ const NewApplication = () => {
 		end_date: "",
 		reason: "",
 	});
+	const [isLoading, setIsLoading] = useState(false);
 	const [employees, setEmployees] = useState([]);
 	const [categories, setCategories] = useState([]);
 	const [errors, setErrors] = useState({});
 	const [searchloading, setSearchLoading] = useState(false);
-	const [successMessage, setSuccessMessage] = useState("");
+	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
 	useEffect(() => {
 		const getLeaveCategories = async () => {
@@ -94,13 +95,19 @@ const NewApplication = () => {
 		e.preventDefault();
 		if (!validateForm()) return;
 		try {
+			setIsLoading(true);
 			await axiosInstance.post("employees/attendances/leave/create", { ...formData, employee_id: formData.employee.id });
-			setSuccessMessage("Leave application submitted successfully!");
-			setFormData({ employee: "", leave_category_id: "", start_date: "", end_date: "", reason: "" });
+			setSnackbar({ open: true, message: "Leave application submitted successfully!", severity: "success" });
 			setErrors({});
 		} catch (error) {
-			console.error("Error submitting leave application", error);
+			setSnackbar({ open: true, message: error.response.data.message ?? "Something went wrong", severity: "error" });
+		} finally {
+			setIsLoading(false);
 		}
+	};
+
+	const handleCloseSnackbar = () => {
+		setSnackbar({ ...snackbar, open: false });
 	};
 
 	return (
@@ -112,7 +119,6 @@ const NewApplication = () => {
 				</div>
 				<div className="content">
 					<h3>New Leave Application</h3>
-					{successMessage && <Alert severity="success">{successMessage}</Alert>}
 					<form onSubmit={handleSubmit} style={{ maxWidth: "600px", margin: "auto", padding: "24px", backgroundColor: "white", borderRadius: "8px", boxShadow: "0 2px 4px rgba(0,0,0,0.05)" }}>
 						<Autocomplete className="mb-3" options={employees} getOptionLabel={(option) => option.name || ""} value={formData.employee} onInputCapture={handleEmployeeSearch} onChange={(event, value) => handleAutocompleteChange(event, value, "employee")} renderInput={(params) => <TextField {...params} label="Search Employee" variant="outlined" error={!!errors.employee} helperText={errors.employee} />} />
 
@@ -129,7 +135,6 @@ const NewApplication = () => {
 							{errors.leave_category_id && <FormHelperText error>{errors.leave_category_id}</FormHelperText>}
 						</FormControl>
 
-						{formData.start_date}
 						<div className="d-flex gap-3">
 							<TextField
 								type="date"
@@ -165,16 +170,32 @@ const NewApplication = () => {
 						</div>
 						<TextField multiline rows={3} label="Reason" fullWidth name="reason" value={formData.reason} onChange={handleChange} margin="normal" error={!!errors.reason} helperText={errors.reason} />
 						<div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
-							<Button variant="outlined" onClick={() => navigate(-1)}>
+							<button
+								type="button"
+								style={{
+									padding: "8px 16px",
+									fontSize: "14px",
+									border: "1px solid #E0E0E0",
+									borderRadius: "4px",
+									backgroundColor: "white",
+									color: "#666",
+									cursor: "pointer",
+								}}
+								onClick={() => navigate(-1)}>
 								Cancel
-							</Button>
-							<Button type="submit" variant="contained" color="primary">
-								Submit
+							</button>
+							<Button type="submit" disabled={isLoading} loading={isLoading} variant="contained" sx={{ backgroundColor: "#0D2B4E", color: "white" }}>
+								Add
 							</Button>
 						</div>
 					</form>
 				</div>
 			</div>
+			<Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+				<Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+					{snackbar.message}
+				</Alert>
+			</Snackbar>
 		</>
 	);
 };
