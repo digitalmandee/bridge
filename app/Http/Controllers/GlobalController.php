@@ -16,21 +16,33 @@ class GlobalController extends Controller
         $query = $request->input('query');
         $type = $request->input('type');
 
-        // If searching for members (type = 'user')
-        if ($type == 'user') {
-            $members = User::where(['created_by_branch_id' => $branchId, 'type' => 'user', 'status' => 'active', 'company_id' => null])->where('name', 'like', "%$query%")->select('id', 'name', 'email', 'phone_no')->get();
-
-            return response()->json(['success' => true, 'results' => $members], 200);
+        // Allowed types
+        $allowedTypes = ['user', 'company', 'employee'];
+        if (!in_array($type, $allowedTypes)) {
+            return response()->json(['success' => false, 'message' => 'Invalid type'], 400);
         }
 
-        // If searching for companies (type = 'company')
-        if ($type == 'company') {
-            $companies = User::where(['created_by_branch_id' => $branchId, 'type' => 'company', 'status' => 'active'])->where('name', 'like', "%$query%")->select('id', 'name', 'email', 'phone_no')->get();
+        return $this->searchUsersByType($branchId, $query, $type);
+    }
 
-            return response()->json(['success' => true, 'results' => $companies], 200);
+    private function searchUsersByType($branchId, $query, $type)
+    {
+        $conditions = [
+            'created_by_branch_id' => $branchId,
+            'type' => $type,
+            'status' => 'active'
+        ];
+
+        if ($type === 'user') {
+            $conditions['company_id'] = null;
         }
 
-        return response()->json(['success' => false, 'message' => 'Invalid type'], 400);
+        $results = User::where($conditions)
+            ->where('name', 'like', "%$query%")
+            ->select('id', 'name', 'email', 'phone_no')
+            ->get();
+
+        return response()->json(['success' => true, 'results' => $results], 200);
     }
 
     public function searchPlan(Request $request)

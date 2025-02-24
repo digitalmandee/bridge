@@ -24,6 +24,15 @@ class LeaveCategoryController extends Controller
         return response()->json(['success' => true, 'leave_categories' => $leaveCategories]);
     }
 
+    public function getAll(Request $request)
+    {
+        $branchId = auth()->user()->branch->id;
+
+        $leaveCategories = LeaveCategory::where('branch_id', $branchId)->where('status', 'published')->select('id', 'name')->orderByDesc('created_at')->get();
+
+        return response()->json(['success' => true, 'categories' => $leaveCategories]);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -36,6 +45,7 @@ class LeaveCategoryController extends Controller
             'name' => 'required|string',
             'color' => 'required|string',
             'description' => 'required|string',
+            'short_code' => 'required|string',
         ]);
 
         try {
@@ -44,6 +54,7 @@ class LeaveCategoryController extends Controller
                 'name' => $request->name,
                 'color' => $request->color,
                 'description' => $request->description,
+                'short_code' => $request->short_code
             ]);
 
             return response()->json(['success' => true, 'message' => 'Leave Category created successfully'], 201);
@@ -78,6 +89,7 @@ class LeaveCategoryController extends Controller
             'name' => 'required|string',
             'color' => 'required|string',
             'description' => 'required|string',
+            'short_code' => 'required|string',
             'status' => 'required|in:published,draft',
         ]);
 
@@ -86,6 +98,7 @@ class LeaveCategoryController extends Controller
                 'name' => $request->name,
                 'color' => $request->color,
                 'description' => $request->description,
+                'short_code' => $request->short_code,
                 'status' => $request->status,
             ]);
 

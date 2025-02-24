@@ -11,7 +11,7 @@ class RolePermissionController extends Controller
 {
     public function index()
     {
-        $roles = Role::with('permissions')->whereIn('name', ['admin'])->get();
+        $roles = Role::with('permissions')->whereNotIn('name', ['super_admin', 'invester', 'user'])->get();
         return response()->json($roles);
     }
 
@@ -40,7 +40,7 @@ class RolePermissionController extends Controller
 
         DB::beginTransaction();
         // Create role
-        $role = Role::create(['name' => $request->name, 'guard_name' => 'web']);
+        $role = Role::firstOrCreate(['name' => $request->name, 'guard_name' => 'web']);
 
         // Convert permission IDs to names before syncing
         if ($request->has('permissions')) {

@@ -14,12 +14,21 @@ class EmployeeController extends Controller
 {
     public function index(Request $request)
     {
-        $limit = $request->query('limit') ?? 10;
-
+        $type = $request->query('type', 'list');
+        $query = $request->query('query');
         $branchId = auth()->user()->branch->id;
-        $employees = Employee::where('branch_id', $branchId)->with(['user:id,name,email,designation,phone_no', 'department:id,name', 'branch:id,name'])->paginate($limit);
+        if (!$branchId) return response()->json(['message' => 'Branch ID parameter is required'], 400);
 
-        return response()->json(['success' => true, 'employees' => $employees], 200);
+        if ($type == 'search') {
+            $employees = User::where('created_by_branch_id ', $branchId)->where('type', 'employee')->where('name', 'like', "%$query%")->select('id', 'name', 'email')->get();
+
+            return response()->json(['success' => true, 'results' => $employees], 200);
+        } else {
+            $limit = $request->query('limit') ?? 10;
+
+            $employees = Employee::where('branch_id', $branchId)->with(['user:id,name,email,designation,phone_no', 'department:id,name', 'branch:id,name'])->paginate($limit);
+            return response()->json(['success' => true, 'employees' => $employees], 200);;
+        }
     }
 
     public function dashboard(Request $request)

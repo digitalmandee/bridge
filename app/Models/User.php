@@ -66,7 +66,9 @@ class User extends Authenticatable
     }
     public function branch()
     {
-        return $this->hasOne(Branch::class);
+        return $this->type === 'admin' && $this->created_by_branch_id
+            ? $this->hasOne(Branch::class, 'id', 'created_by_branch_id')
+            : $this->hasOne(Branch::class);
     }
 
     public function bookingSchedulesByCompany()

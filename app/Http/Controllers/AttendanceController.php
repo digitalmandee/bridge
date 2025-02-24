@@ -106,10 +106,10 @@ class AttendanceController extends Controller
     public function createLeave(Request $request)
     {
         $request->validate([
-            'employee_id' => 'required|exists:employees,id',
+            'employee_id' => 'required|exists:users,id',
+            'leave_category_id' => 'required|exists:leave_categories,id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'leave_category_id' => 'required|exists:leave_categories,id',
             'reason' => 'required|string',
         ]);
 
@@ -117,9 +117,11 @@ class AttendanceController extends Controller
             $startDate = Carbon::parse($request->start_date);
             $endDate = Carbon::parse($request->end_date);
 
+            $employeeId = Employee::where('user_id', $request->employee_id)->value('id');
+
             // Check if the user already has a leave application in this range
             if (LeaveApplication::where('branch_id', auth()->user()->branch->id)
-                ->where('employee_id', $request->employee_id)
+                ->where('employee_id', $employeeId)
                 ->whereBetween('start_date', [$startDate, $endDate])
                 ->orWhereBetween('end_date', [$startDate, $endDate])
                 ->exists()
@@ -129,7 +131,7 @@ class AttendanceController extends Controller
 
             LeaveApplication::create([
                 'branch_id' => auth()->user()->branch->id,
-                'employee_id' => $request->employee_id,
+                'employee_id' => $employeeId,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'leave_category_id' => $request->leave_category_id,
