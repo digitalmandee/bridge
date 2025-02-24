@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
 import { RxDashboard } from "react-icons/rx";
@@ -11,19 +11,19 @@ import { IoMdContact } from "react-icons/io";
 import { FaAngleRight } from "react-icons/fa6";
 ("react-icons/all");
 import "./style.css";
+import { AuthContext } from "@/contexts/AuthContext";
 
 const menuItems = [
-	{ to: "/branch/dashboard", label: "Dashboard", icon: <RxDashboard />, hasDropdown: false },
+	{ to: "/branch/dashboard", label: "Dashboard", icon: <RxDashboard />, hasDropdown: false, permission: "admin-dashboard" },
 	{
 		label: "Seat Booking",
 		icon: <RxDashboard />,
 		hasDropdown: true,
 		dropdown: [
-			{ to: "/branch/floorplan", label: "Floor Plan" },
-			{ to: "/branch/booking/plans", label: "Price Plan" },
-			{ to: "/branch/booking/requests", label: "Booking Request" },
-			{ to: "/branch/booking/seats-allocation", label: "Seat Card" },
-			// { to: "/branch/booking/invoices", label: "Booking Invoice" },
+			{ to: "/branch/floorplan", label: "Floor Plan", permission: "floor-plan" },
+			{ to: "/branch/booking/plans", label: "Price Plan", permission: "price-plan" },
+			{ to: "/branch/booking/requests", label: "Booking Request", permission: "booking-request" },
+			{ to: "/branch/booking/seats-allocation", label: "Seat Card", permission: "seat-card" },
 		],
 	},
 	{
@@ -31,8 +31,8 @@ const menuItems = [
 		icon: <SlCalender />,
 		hasDropdown: true,
 		dropdown: [
-			{ to: "/branch/booking-schedule", label: "Room Booking" },
-			{ to: "/branch/booking-schedule/requests", label: "Booking Requests" },
+			{ to: "/branch/booking-schedule", label: "Room Booking", permission: "room-booking" },
+			{ to: "/branch/booking-schedule/requests", label: "Booking Requests", permission: "booking-requests" },
 		],
 	},
 	{
@@ -40,9 +40,9 @@ const menuItems = [
 		icon: <SlCalender />,
 		hasDropdown: true,
 		dropdown: [
-			{ to: "/branch/invoice/dashboard", label: "Dashboard" },
-			{ to: "/branch/invoice/create", label: "New Invoice" },
-			{ to: "/branch/invoice/management", label: "Invoice Management" },
+			{ to: "/branch/invoice/dashboard", label: "Dashboard", permission: "invoice-dashboard" },
+			{ to: "/branch/invoice/create", label: "New Invoice", permission: "new-invoice" },
+			{ to: "/branch/invoice/management", label: "Invoice Management", permission: "invoice-management" },
 		],
 	},
 	{
@@ -50,10 +50,10 @@ const menuItems = [
 		icon: <SlCalender />,
 		hasDropdown: true,
 		dropdown: [
-			{ to: "/branch/floorplan", label: "Add New" },
-			{ to: "/branch/member/companies", label: "Company" },
-			{ to: "/branch/member/users", label: "Users" },
-			{ to: "/branch/member/contracts", label: "Contract" },
+			{ to: "/branch/floorplan", label: "Add New", permission: "floor-plan" },
+			{ to: "/branch/member/companies", label: "Company", permission: "Company" },
+			{ to: "/branch/member/users", label: "Users", permission: "users" },
+			{ to: "/branch/member/contracts", label: "Contract", permission: "contracts" },
 		],
 	},
 	{
@@ -61,30 +61,36 @@ const menuItems = [
 		icon: <SlCalender />,
 		hasDropdown: true,
 		dropdown: [
-			{ to: "/branch/employee/dashboard", label: "Dashboard" },
-			{ to: "/branch/employee/attendance", label: "Attendance" },
-			{ to: "/branch/employee/leave/category", label: "Leave Category" },
-			{ to: "/branch/employee/leave/application", label: "Leave Application" },
-			{ to: "/branch/employee/leave/management", label: "Leave Management" },
-			{ to: "/branch/employee/leave/report", label: "Leave Report" },
-			{ to: "/branch/employee/manage/attendance", label: "Manage Attendance" },
-			{ to: "/branch/employee/attendance/monthly/report", label: "Monthly Report" },
-			{ to: "/branch/employee/attendance/report", label: "Attendance Report" },
+			{ to: "/branch/employee/dashboard", label: "Dashboard", permission: "employee-dashboard" },
+			{ to: "/branch/employee/departments", label: "Departments", permission: "employee-dashboard" },
+			{ to: "/branch/employee/attendance", label: "Attendance", permission: "attendance" },
+			{ to: "/branch/employee/leave/category", label: "Leave Category", permission: "leave-category" },
+			{ to: "/branch/employee/leave/application", label: "Leave Application", permission: "leave-application" },
+			{ to: "/branch/employee/leave/management", label: "Leave Management", permission: "leave-management" },
+			{ to: "/branch/employee/leave/report", label: "Leave Report", permission: "leave-report" },
+			{ to: "/branch/employee/manage/attendance", label: "Manage Attendance", permission: "manage-attendance" },
+			{ to: "/branch/employee/attendance/monthly/report", label: "Monthly Report", permission: "monthly-report" },
+			{ to: "/branch/employee/attendance/report", label: "Attendance Report", permission: "manage-attendance" },
 		],
 	},
-	{ to: "", label: "Inventory Management", icon: <MdOutlineInventory />, hasDropdown: true },
-	{ to: "", label: "Expense Management", icon: <LuListTodo />, hasDropdown: true },
-	{ to: "", label: "Financial Report", icon: <GoDatabase />, hasDropdown: true },
+	// { to: "", label: "Inventory Management", icon: <MdOutlineInventory />, hasDropdown: true },
+	// { to: "", label: "Expense Management", icon: <LuListTodo />, hasDropdown: true },
+	// { to: "", label: "Financial Report", icon: <GoDatabase />, hasDropdown: true },
 	{
 		label: "Users Role Management",
 		icon: <SlCalender />,
 		hasDropdown: true,
-		dropdown: [{ to: "/branch/users/roles", label: "Role" }],
+		dropdown: [
+			{ to: "/branch/users/roles", label: "Roles", permission: "roles" },
+			{ to: "/branch/users/management", label: "User", permission: "employee-users" },
+		],
 	},
 	{ to: "", label: "Settings", icon: <RxDashboard />, hasDropdown: false },
 ];
 
 const Admin = () => {
+	const { permissions } = useContext(AuthContext);
+
 	const location = useLocation();
 	const [selectedButton, setSelectedButton] = useState("");
 	const [openDropdown, setOpenDropdown] = useState("");
@@ -132,42 +138,54 @@ const Admin = () => {
 
 	return (
 		<ul>
-			{menuItems.map((item, index) => (
-				<li key={index}>
-					{item.hasDropdown ? (
-						<>
-							<Button className={`w-100 dropdown-button ${selectedButton === item.label ? "active-button" : ""}`} onClick={() => handleButtonClick(item.label, item.to, item.hasDropdown)}>
-								<span className="icon">{item.icon}</span>
-								{item.label}
-								<span className={`arrow ${openDropdown === item.label ? "rotate" : ""}`}>
-									<FaAngleRight />
-								</span>
-							</Button>
-							{openDropdown === item.label && (
-								<ul className="submenu">
-									{item.dropdown &&
-										item.dropdown.map((subItem, subIndex) => (
-											<li key={subIndex}>
-												<Link to={subItem.to}>
-													<Button className={`w-100 ${selectedButton === subItem.label ? "active-button" : ""}`} onClick={() => handleButtonClick(subItem.label, subItem.to, false)}>
-														{subItem.label}
-													</Button>
-												</Link>
-											</li>
-										))}
-								</ul>
-							)}
-						</>
-					) : (
-						<Link to={item.to}>
-							<Button className={`w-100 ${selectedButton === item.label ? "active-button" : ""}`} onClick={() => handleButtonClick(item.label, item.to, item.hasDropdown)}>
-								<span className="icon">{item.icon}</span>
-								{item.label}
-							</Button>
-						</Link>
-					)}
-				</li>
-			))}
+			{menuItems
+				.filter((item) => {
+					if (!item.hasDropdown) {
+						// Check permission for single item
+						return permissions.includes(item.permission);
+					}
+
+					// Check if any dropdown item has permission
+					return item.dropdown.some((subItem) => permissions.includes(subItem.permission));
+				})
+				.map((item, index) => (
+					<li key={index}>
+						{item.hasDropdown ? (
+							<>
+								<Button className={`w-100 dropdown-button ${selectedButton === item.label ? "active-button" : ""}`} onClick={() => handleButtonClick(item.label, item.to, item.hasDropdown)}>
+									<span className="icon">{item.icon}</span>
+									{item.label}
+									<span className={`arrow ${openDropdown === item.label ? "rotate" : ""}`}>
+										<FaAngleRight />
+									</span>
+								</Button>
+								{openDropdown === item.label && (
+									<ul className="submenu">
+										{item.dropdown &&
+											item.dropdown
+												.filter((subItem) => permissions.includes(subItem.permission))
+												.map((subItem, subIndex) => (
+													<li key={subIndex}>
+														<Link to={subItem.to}>
+															<Button className={`w-100 ${selectedButton === subItem.label ? "active-button" : ""}`} onClick={() => handleButtonClick(subItem.label, subItem.to, false)}>
+																{subItem.label}
+															</Button>
+														</Link>
+													</li>
+												))}
+									</ul>
+								)}
+							</>
+						) : (
+							<Link to={item.to}>
+								<Button className={`w-100 ${selectedButton === item.label ? "active-button" : ""}`} onClick={() => handleButtonClick(item.label, item.to, item.hasDropdown)}>
+									<span className="icon">{item.icon}</span>
+									{item.label}
+								</Button>
+							</Link>
+						)}
+					</li>
+				))}
 		</ul>
 	);
 };

@@ -13,6 +13,7 @@ const EditCategory = () => {
 		name: "",
 		color: "#000000",
 		description: "",
+		short_code: "",
 		status: "published",
 	});
 	const [errors, setErrors] = useState({});
@@ -26,12 +27,7 @@ const EditCategory = () => {
 			try {
 				const res = await axiosInstance.get(`employees/leavecategories/${id}`);
 				if (res.data.success) {
-					setFormData({
-						name: res.data.leave_category.name,
-						color: res.data.leave_category.color,
-						description: res.data.leave_category.description,
-						status: res.data.leave_category.status,
-					});
+					setFormData(res.data.leave_category);
 				}
 			} catch (error) {
 				console.error("Error fetching category:", error);
@@ -55,6 +51,7 @@ const EditCategory = () => {
 		let newErrors = {};
 		if (!formData.name.trim()) newErrors.name = "Category name is required.";
 		if (!formData.description.trim()) newErrors.description = "Description is required.";
+		if (!formData.short_code.trim()) newErrors.short_code = "Abbreviation is required.";
 		if (!formData.status) newErrors.status = "Status is required.";
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
@@ -69,6 +66,7 @@ const EditCategory = () => {
 		try {
 			await axiosInstance.put(`employees/leavecategories/${id}`, formData);
 			setSnackbar({ open: true, message: "Category updated successfully!", severity: "success" });
+			navigate("/branch/employee/leave/category");
 		} catch (error) {
 			setSnackbar({ open: true, message: error.response?.data?.message ?? "Something went wrong", severity: "error" });
 		} finally {
@@ -128,23 +126,46 @@ const EditCategory = () => {
 						</div>
 
 						{/* Color */}
-						<div style={{ marginBottom: "12px" }}>
-							<label style={{ fontSize: "14px", color: "#333", marginBottom: "8px", display: "block" }}>
-								Color <span style={{ color: "#FF0000" }}>*</span>
-							</label>
-							<input
-								type="color"
-								name="color"
-								value={formData.color}
-								onChange={handleChange}
-								style={{
-									width: "100px",
-									height: "40px",
-									border: "none",
-									cursor: "pointer",
-									margin: 0,
-								}}
-							/>
+						<div style={{ display: "flex", gap: "12px", marginBottom: "12px" }}>
+							<div style={{ flex: 1 }}>
+								<label style={{ fontSize: "14px", color: "#333", marginBottom: "8px", display: "block" }}>
+									Abbreviation <span style={{ color: "#FF0000" }}>*</span>
+								</label>
+								<input
+									type="text"
+									name="short_code"
+									value={formData.short_code}
+									onChange={handleChange}
+									placeholder="Abbreviation"
+									style={{
+										width: "100%",
+										padding: "12px",
+										fontSize: "14px",
+										border: "1px solid #E0E0E0",
+										borderRadius: "4px",
+										margin: 0,
+									}}
+								/>
+								{errors.short_code && <p style={{ color: "red", fontSize: "12px", marginTop: "5px" }}>{errors.short_code}</p>}
+							</div>
+							<div style={{ marginBottom: "12px" }}>
+								<label style={{ fontSize: "14px", color: "#333", marginBottom: "8px", display: "block" }}>
+									Color <span style={{ color: "#FF0000" }}>*</span>
+								</label>
+								<input
+									type="color"
+									name="color"
+									value={formData.color}
+									onChange={handleChange}
+									style={{
+										width: "100px",
+										height: "40px",
+										border: "none",
+										cursor: "pointer",
+										margin: 0,
+									}}
+								/>
+							</div>
 						</div>
 
 						<div style={{ marginBottom: "12px" }}>

@@ -11,6 +11,7 @@ const CreateCategory = () => {
 	const [formData, setFormData] = useState({
 		name: "",
 		color: "#000000",
+		short_code: "",
 		description: "Can be avoiled once a year",
 	});
 	const [errors, setErrors] = useState({});
@@ -27,6 +28,7 @@ const CreateCategory = () => {
 	const validateForm = () => {
 		let newErrors = {};
 		if (!formData.name.trim()) newErrors.name = "Category name is required.";
+		if (!formData.short_code.trim()) newErrors.short_code = "Abbreviation is required.";
 		if (!formData.description.trim()) newErrors.description = "Description is required.";
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
@@ -104,23 +106,46 @@ const CreateCategory = () => {
 						</div>
 
 						{/* Color */}
-						<div style={{ marginBottom: "12px" }}>
-							<label style={{ fontSize: "14px", color: "#333", marginBottom: "8px", display: "block" }}>
-								Color <span style={{ color: "#FF0000" }}>*</span>
-							</label>
-							<input
-								type="color"
-								name="color"
-								value={formData.color}
-								onChange={handleChange}
-								style={{
-									width: "100px",
-									height: "40px",
-									border: "none",
-									cursor: "pointer",
-									margin: 0,
-								}}
-							/>
+						<div style={{ display: "flex", gap: "12px", marginBottom: "12px" }}>
+							<div style={{ flex: 1 }}>
+								<label style={{ fontSize: "14px", color: "#333", marginBottom: "8px", display: "block" }}>
+									Abbreviation <span style={{ color: "#FF0000" }}>*</span>
+								</label>
+								<input
+									type="text"
+									name="short_code"
+									value={formData.short_code}
+									onChange={handleChange}
+									placeholder="Abbreviation"
+									style={{
+										width: "100%",
+										padding: "12px",
+										fontSize: "14px",
+										border: "1px solid #E0E0E0",
+										borderRadius: "4px",
+										margin: 0,
+									}}
+								/>
+								{errors.short_code && <p style={{ color: "red", fontSize: "12px", marginTop: "5px" }}>{errors.short_code}</p>}
+							</div>
+							<div>
+								<label style={{ fontSize: "14px", color: "#333", marginBottom: "8px", display: "block" }}>
+									Color <span style={{ color: "#FF0000" }}>*</span>
+								</label>
+								<input
+									type="color"
+									name="color"
+									value={formData.color}
+									onChange={handleChange}
+									style={{
+										width: "100px",
+										height: "40px",
+										border: "none",
+										cursor: "pointer",
+										margin: 0,
+									}}
+								/>
+							</div>
 						</div>
 
 						{/* Description */}
