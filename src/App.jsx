@@ -72,11 +72,8 @@ import BranchUserCreate from "@/pages/users/userform";
 
 // Notification
 import Notifications from "@/pages/notificaitons";
-<<<<<<< HEAD
 
-=======
 import NoPermission from "./pages/nopermission";
->>>>>>> 25db7dded7bb7afe619c3e4b18a67340eddf2015
 
 function App() {
 	// const [isToggleSideBar, setIsToggleSidebar] = useState(false);
