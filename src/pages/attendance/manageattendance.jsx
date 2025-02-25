@@ -17,7 +17,6 @@ import dayjs from "dayjs";
 const ManageAttendance = () => {
 	const navigate = useNavigate();
 	const [searchQuery, setSearchQuery] = useState("");
-	const [page, setPage] = useState(1);
 	const [date, setDate] = useState(dayjs());
 
 	const [attendances, setAttendances] = useState([]);

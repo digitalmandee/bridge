@@ -428,7 +428,7 @@ function App() {
 						</ProtectedRoute>
 					}
 				/>
-
+				{/* Leave Category */}
 				<Route
 					path="/branch/employee/leave/category"
 					element={
@@ -468,6 +468,14 @@ function App() {
 					path="/branch/employee/leave/application/new"
 					element={
 						<ProtectedRoute role="admin" permission="leave-application">
+							<NewApplication />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/branch/employee/leave/application/edit/:id"
+					element={
+						<ProtectedRoute role="admin" permission="leave-category">
 							<NewApplication />
 						</ProtectedRoute>
 					}

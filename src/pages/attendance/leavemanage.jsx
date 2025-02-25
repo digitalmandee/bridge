@@ -1,78 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
 import { Navigate, useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
-import { InputAdornment } from "@mui/material";
+import { CircularProgress, InputAdornment } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import { Table, TableBody, TableCell, Button, TableContainer, TableHead, TableRow, Paper, Pagination, IconButton, TextField, Box, Typography } from "@mui/material";
 import { Edit as EditIcon, ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import axiosInstance from "@/utils/axiosInstance";
+import dayjs from "dayjs";
 
 const LeaveManage = () => {
 	const navigate = useNavigate();
 
 	const [searchTerm, setSearchTerm] = useState("");
-	const [page, setPage] = useState(1);
-	const rowsPerPage = 5;
-	// Sample data
-	const leaveData = [
-		{
-			id: 1,
-			name: "John Doe",
-			startDate: "05 Jan 2025",
-			endDate: "05 Jan 2025",
-			days: 1,
-			category: "Casual",
-			createdAt: "05 Jan 2025",
-			status: "Accepted",
-		},
-		{
-			id: 2,
-			name: "John Doe",
-			startDate: "05 Jan 2025",
-			endDate: "05 Jan 2025",
-			days: 1,
-			category: "Sick",
-			createdAt: "05 Jan 2025",
-			status: "Pending",
-		},
-		{
-			id: 3,
-			name: "John Doe",
-			startDate: "05 Jan 2025",
-			endDate: "05 Feb 2025",
-			days: 10,
-			category: "Business",
-			createdAt: "05 Feb 2025",
-			status: "Accepted",
-		},
-		{
-			id: 4,
-			name: "John Doe",
-			startDate: "05 Jan 2025",
-			endDate: "05 Oct 2025",
-			days: 20,
-			category: "Casual",
-			createdAt: "05 Oct 2025",
-			status: "Pending",
-		},
-		{
-			id: 5,
-			name: "John Doe",
-			startDate: "05 Jan 2025",
-			endDate: "05 Jan 2025",
-			days: 25,
-			category: "Sick",
-			createdAt: "05 Jan 2025",
-			status: "Accepted",
-		},
-	];
+	const [date, setDate] = useState(dayjs());
 
-	const filteredData = leaveData.filter((row) => row.name.toLowerCase().includes(searchTerm.toLowerCase()) || row.category.toLowerCase().includes(searchTerm.toLowerCase()));
+	const [applications, setApplications] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(1);
+	const [limit] = useState(10);
+	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
-	const handlePageChange = (event, newPage) => {
-		setPage(newPage);
+	useEffect(() => {
+		fetchApplicaitons(currentPage);
+	}, [currentPage, limit, date]);
+
+	const fetchApplicaitons = async (page = 1) => {
+		setIsLoading(true);
+		try {
+			const res = await axiosInstance.get("employees/leaves", { params: { page, limit, date: date.format("YYYY-MM-DD") } });
+			if (res.data.success) {
+				setApplications(res.data.applications.data);
+				setTotalPages(res.data.applications.last_page);
+				setCurrentPage(res.data.applications.current_page);
+			}
+		} catch (error) {
+			setSnackbar({ open: true, message: "Error fetching applications!", severity: "error" });
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const handleCloseSnackbar = () => {
+		setSnackbar({ ...snackbar, open: false });
 	};
 
 	return (
@@ -90,34 +65,41 @@ const LeaveManage = () => {
 						<h3 style={{ margin: 0 }}>Leave Application</h3>
 					</div>
 					<Box sx={{ backgroundColor: "#FFFFFF", padding: 2, borderRadius: 2 }}>
-						<Box className="mb-4">
-							<TextField
-								variant="outlined"
-								placeholder="Search..."
-								value={searchTerm}
-								onChange={(e) => setSearchTerm(e.target.value)}
-								size="small"
-								sx={{ width: "20%" }}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<Search color="action" />
-										</InputAdornment>
-									),
-								}}
-							/>
-							<Button
-								variant="contained"
-								sx={{
-									backgroundColor: "#0D2B4E",
-									color: "white",
-									textTransform: "none",
-									marginLeft: "2rem",
-									padding: "6px 16px",
-									"&:hover": { backgroundColor: "#09203D" }, // Slightly darker shade on hover
-								}}>
-								Add
-							</Button>
+						<Box className="mb-4 d-flex">
+							<Box className="mb-4" sx={{ flexGrow: 1 }}>
+								<TextField
+									variant="outlined"
+									placeholder="Search..."
+									value={searchTerm}
+									onChange={(e) => setSearchTerm(e.target.value)}
+									size="small"
+									sx={{ width: "20%" }}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position="start">
+												<Search color="action" />
+											</InputAdornment>
+										),
+									}}
+								/>
+								<Button
+									variant="contained"
+									sx={{
+										backgroundColor: "#0D2B4E",
+										color: "white",
+										textTransform: "none",
+										marginLeft: "2rem",
+										padding: "6px 16px",
+										"&:hover": { backgroundColor: "#09203D" }, // Slightly darker shade on hover
+									}}>
+									Add
+								</Button>
+							</Box>
+
+							{/* Date Picker on the Right */}
+							<LocalizationProvider dateAdapter={AdapterDayjs}>
+								<DatePicker label="Select Date" value={date} onChange={(newValue) => setDate(newValue)} renderInput={(params) => <TextField {...params} size="small" />} />
+							</LocalizationProvider>
 						</Box>
 
 						<TableContainer component={Paper}>
@@ -135,37 +117,52 @@ const LeaveManage = () => {
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{filteredData.slice((page - 1) * rowsPerPage, page * rowsPerPage).map((row) => (
-										<TableRow key={row.id}>
-											<TableCell>{row.id}</TableCell>
-											<TableCell>{row.name}</TableCell>
-											<TableCell>{row.startDate}</TableCell>
-											<TableCell>{row.endDate}</TableCell>
-											<TableCell>{row.days}</TableCell>
-											<TableCell>{row.category}</TableCell>
-											<TableCell>{row.createdAt}</TableCell>
-											<TableCell>
-												<span
-													style={{
-														backgroundColor: row.status === "Accepted" ? "#0D2B4E" : "#C5DCF7AB",
-														color: row.status === "Accepted" ? "white" : "black",
-														padding: "6px 12px",
-														borderRadius: "50px",
-														display: "inline-block",
-													}}>
-													{row.status}
-												</span>
+									{isLoading ? (
+										<TableRow>
+											<TableCell colSpan={9} align="center">
+												<CircularProgress sx={{ color: "#0F172A" }} />
 											</TableCell>
 										</TableRow>
-									))}
+									) : applications.length > 0 ? (
+										applications.map((application) => (
+											<TableRow key={application.id}>
+												<TableCell>{application.id}</TableCell>
+												<TableCell>{application.employee?.user?.name}</TableCell>
+												<TableCell>{application.start_date}</TableCell>
+												<TableCell>{application.end_date}</TableCell>
+												<TableCell>{application.number_of_days}</TableCell>
+												<TableCell>{application.leave_category.name}</TableCell>
+												<TableCell>{dayjs(application.created_at).format("YYYY-MM-DD")}</TableCell>
+												<TableCell>
+													<span
+														style={{
+															backgroundColor: application.status === "approved" ? "#0D2B4E" : "#C5DCF7AB",
+															color: application.status === "approved" ? "white" : "black",
+															padding: "6px 12px",
+															borderRadius: "50px",
+															display: "inline-block",
+															textTransform: "capitalize",
+														}}>
+														{application.status}
+													</span>
+												</TableCell>
+											</TableRow>
+										))
+									) : (
+										<TableRow>
+											<TableCell colSpan={9} align="center">
+												No applications found.
+											</TableCell>
+										</TableRow>
+									)}
 								</TableBody>
 							</Table>
 						</TableContainer>
 
 						{/* Pagination */}
-						<Box sx={{ display: "flex", justifyContent: "end", mt: 3 }}>
-							<Pagination count={10} />
-						</Box>
+						<div className="d-flex justify-content-end mt-4">
+							<Pagination count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} shape="rounded" style={{ color: "#0a2647" }} />
+						</div>
 					</Box>
 				</div>
 			</div>
