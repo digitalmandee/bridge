@@ -24,4 +24,14 @@ class Employee extends Model
     {
         return $this->belongsTo(Branch::class);
     }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function leaveApplications()
+    {
+        return $this->hasMany(LeaveApplication::class);
+    }
 }

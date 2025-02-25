@@ -31,6 +31,130 @@ class AttendanceController extends Controller
         return response()->json(['success' => true, 'attendance' => $attendance], 200);
     }
 
+    public function attendanceReport(Request $request)
+    {
+        $limit = (int) $request->query('limit', 10);
+        $branchId = auth()->user()->branch->id;
+        $month = $request->query('month', now()->format('Y-m'));
+
+        // Define start and end date for efficient filtering
+        $startDate = $month . '-01';
+        $endDate = date('Y-m-t', strtotime($startDate)); // Last date of the month
+
+        // Get employees with user details
+        $employees = Employee::where('employees.branch_id', $branchId)
+            ->join('users', 'users.id', '=', 'employees.user_id')
+            ->select('employees.id', 'employees.employee_id', 'users.name as employee_name')
+            ->paginate($limit);
+
+        // Fetch all employee IDs for attendance and leave lookup
+        $employeeIds = $employees->pluck('id')->toArray();
+
+        // Get attendances in a single optimized query
+        $attendances = Attendance::whereIn('employee_id', $employeeIds)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->with('leaveCategory:id,name')
+            ->select('employee_id', 'leave_category_id', 'date', 'status')
+            ->get()
+            ->groupBy('employee_id'); // Grouped by employee ID for quick lookup
+
+        // Get approved leave applications for employees in the selected month
+        $leaves = LeaveApplication::whereIn('employee_id', $employeeIds)
+            ->where('status', 'approved') // Only approved leaves
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate])
+                    ->orWhere(function ($q) use ($startDate, $endDate) {
+                        $q->where('start_date', '<', $startDate)->where('end_date', '>', $endDate);
+                    });
+            })
+            ->with('leaveCategory:id,name')
+            ->select('employee_id', 'start_date', 'end_date', 'leave_category_id')
+            ->get();
+
+        // Organize leaves by employee ID for quick lookup
+        $leaveData = [];
+        foreach ($leaves as $leave) {
+            $leaveCategory = optional($leave->leaveCategory)->name;
+            $start = max($leave->start_date, $startDate);
+            $end = min($leave->end_date, $endDate);
+
+            $current = strtotime($start);
+            while ($current <= strtotime($end)) {
+                $date = date('Y-m-d', $current);
+                $dayOfWeek = date('w', $current); // 0 = Sunday
+
+                if ($dayOfWeek != 0) { // Exclude Sundays
+                    $leaveData[$leave->employee_id][$date] = [
+                        'date' => $date,
+                        'status' => 'leave',
+                        'leave_category' => $leaveCategory
+                    ];
+                }
+
+                $current = strtotime("+1 day", $current);
+            }
+        }
+
+        // Get all dates in the selected month
+        $allDates = [];
+        $current = strtotime($startDate);
+        $end = strtotime($endDate);
+
+        while ($current <= $end) {
+            $allDates[date('Y-m-d', $current)] = null;
+            $current = strtotime("+1 day", $current);
+        }
+
+        // Format data ensuring all dates exist
+        $reportData = $employees->map(function ($employee) use ($attendances, $leaveData, $allDates) {
+            $employeeAttendances = $attendances[$employee->id] ?? collect();
+
+            // Convert attendance data to date-keyed array
+            $attendanceMap = $employeeAttendances->mapWithKeys(function ($record) {
+                return [
+                    $record->date => [
+                        'date' => $record->date,
+                        'status' => $record->status,
+                        'leave_category' => optional($record->leaveCategory)->name
+                    ]
+                ];
+            })->toArray();
+
+            // Fill attendance for all dates
+            $filledAttendance = [];
+            foreach ($allDates as $date => $value) {
+                if (isset($attendanceMap[$date])) {
+                    // Use attendance data if exists
+                    $filledAttendance[$date] = $attendanceMap[$date];
+                } elseif (isset($leaveData[$employee->id][$date])) {
+                    // Use leave data if attendance does not exist
+                    $filledAttendance[$date] = $leaveData[$employee->id][$date];
+                } else {
+                    // Default to null status
+                    $filledAttendance[$date] = ['date' => $date, 'status' => null, 'leave_category' => null];
+                }
+            }
+
+            return [
+                'employee_id' => $employee->employee_id,
+                'name' => $employee->employee_name,
+                'attendances' => array_values($filledAttendance) // Ensure array format for JSON
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'report_data' => [
+                'employees' => $reportData,
+                'current_page' => $employees->currentPage(),
+                'last_page' => $employees->lastPage(),
+            ]
+        ]);
+    }
+
+
+
     public function updateAttendance(Request $request, $attendanceId)
     {
         // Validate
@@ -100,86 +224,6 @@ class AttendanceController extends Controller
         }
 
         return response()->json(['success' => true, 'report' => $report]);
-    }
-
-    // Leave Application
-    public function createLeave(Request $request)
-    {
-        $request->validate([
-            'employee_id' => 'required|exists:users,id',
-            'leave_category_id' => 'required|exists:leave_categories,id',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'reason' => 'required|string',
-        ]);
-
-        try {
-            $startDate = Carbon::parse($request->start_date);
-            $endDate = Carbon::parse($request->end_date);
-
-            $employeeId = Employee::where('user_id', $request->employee_id)->value('id');
-
-            // Check if the user already has a leave application in this range
-            if (LeaveApplication::where('branch_id', auth()->user()->branch->id)
-                ->where('employee_id', $employeeId)
-                ->whereBetween('start_date', [$startDate, $endDate])
-                ->orWhereBetween('end_date', [$startDate, $endDate])
-                ->exists()
-            ) {
-                return response()->json(['success' => false, 'message' => 'You already have a leave application in this date range'], 422);
-            }
-
-            LeaveApplication::create([
-                'branch_id' => auth()->user()->branch->id,
-                'employee_id' => $employeeId,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'leave_category_id' => $request->leave_category_id,
-                'number_of_days' => $startDate->diffInDays($endDate) + 1,
-                'reason' => $request->reason,
-            ]);
-
-            return response()->json(['success' => true, 'message' => 'Leave application created successfully']);
-        } catch (\Throwable $th) {
-            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
-        }
-    }
-
-    public function updateLeave(Request $request, $id)
-    {
-        $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'reason' => 'required|string',
-            'leave_category_id' => 'required',
-            'status' => 'required|in:pending,approved,rejected',
-        ]);
-
-        try {
-            LeaveApplication::find($id)->update([
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'reason' => $request->reason,
-                'leave_category_id' => $request->leave_category_id,
-                'status' => $request->status
-            ]);
-
-            return response()->json(['success' => true, 'message' => 'Leave application updated successfully']);
-        } catch (\Throwable $th) {
-            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
-        }
-    }
-
-    public function leaveReport(Request $request)
-    {
-        $limit = $request->query('limit', 10);
-        $branchId = auth()->user()->branch->id;
-
-        $date = $request->query('date', now()->format('Y-m-d'));
-
-        $leaveApplications = LeaveApplication::where('branch_id', $branchId)->where('start_date', '<=', $date)->where('end_date', '>=', $date)->orderByDesc('created_at')->paginate($limit);
-
-        return response()->json(['success' => true, 'leave_applications' => $leaveApplications]);
     }
 
     public function profileReport(Request $request, $employeeId)

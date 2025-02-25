@@ -26,45 +26,18 @@ class Branch extends Model
         return $this->hasMany(ScheduleFloor::class);
     }
 
+    public function employees()
+    {
+        return $this->hasMany(Employee::class);
+    }
 
-    // public static function branches()
-    // {
-    //     return self::where('status', 1)->get();
-    // }
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 
-    // public static function storeBranch($request)
-    // {
-    //     $formattedName = ucwords(strtolower($request->name));
-
-    //     $branch = new self();
-    //     $branch->name = $formattedName;
-    //     $branch->location = $request->location;
-    //     $branch->status = $request->status ?? 0;
-    //     $branch->save();
-    // }
-
-    // public static function editBranch($id)
-    // {
-    //    return self::find($id);
-    // }
-
-    // public static function updateBranch($request, $id)
-    // {
-    //     $formattedName = ucwords(strtolower($request->name));
-
-    //     $branch = self::find($id);
-    //     $branch->name = $formattedName;
-    //     $branch->location = $request->location;
-    //     $branch->status = $request->status ?? 0;
-    //     $branch->save();
-    // }
-
-    // public static function destroyBranch($id)
-    // {
-    //    return self::find($id)->delete();
-    // }
-    // public function floors()
-    // {
-    //     return $this->hasMany(Floor::class);
-    // }
+    public function leaveApplications()
+    {
+        return $this->hasMany(LeaveApplication::class);
+    }
 }

@@ -23,6 +23,11 @@ class SyncAttendance extends Command
 
     public function handle()
     {
+        // Skip execution on Sundays
+        if (Carbon::today()->isSunday()) {
+            $this->info("Attendance sync skipped (Sunday).");
+            return;
+        }
         // Fetch attendance data from ZKTeco
         // $logs = $this->zkService->getAttendance();
 

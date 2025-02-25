@@ -13,6 +13,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FloorPlanController;
 use App\Http\Controllers\GlobalController;
 use App\Http\Controllers\InvoicesController;
+use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\LeaveCategoryController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
@@ -60,6 +61,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'user'], function () {
         Route::get('dashboard', [UserController::class, 'index']);
     });
+
+    // Route::group(['prefix' => 'branch'], function () {
+    //     Route::get('dashboard', [UserController::class, 'index']);
+    // });
 
     // Member Module for admin
     Route::group(['prefix' => 'member'], function () {
@@ -132,19 +137,26 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('show/{id}', [EmployeeController::class, 'show']);
         Route::put('update/{id}', [EmployeeController::class, 'update']);
 
+        // Leave Categories
         Route::get('leavecategories/all', [LeaveCategoryController::class, 'getAll']);
-
         Route::resource('leavecategories', LeaveCategoryController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 
+        // Leave Applicaitons
+        Route::get('leaves/reports', [LeaveApplicationController::class, 'leaveReport']);
+        Route::get('leaves/reports/monthly', [LeaveApplicationController::class, 'leaveReportMonthly']);
+        Route::resource('leaves', LeaveApplicationController::class)->except(['create', 'edit']);
 
+        // Route::post('leave/create', [LeaveApplicationController::class, 'createLeave']);
+        // Route::put('leave/update/{id}', [LeaveApplicationController::class, 'updateLeave']);
+        // Route::get('leave/reports', [LeaveApplicationController::class, 'leaveReport']);
+
+        // Attendances
         Route::group(['prefix' => 'attendances'], function () {
             Route::get('', [AttendanceController::class, 'index']);
+            Route::get('/reports', [AttendanceController::class, 'attendanceReport']);
             Route::put('{attendanceId}', [AttendanceController::class, 'updateAttendance']);
             Route::get('profile/report/{employeeId}', [AttendanceController::class, 'profileReport']);
             Route::post('all/report', [AttendanceController::class, 'allEmployeesReport']);
-            Route::post('leave/create', [AttendanceController::class, 'createLeave']);
-            Route::put('leave/update/{id}', [AttendanceController::class, 'updateLeave']);
-            Route::post('leave/report', [AttendanceController::class, 'leaveReport']);
         });
     });
 
@@ -156,11 +168,3 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     // Booking Plans
     Route::resource('booking-plans', BookingPlanController::class)->except(['create', 'show', 'edit']);
 });
-
-
-// $branchId = auth()->user()->branch->id;
-// $query = $request->input('query');
-
-// $plans = BookingPlan::where(['branch_id' => $branchId])->where('name', 'like', "%$query%")->select('id', 'name', 'price', 'type')->get();
-
-// return response()->json(['success' => true, 'results' => $plans], 200);

@@ -21,9 +21,7 @@ class CreateAttendancesTable extends Migration
             $table->date('date');
             $table->time('check_in')->nullable();
             $table->time('check_out')->nullable();
-            // $table->boolean('attendance')->default(false);
             $table->enum('status', ['present', 'absent', 'leave', 'late'])->default('present');
-            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('branch_id')->references('id')->on('branches');

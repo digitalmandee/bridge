@@ -16,4 +16,14 @@ class LeaveApplication extends Model
     {
         return $this->belongsTo(Employee::class);
     }
+
+    public function leaveCategory()
+    {
+        return $this->belongsTo(LeaveCategory::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 }

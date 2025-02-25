@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Attendance extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = ['branch_id', 'employee_id', 'leave_category_id', 'date', 'check_in', 'check_out', 'status'];
 
@@ -20,5 +19,10 @@ class Attendance extends Model
     public function leaveCategory()
     {
         return $this->belongsTo(LeaveCategory::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 }
