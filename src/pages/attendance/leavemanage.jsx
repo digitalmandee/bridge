@@ -84,6 +84,7 @@ const LeaveManage = () => {
 								/>
 								<Button
 									variant="contained"
+									onClick={() => navigate("/branch/employee/leave/application/new")}
 									sx={{
 										backgroundColor: "#0D2B4E",
 										color: "white",

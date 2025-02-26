@@ -1,78 +1,56 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
 import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
-import { InputAdornment } from "@mui/material";
+import { CircularProgress, FormControl, InputAdornment, MenuItem, Select } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import { Table, TableBody, TableCell, TableContainer, TableHead, Button, TableRow, Paper, Pagination, IconButton, TextField, Box, Typography } from "@mui/material";
 import { Edit as EditIcon, ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
+import axiosInstance from "@/utils/axiosInstance";
 
 const LeaveReport = () => {
 	const navigate = useNavigate();
 	const [searchTerm, setSearchTerm] = useState("");
-	const [page, setPage] = useState(1);
-	const rowsPerPage = 5;
-	// Sample data
-	const leaveData = [
-		{
-			id: 1,
-			name: "John Doe",
-			casualLeave: "2",
-			sickLeave: "",
-			advanceLeave: "",
-			totalAttendance: "20",
-			totalAbsent: "2",
-			totalLeave: "0",
-		},
-		{
-			id: 2,
-			name: "John Doe",
-			casualLeave: "",
-			sickLeave: "1",
-			advanceLeave: "",
-			totalAttendance: "10",
-			totalAbsent: "2",
-			totalLeave: "5",
-		},
-		{
-			id: 3,
-			name: "John Doe",
-			casualLeave: "2",
-			sickLeave: "",
-			advanceLeave: "0",
-			totalAttendance: "14",
-			totalAbsent: "5",
-			totalLeave: "0",
-		},
-		{
-			id: 4,
-			name: "John Doe",
-			casualLeave: "",
-			sickLeave: "",
-			advanceLeave: 1,
-			totalAttendance: "8",
-			totalAbsent: "0",
-			totalLeave: "0",
-		},
-		{
-			id: 5,
-			name: "John Doe",
-			casualLeave: "2",
-			sickLeave: "",
-			advanceLeave: "0",
-			totalAttendance: "5",
-			totalAbsent: "4",
-			totalLeave: "0",
-		},
-	];
 
-	const filteredData = leaveData.filter((row) => row.name.toLowerCase().includes(searchTerm.toLowerCase()) || row.category.toLowerCase().includes(searchTerm.toLowerCase()));
+	const currentDate = new Date();
+	const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}`;
+	const [month, setMonth] = useState(currentMonth);
+	const [employees, setEmployees] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(1);
+	const [limit, setLimit] = useState(10);
 
-	const handlePageChange = (event, newPage) => {
-		setPage(newPage);
+	const getMonthlyReport = async (page = 1) => {
+		setIsLoading(true);
+		try {
+			const res = await axiosInstance.get("employees/leaves/reports", {
+				params: { page, limit, month },
+			});
+			if (res.data.success) {
+				setEmployees(res.data.report_data.employees);
+				setTotalPages(res.data.report_data.last_page);
+				setCurrentPage(res.data.report_data.current_page);
+			}
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setIsLoading(false);
+		}
 	};
+
+	useEffect(() => {
+		getMonthlyReport(currentPage);
+	}, [currentPage, limit, month]);
+
+	// Generate months dynamically
+	const months = Array.from({ length: 12 }, (_, i) => {
+		const monthValue = `${currentDate.getFullYear()}-${String(i + 1).padStart(2, "0")}`;
+		return { value: monthValue, label: new Date(currentDate.getFullYear(), i, 1).toLocaleString("en-US", { month: "long" }) };
+	});
+
 	return (
 		<>
 			<TopNavbar />
@@ -88,34 +66,47 @@ const LeaveReport = () => {
 						<h3 style={{ margin: 0 }}>Leave Report</h3>
 					</div>
 					<Box sx={{ backgroundColor: "#FFFFFF", padding: 2, borderRadius: 2 }}>
-						<Box className="mb-4">
-							<TextField
-								variant="outlined"
-								placeholder="Search..."
-								value={searchTerm}
-								onChange={(e) => setSearchTerm(e.target.value)}
-								size="small"
-								sx={{ width: "20%" }}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<Search color="action" />
-										</InputAdornment>
-									),
-								}}
-							/>
-							<Button
-								variant="contained"
-								sx={{
-									backgroundColor: "#0D2B4E",
-									color: "white",
-									textTransform: "none",
-									marginLeft: "2rem",
-									padding: "6px 16px",
-									"&:hover": { backgroundColor: "#09203D" }, // Slightly darker shade on hover
-								}}>
-								Go
-							</Button>
+						<Box className="mb-4 d-flex justify-content-between">
+							<Box className="d-flex align-items-center">
+								<TextField
+									variant="outlined"
+									placeholder="Search..."
+									value={searchTerm}
+									onChange={(e) => setSearchTerm(e.target.value)}
+									size="small"
+									sx={{ width: "100%" }}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position="start">
+												<Search color="action" />
+											</InputAdornment>
+										),
+									}}
+								/>
+								<Button
+									variant="contained"
+									sx={{
+										backgroundColor: "#0D2B4E",
+										color: "white",
+										textTransform: "none",
+										marginLeft: "2rem",
+										padding: "6px 16px",
+										"&:hover": { backgroundColor: "#09203D" }, // Slightly darker shade on hover
+									}}>
+									Go
+								</Button>
+							</Box>
+							<Box>
+								<FormControl size="small">
+									<Select value={month} onChange={(e) => setMonth(e.target.value)} sx={{ minWidth: 120 }}>
+										{months.map((m) => (
+											<MenuItem key={m.value} value={m.value}>
+												{m.label}
+											</MenuItem>
+										))}
+									</Select>
+								</FormControl>
+							</Box>
 						</Box>
 
 						<TableContainer component={Paper}>
@@ -133,25 +124,39 @@ const LeaveReport = () => {
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{filteredData.slice((page - 1) * rowsPerPage, page * rowsPerPage).map((row) => (
-										<TableRow key={row.id}>
-											<TableCell>{row.id}</TableCell>
-											<TableCell>{row.name}</TableCell>
-											<TableCell>{row.casualLeave}</TableCell>
-											<TableCell>{row.sickLeave}</TableCell>
-											<TableCell>{row.advanceLeave}</TableCell>
-											<TableCell>{row.totalAttendance}</TableCell>
-											<TableCell>{row.totalAbsent}</TableCell>
-											<TableCell>{row.totalLeave}</TableCell>
+									{isLoading ? (
+										<TableRow>
+											<TableCell colSpan={7} align="center">
+												<CircularProgress sx={{ color: "#0F172A" }} />
+											</TableCell>
 										</TableRow>
-									))}
+									) : employees.length > 0 ? (
+										employees.map((employee) => (
+											<TableRow key={employee.employee_id}>
+												<TableCell>{employee.employee_id}</TableCell>
+												<TableCell>{employee.employee_name}</TableCell>
+												<TableCell>{employee.leave_categories?.Casual_Leave}</TableCell>
+												<TableCell>{employee.leave_categories?.Sick_Leave}</TableCell>
+												<TableCell>{employee.advanceLeave}</TableCell>
+												<TableCell>{employee.total_attendance}</TableCell>
+												<TableCell>{employee.total_absence}</TableCell>
+												<TableCell>{employee.total_leave}</TableCell>
+											</TableRow>
+										))
+									) : (
+										<TableRow>
+											<TableCell colSpan={7} align="center">
+												No invoices found.
+											</TableCell>
+										</TableRow>
+									)}
 								</TableBody>
 							</Table>
 						</TableContainer>
 
 						{/* Pagination */}
 						<Box sx={{ display: "flex", justifyContent: "end", mt: 3 }}>
-							<Pagination count={10} />
+							<Pagination count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} />
 						</Box>
 					</Box>
 				</div>
