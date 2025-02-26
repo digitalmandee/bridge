@@ -85,10 +85,9 @@ const GFloorPlan = () => {
 				) : (
 					<div className="floor" ref={floorRef}>
 						{tables.length > 0 &&
-							tables.map(
-								(table) =>
-									table.chairs.length > 0 &&
-									table.chairs.map((chair) => (
+							tables.map((table) =>
+								table.chairs.length > 0
+									? table.chairs.map((chair) => (
 										<Chair
 											className="chair"
 											key={`${table.id}${chair.id}`}
@@ -101,26 +100,77 @@ const GFloorPlan = () => {
 												cursor: chair.time_slot === "full_day" ? "not-allowed" : "pointer",
 												fontSize: "30px",
 											}}
-											onClick={() => chair.time_slot != "full_day" && toggleChairColor(table.id, chair.id)}
+											onClick={() =>
+												chair.time_slot !== "full_day" && toggleChairColor(table.id, chair.id)
+											}
 										/>
 									))
+									: null
 							)}
 					</div>
 				)}
+
 				{/* Display Selected Chairs */}
-				<div className="selected-chairs">
-					<h3>Selected Chairs:</h3>
+				<div
+					style={{
+						marginLeft: "1rem",
+						width: "100%", // Adjust width as needed
+						maxWidth: "250px", // Set max width
+						height: "200px", // Set max height to enable scrolling
+						backgroundColor: "white", // White background
+						borderRadius: "0.5rem", // Rounded corners
+						padding: "0", // Remove padding
+						boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // Optional shadow
+						overflow: "hidden", // Enable vertical scrolling
+						border: "1px solid #ddd",
+					}}
+				>
+					<h4
+						style={{
+							background: "#0D2B4E",
+							color: "white",
+							margin: 0,
+							padding: "0.75rem",
+							borderTopLeftRadius: "0.5rem",
+							borderTopRightRadius: "0.5rem",
+							textAlign: "center",
+						}}
+					>
+						Selected Items:
+					</h4>
+
 					{Object.entries(selectedChairs).length > 0 && (
-						<ul>
+						<div
+							style={{
+								display: "flex",
+								flexWrap: "wrap",
+								gap: "8px",
+								padding: "0.5rem",
+								overflowY: "auto",
+								maxHeight: "150px",
+								scrollbarWidth: "none",
+								msOverflowStyle: "none",
+							}}
+							className="hide-scrollbar"
+						>
 							{Object.entries(selectedChairs).map(([tableId, chairs]) =>
 								chairs.map((chair) => (
-									<li key={chair.id}>
-										{tableId}
-										{chair.id}
-									</li>
+									<div
+										key={`${tableId}-${chair.id}`}
+										style={{
+											padding: "5px 10px",
+											background: "#E3F2FD", // Light blue for contrast
+											borderRadius: "5px",
+											fontSize: "14px",
+											fontWeight:'bold',
+											whiteSpace: "nowrap", // Prevents breaking inside the box
+										}}
+									>
+										{tableId} - {chair.id}
+									</div>
 								))
 							)}
-						</ul>
+						</div>
 					)}
 				</div>
 			</div>

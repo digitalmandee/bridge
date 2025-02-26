@@ -70,13 +70,10 @@ import RoleForm from "@/pages/users/roles/roleform";
 import BranchUserManagement from "@/pages/users/management";
 import BranchUserCreate from "@/pages/users/userform";
 
+import CreateBranch from "./pages/dashboard/branch";
+
 // Notification
 import Notifications from "@/pages/notificaitons";
-<<<<<<< HEAD
-
-=======
-import NoPermission from "./pages/nopermission";
->>>>>>> 25db7dded7bb7afe619c3e4b18a67340eddf2015
 
 function App() {
 	// const [isToggleSideBar, setIsToggleSidebar] = useState(false);
@@ -97,8 +94,17 @@ function App() {
 				<Route
 					path="/super-admin/dashboard"
 					element={
-						<ProtectedRoute role="super_admin">
+						<ProtectedRoute>
 							<SuperAdminDashboard />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/create/new/branch"
+					element={
+						<ProtectedRoute>
+							<CreateBranch />
 						</ProtectedRoute>
 					}
 				/>
@@ -573,15 +579,15 @@ function App() {
 					}
 				/>
 
-				{/* No Permission */}
-				<Route
+				{/*No Permission */}
+				{/* <Route
 					path="/no-permission"
 					element={
 						<ProtectedRoute role="admin">
 							<NoPermission />
 						</ProtectedRoute>
 					}
-				/>
+				/> */}
 
 				{/* 404 Page */}
 				<Route path="*" element={<p>404 Not Found</p>} />

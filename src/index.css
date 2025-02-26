@@ -24,9 +24,9 @@ body {
 }
 
 .main .sidebarWrapper.toggle {
-  width: 0%;
-  flex: 0 0 0%;
-  overflow: hidden;
+  max-width: 5%;
+  flex: 0 0 5%;
+  /* overflow: hidden; */
 }
 
 .right-content {
@@ -76,7 +76,7 @@ body {
 }
 
 .toggle .sidebar {
-  left: -120%;
+  left: -130%;
 }
 
 .sidebar::-webkit-scrollbar {
