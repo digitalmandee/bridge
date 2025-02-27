@@ -70,6 +70,8 @@ import RoleForm from "@/pages/users/roles/roleform";
 import BranchUserManagement from "@/pages/users/management";
 import BranchUserCreate from "@/pages/users/userform";
 
+import CreateBranch from "./pages/dashboard/branch";
+
 // Notification
 import Notifications from "@/pages/notificaitons";
 
@@ -96,6 +98,15 @@ function App() {
 					element={
 						<ProtectedRoute role="superadmin">
 							<SuperAdminDashboard />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="/create/new/branch"
+					element={
+						<ProtectedRoute>
+							<CreateBranch />
 						</ProtectedRoute>
 					}
 				/>
@@ -578,7 +589,7 @@ function App() {
 					}
 				/>
 
-				{/* No Permission */}
+				{/*No Permission */}
 				<Route
 					path="/no-permission"
 					element={

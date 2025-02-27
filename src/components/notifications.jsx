@@ -75,4 +75,5 @@ const notificationsStyle = {
 	width: "21rem",
 	padding: "1.5rem",
 	transition: "width 0.3s ease-in-out",
+	scrollbarWidth: "none",
 };
