@@ -146,10 +146,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('leaves/reports/monthly', [LeaveApplicationController::class, 'leaveReportMonthly']);
         Route::resource('leaves', LeaveApplicationController::class)->except(['create', 'edit']);
 
-        // Route::post('leave/create', [LeaveApplicationController::class, 'createLeave']);
-        // Route::put('leave/update/{id}', [LeaveApplicationController::class, 'updateLeave']);
-        // Route::get('leave/reports', [LeaveApplicationController::class, 'leaveReport']);
-
         // Attendances
         Route::group(['prefix' => 'attendances'], function () {
             Route::get('', [AttendanceController::class, 'index']);

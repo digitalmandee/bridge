@@ -26,6 +26,7 @@ class CreateEmployeesTable extends Migration
             $table->string('national_id')->nullable();
             $table->string('account_no')->nullable();
             $table->bigInteger('salary')->default(0);
+            $table->decimal('tex', 10, 2)->nullable();
             $table->date('joining_date');
             $table->softDeletes();
             $table->timestamps();

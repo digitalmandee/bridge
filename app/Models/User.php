@@ -71,10 +71,16 @@ class User extends Authenticatable
             : $this->hasOne(Branch::class);
     }
 
+    public function bookingSchedules()
+    {
+        return $this->hasMany(BookingSchedule::class);
+    }
+
     public function bookingSchedulesByCompany()
     {
         return $this->hasMany(BookingSchedule::class, 'company_id');
     }
+
     public function company()
     {
         return $this->belongsTo(User::class, 'company_id', 'id');

@@ -113,17 +113,17 @@ class LeaveApplicationController extends Controller
             $totalLeave = 0;
             foreach ($leaveData as $leave) {
                 $filteredLeaveDays = $leave->total_leave - (isset($attendanceDates[$employee->id]) ? 1 : 0);
-                $leaveSummary[$leave->leave_category] = max(0, $filteredLeaveDays); // Ensure no negative values
-                $totalLeave += $leaveSummary[$leave->leave_category];
+                $leaveSummary[str_replace(' ', '_', $leave->leave_category)] = max(0, $filteredLeaveDays); // Ensure no negative values
+                $totalLeave += $leaveSummary[str_replace(' ', '_', $leave->leave_category)];
 
                 // Update total summary
-                if (!isset($totalSummary['leave_categories'][$leave->leave_category])) {
-                    $totalSummary['leave_categories'][$leave->leave_category] = 0;
+                if (!isset($totalSummary['leave_categories'][str_replace(' ', '_', $leave->leave_category)])) {
+                    $totalSummary['leave_categories'][str_replace(' ', '_', $leave->leave_category)] = 0;
                 }
-                $totalSummary['leave_categories'][$leave->leave_category] += $leaveSummary[$leave->leave_category];
+                $totalSummary['leave_categories'][str_replace(' ', '_', $leave->leave_category)] += $leaveSummary[str_replace(' ', '_', $leave->leave_category)];
             }
 
-            // ✅ Calculate total absence correctly
+            // Calculate total absence correctly
             $totalAbsence = $totalWorkingDays - ($totalLeave + $attendanceData->total_attendance);
 
             // Update totals
