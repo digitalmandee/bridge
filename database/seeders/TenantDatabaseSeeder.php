@@ -8,6 +8,7 @@ use Database\Seeders\Tenants\BookingPlanSeeder;
 use Database\Seeders\Tenants\FloorsTableSeeder;
 use Database\Seeders\Tenants\PermissionsSeeder;
 use Database\Seeders\Tenants\RoomsTableSeeder;
+use Database\Seeders\Tenants\ScheduleRoomsTableSeeder;
 use Database\Seeders\Tenants\UserSeeder;
 use Illuminate\Database\Seeder;
 
@@ -25,6 +26,7 @@ class TenantDatabaseSeeder extends Seeder
             FloorsTableSeeder::class,
             RoomsTableSeeder::class,
             BookingPlanSeeder::class,
+            ScheduleRoomsTableSeeder::class,
             PermissionsSeeder::class
         ]);
     }

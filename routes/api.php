@@ -3,8 +3,11 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\BookingPlanController;
+use App\Http\Controllers\Api\BookingScheduleController;
 use App\Http\Controllers\Api\FloorPlanController;
 use App\Http\Controllers\Api\GlobalController;
+use App\Http\Controllers\Api\InvoicesController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -66,7 +69,28 @@ Route::group(['middleware' => ['set_tenant']], function () {
         // Check Availability
         Route::post('check-availability', [FloorPlanController::class, 'checkAvailability']);
         // Booking Users
-        // Route::get('users', [UserController::class, 'getBookingUsers']);
+        Route::get('users', [UserController::class, 'getBookingUsers']);
+    });
+
+    // Booking Schedule Calendar
+    Route::get('booking-schedules', [BookingScheduleController::class, 'index']);
+    Route::group(['prefix' => 'booking-schedule'], function () {
+        Route::post('create', [BookingScheduleController::class, 'create']);
+        Route::get('filter', [BookingScheduleController::class, 'filter']);
+        Route::get('availability-rooms', [BookingScheduleController::class, 'getAvailabilityRooms']);
+        Route::get('requests', [BookingScheduleController::class, 'getRequests']);
+        Route::post('update', [BookingScheduleController::class, 'update']);
+    });
+
+    // Invoices
+    Route::group(['prefix' => 'invoices'], function () {
+        Route::get('', [InvoicesController::class, 'index']);
+        Route::get('customer-detail/{id}', [InvoicesController::class, 'customerDetail']);
+        Route::post('create', [InvoicesController::class, 'store']);
+        Route::post('update', [InvoicesController::class, 'update']);
+        Route::get('dashboard', [InvoicesController::class, 'dashboard']);
+        // Get realted user booking data
+        Route::get('user-booking', [InvoicesController::class, 'userBooking']);
     });
 
     // Booking Plans

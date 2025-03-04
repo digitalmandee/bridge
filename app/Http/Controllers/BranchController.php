@@ -51,7 +51,7 @@ class BranchController extends Controller
             // 'domain_name' => 'required|string|unique:domains,domain',
         ]);
 
-        $tenant = Tenant::create(['email' => $validatedData['email']]);
+        $tenant = Tenant::create($validatedData);
 
         tenancy()->initialize($tenant);
 

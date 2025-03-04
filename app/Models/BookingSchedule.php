@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class BookingSchedule extends Model
 {
     use HasFactory;
+
     protected $dates = ['startTime', 'endTime', 'date'];
 
     protected $fillable = [
-        'branch_id',
         'user_id',
         'company_id',
         'schedule_floor_id',
@@ -28,18 +28,23 @@ class BookingSchedule extends Model
 
     protected $primaryKey = 'event_id';
 
-    public function branch()
+    protected $appends = ['branch'];
+
+    public function getBranchAttribute()
     {
-        return $this->belongsTo(Branch::class);
+        return ['name' => tenant('name')];
     }
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
     public function room()
     {
         return $this->belongsTo(ScheduleRoom::class, 'schedule_room_id');
     }
+
     public function floor()
     {
         return $this->belongsTo(ScheduleFloor::class, 'schedule_floor_id');

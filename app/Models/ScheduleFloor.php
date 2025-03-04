@@ -11,14 +11,8 @@ class ScheduleFloor extends Model
     use HasFactory;
 
     protected $fillable = [
-        'branch_id',
         'name'
     ];
-
-    public function branch()
-    {
-        return $this->belongsTo(Branch::class);
-    }
 
     public function rooms()
     {
