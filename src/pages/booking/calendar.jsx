@@ -12,9 +12,11 @@ import colors from "@/assets/styles/color";
 import { AuthContext } from "@/contexts/AuthContext";
 import Loader from "@/components/Loader";
 import axiosInstance from "@/utils/axiosInstance";
+import { useParams } from "react-router-dom";
 
 const BookingCalender = () => {
 	const { user } = useContext(AuthContext);
+	const { branch } = useParams();
 
 	const [selectedDate, setSelectedDate] = useState(new Date());
 	const [location, setLocation] = useState("");
@@ -756,9 +758,6 @@ const BookingCalender = () => {
 										</Typography>
 										<Typography variant="body2" mb={2}>
 											Persons: {selectedEvent.persons}
-										</Typography>
-										<Typography variant="body2" mb={2}>
-											Branch: {selectedEvent.branch.name}
 										</Typography>
 										<Typography variant="body2" mb={2}>
 											Location: {selectedEvent.floor.name}

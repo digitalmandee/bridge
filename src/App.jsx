@@ -300,7 +300,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/booking-schedule/requests"
+					path="/:branch/branch/booking-schedule/requests"
 					element={
 						<ProtectedRoute role="admin" permission="booking-requests">
 							<ScheduleRequests />
@@ -310,7 +310,7 @@ function App() {
 
 				{/* Invoice Routes */}
 				<Route
-					path="/branch/invoice/dashboard"
+					path="/:branch/branch/invoice/dashboard"
 					element={
 						<ProtectedRoute role="admin" permission="invoice-dashboard">
 							<InvoiceDashboard />
@@ -318,7 +318,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/invoice/create"
+					path="/:branch/branch/invoice/create"
 					element={
 						<ProtectedRoute role="admin" permission="new-invoice">
 							<InvoiceCreate />
@@ -326,7 +326,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/invoice/management"
+					path="/:branch/branch/invoice/management"
 					element={
 						<ProtectedRoute role="admin" permission="invoice-management">
 							<InvoiceManagement />
@@ -334,7 +334,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/invoice/customer-detail/:customerId"
+					path="/:branch/branch/invoice/customer-detail/:customerId"
 					element={
 						<ProtectedRoute role="admin" permission="invoice-management">
 							<InvoiceDetail />
