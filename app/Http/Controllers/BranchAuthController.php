@@ -26,7 +26,7 @@ class BranchAuthController extends Controller
         tenancy()->initialize($tenant);
 
         // Generate a token
-        $token = $tenant->createToken('tenant_token')->plainTextToken;
+        $token = $tenant->createToken('my-app-token')->plainTextToken;
 
         return response()->json(['message' => 'Login successful', 'token' => $token, 'tenant_id' => $tenant->id]);
     }

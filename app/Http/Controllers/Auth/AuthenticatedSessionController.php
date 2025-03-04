@@ -19,7 +19,7 @@ class AuthenticatedSessionController extends Controller
     {
         // Validate the incoming request
         $validatedData = $request->validate([
-            'email'    => 'required|email',
+            'email' => 'required|email',
             'password' => 'required|string|min:6',
         ]);
 
@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
         $token = $user->createToken('my-app-token')->plainTextToken;
 
         // Fetch user role & permissions (if applicable)
-        $role = $user->roles()->first(); // Assuming the user has a single role
+        $role = $user->roles()->first();  // Assuming the user has a single role
         $permissions = $role ? $role->permissions->pluck('name')->toArray() : [];
 
         // Update last login time
@@ -46,20 +46,20 @@ class AuthenticatedSessionController extends Controller
 
         // Prepare response data
         $responseData = [
-            'id'           => $user->id,
-            'name'         => $user->name,
-            'email'        => $user->email,
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
             // 'phone_no'     => $user->phone_no,
             // 'profile_image'     => $user->profile_image,
             // 'last_login_human' => $user->last_login_human,
             // 'type'         => $user->type,
             // 'role'         => $role ? $user->type : null,
-            'permissions'  => $permissions,
-            'token'        => $token,
+            'permissions' => $permissions,
+            'token' => $token,
         ];
 
         // Return successful response
-        return response()->json(['success' => true, 'message' => 'User logged in successfully.', 'data'    => $responseData], 200);
+        return response()->json(['success' => true, 'message' => 'User logged in successfully.', 'data' => $responseData], 200);
     }
 
     /**

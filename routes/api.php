@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\BookingPlanController;
+use App\Http\Controllers\Api\FloorPlanController;
+use App\Http\Controllers\Api\GlobalController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -10,6 +15,7 @@ use App\Http\Controllers\BranchAuthController;
 use App\Http\Controllers\BranchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use PharIo\Manifest\AuthorCollection;
 
 /*
  * |--------------------------------------------------------------------------
@@ -22,12 +28,52 @@ use Illuminate\Support\Facades\Route;
  * |
  */
 
-Route::post('/register', [RegisteredUserController::class, 'store'])->middleware('guest');
+// Route::post('/branch/login', [BranchAuthController::class, 'login'])->middleware('guest');
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest');
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth');
+Route::post('/branch/login', [AuthController::class, 'userlogin'])->middleware('guest');
 
-Route::post('/branch/login', [BranchAuthController::class, 'login'])->middleware('guest');
+// Check Branch
+Route::get('/branch/check', [BranchController::class, 'checkBranch'])->middleware('guest');
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::resource('branch', BranchController::class)->except(['create', 'edit']);
+
+    // Booking Seats
 });
+
+Route::group(['middleware' => ['set_tenant']], function () {
+    // -------------- Webs
+    Route::get('/user', [AuthController::class, 'getUser']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Members and Companies
+    // only Individual user
+    Route::get('/members', [GlobalController::class, 'getMembers']);
+    // only Company with id, name
+    Route::get('/companies', [GlobalController::class, 'getCompanies']);
+    // show all members and companies based on query
+    Route::get('/search', [GlobalController::class, 'search']);
+
+    // Booking Seats
+    Route::get('floor-plan', [FloorPlanController::class, 'getFloorPlan']);
+    Route::get('seat-allocations', [FloorPlanController::class, 'getSeatAllocations']);
+
+    // Bookings
+    Route::get('bookings', [BookingController::class, 'getBookings']);
+    Route::group(['prefix' => 'booking'], function () {
+        Route::post('create', [BookingController::class, 'createBooking']);
+        Route::post('update', [BookingController::class, 'updateBooking']);
+        // Check Availability
+        Route::post('check-availability', [FloorPlanController::class, 'checkAvailability']);
+        // Booking Users
+        // Route::get('users', [UserController::class, 'getBookingUsers']);
+    });
+
+    // Booking Plans
+    Route::resource('booking-plans', BookingPlanController::class)->except(['create', 'show', 'edit']);
+});
+
+// Route::group(['middleware' => 'set_tenant'], function () {
+// Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+// Route::post('/user/login', [BranchController::class, 'Login']);
+// });
