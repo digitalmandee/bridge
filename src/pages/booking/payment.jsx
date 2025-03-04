@@ -29,7 +29,6 @@ const Payment = () => {
 	const handleConfirm = async () => {
 		// Create a FormData object to send the image and other data
 		const formData = new FormData();
-		formData.append("branch_id", 1);
 		formData.append("floor_id", selectedFloor);
 		formData.append("profile_image", bookingdetails.profile_image); // Add the receipt file
 		formData.append("receipt", receiptFile); // Add the receipt file
@@ -64,9 +63,9 @@ const Payment = () => {
 		<>
 			<div
 				style={{
-					width: '100%',
+					width: "100%",
 					display: "flex",
-					justifyContent: "center"
+					justifyContent: "center",
 				}}>
 				<div
 					style={{
@@ -75,7 +74,7 @@ const Payment = () => {
 						borderRadius: "10px",
 						// boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
 						width: "50%",
-						marginLeft: '16rem',
+						marginLeft: "16rem",
 					}}>
 					<h3
 						style={{
@@ -90,21 +89,22 @@ const Payment = () => {
 					<div
 						style={{
 							display: "flex",
-							backgroundColor: 'transparent',
+							backgroundColor: "transparent",
 							justifyContent: "space-between",
 							// gap: "0.5rem",
 							marginBottom: "20px",
 						}}>
-						<div style={{
-							flex: 1,
-							maxWidth: '213px',
-							maxHeight: '144px',
-							textAlign: "center",
-							// padding: "10px",
-							borderRadius: "10px",
-							cursor: "pointer",
-							backgroundColor: '#FFFFFF',
-						}}
+						<div
+							style={{
+								flex: 1,
+								maxWidth: "213px",
+								maxHeight: "144px",
+								textAlign: "center",
+								// padding: "10px",
+								borderRadius: "10px",
+								cursor: "pointer",
+								backgroundColor: "#FFFFFF",
+							}}
 							className={`payment-methods ${bookingdetails.payment_method === "cash" ? "active" : ""}`}
 							onClick={() =>
 								setBookingDetails((prevDetails) => ({
@@ -122,16 +122,17 @@ const Payment = () => {
 								Cash
 							</p>
 						</div>
-						<div style={{
-							flex: 1,
-							maxWidth: '213px',
-							maxHeight: '144px',
-							textAlign: "center",
-							// padding: "10px",
-							borderRadius: "10px",
-							cursor: "pointer",
-							backgroundColor: '#FFFFFF',
-						}}
+						<div
+							style={{
+								flex: 1,
+								maxWidth: "213px",
+								maxHeight: "144px",
+								textAlign: "center",
+								// padding: "10px",
+								borderRadius: "10px",
+								cursor: "pointer",
+								backgroundColor: "#FFFFFF",
+							}}
 							className={`payment-methods ${bookingdetails.payment_method === "bank" ? "active" : ""}`}
 							onClick={() =>
 								setBookingDetails((prevDetails) => ({
@@ -176,7 +177,7 @@ const Payment = () => {
 					<button
 						style={{
 							display: "block",
-							width: '50%',
+							width: "50%",
 							margin: "0 auto",
 							backgroundColor: colors.primary,
 							color: "white",
@@ -191,22 +192,23 @@ const Payment = () => {
 					</button>
 					{showModal && <Modal handleClose={handleClose} />}
 				</div>
-				<div style={{
-					width: '100%',
-					maxWidth: '250px',
-					marginTop: '3rem',
-					marginLeft: '1rem',
-					backgroundColor: '#fff',
-					height: '40vh',
-					// padding: '10px',
-					borderRadius: '10px',
-					boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.1)',
-					display: 'flex',
-					flexDirection: 'column',
-					justifyContent: 'flex-start',
-					overflowY: 'auto'
-				}} className="scroll-container">
-
+				<div
+					style={{
+						width: "100%",
+						maxWidth: "250px",
+						marginTop: "3rem",
+						marginLeft: "1rem",
+						backgroundColor: "#fff",
+						height: "40vh",
+						// padding: '10px',
+						borderRadius: "10px",
+						boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.1)",
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "flex-start",
+						overflowY: "auto",
+					}}
+					className="scroll-container">
 					{/* Scrollbar Styling */}
 					<style>
 						{`
@@ -234,16 +236,17 @@ const Payment = () => {
 					{Object.entries(selectedChairs).length > 0 && (
 						<>
 							{/* Header */}
-							<div style={{
-								background: "#002855",
-								color: "white",
-								fontSize: "16px",
-								fontWeight: "bold",
-								padding: "20px",
-								textAlign: "center",
-								borderTopLeftRadius: "10px",
-								borderTopRightRadius: "10px"
-							}}>
+							<div
+								style={{
+									background: "#002855",
+									color: "white",
+									fontSize: "16px",
+									fontWeight: "bold",
+									padding: "20px",
+									textAlign: "center",
+									borderTopLeftRadius: "10px",
+									borderTopRightRadius: "10px",
+								}}>
 								Selected Chair
 							</div>
 
@@ -251,41 +254,47 @@ const Payment = () => {
 							<ul style={{ padding: "0", marginTop: "10px", listStyle: "none" }}>
 								{Object.entries(selectedChairs).map(([tableId, chairs]) =>
 									chairs.map((chair) => (
-										<li key={chair.id} style={{
-											// borderBottom: "1px solid #ddd",
-											padding: "8px 0",
-											fontSize: "14px",
-											color: "#333"
-										}}>
-											<div style={{
-												display: "flex",
-												padding: '0 1rem',
-												justifyContent: "space-between",
-												fontWeight: "bold"
+										<li
+											key={chair.id}
+											style={{
+												// borderBottom: "1px solid #ddd",
+												padding: "8px 0",
+												fontSize: "14px",
+												color: "#333",
 											}}>
+											<div
+												style={{
+													display: "flex",
+													padding: "0 1rem",
+													justifyContent: "space-between",
+													fontWeight: "bold",
+												}}>
 												<span>Plan Name</span>
 												<span>Plan Price</span>
 											</div>
-											<div style={{
-												display: "flex",
-												padding: '0 1rem',
-												justifyContent: "space-between",
-												marginTop: "5px",
-												fontSize: "14px"
-											}}>
+											<div
+												style={{
+													display: "flex",
+													padding: "0 1rem",
+													justifyContent: "space-between",
+													marginTop: "5px",
+													fontSize: "14px",
+												}}>
 												<span>{bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan)?.name}</span>
 												<span>Rs. {bookingdetails.total_price}</span>
 											</div>
-											<div style={{
-												borderBottom: "1px solid #ddd",
-												margin: "8px 0"
-											}}></div>
-											<div style={{
-												marginTop: "8px",
-												padding: '0 1rem',
-												fontSize: "14px",
-												fontWeight:'bold',
-											}}>
+											<div
+												style={{
+													borderBottom: "1px solid #ddd",
+													margin: "8px 0",
+												}}></div>
+											<div
+												style={{
+													marginTop: "8px",
+													padding: "0 1rem",
+													fontSize: "14px",
+													fontWeight: "bold",
+												}}>
 												<span style={{ fontWeight: "bold" }}>Plan Description</span>
 												<p style={{ margin: "2px 0 0" }}>{bookingdetails.package_detail}</p>
 											</div>

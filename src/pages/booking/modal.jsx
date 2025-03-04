@@ -1,11 +1,12 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import colors from "../../assets/styles/color";
 
 const Modal = ({ handleClose }) => {
+	const { branch } = useParams();
 	const navigate = useNavigate();
 	const handleContinue = () => {
-		navigate("/branch/booking/requests"); // Navigate to the seatsAllocation screen
+		navigate(`/${branch}/branch/booking/requests`); // Navigate to the seatsAllocation screen
 	};
 	return (
 		<>

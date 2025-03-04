@@ -5,7 +5,7 @@ import Aseat from "../../assets/A-seat.png";
 import Oseat from "../../assets/O-seat.png";
 import datab from "../../assets/datab.png";
 import { IoIosArrowDropright } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import GFloorPlan from "./floor/Gfloor/gfloor";
 import FFloorPlan from "./floor/Ffloor/ffloor";
 import colors from "../../assets/styles/color";
@@ -92,10 +92,12 @@ const Floorplan = () => {
 
 	const navigate = useNavigate();
 
+	const { branch } = useParams();
+
 	const totalSelectedChairs = Object.values(selectedChairs).flat().length;
 
 	const handleNextClick = () => {
-		navigate("/branch/booking"); // Navigate to the Booking screen
+		navigate(`/${branch}/branch/booking`); // Navigate to the Booking screen
 		setBookingDetails((prevDetails) => ({ ...prevDetails, type: totalSelectedChairs > 1 ? "company" : "individual" })), [totalSelectedChairs];
 	};
 
@@ -127,8 +129,6 @@ const Floorplan = () => {
 				console.error("Error fetching floor plan data", error);
 			} finally {
 				setTimeout(() => {
-					console.log(tables);
-
 					setIsLoading(false);
 				}, 500);
 			}
@@ -174,253 +174,253 @@ const Floorplan = () => {
 						display: 'flex',
 						width:'100%',
 					}}> */}
+					<div
+						style={{
+							backgroundColor: "transparent",
+							padding: "10px",
+							width: "70%",
+							/* margin-left: 1rem; */
+							marginBottom: "0.5rem",
+							/* margin: 2 auto; */
+							display: "flex",
+							flexDirection: "column",
+							/* align-items: center; */
+							/* justify-content: center; */
+							/* text-align: center; */
+						}}>
 						<div
 							style={{
-								backgroundColor: "transparent",
-								padding: "10px",
-								width: "70%",
-								/* margin-left: 1rem; */
-								marginBottom: "0.5rem",
-								/* margin: 2 auto; */
 								display: "flex",
-								flexDirection: "column",
-								/* align-items: center; */
-								/* justify-content: center; */
-								/* text-align: center; */
+								justifyContent: "flex-start",
+								alignItems: "center",
+								marginBottom: "20px",
+								gap: "3.5rem",
+								// backgroundColor:'#000'
 							}}>
+							<button
+								style={{
+									backgroundColor: colors.primary,
+									color: "white",
+									border: "none",
+									borderRadius: "5px",
+									width: "30%",
+									padding: "10px 10px",
+									fontSize: "14px",
+									fontWeight: "bold",
+									cursor: "pointer",
+									boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+								}}>
+								View Seats Allocation
+							</button>
+
+							{/* View Booking Request Button */}
+							<button
+								style={{
+									backgroundColor: colors.primary,
+									color: "white",
+									border: "none",
+									borderRadius: "5px",
+									width: "30%",
+									padding: "10px 10px",
+									fontSize: "14px",
+									fontWeight: "bold",
+									cursor: "pointer",
+									boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+								}}>
+								View Booking Request
+							</button>
+							<button
+								style={{
+									backgroundColor: colors.primary,
+									color: "white",
+									border: "none",
+									borderRadius: "5px",
+									width: "20%",
+									padding: "10px 10px",
+									fontSize: "14px",
+									fontWeight: "bold",
+									cursor: "pointer",
+									boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+								}}>
+								Select Floor
+							</button>
+						</div>
+
+						{/* Cards Section */}
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "flex-start",
+								alignItems: "center",
+								marginBottom: "20px",
+								// gap:'3.5rem',
+								gap: "1.2rem",
+								// backgroundColor:'black',
+							}}>
+							{/* Available Seats Card */}
 							<div
 								style={{
+									backgroundColor: "white",
+									borderRadius: "10px",
+									padding: "20px",
 									display: "flex",
-									justifyContent: "flex-start",
-									alignItems: "center",
-									marginBottom: "20px",
-									gap: "3.5rem",
-									// backgroundColor:'#000'
+									justifyContent: "space-between",
+									// flex: '1',
+									width: "35%",
+									height: "20%",
+									boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+									textAlign: "center",
 								}}>
-								<button
-									style={{
-										backgroundColor: colors.primary,
-										color: "white",
-										border: "none",
-										borderRadius: "5px",
-										width: "30%",
-										padding: "10px 10px",
-										fontSize: "14px",
-										fontWeight: "bold",
-										cursor: "pointer",
-										boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-									}}>
-									View Seats Allocation
-								</button>
-
-								{/* View Booking Request Button */}
-								<button
-									style={{
-										backgroundColor: colors.primary,
-										color: "white",
-										border: "none",
-										borderRadius: "5px",
-										width: "30%",
-										padding: "10px 10px",
-										fontSize: "14px",
-										fontWeight: "bold",
-										cursor: "pointer",
-										boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-									}}>
-									View Booking Request
-								</button>
-								<button
-									style={{
-										backgroundColor: colors.primary,
-										color: "white",
-										border: "none",
-										borderRadius: "5px",
-										width: "20%",
-										padding: "10px 10px",
-										fontSize: "14px",
-										fontWeight: "bold",
-										cursor: "pointer",
-										boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-									}}>
-									Select Floor
-								</button>
-							</div>
-
-							{/* Cards Section */}
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "flex-start",
-									alignItems: "center",
-									marginBottom: "20px",
-									// gap:'3.5rem',
-									gap: "1.2rem",
-									// backgroundColor:'black',
-								}}>
-								{/* Available Seats Card */}
+								<div>
+									<h6 style={{ color: "#888", marginBottom: "10px" }}>Available Seats</h6>
+									<h2 style={{ fontSize: "36px", color: "#000", margin: "0" }}>{totalAvailableChairs}</h2>
+								</div>
 								<div
 									style={{
-										backgroundColor: "white",
+										width: "50px",
+										height: "50px",
+										backgroundColor: "#425af5",
 										borderRadius: "10px",
-										padding: "20px",
+										// margin: '0',
 										display: "flex",
-										justifyContent: "space-between",
-										// flex: '1',
-										width: "35%",
-										height: "20%",
-										boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-										textAlign: "center",
+										alignItems: "center",
+										justifyContent: "center",
+										color: "white",
 									}}>
-									<div>
-										<h6 style={{ color: "#888", marginBottom: "10px" }}>Available Seats</h6>
-										<h2 style={{ fontSize: "36px", color: "#000", margin: "0" }}>{totalAvailableChairs}</h2>
-									</div>
-									<div
-										style={{
-											width: "50px",
-											height: "50px",
-											backgroundColor: "#425af5",
-											borderRadius: "10px",
-											// margin: '0',
-											display: "flex",
-											alignItems: "center",
-											justifyContent: "center",
-											color: "white",
-										}}>
-										<img src={Aseat} alt="" />
-										{/* <span role="img" aria-label="seat">
+									<img src={Aseat} alt="" />
+									{/* <span role="img" aria-label="seat">
                     🪑
                   </span> */}
-									</div>
-								</div>
-
-								{/* Occupied Seats Card */}
-								<div
-									style={{
-										backgroundColor: "white",
-										borderRadius: "10px",
-										padding: "20px",
-										display: "flex",
-										justifyContent: "space-between",
-										// flex: '1',
-										width: "35%",
-										height: "20%",
-										boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-										textAlign: "center",
-									}}>
-									<div>
-										<h6 style={{ color: "#888", marginBottom: "10px" }}>Occupied Seats</h6>
-										<h2 style={{ fontSize: "36px", color: "#000", margin: "0" }}>{totalOccupiedChairs}</h2>
-									</div>
-									<div
-										style={{
-											width: "50px",
-											height: "50px",
-											backgroundColor: "#00c853",
-											borderRadius: "10px",
-											// margin: '20px auto 0',
-											display: "flex",
-											alignItems: "center",
-											justifyContent: "center",
-											color: "white",
-										}}>
-										<img src={Oseat} alt="" />
-									</div>
-								</div>
-
-								{/* Floor Selector */}
-								<div
-									style={{
-										width: "20.5%",
-										// height: '10%',
-										backgroundColor: "white",
-										borderRadius: "10px",
-										padding: "20px",
-										// flex: '1',
-										boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-										textAlign: "center",
-										position: "relative",
-										display: "flex",
-										flexDirection: "column",
-										justifyContent: "flex-start",
-										height: "110px",
-										// overflow:'hidden'
-									}}>
-									{/* Image Section */}
-									<img
-										src={datab}
-										alt="Floor image"
-										style={{
-											alignSelf: "center",
-											marginBottom: "auto",
-											// height:'45px',
-											// width:'45px'
-										}}
-									/>
-
-									{/* Button Section */}
-									<button
-										onClick={toggleDropdown} // Toggle dropdown on button click
-										style={{
-											backgroundColor: "transparent",
-											width: "100%",
-											// marginTop: '15px', // Add margin between image and button
-											color: "#000",
-											border: "none",
-											marginTop: "15px",
-											borderRadius: "10px",
-											fontSize: "16px",
-											fontWeight: "400",
-											cursor: "pointer",
-											display: "flex",
-											alignItems: "center",
-											justifyContent: "space-between", // Add space between text and icon
-											// padding: '10px 15px', // Add padding for better look
-										}}>
-										{selectedFloor == 1 ? "G Floor" : "1st Floor"} <span style={{ fontSize: "16px" }}>▼</span>
-									</button>
-
-									{/* Dropdown Section */}
-									{isDropdownOpen && (
-										<div
-											style={{
-												marginTop: "10px",
-												backgroundColor: "white",
-												border: "1px solid #ddd",
-												borderRadius: "5px",
-												boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-												padding: "5px",
-												textAlign: "left",
-												position: "absolute",
-												zIndex: 1,
-												top: "100%",
-												left: "0",
-												width: "100%",
-											}}>
-											<div
-												onClick={() => handleFloorSelection(1)} // Handle ground floor selection
-												style={{
-													padding: "8px 10px",
-													cursor: "pointer",
-													borderBottom: "1px solid #eee",
-												}}>
-												G Floor
-											</div>
-											<div
-												onClick={() => handleFloorSelection(2)} // Handle first floor selection
-												style={{
-													padding: "8px 10px",
-													cursor: "pointer",
-												}}>
-												1st Floor
-											</div>
-										</div>
-									)}
 								</div>
 							</div>
+
+							{/* Occupied Seats Card */}
+							<div
+								style={{
+									backgroundColor: "white",
+									borderRadius: "10px",
+									padding: "20px",
+									display: "flex",
+									justifyContent: "space-between",
+									// flex: '1',
+									width: "35%",
+									height: "20%",
+									boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+									textAlign: "center",
+								}}>
+								<div>
+									<h6 style={{ color: "#888", marginBottom: "10px" }}>Occupied Seats</h6>
+									<h2 style={{ fontSize: "36px", color: "#000", margin: "0" }}>{totalOccupiedChairs}</h2>
+								</div>
+								<div
+									style={{
+										width: "50px",
+										height: "50px",
+										backgroundColor: "#00c853",
+										borderRadius: "10px",
+										// margin: '20px auto 0',
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+										color: "white",
+									}}>
+									<img src={Oseat} alt="" />
+								</div>
+							</div>
+
+							{/* Floor Selector */}
+							<div
+								style={{
+									width: "20.5%",
+									// height: '10%',
+									backgroundColor: "white",
+									borderRadius: "10px",
+									padding: "20px",
+									// flex: '1',
+									boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+									textAlign: "center",
+									position: "relative",
+									display: "flex",
+									flexDirection: "column",
+									justifyContent: "flex-start",
+									height: "110px",
+									// overflow:'hidden'
+								}}>
+								{/* Image Section */}
+								<img
+									src={datab}
+									alt="Floor image"
+									style={{
+										alignSelf: "center",
+										marginBottom: "auto",
+										// height:'45px',
+										// width:'45px'
+									}}
+								/>
+
+								{/* Button Section */}
+								<button
+									onClick={toggleDropdown} // Toggle dropdown on button click
+									style={{
+										backgroundColor: "transparent",
+										width: "100%",
+										// marginTop: '15px', // Add margin between image and button
+										color: "#000",
+										border: "none",
+										marginTop: "15px",
+										borderRadius: "10px",
+										fontSize: "16px",
+										fontWeight: "400",
+										cursor: "pointer",
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "space-between", // Add space between text and icon
+										// padding: '10px 15px', // Add padding for better look
+									}}>
+									{selectedFloor == 1 ? "G Floor" : "1st Floor"} <span style={{ fontSize: "16px" }}>▼</span>
+								</button>
+
+								{/* Dropdown Section */}
+								{isDropdownOpen && (
+									<div
+										style={{
+											marginTop: "10px",
+											backgroundColor: "white",
+											border: "1px solid #ddd",
+											borderRadius: "5px",
+											boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+											padding: "5px",
+											textAlign: "left",
+											position: "absolute",
+											zIndex: 1,
+											top: "100%",
+											left: "0",
+											width: "100%",
+										}}>
+										<div
+											onClick={() => handleFloorSelection(1)} // Handle ground floor selection
+											style={{
+												padding: "8px 10px",
+												cursor: "pointer",
+												borderBottom: "1px solid #eee",
+											}}>
+											G Floor
+										</div>
+										<div
+											onClick={() => handleFloorSelection(2)} // Handle first floor selection
+											style={{
+												padding: "8px 10px",
+												cursor: "pointer",
+											}}>
+											1st Floor
+										</div>
+									</div>
+								)}
+							</div>
 						</div>
-						{/* Pie Chart */}
-						{/* <div
+					</div>
+					{/* Pie Chart */}
+					{/* <div
 							style={{
 								width: "350px",
 								height: "333px",

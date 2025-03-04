@@ -14,10 +14,13 @@ const AuthProvider = ({ children }) => {
 		const fetchUser = async () => {
 			try {
 				const response = await axiosInstance.get("user");
+
 				setUser(response.data);
 				setRole(response.data.role);
 				setPermissions(response.data.permissions);
-			} catch {
+			} catch (error) {
+				console.log(error.response.data);
+
 				setUser(null);
 				setRole("");
 				setPermissions([]);

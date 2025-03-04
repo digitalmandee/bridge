@@ -14,6 +14,8 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 			try {
 				const response = await axiosInstance.get("booking-plans");
 
+				console.log(response.data);
+
 				if (response.data && Array.isArray(response.data.data)) {
 					setBookingPlans(response.data.data);
 				}

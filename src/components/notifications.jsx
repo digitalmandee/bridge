@@ -16,8 +16,8 @@ const DashboardNotifications = () => {
 		try {
 			const res = await axiosInstance.get("notifications?limit=4");
 
-			setNotifications(res.data.notifications);
-			setUnreadNotifications(res.data.unread);
+			// setNotifications(res.data.notifications);
+			// setUnreadNotifications(res.data.unread);
 		} catch (error) {
 			console.error("Error fetching notifications:", error.response.data);
 		}

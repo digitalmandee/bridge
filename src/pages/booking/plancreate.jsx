@@ -2,13 +2,15 @@ import axios from "axios";
 import React, { useState } from "react";
 import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { Button, Snackbar, Alert } from "@mui/material";
 import colors from "@/assets/styles/color";
 import axiosInstance from "@/utils/axiosInstance";
 
 const PlanCreate = () => {
+	const { branch } = useParams();
+
 	const [isLoading, setIsLoading] = useState(false);
 	const [name, setName] = useState("");
 	const [type, setType] = useState("monthly");
@@ -90,7 +92,7 @@ const PlanCreate = () => {
 				</div>
 				<div className="content">
 					<div className="d-flex justify-content-between align-items-center flex-wrap grid-margin py-4">
-						<Link to={"/branch/booking/plans"} className="d-flex align-items-center gap-2" style={{ textDecoration: "none", color: "black" }}>
+						<Link to={`/${branch}/branch/booking/plans`} className="d-flex align-items-center gap-2" style={{ textDecoration: "none", color: "black" }}>
 							<ChevronLeftIcon fontSize="large" />
 							<h3 className="mb-3 mb-md-0">Branch Plan Create</h3>
 						</Link>

@@ -51,8 +51,6 @@ const MemberDetail = ({ handleNext }) => {
 
 	// Handle user selection from search results
 	const handleSelectUser = async (user) => {
-		console.log(user);
-
 		setBookingDetails({
 			...bookingdetails,
 			name: user.name,

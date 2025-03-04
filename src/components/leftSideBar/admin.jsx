@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { Button } from "@mui/material";
 import { RxDashboard } from "react-icons/rx";
 import { MdOutlineInventory } from "react-icons/md";
@@ -91,6 +91,8 @@ const menuItems = [
 const Admin = () => {
 	const { permissions } = useContext(AuthContext);
 
+	const { branch } = useParams();
+
 	const location = useLocation();
 	const [selectedButton, setSelectedButton] = useState("");
 	const [openDropdown, setOpenDropdown] = useState("");
@@ -166,7 +168,7 @@ const Admin = () => {
 												.filter((subItem) => permissions.includes(subItem.permission))
 												.map((subItem, subIndex) => (
 													<li key={subIndex}>
-														<Link to={subItem.to}>
+														<Link to={"/" + branch + subItem.to}>
 															<Button className={`w-100 ${selectedButton === subItem.label ? "active-button" : ""}`} onClick={() => handleButtonClick(subItem.label, subItem.to, false)}>
 																{subItem.label}
 															</Button>
@@ -177,7 +179,7 @@ const Admin = () => {
 								)}
 							</>
 						) : (
-							<Link to={item.to}>
+							<Link to={"/" + branch + item.to}>
 								<Button className={`w-100 ${selectedButton === item.label ? "active-button" : ""}`} onClick={() => handleButtonClick(item.label, item.to, item.hasDropdown)}>
 									<span className="icon">{item.icon}</span>
 									{item.label}

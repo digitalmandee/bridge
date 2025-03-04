@@ -1,48 +1,67 @@
-import React from "react";
-import admin from "../../assets/admin.png";
-import branch from "../../assets/branch.png";
-import invester from "../../assets/investor.png";
-import user from "../../assets/user.png";
-import logopic from "../../assets/logopic.png"
-import { Link } from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
-import './welcome.css'
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axiosInstance from "@/utils/axiosInstance";
+import adminLogo from "@/assets/admin.png";
+import branchLogo from "@/assets/branch.png";
+import investerLogo from "@/assets/investor.png";
+import userLogo from "@/assets/user.png";
+import logopic from "@/assets/logopic.png";
+import "./welcome.css";
 
 const Welcome = () => {
+	const navigate = useNavigate();
+	const { branch } = useParams();
 
-  const navigate = useNavigate();
+	const [isExist, setIsExist] = useState(null); // Null indicates loading state
 
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
+	useEffect(() => {
+		const checkBranch = async () => {
+			try {
+				const res = await axiosInstance.get(`branch/check?branch=${branch}`);
+				setIsExist(res.data.exist);
+			} catch (err) {
+				console.error("Error checking branch:", err);
+				setIsExist(false); // Default to non-existent if error occurs
+			}
+		};
 
-  return (
-    <div className="wcontainer">
-      <img src={logopic} alt="" className="container-img" />
-      <p className="subHeading">Choose Account Type</p>
-      <div className="accountTypeContainer">
-        {[
-          { name: "Super Admin", img: admin, path: "/super-admin/dashboard" },
-          { name: "Branch Login", img: branch, path: "/branch/dashboard" },
-          { name: "Investor Login", img: invester, path: "/investor/dashboard" },
-          { name: "User", img: user, path: "/user/dashboard" },
-        ].map((account, index) => (
-          <div key={index} className="account-wrapper">
-            <div className="accountType"
-              onClick={() => handleNavigation(account.path)}
-            >
-              <img
-                src={account.img}
-                alt={account.name}
-                className="accountImage"
-              />
-            </div>
-            <p>{account.name}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+		if (branch) checkBranch();
+		else setIsExist(false);
+	}, [branch]); // Ensure it re-runs if `branch` changes
+
+	const handleNavigation = (path) => {
+		navigate(path);
+	};
+
+	if (isExist === null) {
+		return <p>Loading...</p>; // Show loading state before check completes
+	}
+
+	if (!isExist) {
+		return <p>Branch does not exist</p>; // Show error if branch is invalid
+	}
+
+	return (
+		<div className="wcontainer">
+			<img src={logopic} alt="Logo" className="container-img" />
+			<p className="subHeading">Choose Account Type</p>
+			<div className="accountTypeContainer">
+				{[
+					{ name: "Super Admin", img: adminLogo, path: "/super-admin/dashboard" },
+					{ name: "Branch Login", img: branchLogo, path: branch ? `/${branch}/branch/dashboard` : "/branch/dashboard" },
+					{ name: "Investor Login", img: investerLogo, path: "/investor/dashboard" },
+					{ name: "User", img: userLogo, path: branch ? `/${branch}/user/dashboard` : "/user/dashboard" },
+				].map((account, index) => (
+					<div key={index} className="account-wrapper">
+						<div className="accountType" onClick={() => handleNavigation(account.path)}>
+							<img src={account.img} alt={account.name} className="accountImage" />
+						</div>
+						<p>{account.name}</p>
+					</div>
+				))}
+			</div>
+		</div>
+	);
 };
 
 export default Welcome;

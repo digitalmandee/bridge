@@ -89,8 +89,8 @@ function App() {
 		<BrowserRouter>
 			<Routes>
 				{/* Public Routes */}
-				<Route path="/" element={<Welcome />} />
-				<Route path="/login" element={<LoginPage />} />
+				<Route path="/:branch?" element={<Welcome />} />
+				<Route path=":branch/login" element={<LoginPage />} />
 
 				{/* Super Admin Routes */}
 				<Route
@@ -221,7 +221,7 @@ function App() {
 
 				{/* Branch Routes */}
 				<Route
-					path="/branch/dashboard"
+					path="/:branch/branch/dashboard"
 					element={
 						<ProtectedRoute role="admin" permission="admin-dashboard">
 							<AdminDashboard />
@@ -231,7 +231,7 @@ function App() {
 
 				{/* Floor Plan */}
 				<Route
-					path="/branch/floorplan"
+					path="/:branch/branch/floorplan"
 					element={
 						<ProtectedRoute role="admin" permission="floor-plan">
 							<Floorplan />
@@ -241,7 +241,7 @@ function App() {
 
 				{/* Booking Requests */}
 				<Route
-					path="/branch/booking"
+					path="/:branch/branch/booking"
 					element={
 						<ProtectedRoute role="admin" permission="floor-plan">
 							<Booking />
@@ -249,7 +249,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/booking/requests"
+					path="/:branch/branch/booking/requests"
 					element={
 						<ProtectedRoute role="admin" permission="booking-request">
 							<BookingRequests />
@@ -266,7 +266,7 @@ function App() {
 				/> */}
 				{/* Booking Price Plan */}
 				<Route
-					path="/branch/booking/plans"
+					path="/:branch/branch/booking/plans"
 					element={
 						<ProtectedRoute role="admin" permission="price-plan">
 							<BookingPlans />
@@ -274,7 +274,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/booking/plans/create"
+					path="/:branch/branch/booking/plans/create"
 					element={
 						<ProtectedRoute role="admin" permission="price-plan">
 							<BookingPlanCreate />
@@ -283,7 +283,7 @@ function App() {
 				/>
 				{/* Booking Seats Allocation */}
 				<Route
-					path="/branch/booking/seats-allocation"
+					path="/:branch/branch/booking/seats-allocation"
 					element={
 						<ProtectedRoute role="admin" permission="seat-card">
 							<SeatsAllocation />
@@ -292,7 +292,7 @@ function App() {
 				/>
 				{/* Room Booking */}
 				<Route
-					path="/branch/booking-schedule"
+					path="/:branch/branch/booking-schedule"
 					element={
 						<ProtectedRoute role="admin" permission="room-booking">
 							<BookingCalendar />

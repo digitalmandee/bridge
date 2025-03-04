@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { IconButton, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Select, Snackbar, Alert } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Loader from "@/components/Loader";
 import colors from "@/assets/styles/color";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "@/utils/axiosInstance";
 
 const BookingPlans = () => {
+	const { branch } = useParams();
+
 	const [bookingPlans, setBookingPlans] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -126,7 +128,7 @@ const BookingPlans = () => {
 							<h3>Price Plan</h3>
 						</div>
 						<Link
-							to={"/branch/booking/plans/create"}
+							to={`/${branch}/branch/booking/plans/create`}
 							style={{
 								padding: "10px 20px",
 								borderRadius: "5px",

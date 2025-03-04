@@ -1,40 +1,67 @@
-import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import logo from "../../../assets/logopic.png";
 import profile from "../../../assets/profile.png";
 import "./login.css";
 import axios from "axios";
 import { AuthContext } from "../../../contexts/AuthContext";
+import axiosInstance from "@/utils/axiosInstance";
 
 const LoginPage = () => {
+	const { branch } = useParams();
+
 	const { setUser, setRole, setPermissions } = useContext(AuthContext);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
+	const [isExist, setIsExist] = useState(null); // Null indicates loading state
+
+	useEffect(() => {
+		const checkBranch = async () => {
+			try {
+				const res = await axiosInstance.get(`branch/check?branch=${branch}`);
+				setIsExist(res.data.exist);
+			} catch (err) {
+				console.error("Error checking branch:", err);
+				setIsExist(false); // Default to non-existent if error occurs
+			}
+		};
+
+		if (branch) checkBranch();
+		else setIsExist(false);
+	}, [branch]); // Ensure it re-runs if `branch` changes
+
+	if (isExist === null) {
+		return <p>Loading...</p>; // Show loading state before check completes
+	}
+
+	if (!isExist) {
+		return <p>Branch does not exist</p>; // Show error if branch is invalid
+	}
+
 	const handleLogin = async (e) => {
 		e.preventDefault(); // prevent from reloading
 		setLoading(true);
 		try {
-			const response = await axios.post(import.meta.env.VITE_BASE_API + "login", { email, password }, { headers: { "Content-Type": "application/json" } });
-			localStorage.setItem("authToken", response.data.data.token);
-
+			const response = await axios.post(import.meta.env.VITE_BASE_API + "branch/login", { email, password }, { headers: { Accept: "application/json", Branch: branch } });
 			console.log(response.data);
+
+			localStorage.setItem("authToken", response.data.data.token);
 
 			setUser(response.data.data);
 			setRole(response.data.data.role);
 			setPermissions(response.data.data.permissions);
 			if (response.data.data.type === "superadmin") window.location.href = "/super-admin/dashboard";
-			else if (response.data.data.type === "admin") window.location.href = "/branch/dashboard";
+			else if (response.data.data.type === "admin") window.location.href = `/${branch}/branch/dashboard`;
 			else if (response.data.data.type === "investor") window.location.href = "/investor/dashboard";
 			else if (response.data.data.type === "user") window.location.href = "/user/dashboard";
 			else if (response.data.data.type === "company") window.location.href = "/company/dashboard";
 		} catch (error) {
 			console.log(error.response.data);
 			alert("Login failed. Check credentials.");
-		}
-		finally {
+		} finally {
 			setLoading(false); // ⬅️ Hide spinner after request completes
 		}
 	};
