@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress, Pagination } from "@mui/material";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,6 +10,8 @@ import { AuthContext } from "@/contexts/AuthContext";
 
 const UserManagement = () => {
 	const navigate = useNavigate();
+	const { branch } = useParams();
+
 	const [users, setUsers] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -78,7 +80,7 @@ const UserManagement = () => {
 											bgcolor: "#1E293B",
 										},
 									}}
-									onClick={() => navigate("/branch/users/new")}>
+									onClick={() => navigate(`/${branch}/branch/users/new`)}>
 									New User
 								</Button>
 							</div>
@@ -111,7 +113,7 @@ const UserManagement = () => {
 												<TableCell>{user.email}</TableCell>
 												<TableCell sx={{ textTransform: "capitalize" }}>{user.status}</TableCell>
 												<TableCell>
-													<Button onClick={() => navigate(`/branch/users/edit/${user.id}`)} color="primary">
+													<Button onClick={() => navigate(`/${branch}/branch/users/edit/${user.id}`)} color="primary">
 														Edit
 													</Button>
 													<Button onClick={() => handleDelete(user.id)} color="secondary">

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { TextField, Select, MenuItem, Button, Card, CardContent, IconButton, Typography, FormControl, InputLabel, Menu, Snackbar, Alert } from "@mui/material";
 import { ArrowBack, MoreVert } from "@mui/icons-material";
@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 
 const Management = () => {
 	const navigate = useNavigate();
+	const { branch } = useParams();
 
 	const [clientName, setClientName] = useState("");
 	const [selectedOption, setSelectedOption] = useState("");
@@ -92,7 +93,7 @@ const Management = () => {
 								<MoreVert />
 							</IconButton>
 							<Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={handleMenuClose}>
-								<MenuItem onClick={() => navigate(`/branch/employee/leave/category/edit/${data.id}`)}>Edit</MenuItem>
+								<MenuItem onClick={() => navigate(`/${branch}/branch/employee/leave/category/edit/${data.id}`)}>Edit</MenuItem>
 								<MenuItem disabled={deleteLoading} onClick={() => handleDeleteClick(data.id)}>
 									Delete
 								</MenuItem>
@@ -157,7 +158,7 @@ const Management = () => {
 							</div>
 							<div style={{ maxWidth: "120px" }}>
 								<Button
-									onClick={() => navigate("/branch/employee/leave/category/create")}
+									onClick={() => navigate(`/${branch}/branch/employee/leave/category/create`)}
 									variant="contained"
 									fullWidth
 									style={{

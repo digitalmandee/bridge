@@ -76,6 +76,9 @@ import CreateBranch from "./pages/dashboard/branch";
 import Notifications from "@/pages/notificaitons";
 
 import NoPermission from "./pages/nopermission";
+import SuperAdminLogin from "./pages/auth/login/superadminlogin";
+import ProtectedSuperRoute from "./ProtectedSuperRoute";
+import BranchManagement from "./pages/branch";
 
 function App() {
 	// const [isToggleSideBar, setIsToggleSidebar] = useState(false);
@@ -89,25 +92,35 @@ function App() {
 		<BrowserRouter>
 			<Routes>
 				{/* Public Routes */}
-				<Route path="/:branch?" element={<Welcome />} />
+				<Route path="/" element={<SuperAdminLogin />} />
+				<Route path="/:branch" element={<Welcome />} />
 				<Route path=":branch/login" element={<LoginPage />} />
 
 				{/* Super Admin Routes */}
 				<Route
 					path="/super-admin/dashboard"
 					element={
-						<ProtectedRoute role="superadmin">
+						<ProtectedSuperRoute role="superadmin">
 							<SuperAdminDashboard />
-						</ProtectedRoute>
+						</ProtectedSuperRoute>
 					}
 				/>
 
 				<Route
-					path="/create/new/branch"
+					path="/super-admin/branch/create"
 					element={
-						<ProtectedRoute>
+						<ProtectedSuperRoute role="superadmin">
 							<CreateBranch />
-						</ProtectedRoute>
+						</ProtectedSuperRoute>
+					}
+				/>
+
+				<Route
+					path="/super-admin/branch/management"
+					element={
+						<ProtectedSuperRoute role="superadmin">
+							<BranchManagement />
+						</ProtectedSuperRoute>
 					}
 				/>
 
@@ -397,7 +410,7 @@ function App() {
 				{/* Employee Management Routes */}
 
 				<Route
-					path="/branch/employee/dashboard"
+					path="/:branch/branch/employee/dashboard"
 					element={
 						<ProtectedRoute role="admin" permission="employee-dashboard">
 							<EmployeeDashboard />
@@ -405,7 +418,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/employee/create"
+					path="/:branch/branch/employee/create"
 					element={
 						<ProtectedRoute role="admin" permission="employee-dashboard">
 							<EmployeeCreate />
@@ -413,7 +426,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/employee/departments"
+					path="/:branch/branch/employee/departments"
 					element={
 						<ProtectedRoute role="admin" permission="employee-dashboard">
 							<Departments />
@@ -422,7 +435,7 @@ function App() {
 				/>
 
 				<Route
-					path="/branch/employee/details/:employeeId"
+					path="/:branch/branch/employee/details/:employeeId"
 					element={
 						<ProtectedRoute role="admin" permission="employee-dashboard">
 							<EmployeeDetails />
@@ -432,7 +445,7 @@ function App() {
 				{/* Attendance */}
 
 				<Route
-					path="/branch/employee/attendance"
+					path="/:branch/branch/employee/attendance"
 					element={
 						<ProtectedRoute role="admin" permission="attendance">
 							<AttendanceDashboard />
@@ -441,7 +454,7 @@ function App() {
 				/>
 				{/* Leave Category */}
 				<Route
-					path="/branch/employee/leave/category"
+					path="/:branch/branch/employee/leave/category"
 					element={
 						<ProtectedRoute role="admin" permission="leave-category">
 							<LeaveCategory />
@@ -450,7 +463,7 @@ function App() {
 				/>
 
 				<Route
-					path="/branch/employee/leave/category/create"
+					path="/:branch/branch/employee/leave/category/create"
 					element={
 						<ProtectedRoute role="admin" permission="leave-category">
 							<LeaveCategoryCreate />
@@ -458,7 +471,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/employee/leave/category/edit/:id"
+					path="/:branch/branch/employee/leave/category/edit/:id"
 					element={
 						<ProtectedRoute role="admin" permission="leave-category">
 							<LeaveCategoryEdit />
@@ -467,7 +480,7 @@ function App() {
 				/>
 
 				<Route
-					path="/branch/employee/leave/application"
+					path="/:branch/branch/employee/leave/application"
 					element={
 						<ProtectedRoute role="admin" permission="leave-application">
 							<LeaveApplication />
@@ -476,7 +489,7 @@ function App() {
 				/>
 
 				<Route
-					path="/branch/employee/leave/application/new"
+					path="/:branch/branch/employee/leave/application/new"
 					element={
 						<ProtectedRoute role="admin" permission="leave-application">
 							<NewApplication />
@@ -484,7 +497,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/employee/leave/application/edit/:id"
+					path="/:branch/branch/employee/leave/application/edit/:id"
 					element={
 						<ProtectedRoute role="admin" permission="leave-category">
 							<NewApplication />
@@ -493,7 +506,7 @@ function App() {
 				/>
 
 				<Route
-					path="/branch/employee/leave/management"
+					path="/:branch/branch/employee/leave/management"
 					element={
 						<ProtectedRoute role="admin" permission="leave-management">
 							<LeaveManage />
@@ -502,7 +515,7 @@ function App() {
 				/>
 
 				<Route
-					path="/branch/employee/leave/report"
+					path="/:branch/branch/employee/leave/report"
 					element={
 						<ProtectedRoute role="admin" permission="leave-report">
 							<LeaveReport />
@@ -511,7 +524,7 @@ function App() {
 				/>
 
 				<Route
-					path="/branch/employee/manage/attendance"
+					path="/:branch/branch/employee/manage/attendance"
 					element={
 						<ProtectedRoute role="admin" permission="manage-attendance">
 							<ManageAttendance />
@@ -520,7 +533,7 @@ function App() {
 				/>
 
 				<Route
-					path="/branch/employee/attendance/report"
+					path="/:branch/branch/employee/attendance/report"
 					element={
 						<ProtectedRoute role="admin" permission="manage-attendance">
 							<AttendanceReport />
@@ -529,7 +542,7 @@ function App() {
 				/>
 
 				<Route
-					path="/branch/employee/attendance/monthly/report"
+					path="/:branch/branch/employee/attendance/monthly/report"
 					element={
 						<ProtectedRoute role="admin" permission="monthly-report">
 							<MonthlyReport />
@@ -540,7 +553,7 @@ function App() {
 				{/* Manage User Roles */}
 
 				<Route
-					path="/branch/users/roles"
+					path="/:branch/branch/users/roles"
 					element={
 						<ProtectedRoute role="admin" permission="roles">
 							<RoleManagement />
@@ -548,7 +561,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/users/roles/new"
+					path="/:branch/branch/users/roles/new"
 					element={
 						<ProtectedRoute role="admin" permission="roles">
 							<RoleForm />
@@ -556,7 +569,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/users/roles/edit/:id"
+					path="/:branch/branch/users/roles/edit/:id"
 					element={
 						<ProtectedRoute role="admin" permission="roles">
 							<RoleForm />
@@ -564,7 +577,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/users/management"
+					path="/:branch/branch/users/management"
 					element={
 						<ProtectedRoute role="admin" permission="employee-users">
 							<BranchUserManagement />
@@ -572,7 +585,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/users/new"
+					path="/:branch/branch/users/new"
 					element={
 						<ProtectedRoute role="admin" permission="employee-users">
 							<BranchUserCreate />
@@ -581,7 +594,7 @@ function App() {
 				/>
 
 				<Route
-					path="/branch/users/edit/:id"
+					path="/:branch/branch/users/edit/:id"
 					element={
 						<ProtectedRoute role="admin" permission="employee-users">
 							<BranchUserCreate />

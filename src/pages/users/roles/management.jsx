@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress } from "@mui/material";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,6 +10,8 @@ import { AuthContext } from "@/contexts/AuthContext";
 
 const RoleManagement = () => {
 	const navigate = useNavigate();
+	const { branch } = useParams();
+
 	const [roles, setRoles] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 
@@ -69,7 +71,7 @@ const RoleManagement = () => {
 											bgcolor: "#1E293B",
 										},
 									}}
-									onClick={() => navigate("/branch/users/roles/new")}>
+									onClick={() => navigate(`/${branch}/branch/users/roles/new`)}>
 									New Role
 								</Button>
 							</div>
@@ -96,7 +98,7 @@ const RoleManagement = () => {
 											<TableRow key={role.id}>
 												<TableCell>{role.name}</TableCell>
 												<TableCell>
-													<Button onClick={() => navigate(`/branch/users/roles/edit/${role.id}`)} color="primary">
+													<Button onClick={() => navigate(`/${branch}/branch/users/roles/edit/${role.id}`)} color="primary">
 														Edit
 													</Button>
 													<Button onClick={() => handleDelete(role.id)} color="secondary">

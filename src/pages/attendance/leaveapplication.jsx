@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { Alert, CircularProgress, InputAdornment, Snackbar } from "@mui/material";
 import { Search } from "@mui/icons-material";
@@ -15,6 +15,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const LeaveApplication = () => {
 	const navigate = useNavigate();
+	const { branch } = useParams();
+
 	const [searchTerm, setSearchTerm] = useState("");
 	const [date, setDate] = useState(dayjs());
 
@@ -132,7 +134,7 @@ const LeaveApplication = () => {
 												</span>
 											</TableCell>
 											<TableCell>
-												<IconButton size="small" onClick={() => navigate(`/branch/employee/leave/application/edit/${application.id}`)}>
+												<IconButton size="small" onClick={() => navigate(`/${branch}/branch/employee/leave/application/edit/${application.id}`)}>
 													<EditIcon fontSize="small" />
 												</IconButton>
 											</TableCell>

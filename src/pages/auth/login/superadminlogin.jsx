@@ -1,0 +1,66 @@
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import logo from "@/assets/logopic.png";
+import profile from "@/assets/profile.png";
+import "./login.css";
+import axios from "axios";
+import { AuthContext } from "@/contexts/AuthContext";
+
+const SuperAdminLogin = () => {
+	const { setUser, setRole, setPermissions } = useContext(AuthContext);
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [loading, setLoading] = useState(false);
+	const navigate = useNavigate();
+
+	const handleLogin = async (e) => {
+		e.preventDefault(); // prevent from reloading
+		setLoading(true);
+		try {
+			const response = await axios.post(import.meta.env.VITE_BASE_API + "login", { email, password }, { headers: { Accept: "application/json" } });
+			console.log(response.data);
+
+			localStorage.setItem("authToken", response.data.data.token);
+
+			setUser(response.data.data);
+			setRole(response.data.data.role);
+			setPermissions(response.data.data.permissions);
+			if (response.data.data.type === "superadmin") window.location.href = "/super-admin/dashboard";
+		} catch (error) {
+			console.log(error.response.data);
+			alert("Login failed. Check credentials.");
+		} finally {
+			setLoading(false); // ⬅️ Hide spinner after request completes
+		}
+	};
+
+	return (
+		<>
+			<div className="login-container">
+				<div className="logo-container">
+					<img src={logo} width={"270px"} alt="Welcome to Bridge" className="logo-image" />
+				</div>
+				<div className="login-card mt-5">
+					<div className="avatar-container">
+						<img src={profile} alt="User" className="avatar-icon" />
+					</div>
+					<h2 className="login-heading">Log In</h2>
+					<form className="login-form" onSubmit={handleLogin}>
+						<label htmlFor="email">Email</label>
+						<input type="email" id="email" name="email" placeholder="Enter your email" onChange={(e) => setEmail(e.target.value)} />
+						<label htmlFor="password">
+							Password <span className="required">*</span>
+						</label>
+						<input type="password" id="password" name="password" placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
+
+						<button type="submit" className={`login-button ${loading ? "loading" : ""}`}>
+							{loading ? <div className="spinner"></div> : "Log in"}
+						</button>
+					</form>
+				</div>
+			</div>
+		</>
+	);
+};
+
+export default SuperAdminLogin;

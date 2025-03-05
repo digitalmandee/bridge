@@ -7,12 +7,14 @@ import PeopleIcon from "@mui/icons-material/People";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PrintIcon from "@mui/icons-material/Print";
 import { ArrowDownIcon, ArrowUpIcon, Bell, Building2, FileText, Building } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "@/utils/axiosInstance";
 import { Box } from "@mui/system";
 
 const EmployeeDashboard = () => {
 	const navigate = useNavigate();
+
+	const { branch } = useParams();
 
 	const [employees, setEmployees] = useState([]);
 	const [stats, setStats] = useState(null);
@@ -74,7 +76,7 @@ const EmployeeDashboard = () => {
 							<Typography variant="h5" style={{ fontWeight: "bold" }}>
 								Employee Management
 							</Typography>
-							<Button style={{ color: "white", backgroundColor: "#0D2B4E" }} onClick={() => navigate("/branch/employee/create")}>
+							<Button style={{ color: "white", backgroundColor: "#0D2B4E" }} onClick={() => navigate(`/${branch}/branch/employee/create`)}>
 								Add Employee
 							</Button>
 						</div>
@@ -131,7 +133,7 @@ const EmployeeDashboard = () => {
 										) : employees.length > 0 ? (
 											employees.map((row, index) => (
 												<TableRow key={index}>
-													<TableCell style={{ cursor: "pointer", fontWeight: "bold" }} onClick={() => navigate(`/branch/employee/details/${row.employee_id}`, { state: { employee: row } })}>
+													<TableCell style={{ cursor: "pointer", fontWeight: "bold" }} onClick={() => navigate(`/${branch}/branch/employee/details/${row.employee_id}`, { state: { employee: row } })}>
 														#{row.employee_id}
 													</TableCell>
 													<TableCell>{row.user?.name}</TableCell>

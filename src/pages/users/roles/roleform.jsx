@@ -7,7 +7,8 @@ import Sidebar from "@/components/leftSideBar";
 import { MdArrowBackIos } from "react-icons/md";
 
 const RoleForm = () => {
-	const { id } = useParams();
+	const { branch, id } = useParams();
+
 	const [roleName, setRoleName] = useState("");
 	const [permissions, setPermissions] = useState({});
 	const [selectedPermissions, setSelectedPermissions] = useState([]);
@@ -55,7 +56,7 @@ const RoleForm = () => {
 			} else {
 				await axiosInstance.post("roles", roleData);
 			}
-			navigate("/branch/users/roles");
+			navigate(`/${branch}/branch/users/roles`);
 		} catch (error) {
 			console.error("Error saving role", error);
 		}

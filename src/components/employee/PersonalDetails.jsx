@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Typography, Button, Divider, TextField } from "@mui/material";
+import { Grid, Typography, Button, Divider, TextField, Snackbar, Alert } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 const PersonalDetails = ({ employeeId }) => {
+	const navigate = useNavigate();
+
 	const [isLoading, setIsLoading] = useState(false);
 	const [errors, setErrors] = useState({});
 	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
@@ -189,6 +192,12 @@ const PersonalDetails = ({ employeeId }) => {
 					</Button>
 				</Grid>
 			</Grid>
+
+			<Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+				<Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+					{snackbar.message}
+				</Alert>
+			</Snackbar>
 		</>
 	);
 };

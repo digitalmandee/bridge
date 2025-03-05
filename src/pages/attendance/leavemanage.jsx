@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { CircularProgress, InputAdornment } from "@mui/material";
 import { Search } from "@mui/icons-material";
@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 
 const LeaveManage = () => {
 	const navigate = useNavigate();
+	const { branch } = useParams();
 
 	const [searchTerm, setSearchTerm] = useState("");
 	const [date, setDate] = useState(dayjs());
@@ -84,7 +85,7 @@ const LeaveManage = () => {
 								/>
 								<Button
 									variant="contained"
-									onClick={() => navigate("/branch/employee/leave/application/new")}
+									onClick={() => navigate(`/${branch}/branch/employee/leave/application/new`)}
 									sx={{
 										backgroundColor: "#0D2B4E",
 										color: "white",

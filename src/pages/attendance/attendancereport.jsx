@@ -7,6 +7,8 @@ import { Button, TextField, Checkbox, Pagination, Table, TableBody, TableCell, T
 import axiosInstance from "@/utils/axiosInstance";
 
 const AttendanceReport = () => {
+	const navigate = useNavigate();
+
 	const currentDate = new Date();
 	const [month, setMonth] = useState(currentDate.getMonth() + 1);
 	const [year, setYear] = useState(currentDate.getFullYear());

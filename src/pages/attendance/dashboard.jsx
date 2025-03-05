@@ -11,12 +11,14 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import DescriptionIcon from "@mui/icons-material/Description";
 import EventNoteIcon from "@mui/icons-material/EventNote";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "@/utils/axiosInstance";
 import { Box } from "@mui/system";
 
 const AttendanceDashboard = () => {
 	const navigate = useNavigate();
+
+	const { branch } = useParams();
 
 	const [employees, setEmployees] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -60,7 +62,7 @@ const AttendanceDashboard = () => {
 							<Typography variant="text" style={{ fontWeight: "500", fontSize: "24px" }}>
 								Application Dashboard
 							</Typography>
-							<Button style={{ color: "white", backgroundColor: "#0D2B4E" }} onClick={() => navigate("/branch/employee/leave/application/new")}>
+							<Button style={{ color: "white", backgroundColor: "#0D2B4E" }} onClick={() => navigate(`/${branch}/branch/employee/leave/application/new`)}>
 								New Application
 							</Button>
 						</div>
@@ -148,7 +150,7 @@ const AttendanceDashboard = () => {
 										justifyContent: "center",
 										textAlign: "center",
 									}}
-									onClick={() => card.path && navigate(card.path)}>
+									onClick={() => card.path && navigate("/" + branch + card.path)}>
 									<div
 										style={{
 											width: "40px",
@@ -225,7 +227,7 @@ const AttendanceDashboard = () => {
 										) : employees.length > 0 ? (
 											employees.map((row, index) => (
 												<tr key={index}>
-													<td style={{ cursor: "pointer", fontWeight: "bold", padding: "12px 16px", color: "#333" }} onClick={() => navigate(`/branch/employee/details/${row.employee_id}`, { state: { employee: row } })}>
+													<td style={{ cursor: "pointer", fontWeight: "bold", padding: "12px 16px", color: "#333" }} onClick={() => navigate(`/${branch}/branch/employee/details/${row.employee_id}`, { state: { employee: row } })}>
 														#{row.employee_id}
 													</td>
 													<td style={{ padding: "12px 16px", color: "#333" }}>{row.user?.name}</td>

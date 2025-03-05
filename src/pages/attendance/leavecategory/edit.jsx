@@ -8,7 +8,8 @@ import { Alert, Button, Snackbar } from "@mui/material";
 
 const EditCategory = () => {
 	const navigate = useNavigate();
-	const { id } = useParams(); // Get category ID from URL
+	const { branch, id } = useParams();
+
 	const [formData, setFormData] = useState({
 		name: "",
 		color: "#000000",
@@ -66,7 +67,7 @@ const EditCategory = () => {
 		try {
 			await axiosInstance.put(`employees/leavecategories/${id}`, formData);
 			setSnackbar({ open: true, message: "Category updated successfully!", severity: "success" });
-			navigate("/branch/employee/leave/category");
+			navigate(`/${branch}/branch/employee/leave/category`);
 		} catch (error) {
 			setSnackbar({ open: true, message: error.response?.data?.message ?? "Something went wrong", severity: "error" });
 		} finally {
