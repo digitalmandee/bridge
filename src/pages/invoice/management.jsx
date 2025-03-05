@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, MenuItem, Avatar, Select, CircularProgress, Snackbar, Dialog, DialogTitle, DialogContent, FormControl, InputLabel, RadioGroup, FormControlLabel, DialogActions, Radio } from "@mui/material";
 import { Search as SearchIcon, Download as DownloadIcon, Notifications as NotificationsIcon } from "@mui/icons-material";
@@ -14,6 +14,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const InvoiceManagement = () => {
 	const { user } = useContext(AuthContext);
+	const { branch } = useParams();
+
 	const navigate = useNavigate();
 
 	const [invoices, setInvoices] = useState([]);
@@ -209,7 +211,7 @@ const InvoiceManagement = () => {
 												bgcolor: "#1E293B",
 											},
 										}}
-										onClick={() => navigate("/branch/invoice/create")}>
+										onClick={() => navigate(`/${branch}/branch/invoice/create`)}>
 										New Invoice
 									</Button>
 								)}

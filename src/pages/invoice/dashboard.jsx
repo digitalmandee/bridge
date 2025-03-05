@@ -4,12 +4,14 @@ import { Search as SearchIcon, FilterAlt as FilterIcon, Download as DownloadIcon
 import "bootstrap/dist/css/bootstrap.min.css";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../utils/axiosInstance";
+import { useNavigate, useParams } from "react-router-dom";
+import axiosInstance from "@/utils/axiosInstance";
 import colors from "@/assets/styles/color";
 
 const InvoiceDashboard = () => {
 	const navigate = useNavigate();
+	const { branch } = useParams();
+
 	const [month, setMonth] = useState("January");
 	const [invoices, setInvoices] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -115,7 +117,7 @@ const InvoiceDashboard = () => {
 										<MenuItem value="January">January</MenuItem>
 										{/* Add more months */}
 									</Select>
-									<Button variant="contained" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: "#1E293B" } }} onClick={() => navigate("/branch/invoice/create")}>
+									<Button variant="contained" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: "#1E293B" } }} onClick={() => navigate(`/${branch}/branch/invoice/create`)}>
 										Create Invoice
 									</Button>
 								</Box>
