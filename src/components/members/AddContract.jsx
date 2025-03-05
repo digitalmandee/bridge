@@ -151,7 +151,7 @@ const AddContract = () => {
 				handleClose();
 			}
 		} catch (error) {
-			// console.error(error.response.data);
+			console.error(error.response.data);
 			setErrorMsg(error.response.data.message);
 		} finally {
 			setLoading(false);

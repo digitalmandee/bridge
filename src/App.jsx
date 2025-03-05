@@ -352,7 +352,7 @@ function App() {
 					}
 				/> */}
 				<Route
-					path="/branch/member/companies"
+					path="/:branch/branch/member/companies"
 					element={
 						<ProtectedRoute role="admin" permission="Company">
 							<MemberCompanies />
@@ -360,7 +360,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/member/companies/:companyId"
+					path="/:branch/branch/member/companies/:companyId"
 					element={
 						<ProtectedRoute role="admin" permission="Company">
 							<MemberCompanyDetail />
@@ -368,7 +368,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/member/users"
+					path="/:branch/branch/member/users"
 					element={
 						<ProtectedRoute role="admin" permission="users">
 							<MemberUsers />
@@ -376,7 +376,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/branch/member/contracts"
+					path="/:branch/branch/member/contracts"
 					element={
 						<ProtectedRoute role="admin" permission="contracts">
 							<MemberContracts />

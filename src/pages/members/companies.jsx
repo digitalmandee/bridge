@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { TextField, Select, MenuItem, Typography, Avatar, Chip, Box, IconButton, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, createTheme, InputAdornment, CircularProgress } from "@mui/material";
 import { ArrowBack, Search } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -6,9 +6,13 @@ import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import axiosInstance from "@/utils/axiosInstance";
 import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { AuthContext } from "@/contexts/AuthContext";
 
 const Company = () => {
+	const { user: userData } = useContext(AuthContext);
+	const { branch } = useParams();
+
 	const navigate = useNavigate();
 
 	const [companies, setCompanies] = useState([]);
@@ -140,12 +144,12 @@ const Company = () => {
 												companies.map((company) => (
 													<TableRow key={company.id}>
 														<TableCell>
-															<Box sx={{ display: "flex", alignItems: "center", gap: 2, cursor: "pointer" }} onClick={() => navigate(`/branch/member/companies/${company.id}`)}>
+															<Box sx={{ display: "flex", alignItems: "center", gap: 2, cursor: "pointer" }} onClick={() => navigate(`/${branch}/branch/member/companies/${company.id}`)}>
 																<Avatar src={company.profile_image ? import.meta.env.VITE_ASSET_API + company.profile_image : ""} />
 																<Box>
 																	<Typography>{company.name}</Typography>
 																	<Typography variant="body2" color="text.secondary">
-																		{company.user_branch.name}
+																		{userData.branch}
 																	</Typography>
 																</Box>
 															</Box>

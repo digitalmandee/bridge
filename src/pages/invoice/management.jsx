@@ -283,7 +283,7 @@ const InvoiceManagement = () => {
 												<TableCell style={{ textTransform: "capitalize" }}>{invoice.invoice_type}</TableCell>
 												{user.type === "admin" && (
 													<TableCell>
-														<Box display="flex" alignItems="center" gap={1} onClick={() => navigate(`/branch/invoice/customer-detail/${invoice.user.id}`)} sx={{ cursor: "pointer" }}>
+														<Box display="flex" alignItems="center" gap={1} onClick={() => navigate(`/${branch}/branch/invoice/customer-detail/${invoice.user.id}`)} sx={{ cursor: "pointer" }}>
 															<Avatar sx={{ width: 32, height: 32 }} src={import.meta.env.VITE_ASSET_API + invoice.user.profile_image}></Avatar>
 															<Box>
 																<Typography variant="body2">

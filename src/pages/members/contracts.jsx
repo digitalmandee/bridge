@@ -165,7 +165,7 @@ const MemberContract = () => {
 													<TableCell>
 														<Typography variant="body2">{contract.user.name}</Typography>
 														<Typography variant="caption" sx={{ color: "text.secondary" }}>
-															{contract.branch.name}
+															{user.branch}
 														</Typography>
 													</TableCell>
 													<TableCell>

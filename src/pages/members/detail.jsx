@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate, useParams } from "react-router-dom";
@@ -9,8 +9,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "../../utils/axiosInstance";
 import StaffLists from "@/components/members/company/StaffLists";
 import BillingLists from "@/components/members/company/BillingLists";
+import { AuthContext } from "@/contexts/AuthContext";
 
 const MemberCompanyDetail = () => {
+	const { user: userData } = useContext(AuthContext);
+
 	const navigate = useNavigate();
 
 	const [month, setMonth] = useState("Month");
@@ -111,7 +114,7 @@ const MemberCompanyDetail = () => {
 										<Typography color="text.secondary" variant="body2">
 											Branch:
 										</Typography>
-										<Typography variant="body1">{company.user_branch?.name}</Typography>
+										<Typography variant="body1">{userData.branch}</Typography>
 									</Box>
 								</Box>
 							</Box>

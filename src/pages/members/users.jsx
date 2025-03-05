@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { TextField, Typography, Avatar, Chip, Box, IconButton, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, createTheme, InputAdornment, CircularProgress } from "@mui/material";
 import { ArrowBack, Search } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import axiosInstance from "@/utils/axiosInstance";
+import { AuthContext } from "@/contexts/AuthContext";
 
 const MemberUser = () => {
+	const { user: userData } = useContext(AuthContext);
+
 	const [users, setUsers] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -117,7 +120,7 @@ const MemberUser = () => {
 																		{user.name} <span style={{ color: "#6C757D", fontSize: "0.875rem" }}>{user.company ? "at " + user.company.name : ""}</span>
 																	</Typography>
 																	<Typography variant="body2" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-																		<span style={{ fontSize: "10px" }}>●</span> {user.user_branch.name}
+																		<span style={{ fontSize: "10px" }}>●</span> {userData.branch}
 																	</Typography>
 																</Box>
 															</Box>
