@@ -65,17 +65,6 @@ class User extends Authenticatable
     // {
     //     return $this->belongsTo(Contract::class, 'created_by_branch_id');
     // }
-    public function userBranch()
-    {
-        return $this->belongsTo(Branch::class, 'created_by_branch_id');
-    }
-
-    public function branch()
-    {
-        return $this->type === 'admin' && $this->created_by_branch_id
-            ? $this->hasOne(Branch::class, 'id', 'created_by_branch_id')
-            : $this->hasOne(Branch::class);
-    }
 
     public function bookingSchedules()
     {

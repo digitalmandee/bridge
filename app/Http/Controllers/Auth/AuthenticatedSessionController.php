@@ -24,7 +24,7 @@ class AuthenticatedSessionController extends Controller
         ]);
 
         // Attempt to find the user
-        $user = User::where('email', $validatedData['email'])->select(['id', 'name', 'email', 'password'])->first();
+        $user = User::where('email', $validatedData['email'])->select(['id', 'name', 'email', 'type', 'password'])->first();
 
         // Verify user existence and password
         if (!$user || !Hash::check($validatedData['password'], $user->password)) {
@@ -49,11 +49,8 @@ class AuthenticatedSessionController extends Controller
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
-            // 'phone_no'     => $user->phone_no,
-            // 'profile_image'     => $user->profile_image,
-            // 'last_login_human' => $user->last_login_human,
-            // 'type'         => $user->type,
-            // 'role'         => $role ? $user->type : null,
+            'type' => $user->type,
+            'role' => $user->type,
             'permissions' => $permissions,
             'token' => $token,
         ];

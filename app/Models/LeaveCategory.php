@@ -10,5 +10,5 @@ class LeaveCategory extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['branch_id', 'name', 'color', 'description', 'short_code', 'status'];
+    protected $fillable = ['name', 'color', 'description', 'short_code', 'status'];
 }

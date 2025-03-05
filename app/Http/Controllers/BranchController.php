@@ -13,15 +13,13 @@ class BranchController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $user = auth('sanctum')->user();
+        $limit = $request->query('limit', 10);
 
-        if (!$user) {
-            return response()->json(['error' => 'User not authenticated'], 401);
-        }
+        $branches = Tenant::paginate($limit);
 
-        return response()->json($user);
+        return response()->json(['success' => true, 'branches' => $branches]);
     }
 
     /**
@@ -47,6 +45,12 @@ class BranchController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:tenants,email',
+            'username' => 'required|string|unique:tenants,username',
+            'location' => 'required|string',
+            'floors' => 'required|integer',
+            'rooms' => 'required|integer',
+            'seats' => 'required|integer',
+            'tables' => 'required|integer',
             // 'password' => ['required', Rules\Password::defaults()],
             // 'domain_name' => 'required|string|unique:domains,domain',
         ]);
@@ -79,6 +83,11 @@ class BranchController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
+    {
+        //
+    }
+
+    public function getBranchStats()
     {
         //
     }

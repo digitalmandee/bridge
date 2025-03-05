@@ -44,28 +44,23 @@ class GlobalController extends Controller
 
     public function searchPlan(Request $request)
     {
-        $branchId = auth()->user()->branch->id;
         $query = $request->input('query');
 
-        $plans = BookingPlan::where(['branch_id' => $branchId])->where('name', 'like', "%$query%")->select('id', 'name', 'price', 'type')->get();
+        $plans = BookingPlan::where('name', 'like', "%$query%")->select('id', 'name', 'price', 'type')->get();
 
         return response()->json(['success' => true, 'results' => $plans], 200);
     }
 
     public function getMembers()
     {
-        $branchId = auth()->user()->branch->id;
-
-        $members = User::where(['created_by_branch_id' => $branchId, 'type' => 'user', 'status' => 'active', 'company_id' => null])->select('id', 'name')->get();
+        $members = User::where(['type' => 'user', 'status' => 'active', 'company_id' => null])->select('id', 'name')->get();
 
         return response()->json(['success' => true, 'members' => $members], 200);
     }
 
     public function getCompanies()
     {
-        $branchId = auth()->user()->branch->id;
-
-        $companies = User::where(['created_by_branch_id' => $branchId, 'type' => 'company', 'status' => 'active'])->select('id', 'name')->get();
+        $companies = User::where(['type' => 'company', 'status' => 'active'])->select('id', 'name')->get();
 
         return response()->json(['success' => true, 'companies' => $companies], 200);
     }

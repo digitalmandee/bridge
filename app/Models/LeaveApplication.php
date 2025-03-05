@@ -10,7 +10,7 @@ class LeaveApplication extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['branch_id', 'employee_id', 'leave_category_id', 'start_date', 'end_date', 'number_of_days', 'reason', 'status'];
+    protected $fillable = ['employee_id', 'leave_category_id', 'start_date', 'end_date', 'number_of_days', 'reason', 'status'];
 
     public function employee()
     {
@@ -20,10 +20,5 @@ class LeaveApplication extends Model
     public function leaveCategory()
     {
         return $this->belongsTo(LeaveCategory::class);
-    }
-
-    public function branch()
-    {
-        return $this->belongsTo(Branch::class);
     }
 }

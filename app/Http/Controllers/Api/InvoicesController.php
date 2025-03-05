@@ -60,7 +60,7 @@ class InvoicesController extends Controller
     {
         $limit = $request->input('limit', 10);  // Default limit
 
-        $customer = User::where('id', $id)->where('type', ['user', 'company'])->with(['invoices' => function ($query) use ($limit) {
+        $customer = User::where('id', $id)->with(['invoices' => function ($query) use ($limit) {
             $query->orderBy('created_at', 'desc')->paginate($limit);
         }])->select('id', 'name', 'email', 'type', 'profile_image', 'phone_no')->firstOrFail();
 
@@ -163,7 +163,6 @@ class InvoicesController extends Controller
                 $isCurrentMonth = $request->paidMonth === Carbon::now()->format('F') && $request->paidYear == Carbon::now()->year;
 
                 $packageEndTime = Carbon::createFromDate($request->paidYear, date('m', strtotime($request->paidMonth)), 1)->endOfMonth();
-                Log::info($packageEndTime);
 
                 if ($booking->status !== 'confirmed') {
                     $newBookingData = $booking->only(['user_id', 'floor_id', 'plan_id', 'chair_ids', 'name', 'phone_no', 'type', 'duration', 'time_slot', 'plan']);

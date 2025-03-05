@@ -21,16 +21,8 @@ class PermissionsSeeder extends Seeder
         $permissions = [
             'superadmin' => [
                 'Dashboard' => ['dashboard'],
+                'Branch' => ['branch-management', 'branch-create'],
             ],
-            'admin' => [
-                'Dashboard' => ['admin-dashboard'],
-                'Seat Booking' => ['floor-plan', 'price-plan', 'booking-request', 'seat-card'],
-                'Booking Management' => ['room-booking', 'booking-requests'],
-                'Invoice' => ['invoice-dashboard', 'new-invoice', 'invoice-management'],
-                'Member' => ['Company', 'users', 'contracts'],
-                'Employee Management' => ['employee-dashboard', 'attendance', 'leave-category', 'leave-application', 'leave-management', 'leave-report', 'manage-attendance', 'monthly-report'],
-                'Users Role Management' => ['roles', 'employee-users'],
-            ]
         ];
 
         // Create Permissions
