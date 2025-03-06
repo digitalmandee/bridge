@@ -47,10 +47,9 @@ const Welcome = () => {
 			<p className="subHeading">Choose Account Type</p>
 			<div className="accountTypeContainer">
 				{[
-					{ name: "Super Admin", img: adminLogo, path: "/super-admin/dashboard" },
-					{ name: "Branch Login", img: branchLogo, path: branch ? `/${branch}/branch/dashboard` : "/branch/dashboard" },
+					{ name: "Branch Login", img: branchLogo, path: `/${branch}/branch/dashboard` },
 					{ name: "Investor Login", img: investerLogo, path: "/investor/dashboard" },
-					{ name: "User", img: userLogo, path: branch ? `/${branch}/user/dashboard` : "/user/dashboard" },
+					{ name: "User", img: userLogo, path: `/${branch}/user/dashboard` },
 				].map((account, index) => (
 					<div key={index} className="account-wrapper">
 						<div className="accountType" onClick={() => handleNavigation(account.path)}>

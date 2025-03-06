@@ -126,7 +126,7 @@ function App() {
 
 				{/* User Routes */}
 				<Route
-					path="/user/dashboard"
+					path="/:branch/user/dashboard"
 					element={
 						<ProtectedRoute role="user">
 							<UserDashboard />
@@ -134,7 +134,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/user/booking-schedule"
+					path="/:branch/user/booking-schedule"
 					element={
 						<ProtectedRoute role="user">
 							<BookingCalendar />
@@ -142,7 +142,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/user/booking-schedule/requests"
+					path="/:branch/user/booking-schedule/requests"
 					element={
 						<ProtectedRoute role="user">
 							<ScheduleRequests />
@@ -150,7 +150,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/user/invoices/management"
+					path="/:branch/user/invoices/management"
 					element={
 						<ProtectedRoute role="user">
 							<InvoiceManagement />
@@ -158,7 +158,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/user/notifications"
+					path="/:branch/user/notifications"
 					element={
 						<ProtectedRoute role="user">
 							<Notifications />
@@ -166,7 +166,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/user/contracts"
+					path="/:branch/user/contracts"
 					element={
 						<ProtectedRoute role="user">
 							<MemberContracts />
@@ -176,7 +176,7 @@ function App() {
 
 				{/* Company Routes */}
 				<Route
-					path="/company/dashboard"
+					path="/:branch/company/dashboard"
 					element={
 						<ProtectedRoute role="company">
 							<CompanyDashboard />
@@ -184,7 +184,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/company/staff/add"
+					path="/:branch/company/staff/add"
 					element={
 						<ProtectedRoute role="company">
 							<CompanyAddStaff />
@@ -192,7 +192,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/company/staff/management"
+					path="/:branch/company/staff/management"
 					element={
 						<ProtectedRoute role="company">
 							<CompanyStaffManagement />
@@ -200,7 +200,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/company/invoices/management"
+					path="/:branch/company/invoices/management"
 					element={
 						<ProtectedRoute role="company">
 							<InvoiceManagement />
@@ -208,7 +208,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/company/booking-schedule/requests"
+					path="/:branch/company/booking-schedule/requests"
 					element={
 						<ProtectedRoute role="company">
 							<ScheduleRequests />
@@ -216,7 +216,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/company/notifications"
+					path="/:branch/company/notifications"
 					element={
 						<ProtectedRoute role="company">
 							<Notifications />
@@ -224,7 +224,7 @@ function App() {
 					}
 				/>
 				<Route
-					path="/company/contracts"
+					path="/:branch/company/contracts"
 					element={
 						<ProtectedRoute role="company">
 							<MemberContracts />

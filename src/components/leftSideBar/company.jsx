@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { Button } from "@mui/material";
 import { RxDashboard } from "react-icons/rx";
 import { FaAngleRight } from "react-icons/fa6";
@@ -23,6 +23,8 @@ const menuItems = [
 ];
 
 const Company = () => {
+	const { branch } = useParams();
+
 	const [openDropdown, setOpenDropdown] = useState(null);
 	const location = useLocation();
 
@@ -47,14 +49,14 @@ const Company = () => {
 								<ul className="submenu">
 									{item.dropdown.map((subItem, subIndex) => (
 										<li key={subIndex}>
-											<Link to={subItem.to}>{subItem.label}</Link>
+											<Link to={"/" + branch + subItem.to}>{subItem.label}</Link>
 										</li>
 									))}
 								</ul>
 							)}
 						</>
 					) : (
-						<Link to={item.to}>
+						<Link to={"/" + branch + item.to}>
 							<Button className={`w-100 ${location.pathname === item.to ? "active-button" : ""}`}>
 								<span className="icon">{item.icon}</span>
 								{item.label}

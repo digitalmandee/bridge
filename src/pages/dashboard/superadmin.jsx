@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/superadmin/topNavbar";
 import Sidebar from "@/components/superadmin/leftSideBar";
 import colors from "@/assets/styles/color";
@@ -11,6 +11,7 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
+import axiosInstance from "@/utils/axiosInstance";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
@@ -89,6 +90,44 @@ const floorPlanOptions = {
 
 const SuperAdminDashboard = () => {
 	const navigate = useNavigate();
+	const [selectedBranch, setSelectedBranch] = useState("");
+	const [branches, setBranches] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [data, setData] = useState(null);
+
+	const getBranches = async () => {
+		await axiosInstance.get("/dashboard/branches").then((res) => {
+			if (res.data.success) {
+				setBranches(res.data.branches);
+				if (res.data.branches.length > 0) {
+					setSelectedBranch(res.data.branches[0].id);
+				}
+			}
+		});
+	};
+
+	const getStats = async () => {
+		setIsLoading(true);
+		try {
+			const res = await axiosInstance.get(`/dashboard/branch/stats?branch=${selectedBranch}`);
+			setData(res.data);
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		getBranches();
+	}, []);
+
+	useEffect(() => {
+		if (selectedBranch) {
+			getStats();
+		}
+	}, [selectedBranch]);
+
 	return (
 		<>
 			<TopNavbar />
@@ -130,7 +169,7 @@ const SuperAdminDashboard = () => {
 									View Report
 								</Button>
 								<Select
-									value="branch1"
+									value={selectedBranch}
 									size="small"
 									sx={{
 										bgcolor: "background.paper",
@@ -138,8 +177,13 @@ const SuperAdminDashboard = () => {
 										height: "36px",
 										borderRadius: "4px",
 									}}
-									displayEmpty>
-									<MenuItem value="branch1">Branch 1</MenuItem>
+									onChange={(e) => setSelectedBranch(e.target.value)}>
+									{branches.length > 0 &&
+										branches.map((item) => (
+											<MenuItem key={item.id} value={item.id}>
+												{item.name}
+											</MenuItem>
+										))}
 								</Select>
 								<Button
 									variant="contained"
@@ -155,185 +199,193 @@ const SuperAdminDashboard = () => {
 							</Box>
 						</Box>
 
-						{/* Metric Cards */}
-						<Grid container spacing={2} sx={{ mb: 3 }}>
-							{[
-								{ title: "Total Members", value: "350", icon: PeopleIcon, color: "#0D2B4E" },
-								{ title: "Available Space", value: "43", icon: SpaceBarIcon, color: "#0D2B4E" },
-								{ title: "Total Revenue", value: "35,0000", icon: AttachMoneyIcon, color: "#0D2B4E" },
-								{ title: "P&L", value: "329", icon: BarChartIcon, color: "#0D2B4E" },
-							].map((item, index) => (
-								<Grid item xs={12} sm={6} md={3} key={index}>
-									<Card
-										sx={{
-											boxShadow: "none",
-											border: "1px solid",
-											borderColor: "divider",
-											borderRadius: "8px",
-										}}>
-										<CardContent sx={{ p: 2 }}>
-											<Typography variant="body2" color="text.secondary" gutterBottom>
-												{item.title}
-											</Typography>
-											<Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 1 }}>
-												<Typography variant="h5" sx={{ fontWeight: "bold" }}>
-													{item.value}
-												</Typography>
-												<Box
-													sx={{
-														bgcolor: item.color,
-														borderRadius: "8px",
-														p: 1,
-														display: "flex",
-														alignItems: "center",
-														justifyContent: "center",
-													}}>
-													<item.icon sx={{ color: "#fff", fontSize: 24 }} />
-												</Box>
-											</Box>
-										</CardContent>
-									</Card>
-								</Grid>
-							))}
-						</Grid>
-
-						{/* Charts Section */}
-						<Grid container spacing={2}>
-							{/* Revenue Chart */}
-							<Grid item xs={12} md={7}>
-								<Card
-									sx={{
-										boxShadow: "none",
-										border: "1px solid",
-										borderColor: "divider",
-										borderRadius: "8px",
-										height: "100%",
-									}}>
-									<CardContent sx={{ p: 3 }}>
-										<Typography variant="h6" sx={{ mb: 1 }}>
-											Revenue
-										</Typography>
-										<Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-											Your Revenue This Year
-										</Typography>
-
-										{/* Revenue Summary */}
-										<Box sx={{ display: "flex", gap: 4, mb: 3 }}>
-											<Box>
-												<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-													<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#4C6FFF" }}></Box>
-													<Typography variant="body2" color="text.secondary">
-														Income
-													</Typography>
-												</Box>
-												<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-													<Typography variant="h6" sx={{ fontWeight: "bold" }}>
-														$26,000
-													</Typography>
-													<Typography variant="body2" color="success.main">
-														10% ↑
-													</Typography>
-												</Box>
-											</Box>
-
-											<Box>
-												<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-													<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#FF8F6B" }}></Box>
-													<Typography variant="body2" color="text.secondary">
-														Expenses
-													</Typography>
-												</Box>
-												<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-													<Typography variant="h6" sx={{ fontWeight: "bold" }}>
-														$18,000
-													</Typography>
-													<Typography variant="body2" color="error.main">
-														10% ↑
-													</Typography>
-												</Box>
-											</Box>
-
-											<Box>
-												<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-													<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#00E1C2" }}></Box>
-													<Typography variant="body2" color="text.secondary">
-														Profit
-													</Typography>
-												</Box>
-												<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-													<Typography variant="h6" sx={{ fontWeight: "bold" }}>
-														$8,000
-													</Typography>
-													<Typography variant="body2" color="success.main">
-														3% ↑
-													</Typography>
-												</Box>
-											</Box>
-										</Box>
-
-										<Box sx={{ height: 300 }}>
-											<Bar data={revenueChartData} options={revenueChartOptions} />
-										</Box>
-									</CardContent>
-								</Card>
-							</Grid>
-
-							{/* Floor Plan Chart */}
-							<Grid item xs={12} md={5}>
-								<Card
-									sx={{
-										boxShadow: "none",
-										border: "1px solid",
-										borderColor: "divider",
-										borderRadius: "8px",
-										height: "100%",
-									}}>
-									<CardContent sx={{ p: 3 }}>
-										<Box sx={{ position: "relative", height: 300, display: "flex", justifyContent: "center" }}>
-											<Doughnut data={floorPlanData} options={floorPlanOptions} />
-											<Box
+						{/* Dashboard Stats */}
+						{isLoading}
+						{!isLoading ? (
+							<>
+								{/* Metric Cards */}
+								<Grid container spacing={2} sx={{ mb: 3 }}>
+									{[
+										{ title: "Total Members", value: data?.total_members, icon: PeopleIcon, color: "#0D2B4E" },
+										{ title: "Available Space", value: data?.total_available_chairs, icon: SpaceBarIcon, color: "#0D2B4E" },
+										{ title: "Total Revenue", value: data?.total_revenue, icon: AttachMoneyIcon, color: "#0D2B4E" },
+										{ title: "P&L", value: "329", icon: BarChartIcon, color: "#0D2B4E" },
+									].map((item, index) => (
+										<Grid item xs={12} sm={6} md={3} key={index}>
+											<Card
 												sx={{
-													position: "absolute",
-													top: "50%",
-													left: "50%",
-													transform: "translate(-50%, -50%)",
-													textAlign: "center",
+													boxShadow: "none",
+													border: "1px solid",
+													borderColor: "divider",
+													borderRadius: "8px",
 												}}>
-												<Typography variant="body1" sx={{ fontWeight: "medium" }}>
-													Floor Plan
-												</Typography>
-												<Typography variant="h4" sx={{ fontWeight: "bold" }}>
-													46
-												</Typography>
-												<Typography variant="body2" color="text.secondary">
-													seats
-												</Typography>
-											</Box>
-										</Box>
+												<CardContent sx={{ p: 2 }}>
+													<Typography variant="body2" color="text.secondary" gutterBottom>
+														{item.title}
+													</Typography>
+													<Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 1 }}>
+														<Typography variant="h5" sx={{ fontWeight: "bold" }}>
+															{item.value}
+														</Typography>
+														<Box
+															sx={{
+																bgcolor: item.color,
+																borderRadius: "8px",
+																p: 1,
+																display: "flex",
+																alignItems: "center",
+																justifyContent: "center",
+															}}>
+															<item.icon sx={{ color: "#fff", fontSize: 24 }} />
+														</Box>
+													</Box>
+												</CardContent>
+											</Card>
+										</Grid>
+									))}
+								</Grid>
 
-										{/* Floor Plan Stats */}
-										<Box sx={{ mt: 3 }}>
-											<Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-												<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-													<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#4C6FFF" }}></Box>
-													<Typography>Available</Typography>
+								{/* Charts Section */}
+								<Grid container spacing={2}>
+									{/* Revenue Chart */}
+									<Grid item xs={12} md={7}>
+										<Card
+											sx={{
+												boxShadow: "none",
+												border: "1px solid",
+												borderColor: "divider",
+												borderRadius: "8px",
+												height: "100%",
+											}}>
+											<CardContent sx={{ p: 3 }}>
+												<Typography variant="h6" sx={{ mb: 1 }}>
+													Revenue
+												</Typography>
+												<Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+													Your Revenue This Year
+												</Typography>
+
+												{/* Revenue Summary */}
+												<Box sx={{ display: "flex", gap: 4, mb: 3 }}>
+													<Box>
+														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+															<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#4C6FFF" }}></Box>
+															<Typography variant="body2" color="text.secondary">
+																Income
+															</Typography>
+														</Box>
+														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+															<Typography variant="h6" sx={{ fontWeight: "bold" }}>
+																$26,000
+															</Typography>
+															<Typography variant="body2" color="success.main">
+																10% ↑
+															</Typography>
+														</Box>
+													</Box>
+
+													<Box>
+														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+															<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#FF8F6B" }}></Box>
+															<Typography variant="body2" color="text.secondary">
+																Expenses
+															</Typography>
+														</Box>
+														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+															<Typography variant="h6" sx={{ fontWeight: "bold" }}>
+																$18,000
+															</Typography>
+															<Typography variant="body2" color="error.main">
+																10% ↑
+															</Typography>
+														</Box>
+													</Box>
+
+													<Box>
+														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+															<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#00E1C2" }}></Box>
+															<Typography variant="body2" color="text.secondary">
+																Profit
+															</Typography>
+														</Box>
+														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+															<Typography variant="h6" sx={{ fontWeight: "bold" }}>
+																$8,000
+															</Typography>
+															<Typography variant="body2" color="success.main">
+																3% ↑
+															</Typography>
+														</Box>
+													</Box>
 												</Box>
-												<Typography>32</Typography>
-												<Typography>62.5%</Typography>
-											</Box>
-											<Box sx={{ display: "flex", justifyContent: "space-between" }}>
-												<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-													<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#34A853" }}></Box>
-													<Typography>Occupied</Typography>
+
+												<Box sx={{ height: 300 }}>
+													<Bar data={revenueChartData} options={revenueChartOptions} />
 												</Box>
-												<Typography>14</Typography>
-												<Typography>38.2%</Typography>
-											</Box>
-										</Box>
-									</CardContent>
-								</Card>
-							</Grid>
-						</Grid>
+											</CardContent>
+										</Card>
+									</Grid>
+
+									{/* Floor Plan Chart */}
+									<Grid item xs={12} md={5}>
+										<Card
+											sx={{
+												boxShadow: "none",
+												border: "1px solid",
+												borderColor: "divider",
+												borderRadius: "8px",
+												height: "100%",
+											}}>
+											<CardContent sx={{ p: 3 }}>
+												<Box sx={{ position: "relative", height: 300, display: "flex", justifyContent: "center" }}>
+													<Doughnut data={floorPlanData} options={floorPlanOptions} />
+													<Box
+														sx={{
+															position: "absolute",
+															top: "50%",
+															left: "50%",
+															transform: "translate(-50%, -50%)",
+															textAlign: "center",
+														}}>
+														<Typography variant="body1" sx={{ fontWeight: "medium" }}>
+															Floor Plan
+														</Typography>
+														<Typography variant="h4" sx={{ fontWeight: "bold" }}>
+															46
+														</Typography>
+														<Typography variant="body2" color="text.secondary">
+															seats
+														</Typography>
+													</Box>
+												</Box>
+
+												{/* Floor Plan Stats */}
+												<Box sx={{ mt: 3 }}>
+													<Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+															<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#4C6FFF" }}></Box>
+															<Typography>Available</Typography>
+														</Box>
+														<Typography>32</Typography>
+														<Typography>62.5%</Typography>
+													</Box>
+													<Box sx={{ display: "flex", justifyContent: "space-between" }}>
+														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+															<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#34A853" }}></Box>
+															<Typography>Occupied</Typography>
+														</Box>
+														<Typography>14</Typography>
+														<Typography>38.2%</Typography>
+													</Box>
+												</Box>
+											</CardContent>
+										</Card>
+									</Grid>
+								</Grid>
+							</>
+						) : (
+							""
+						)}
 					</Box>
 				</div>
 			</div>

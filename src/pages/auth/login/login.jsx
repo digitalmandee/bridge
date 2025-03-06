@@ -56,8 +56,8 @@ const LoginPage = () => {
 			if (response.data.data.type === "superadmin") window.location.href = "/super-admin/dashboard";
 			else if (response.data.data.type === "admin") window.location.href = `/${branch}/branch/dashboard`;
 			else if (response.data.data.type === "investor") window.location.href = "/investor/dashboard";
-			else if (response.data.data.type === "user") window.location.href = "/user/dashboard";
-			else if (response.data.data.type === "company") window.location.href = "/company/dashboard";
+			else if (response.data.data.type === "user") window.location.href = `/${branch}/user/dashboard`;
+			else if (response.data.data.type === "company") window.location.href = `/${branch}/company/dashboard`;
 		} catch (error) {
 			console.log(error.response.data);
 			alert("Login failed. Check credentials.");
