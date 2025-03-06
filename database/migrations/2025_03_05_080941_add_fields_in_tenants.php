@@ -12,11 +12,11 @@ return new class extends Migration {
     {
         Schema::table('tenants', function (Blueprint $table) {
             $table->string('username')->unique()->after('email');
-            $table->string('location')->unique()->after('user_name');
-            $table->bigInteger('floors')->unique()->after('location');
-            $table->bigInteger('rooms')->unique()->after('floors');
-            $table->bigInteger('seats')->unique()->after('rooms');
-            $table->bigInteger('tables')->unique()->after('seats');
+            $table->string('location')->unique()->after('username');
+            $table->bigInteger('floors')->after('location');
+            $table->bigInteger('rooms')->after('floors');
+            $table->bigInteger('seats')->after('rooms');
+            $table->bigInteger('tables')->after('seats');
         });
     }
 

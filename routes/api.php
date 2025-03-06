@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\BookingPlanController;
 use App\Http\Controllers\Api\BookingScheduleController;
 use App\Http\Controllers\Api\BranchUserController;
+use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\ContractController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\EmployeeController;
@@ -52,6 +53,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/super/user', [AuthController::class, 'getUser']);
     Route::resource('branches', BranchController::class)->except(['create', 'edit']);
 
+    Route::get('/dashboard/branches', [BranchController::class, 'getBranches']);
     Route::get('/dashboard/branch/stats', [BranchController::class, 'getBranchStats']);
     // Booking Seats
 });
@@ -153,6 +155,21 @@ Route::group(['middleware' => ['set_tenant']], function () {
             Route::get('profile/report/{employeeId}', [AttendanceController::class, 'profileReport']);
             Route::post('all/report', [AttendanceController::class, 'allEmployeesReport']);
         });
+    });
+
+    // User Dasboard
+    Route::group(['prefix' => 'user'], function () {
+        Route::get('dashboard', [UserController::class, 'index']);
+    });
+
+    // Company Dashboard
+    Route::group(['prefix' => 'company'], function () {
+        Route::get('dashboard', [CompanyController::class, 'index']);
+        Route::get('dashboard/staff', [CompanyController::class, 'getStaff']);
+        Route::get('staffs', [CompanyController::class, 'getStaffs']);
+        Route::post('staff/create', [CompanyController::class, 'createStaff']);
+        Route::put('staffs/{id}', [CompanyController::class, 'updateStaff']);
+        Route::delete('staffs/{id}', [CompanyController::class, 'deleteStaff']);
     });
 
     // -------------- Roles Management
