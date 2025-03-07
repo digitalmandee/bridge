@@ -42,7 +42,6 @@ use PharIo\Manifest\AuthorCollection;
  * |
  */
 
-// Route::post('/branch/login', [BranchAuthController::class, 'login'])->middleware('guest');
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest');
 Route::post('/branch/login', [AuthController::class, 'userlogin'])->middleware('guest');
 
@@ -51,6 +50,7 @@ Route::get('/branch/check', [BranchController::class, 'checkBranch'])->middlewar
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/super/user', [AuthController::class, 'getUser']);
+    Route::post('/super/logout', [AuthController::class, 'logout']);
     Route::resource('branches', BranchController::class)->except(['create', 'edit']);
 
     Route::get('/dashboard/branches', [BranchController::class, 'getBranches']);
@@ -185,8 +185,3 @@ Route::group(['middleware' => ['set_tenant']], function () {
     Route::post('/notifications/send', [NotificationController::class, 'sendNotification']);
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 });
-
-// Route::group(['middleware' => 'set_tenant'], function () {
-// Route::post('/login', [AuthenticatedSessionController::class, 'store']);
-// Route::post('/user/login', [BranchController::class, 'Login']);
-// });

@@ -20,7 +20,7 @@ class CreateContractsTable extends Migration
             $table->string('type');
             $table->string('company_number');
             $table->date('start_date');
-            $table->date('end_date');
+            $table->date('end_date')->nullable();
             $table->enum('duration', ['week', 'month']);
             $table->integer('notice_period');
             $table->json('plan');
