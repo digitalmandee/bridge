@@ -96,6 +96,7 @@ Route::group(['middleware' => ['set_tenant']], function () {
     Route::group(['prefix' => 'booking-schedule'], function () {
         Route::post('create', [BookingScheduleController::class, 'create']);
         Route::get('filter', [BookingScheduleController::class, 'filter']);
+        Route::get('search', [BookingScheduleController::class, 'search']);
         Route::get('availability-rooms', [BookingScheduleController::class, 'getAvailabilityRooms']);
         Route::get('requests', [BookingScheduleController::class, 'getRequests']);
         Route::post('update', [BookingScheduleController::class, 'update']);

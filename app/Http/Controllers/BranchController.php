@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SeedDatabase;
 use App\Models\Booking;
 use App\Models\Floor;
 use App\Models\Invoice;
@@ -10,7 +11,9 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 
 class BranchController extends Controller
 {
@@ -26,9 +29,6 @@ class BranchController extends Controller
         return response()->json(['success' => true, 'branches' => $branches]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -40,29 +40,28 @@ class BranchController extends Controller
             'rooms' => 'required|integer',
             'seats' => 'required|integer',
             'tables' => 'required|integer',
-            // 'password' => ['required', Rules\Password::defaults()],
-            // 'domain_name' => 'required|string|unique:domains,domain',
         ]);
 
-        $validatedData['id'] = strtolower(str_replace(' ', '-', $validatedData['location']));
+        try {
+            $validatedData['id'] = strtolower(str_replace(' ', '-', $validatedData['location']));
 
-        $tenant = Tenant::create($validatedData);
+            $tenant = Tenant::create($validatedData);
+            SeedDatabase::dispatch($tenant);
 
-        tenancy()->initialize($tenant);
+            tenancy()->initialize($tenant);
 
-        $user = User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'type' => 'admin',
-        ]);
+            $user = User::create([
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'type' => 'admin',
+            ]);
 
-        $user->assignRole('admin');
+            $user->assignRole('admin');
 
-        // $branch->domains()->create([
-        //     'domain' => $validatedData['domain_name'],
-        // ]);
-
-        return response()->json(['success' => true, 'message' => 'Branch created successfully']);
+            return response()->json(['success' => true, 'message' => 'Branch created successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong.'], 500);
+        }
     }
 
     public function checkBranch(Request $request)

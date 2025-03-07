@@ -217,6 +217,22 @@ class BookingScheduleController extends Controller
         return response()->json(['success' => false, 'message' => 'Invalid parameters'], 400);
     }
 
+    public function search(Request $request)
+    {
+        $query = $request->query('query');
+        if (empty($query)) {
+            return response()->json(['success' => false, 'message' => 'Query parameter is required'], 400);
+        }
+        $user = auth()->user();
+
+        if ($user->type === 'user') {
+            $employees = BookingSchedule::where('user_id', $user->id)->where('title', 'like', "%$query%")->orderBy('created_at', 'desc')->with(['room:id,name', 'floor:id,name', 'user:id,name,email'])->get();
+            return response()->json(['success' => true, 'results' => $employees], 200);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Invalid user'], 400);
+        }
+    }
+
     public function getAvailabilityRooms()
     {
         $user = auth()->user();

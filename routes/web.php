@@ -17,8 +17,8 @@ Route::get('/', function () {
 });
 
 // Catch-all route (must be last)
-// Route::get('{any}', function () {
-//     return 'This is a catch-all route!';
-// })->where('any', '.+');
+Route::get('{any}', function () {
+    return 'This is a catch-all route!';
+})->where('any', '.+');
 
 // require __DIR__ . '/auth.php';
