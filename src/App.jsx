@@ -399,7 +399,7 @@ function App() {
 
 				{/* Notifications */}
 				<Route
-					path="/branch/notifications"
+					path="/:branch/branch/notifications"
 					element={
 						<ProtectedRoute role="admin">
 							<Notifications />

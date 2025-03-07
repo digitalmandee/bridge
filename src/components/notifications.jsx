@@ -3,10 +3,12 @@ import { AuthContext } from "@/contexts/AuthContext";
 import axiosInstance from "@/utils/axiosInstance";
 import { Bell, FileText } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const DashboardNotifications = () => {
 	const { user } = useContext(AuthContext);
+
+	const { branch } = useParams();
 
 	const navigate = useNavigate();
 	const [notifications, setNotifications] = useState([]);
@@ -16,8 +18,8 @@ const DashboardNotifications = () => {
 		try {
 			const res = await axiosInstance.get("notifications?limit=4");
 
-			// setNotifications(res.data.notifications);
-			// setUnreadNotifications(res.data.unread);
+			setNotifications(res.data.notifications);
+			setUnreadNotifications(res.data.unread);
 		} catch (error) {
 			console.error("Error fetching notifications:", error.response.data);
 		}
@@ -29,7 +31,7 @@ const DashboardNotifications = () => {
 	return (
 		<div style={notificationsStyle}>
 			<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-				<h2 onClick={() => navigate(user.type === "admin" ? "/branch/notifications" : "/" + user.type + "/notifications")} style={{ cursor: "pointer", fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>
+				<h2 onClick={() => navigate(user.type === "admin" ? `/${branch}/branch/notifications` : `/${branch}/` + user.type + "/notifications")} style={{ cursor: "pointer", fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>
 					Notifications
 				</h2>
 				<div style={{ position: "relative", backgroundColor: "#0A2156", padding: "0.5rem", borderRadius: "0.375rem" }}>
