@@ -2,11 +2,12 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Contract;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class UpdateContractStatus extends Command
 {
@@ -15,46 +16,52 @@ class UpdateContractStatus extends Command
 
     public function handle()
     {
-        $today = Carbon::today();
+        $branches = Tenant::all();
 
-        // Find contracts where end_date has passed and status is "signed"
-        $contracts = Contract::where('end_date', '<', $today)->where('status', '=', 'signed')->get();
+        foreach ($branches as $branch) {
+            tenant()->initialize($branch);
 
-        foreach ($contracts as $contract) {
-            // Update contract status to "completed"
-            $contract->status = 'completed';
-            $contract->save();
+            $today = Carbon::today();
 
-            // Notification data for the user
-            $userInvoiceNotificationData = [
-                'title' => "Contract Status Updated - {$contract->branch->name}",
-                'message' => "Your contract #{$contract->id} has been marked as Completed. Please check the details.",
-                'type' => 'contract_completed',
-                'contract_id' => $contract->id,
-                'created_by' => $contract->branch->name,
-            ];
+            // Find contracts where end_date has passed and status is "signed"
+            $contracts = Contract::where('end_date', '<', $today)->where('status', '=', 'signed')->get();
 
-            // Send notification to the user
-            $contract->user->notify(new GeneralNotification($userInvoiceNotificationData));
+            foreach ($contracts as $contract) {
+                // Update contract status to "completed"
+                $contract->status = 'completed';
+                $contract->save();
 
-            // Notification data for the admin
-            $adminInvoiceNotificationData = [
-                'title' => "Contract Status Updated - User: {$contract->user->name}",
-                'message' => "The contract #{$contract->id} for {$contract->user->name} has been marked as Completed.",
-                'type' => 'contract_completed',
-                'contract_id' => $contract->id,
-                'created_by' => $contract->branch->name,
-            ];
+                // Notification data for the user
+                $userInvoiceNotificationData = [
+                    'title' => "Contract Status Updated - {$branch->name}",
+                    'message' => "Your contract #{$contract->id} has been marked as Completed. Please check the details.",
+                    'type' => 'contract_completed',
+                    'contract_id' => $contract->id,
+                    'created_by' => $branch->name,
+                ];
 
-            // Assuming you have an Admin user, or you can fetch the admin from the database
-            $admin = User::find($contract->branch->user_id);
+                // Send notification to the user
+                $contract->user->notify(new GeneralNotification($userInvoiceNotificationData));
 
-            // Send notification to the admin
-            if ($admin) {
-                $admin->notify(new GeneralNotification($adminInvoiceNotificationData));
+                // Notification data for the admin
+                $adminInvoiceNotificationData = [
+                    'title' => "Contract Status Updated - User: {$contract->user->name}",
+                    'message' => "The contract #{$contract->id} for {$contract->user->name} has been marked as Completed.",
+                    'type' => 'contract_completed',
+                    'contract_id' => $contract->id,
+                    'created_by' => $branch->name,
+                ];
+
+                // Assuming you have an Admin user, or you can fetch the admin from the database
+                $admin = User::find($branch->user_id);
+
+                // Send notification to the admin
+                if ($admin) {
+                    $admin->notify(new GeneralNotification($adminInvoiceNotificationData));
+                }
+
+                $this->info("Contract #nastp-{$contract->id} status updated to 'Completed'.");
             }
-
-            $this->info("Contract #nastp-{$contract->id} status updated to 'Completed'.");
         }
     }
 }

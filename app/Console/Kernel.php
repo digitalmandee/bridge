@@ -13,9 +13,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        $schedule->command('invoices:check')->monthlyOn(Carbon::now()->endOfMonth()->day, '23:59');
+        $schedule->command('invoices:check')->monthlyOn(3, '23:59');
+        $schedule->command('invoices:check')->monthlyOn(4, '23:59');
+
         // Monthly invoice: Runs at the end & start of the month
-        $schedule->command('invoice:generate-monthly')->monthlyOn(Carbon::now()->endOfMonth()->day, '23:59');
-        $schedule->command('invoice:generate-monthly')->monthlyOn(1, '00:05');
+        // $schedule->command('invoice:generate-monthly')->monthlyOn(Carbon::now()->endOfMonth()->day, '23:59');
+        // $schedule->command('invoice:generate-monthly')->monthlyOn(1, '00:05');
 
         // Full-day invoice: Runs every hour
         $schedule->command('invoice:generate-fullday')->hourly();
