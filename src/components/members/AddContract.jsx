@@ -163,7 +163,7 @@ const AddContract = () => {
 			case 0:
 				return contractType === "individual" ? formData.members !== "" : formData.company !== "";
 			case 1:
-				return formData.type !== "" && formData.company_number !== "" && formData.start_date !== "" && formData.end_date !== "" && formData.notice_period > 0;
+				return formData.type !== "" && formData.company_number !== "" && formData.start_date !== "" && formData.notice_period > 0;
 			case 2:
 				return formData.plan !== "" && formData.amount !== "" && formData.plan_start_date !== "";
 			case 3:
@@ -259,7 +259,7 @@ const AddContract = () => {
 							/>
 
 							<TextField
-								label="End Date"
+								label="End Date (Optional)"
 								type="date"
 								InputLabelProps={{ shrink: true }}
 								value={formData.end_date}
