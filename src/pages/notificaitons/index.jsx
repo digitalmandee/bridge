@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, MenuItem, Select, CircularProgress } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -11,6 +11,8 @@ import { FileText } from "lucide-react";
 
 const NotificationManagement = () => {
 	const { user } = useContext(AuthContext);
+	const { branch } = useParams();
+
 	const navigate = useNavigate();
 
 	const [notifications, setNotifications] = useState([]);
@@ -28,17 +30,17 @@ const NotificationManagement = () => {
 			if (user.type === "user" || user.type === "company") {
 				navigate("/" + user.type + "/user/invoices/management");
 			} else {
-				navigate("/branch/invoices/management");
+				navigate(`/${branch}/branch/invoice/management`);
 			}
 		} else if (notificationtype === "booking") {
 			if (user.type === "admin") {
-				navigate("/branch/booking/requests");
+				navigate(`/${branch}/branch/booking/requests`);
 			}
 		} else if (notificationtype === "booking_schedule") {
 			if (user.type === "user" || user.type === "company") {
 				navigate("/" + user.type + "/booking-schedule/requests");
 			} else {
-				navigate("/branch/booking-schedule/requests");
+				navigate(`/${branch}/branch/booking-schedule/requests`);
 			}
 		}
 	};
@@ -66,7 +68,7 @@ const NotificationManagement = () => {
 			setNotifications(res.data.notifications);
 			setTotalPages(res.data.last_page);
 			setCurrentPage(res.data.current_page);
-			setUnreadNotifications(res.data.unread);
+			// setUnreadNotifications(res.data.unread);
 		} catch (error) {
 			console.error("Error fetching notifications:", error.response);
 		} finally {

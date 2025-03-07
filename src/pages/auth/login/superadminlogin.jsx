@@ -4,10 +4,10 @@ import logo from "@/assets/logopic.png";
 import profile from "@/assets/profile.png";
 import "./login.css";
 import axios from "axios";
-import { AuthContext } from "@/contexts/AuthContext";
+// import { AuthContext } from "@/contexts/SuperContext";
 
 const SuperAdminLogin = () => {
-	const { setUser, setRole, setPermissions } = useContext(AuthContext);
+	// const { setUser, setRole, setPermissions } = useContext(AuthContext);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -22,9 +22,9 @@ const SuperAdminLogin = () => {
 
 			localStorage.setItem("authToken", response.data.data.token);
 
-			setUser(response.data.data);
-			setRole(response.data.data.role);
-			setPermissions(response.data.data.permissions);
+			// setUser(response.data.data);
+			// setRole(response.data.data.role);
+			// setPermissions(response.data.data.permissions);
 			if (response.data.data.type === "superadmin") window.location.href = "/super-admin/dashboard";
 		} catch (error) {
 			console.log(error.response.data);
