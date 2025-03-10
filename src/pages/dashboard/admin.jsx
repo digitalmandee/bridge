@@ -24,13 +24,13 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 			{
 				label: "Revenue",
 				data: [40000, 32000, 35000, 45000, 35000, 45000, 35000, 30000],
-				backgroundColor: "#1E40AF",
+				backgroundColor: "#FFF0BA",
 				barThickness: 15,
 			},
 			{
 				label: "Membership Revenue",
 				data: [35000, 30000, 28000, 35000, 28000, 30000, 35000, 32000],
-				backgroundColor: "#93C5FD",
+				backgroundColor: "#FFCC16",
 				barThickness: 15,
 			},
 		],

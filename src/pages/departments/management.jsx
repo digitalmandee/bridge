@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress, Pagination, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Snackbar, Alert } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
+import colors from "@/assets/styles/color";
 
 const Management = () => {
 	const navigate = useNavigate();
@@ -129,7 +130,7 @@ const Management = () => {
 								</Typography>
 							</div>
 							<div className="col-auto ms-auto">
-								<Button variant="contained" sx={{ bgcolor: "#0F172A", borderRadius: "10px", "&:hover": { bgcolor: "#1E293B" } }} onClick={() => handleOpen()}>
+								<Button variant="contained" sx={{ bgcolor: colors.primary, borderRadius: "10px", "&:hover": { bgcolor: "#1E293B" } }} onClick={() => handleOpen()}>
 									New Department
 								</Button>
 							</div>

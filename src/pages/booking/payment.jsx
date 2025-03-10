@@ -238,7 +238,7 @@ const Payment = () => {
 							{/* Header */}
 							<div
 								style={{
-									background: "#002855",
+									backgroundColor: colors.primary,
 									color: "white",
 									fontSize: "16px",
 									fontWeight: "bold",

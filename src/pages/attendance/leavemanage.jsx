@@ -12,6 +12,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import axiosInstance from "@/utils/axiosInstance";
 import dayjs from "dayjs";
+import colors from "@/assets/styles/color";
 
 const LeaveManage = () => {
 	const navigate = useNavigate();
@@ -87,12 +88,12 @@ const LeaveManage = () => {
 									variant="contained"
 									onClick={() => navigate(`/${branch}/branch/employee/leave/application/new`)}
 									sx={{
-										backgroundColor: "#0D2B4E",
+										backgroundColor: colors.primary,
 										color: "white",
 										textTransform: "none",
 										marginLeft: "2rem",
 										padding: "6px 16px",
-										"&:hover": { backgroundColor: "#09203D" }, // Slightly darker shade on hover
+										"&:hover": { backgroundColor: colors.primary }, // Slightly darker shade on hover
 									}}>
 									Add
 								</Button>

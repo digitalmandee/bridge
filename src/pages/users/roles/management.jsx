@@ -7,7 +7,7 @@ import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRo
 import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "@/utils/axiosInstance";
 import { AuthContext } from "@/contexts/AuthContext";
-
+import colors from "@/assets/styles/color";
 const RoleManagement = () => {
 	const navigate = useNavigate();
 	const { branch } = useParams();
@@ -65,10 +65,10 @@ const RoleManagement = () => {
 								<Button
 									variant="contained"
 									sx={{
-										bgcolor: "#0F172A",
+										bgcolor: colors.primary,
 										borderRadius: "10px",
 										"&:hover": {
-											bgcolor: "#1E293B",
+											bgcolor: colors.primary,
 										},
 									}}
 									onClick={() => navigate(`/${branch}/branch/users/roles/new`)}>

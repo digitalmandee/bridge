@@ -117,7 +117,7 @@ const InvoiceDashboard = () => {
 										<MenuItem value="January">January</MenuItem>
 										{/* Add more months */}
 									</Select>
-									<Button variant="contained" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: "#1E293B" } }} onClick={() => navigate(`/${branch}/branch/invoice/create`)}>
+									<Button variant="contained" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: colors.primary } }} onClick={() => navigate(`/${branch}/branch/invoice/create`)}>
 										Create Invoice
 									</Button>
 								</Box>
@@ -239,7 +239,7 @@ const InvoiceDashboard = () => {
 								Previous
 							</Button>
 							{[...Array(totalPages)].map((_, index) => (
-								<Button key={index} variant={currentPage === index + 1 ? "contained" : "outlined"} sx={currentPage === index + 1 ? { bgcolor: "#0F172A" } : {}} onClick={() => setCurrentPage(index + 1)}>
+								<Button key={index} variant={currentPage === index + 1 ? "contained" : "outlined"} sx={currentPage === index + 1 ? { bgcolor: colors.primary } : {}} onClick={() => setCurrentPage(index + 1)}>
 									{index + 1}
 								</Button>
 							))}

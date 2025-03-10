@@ -6,6 +6,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import axiosInstance from "@/utils/axiosInstance";
+import colors from "@/assets/styles/color";
 
 const EmployeeCreate = () => {
 	const navigate = useNavigate();
@@ -161,7 +162,7 @@ const EmployeeCreate = () => {
 							<Button variant="contained" sx={{ backgroundColor: "white", color: "black" }} onClick={() => navigate(-1)}>
 								Cancel
 							</Button>
-							<Button disabled={isLoading} variant="contained" onClick={handleSubmit} sx={{ backgroundColor: "#0D2B4E", color: "white" }}>
+							<Button disabled={isLoading} variant="contained" onClick={handleSubmit} sx={{ backgroundColor: colors.primary, color: "white" }}>
 								Submit
 							</Button>
 						</Box>

@@ -9,7 +9,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import axiosInstance from "@/utils/axiosInstance";
 import dayjs from "dayjs";
-
+import colors from "@/assets/styles/color";
 const InvoiceCreate = () => {
 	const navigate = useNavigate();
 	const [selectedTab, setSelectedTab] = useState("individual");
@@ -528,7 +528,7 @@ const InvoiceCreate = () => {
 
 								{/* Save Button */}
 								<div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-									<Button disabled={formData.invoiceType === "Monthly" ? (userBooking && userBooking.success === true ? false : true) : loading} variant="contained" type="submit" sx={{ bgcolor: "#0D2B4E", "&:hover": { bgcolor: "#0B1E3E" } }}>
+									<Button disabled={formData.invoiceType === "Monthly" ? (userBooking && userBooking.success === true ? false : true) : loading} variant="contained" type="submit" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: colors.primary } }}>
 										Save Invoice
 									</Button>
 								</div>

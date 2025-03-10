@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import axiosInstance from "@/utils/axiosInstance";
 import { Alert, Button, Snackbar } from "@mui/material";
+import colors from "@/assets/styles/color";
 
 const CreateCategory = () => {
 	const navigate = useNavigate();

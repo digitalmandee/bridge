@@ -8,7 +8,7 @@ import { ArrowBack, MoreVert } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "@/utils/axiosInstance";
 import dayjs from "dayjs";
-
+import colors from "@/assets/styles/color";
 const Management = () => {
 	const navigate = useNavigate();
 	const { branch } = useParams();
@@ -162,7 +162,7 @@ const Management = () => {
 									variant="contained"
 									fullWidth
 									style={{
-										backgroundColor: "#0A2647",
+										backgroundColor: colors.primary,
 										color: "white",
 										textTransform: "none",
 										padding: "12px",

@@ -129,7 +129,7 @@ body {
 }
 
 .sidebar ul li button.active-button {
-  background-color: var(--primary);
+  background-color: #FFCC16;
   color: #fff;
   /* Optional: Change text color */
 }
@@ -195,7 +195,7 @@ body {
 }
 
 .sidebar ul .submenu li a:hover {
-  background-color: var(--primary);
+  background-color: #FFCC16;
   color: white !important;
 }
 
@@ -233,7 +233,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #202224;
+  background-color: #FFCC16;
   color: white;
   border: none;
   /* Removes border */
@@ -263,7 +263,7 @@ body {
 }
 
 .create-booking-btn:hover {
-  background-color: #0D2B4E;
+  background-color: #FFCC16;
   color: white;
   /* Slightly darker yellow on hover */
 }

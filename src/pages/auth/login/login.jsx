@@ -70,7 +70,7 @@ const LoginPage = () => {
 		<>
 			<div className="login-container">
 				<div className="logo-container">
-					<img src={logo} width={"270px"} alt="Welcome to Bridge" className="logo-image" />
+					<img src={logo} width={"370px"} alt="Welcome to Bridge" className="logo-image" />
 				</div>
 				<div className="login-card mt-5">
 					<div className="avatar-container">

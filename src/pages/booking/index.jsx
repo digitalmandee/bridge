@@ -7,6 +7,7 @@ import Payment from "./payment";
 import { useNavigate } from "react-router-dom";
 import { FloorPlanContext } from "../../contexts/floorplan.context";
 import { FaCheck } from "react-icons/fa";
+import colors from "@/assets/styles/color";
 // import './style.css';
 const Booking = () => {
 	const navigate = useNavigate();
@@ -119,7 +120,7 @@ const Booking = () => {
 											fontWeight: "100",
 											fontSize: "16px",
 											color: "white",
-											backgroundColor: currentStep > step.id ? "#002855" : currentStep === step.id ? "#002855" : "#ccc",
+											backgroundColor: currentStep > step.id ? colors.primary : currentStep === step.id ? colors.primary : "#ccc",
 											cursor: "pointer",
 											// position:'relative',
 											zIndex:2
@@ -135,7 +136,7 @@ const Booking = () => {
 											style={{
 												width: "120px",
 												height: "2px",
-												backgroundColor: currentStep > step.id ? "#002855" : "#ccc",
+												backgroundColor: currentStep > step.id ? colors.primary : "#ccc",
 												position: "relative",
 												top:'-20px',
 												right:'-20px',

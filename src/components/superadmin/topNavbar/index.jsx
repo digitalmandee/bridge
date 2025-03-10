@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/Blogo.png";
 import { FaRegBell } from "react-icons/fa6";
 import SearchBar from "./searchBar";
 import profile from "@/assets/profile.png";

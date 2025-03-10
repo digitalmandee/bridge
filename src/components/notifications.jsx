@@ -34,7 +34,7 @@ const DashboardNotifications = () => {
 				<h2 onClick={() => navigate(user.type === "admin" ? `/${branch}/branch/notifications` : `/${branch}/` + user.type + "/notifications")} style={{ cursor: "pointer", fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>
 					Notifications
 				</h2>
-				<div style={{ position: "relative", backgroundColor: "#0A2156", padding: "0.5rem", borderRadius: "0.375rem" }}>
+				<div style={{ position: "relative", backgroundColor: colors.primary, padding: "0.5rem", borderRadius: "0.375rem" }}>
 					<Bell style={{ width: "1.25rem", height: "1.25rem", color: "white" }} />
 					<span style={{ position: "absolute", top: "4px", right: "4px", backgroundColor: "white", padding: "1px 5px", borderRadius: "50%", fontSize: "9px", color: colors.primary, marginLeft: "0.25rem" }}>{unreadNotifications >= 100 ? "99+" : unreadNotifications}</span>
 					<sup> </sup>
@@ -45,7 +45,7 @@ const DashboardNotifications = () => {
 					notifications.map((notification, i) => (
 						<div key={i} style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
 							<div style={{ marginTop: "0.05rem" }}>
-								<FileText style={{ width: "1.25rem", height: "1.25rem", color: "#0A2156" }} />
+								<FileText style={{ width: "1.25rem", height: "1.25rem", color: colors.primary }} />
 							</div>
 							<div style={{ flex: 1, minWidth: 0 }}>
 								<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>

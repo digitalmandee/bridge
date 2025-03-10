@@ -188,8 +188,8 @@ const SuperAdminDashboard = () => {
 								<Button
 									variant="contained"
 									sx={{
-										bgcolor: "#0D2B4E",
-										"&:hover": { bgcolor: "#0D2B4E" },
+										bgcolor: colors.primary,
+										"&:hover": { bgcolor: colors.primary },
 										borderRadius: "4px",
 										textTransform: "none",
 									}}
@@ -206,10 +206,10 @@ const SuperAdminDashboard = () => {
 								{/* Metric Cards */}
 								<Grid container spacing={2} sx={{ mb: 3 }}>
 									{[
-										{ title: "Total Members", value: data?.total_members, icon: PeopleIcon, color: "#0D2B4E" },
-										{ title: "Available Space", value: data?.total_available_chairs, icon: SpaceBarIcon, color: "#0D2B4E" },
-										{ title: "Total Revenue", value: data?.total_revenue, icon: AttachMoneyIcon, color: "#0D2B4E" },
-										{ title: "P&L", value: "329", icon: BarChartIcon, color: "#0D2B4E" },
+										{ title: "Total Members", value: data?.total_members, icon: PeopleIcon, color: colors.primary },
+										{ title: "Available Space", value: data?.total_available_chairs, icon: SpaceBarIcon, color: colors.primary },
+										{ title: "Total Revenue", value: data?.total_revenue, icon: AttachMoneyIcon, color: colors.primary },
+										{ title: "P&L", value: "329", icon: BarChartIcon, color: colors.primary },
 									].map((item, index) => (
 										<Grid item xs={12} sm={6} md={3} key={index}>
 											<Card

@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import Modal from "./modal";
 import axiosInstance from "@/utils/axiosInstance";
-
+// import { colors } from "@mui/material";
+import colors from "@/assets/styles/color";
 const CreateBranch = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [formData, setFormData] = useState({
@@ -92,7 +93,7 @@ const CreateBranch = () => {
 	};
 
 	const buttonStyle = {
-		backgroundColor: "#0D2B4E",
+		backgroundColor: colors.primary,
 		color: "white",
 		padding: "10px",
 		border: "none",

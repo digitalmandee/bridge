@@ -4,7 +4,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import { Container, TextField, Button, MenuItem, Select, InputLabel, FormControl, Card, Typography } from "@mui/material";
 import Sidebar from "@/components/leftSideBar";
 import TopNavbar from "@/components/topNavbar";
-
+import colors from "@/assets/styles/color";
 const UserForm = () => {
 	const { id: userId } = useParams(); // Get userId from route
 	const navigate = useNavigate();

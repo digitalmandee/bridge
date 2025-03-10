@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "@/utils/axiosInstance";
 import { AuthContext } from "@/contexts/SuperContext";
 import { FileText } from "lucide-react";
-
+import colors from "@/assets/styles/color";
 const BranchManagement = () => {
 	const { user } = useContext(AuthContext);
 	const navigate = useNavigate();
@@ -124,7 +124,7 @@ const BranchManagement = () => {
 								Previous
 							</Button>
 							{[...Array(totalPages)].map((_, index) => (
-								<Button key={index} variant={currentPage === index + 1 ? "contained" : "outlined"} sx={currentPage === index + 1 ? { bgcolor: "#0F172A" } : {}} onClick={() => setCurrentPage(index + 1)}>
+								<Button key={index} variant={currentPage === index + 1 ? "contained" : "outlined"} sx={currentPage === index + 1 ? { bgcolor: colors.primary } : {}} onClick={() => setCurrentPage(index + 1)}>
 									{index + 1}
 								</Button>
 							))}

@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, Button, TableRo
 import { Edit as EditIcon, ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "@/utils/axiosInstance";
-
+import colors from "@/assets/styles/color";
 const LeaveReport = () => {
 	const navigate = useNavigate();
 	const [searchTerm, setSearchTerm] = useState("");
@@ -86,12 +86,12 @@ const LeaveReport = () => {
 								<Button
 									variant="contained"
 									sx={{
-										backgroundColor: "#0D2B4E",
+										backgroundColor: colors.primary,
 										color: "white",
 										textTransform: "none",
 										marginLeft: "2rem",
 										padding: "6px 16px",
-										"&:hover": { backgroundColor: "#09203D" }, // Slightly darker shade on hover
+										"&:hover": { backgroundColor: colors.primary }, // Slightly darker shade on hover
 									}}>
 									Go
 								</Button>

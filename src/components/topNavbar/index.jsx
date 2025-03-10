@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/Blogo.png"
 import { FaRegBell } from "react-icons/fa6";
 import SearchBar from "./searchBar";
 import profile from "../../assets/profile.png";
@@ -17,6 +17,7 @@ import { SidebarContext } from "../../contexts/sidebar.context";
 // import { FaRegBell } from "react-icons/fa";
 import { FileText, Building2, Building } from "lucide-react";
 import { MdMenuOpen, MdOutlineMenu } from "react-icons/md";
+import colors from "@/assets/styles/color";
 
 const TopNavbar = () => {
 	const { user, logout } = useContext(AuthContext);
@@ -103,7 +104,7 @@ const TopNavbar = () => {
 								<Menu anchorEl={isOpennotificationDrop} className="notifications" id="notifications" open={openNotifications} onClose={handleClosenotificationsDr} onClick={handleClosenotificationsDr} transformOrigin={{ horizontal: "left", vertical: "top" }} anchorOrigin={{ horizontal: "right", vertical: "top" }}>
 									<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
 										<h3 style={{ fontSize: "1rem", fontWeight: "600", color: "#111827" }}>Notifications</h3>
-										<div style={{ backgroundColor: "#0A2156", padding: "0.5rem", borderRadius: "5px" }}>
+										<div style={{ backgroundColor: colors.primary, padding: "0.5rem", borderRadius: "5px" }}>
 											<FaRegBell style={{ color: "white", fontSize: "16px" }} />
 										</div>
 									</div>
@@ -112,7 +113,7 @@ const TopNavbar = () => {
 									<div>
 										{notifications.map((notification, index) => (
 											<MenuItem key={index} style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "10px" }}>
-												<notification.icon style={{ color: "#0A2156", width: "20px", height: "20px" }} />
+												<notification.icon style={{ color: colors.primary, width: "20px", height: "20px" }} />
 												<div style={{ flex: 1, padding: "0.2rem", maxWidth: "90%" }}>
 													<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
 														<span style={{ fontWeight: "500", fontSize: "14px", color: "#111827" }}>{notification.title}</span>

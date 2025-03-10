@@ -14,6 +14,7 @@ import EventNoteIcon from "@mui/icons-material/EventNote";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "@/utils/axiosInstance";
 import { Box } from "@mui/system";
+import colors from "@/assets/styles/color";
 
 const AttendanceDashboard = () => {
 	const navigate = useNavigate();
@@ -62,7 +63,7 @@ const AttendanceDashboard = () => {
 							<Typography variant="text" style={{ fontWeight: "500", fontSize: "24px" }}>
 								Application Dashboard
 							</Typography>
-							<Button style={{ color: "white", backgroundColor: "#0D2B4E" }} onClick={() => navigate(`/${branch}/branch/employee/leave/application/new`)}>
+							<Button style={{ color: "white", backgroundColor: colors.primary }} onClick={() => navigate(`/${branch}/branch/employee/leave/application/new`)}>
 								New Application
 							</Button>
 						</div>

@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react";
 import { Typography, Button, IconButton, Modal, Box, TextField, Select, MenuItem, FormControl, InputLabel, Checkbox, FormControlLabel, Stepper, Step, StepLabel, ToggleButton, ToggleButtonGroup, CircularProgress, Snackbar, Alert, Autocomplete } from "@mui/material";
 import { Add as AddIcon, Remove as RemoveIcon, Close as CloseIcon } from "@mui/icons-material";
 import axiosInstance from "@/utils/axiosInstance";
+import colors from "@/assets/styles/color";
 
 const AddContract = () => {
 	const [open, setOpen] = useState(false);
@@ -363,8 +364,8 @@ const AddContract = () => {
 				color="primary"
 				sx={{
 					textTransform: "none",
-					bgcolor: "#1a3353",
-					"&:hover": { bgcolor: "#142942" },
+					bgcolor: colors.primary,
+					"&:hover": { bgcolor: colors.primary },
 				}}
 				onClick={handleOpen}>
 				Add Contract

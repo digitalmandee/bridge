@@ -6,7 +6,7 @@ import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import axiosInstance from "@/utils/axiosInstance";
 import { AuthContext } from "@/contexts/AuthContext";
-
+import colors from "@/assets/styles/color";
 const MemberUser = () => {
 	const { user: userData } = useContext(AuthContext);
 
@@ -133,7 +133,7 @@ const MemberUser = () => {
 																label={user.status}
 																size="small"
 																sx={{
-																	backgroundColor: "#002B5B",
+																	backgroundColor: colors.primary,
 																	color: "#fff",
 																	borderRadius: "4px",
 																	height: "24px",

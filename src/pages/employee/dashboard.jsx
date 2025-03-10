@@ -10,6 +10,7 @@ import { ArrowDownIcon, ArrowUpIcon, Bell, Building2, FileText, Building } from 
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "@/utils/axiosInstance";
 import { Box } from "@mui/system";
+import colors from "@/assets/styles/color";
 
 const EmployeeDashboard = () => {
 	const navigate = useNavigate();
@@ -76,7 +77,7 @@ const EmployeeDashboard = () => {
 							<Typography variant="h5" style={{ fontWeight: "bold" }}>
 								Employee Management
 							</Typography>
-							<Button style={{ color: "white", backgroundColor: "#0D2B4E" }} onClick={() => navigate(`/${branch}/branch/employee/create`)}>
+							<Button style={{ color: "white", backgroundColor: colors.primary }} onClick={() => navigate(`/${branch}/branch/employee/create`)}>
 								Add Employee
 							</Button>
 						</div>
@@ -84,10 +85,10 @@ const EmployeeDashboard = () => {
 						{/* Metric Cards */}
 						<div style={{ display: "flex", width: "98%", justifyContent: "space-between", gap: "1rem", marginBottom: "24px" }}>
 							{[
-								{ title: "Total Employees", value: stats?.total_employees || 0, icon: EventSeatIcon, color: "#0D2B4E" },
-								{ title: "Total Present", value: stats?.total_present || 0, icon: PeopleIcon, color: "#0D2B4E" },
-								{ title: "Total Absent", value: stats?.total_absent || 0, icon: AssignmentIcon, color: "#0D2B4E" },
-								{ title: "Late Arrival", value: stats?.total_late || 0, icon: PrintIcon, color: "#0D2B4E" },
+								{ title: "Total Employees", value: stats?.total_employees || 0, icon: EventSeatIcon, color: colors.primary },
+								{ title: "Total Present", value: stats?.total_present || 0, icon: PeopleIcon, color: colors.primary },
+								{ title: "Total Absent", value: stats?.total_absent || 0, icon: AssignmentIcon, color: colors.primary },
+								{ title: "Late Arrival", value: stats?.total_late || 0, icon: PrintIcon, color: colors.primary },
 							].map((item, index) => (
 								<div key={index} style={{ flex: 1 }}>
 									<Card style={{ boxShadow: "none", border: "1px solid #ccc", borderRadius: "8px", height: "100%", backgroundColor: "white" }}>

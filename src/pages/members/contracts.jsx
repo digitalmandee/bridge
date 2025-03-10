@@ -10,7 +10,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import "./contract.css";
 import { AuthContext } from "@/contexts/AuthContext";
 import EditContract from "@/components/members/EditContract";
-
+import colors from "@/assets/styles/color";
 const MemberContract = () => {
 	const { user } = useContext(AuthContext);
 

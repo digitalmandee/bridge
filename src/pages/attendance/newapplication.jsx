@@ -4,6 +4,7 @@ import { Autocomplete, TextField, Button, Alert, Select, MenuItem, FormHelperTex
 import axiosInstance from "@/utils/axiosInstance";
 import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
+import colors from "@/assets/styles/color";
 
 const LeaveApplication = () => {
 	const { id } = useParams(); // Get the ID from URL
@@ -197,7 +198,7 @@ const LeaveApplication = () => {
 								onClick={() => navigate(-1)}>
 								Cancel
 							</button>
-							<Button type="submit" disabled={isLoading} loading={isLoading} variant="contained" sx={{ backgroundColor: "#0D2B4E", color: "white" }}>
+							<Button type="submit" disabled={isLoading} loading={isLoading} variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }}>
 								{id ? "Update" : "Add"}
 							</Button>
 						</div>

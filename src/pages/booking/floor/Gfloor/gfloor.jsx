@@ -4,7 +4,7 @@ import { Chair } from "@mui/icons-material";
 import Loader from "../../../../components/Loader";
 import axios from "axios";
 import { FloorPlanContext } from "../../../../contexts/floorplan.context";
-
+import colors from "@/assets/styles/color";
 const GFloorPlan = () => {
 	const floorRef = useRef(null); // Reference for the floor container
 	const [prevChairDuration, setPrevChairDuration] = useState("");
@@ -127,7 +127,7 @@ const GFloorPlan = () => {
 				>
 					<h4
 						style={{
-							background: "#0D2B4E",
+							backgroundColor: colors.primary,
 							color: "white",
 							margin: 0,
 							padding: "0.75rem",

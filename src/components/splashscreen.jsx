@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/Blogo.png";
 const SplashScreen = ({ onComplete }) => {
   const styles = {
     splashContainer: {
@@ -19,8 +19,8 @@ const SplashScreen = ({ onComplete }) => {
     underline: {
       position: "absolute",
       width: "100%",
-      height: "2px", // Adjust height as needed
-      backgroundColor: "#0D2B4E", // Color of the underline
+      height: "4px", // Adjust height as needed
+      backgroundColor: "#FFCC16", // Color of the underline
       bottom: "0",
       left: "0",
     },
