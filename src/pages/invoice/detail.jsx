@@ -154,7 +154,7 @@ const InvoiceDetail = () => {
 										{customer && customer.invoices.length > 0 ? (
 											customer.invoices.map((invoice) => (
 												<TableRow key={invoice.id}>
-													<TableCell>#NASTP-{invoice.id}</TableCell>
+													<TableCell>#BRIDGE-{invoice.id}</TableCell>
 													<TableCell>{new Date(invoice.created_at).toISOString().split("T")[0]}</TableCell>
 													<TableCell>{invoice.due_date}</TableCell>
 													<TableCell>

@@ -186,7 +186,7 @@ const InvoiceDashboard = () => {
 										{invoices.length > 0 ? (
 											invoices.map((invoice) => (
 												<TableRow key={invoice.id}>
-													<TableCell>#NASTP-{invoice.id}</TableCell>
+													<TableCell>#BRIDGE-{invoice.id}</TableCell>
 													<TableCell style={{ textTransform: "capitalize" }}>{invoice.user.type}</TableCell>
 													<TableCell>
 														<Box display="flex" alignItems="center" gap={1}>
