@@ -6,12 +6,14 @@ import EventSeatIcon from "@mui/icons-material/EventSeat";
 import PeopleIcon from "@mui/icons-material/People";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PrintIcon from "@mui/icons-material/Print";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import DashboardNotifications from "@/components/notifications";
 
 const CompanyDashboard = () => {
 	const navigate = useNavigate();
+
+	const { branch } = useParams();
 
 	const [isLoading, setIsLoading] = useState(true);
 	const [data, setData] = useState({});
@@ -40,7 +42,7 @@ const CompanyDashboard = () => {
 							<Typography variant="h5" style={{ fontWeight: "bold" }}>
 								Dashboard
 							</Typography>
-							<Button style={{ color: "white", backgroundColor: "#0D2B4E" }} onClick={() => navigate("/company/staff/add")}>
+							<Button style={{ color: "white", backgroundColor: "#0D2B4E" }} onClick={() => navigate(`/${branch}/company/staff/add`)}>
 								Add Staff
 							</Button>
 						</div>

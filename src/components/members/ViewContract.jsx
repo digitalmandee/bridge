@@ -188,7 +188,7 @@ const ViewContract = ({ contract, open, onClose }) => {
 			const res = await axiosInstance.put("member/contract/user/update", updatedFormData);
 
 			if (res.data.success) {
-				setAlertOpen(true);
+				// setAlertOpen(true);
 				onClose();
 			}
 		} catch (error) {
