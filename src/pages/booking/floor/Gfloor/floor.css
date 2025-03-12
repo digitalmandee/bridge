@@ -1,11 +1,11 @@
 .floor {
     width: 800px;
-    height: 2000px;
+    height: 80vh;
     margin: 0;
     padding: 0;
     position: relative;
     /* Ensures child elements are positioned relative to this div */
-    background-image: url("../../../../assets/gfloor.png");
+    background-image: url("../../../../assets/gfloor.jpg");
     background-size: contain;
     border-radius: 0.5rem;
     background-repeat: no-repeat;

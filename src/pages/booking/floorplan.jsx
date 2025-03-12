@@ -406,14 +406,6 @@ const Floorplan = () => {
 											}}>
 											G Floor
 										</div>
-										<div
-											onClick={() => handleFloorSelection(2)} // Handle first floor selection
-											style={{
-												padding: "8px 10px",
-												cursor: "pointer",
-											}}>
-											1st Floor
-										</div>
 									</div>
 								)}
 							</div>
