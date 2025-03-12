@@ -8,8 +8,7 @@ import "./style.css";
 import { FormHelperText } from "@mui/material";
 
 const MemberDetail = ({ handleNext }) => {
-	const { bookingdetails, setBookingDetails, formErrors, validateMemeberDetails, selectedChairs, setCheckAvailability } = useContext(FloorPlanContext);
-	const [isLoading, setIsLoading] = useState(false);
+	const { bookingdetails, setBookingDetails, formErrors, validateMemeberDetails } = useContext(FloorPlanContext);
 	const [imagePreview, setImagePreview] = useState(null); // image preview
 	const [searchQuery, setSearchQuery] = useState("");
 	const [searchResults, setSearchResults] = useState([]);
@@ -66,7 +65,7 @@ const MemberDetail = ({ handleNext }) => {
 		if (file) {
 			setBookingDetails((prevDetails) => ({
 				...prevDetails,
-				profile_image: file, // Save image URL to profile_image
+				cnic_image: file, // Save image URL to profile_image
 			}));
 			const reader = new FileReader();
 			reader.onloadend = () => {
@@ -78,59 +77,11 @@ const MemberDetail = ({ handleNext }) => {
 	};
 
 	const handleSubmit = async () => {
-		const allChairs = Object.values(selectedChairs).flat();
-
 		if (validateMemeberDetails()) {
 			setErrors({});
-			const newErrors = {};
-			try {
-				setIsLoading(true);
-
-				const response = await axiosInstance.post("booking/check-availability", {
-					chairs: allChairs,
-					member: { name: bookingdetails.name, email: bookingdetails.email, type: bookingdetails.type === "individual" ? "user" : "company" },
-				});
-
-				if (response.data.success) {
-					setCheckAvailability(response.data.data);
-					updateTimeAndDuration(response.data.data); // Update time and duration based on availability
-					handleNext();
-				}
-			} catch (error) {
-				if (error.response.data.company_exists) newErrors.company_exists = error.response.data.company_exists;
-				else if (error.response.data.type_exists) newErrors.type_exists = error.response.data.type_exists;
-
-				setErrors(newErrors);
-			} finally {
-				setIsLoading(false);
-			}
+			handleNext();
 		}
 	};
-
-	const updateTimeAndDuration = (availabilityData) => {
-		const { available_durations, available_time } = availabilityData;
-
-		const { date, time } = extractDateAndTime(available_time);
-
-		setBookingDetails((prevDetails) => ({
-			...prevDetails,
-			start_date: date,
-			start_time: formatTimeForInput(time),
-			time_slot: available_durations.length > 0 ? available_durations[0] : "day",
-		}));
-	};
-
-	const extractDateAndTime = (availableTime) => {
-		const [date, time] = availableTime.split(" ");
-		return { date, time };
-	};
-
-	const formatTimeForInput = (time) => {
-		const [hours, minutes] = time.split(":");
-		return `${hours}:${minutes}`;
-	};
-
-	const totalSelectedChairs = Object.values(selectedChairs).flat().length;
 
 	return (
 		<>
@@ -146,10 +97,8 @@ const MemberDetail = ({ handleNext }) => {
 					position: "relative",
 				}}>
 				<h3 style={{ textAlign: "center", marginBottom: "20px" }}>
-					<img src={profile} alt="Member Icon" style={{ width: "25px", height: "25px", marginRight: "10px", marginBottom: "5px", verticalAlign: "middle" }} /> Member Detail
+					<img src={profile} alt="Member Icon" style={{ width: "25px", height: "25px", marginRight: "10px", marginBottom: "5px", verticalAlign: "middle" }} /> Primary Information
 				</h3>
-
-				{isLoading && <Loader variant="B" />}
 
 				{/* Name Field */}
 				<div
@@ -166,7 +115,7 @@ const MemberDetail = ({ handleNext }) => {
 							fontWeight: "bold", // Optional: for better label visibility
 							marginLeft: 0,
 						}}>
-						{bookingdetails.type === "individual" ? "Name" : "Company Name"}
+						Full Name
 					</label>
 					<div style={{ position: "relative", marginBottom: "15px" }}>
 						<input type="text" name="name" value={bookingdetails.name} onChange={handleSearchChange} style={{ width: "100%", padding: "10px", borderRadius: "5px", margin: 0, border: "1px solid #ccc" }} />
@@ -184,6 +133,28 @@ const MemberDetail = ({ handleNext }) => {
 						{errors.company_exists && <FormHelperText error>{errors.company_exists}</FormHelperText>}
 					</div>
 
+					{/* Select work Category */}
+					<div style={{ marginBottom: "15px" }}>
+						<label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Work Category</label>
+						<select
+							name="type"
+							value={bookingdetails.type}
+							onChange={handleChange}
+							style={{
+								width: "100%",
+								padding: "10px",
+								borderRadius: "5px",
+								border: "1px solid #ccc",
+								boxSizing: "border-box",
+							}}>
+							<option value="">Select your category</option>
+							<option value="company">Business Organizations</option>
+							<option value="individual">Freelancer</option>
+						</select>
+						{formErrors.type && <span style={{ color: "red" }}>{formErrors.type}</span>}
+						{/* {errors.type_exists && <FormHelperText error>{errors.type_exists}</FormHelperText>} */}
+					</div>
+
 					{/* Email Field */}
 					<label
 						style={{
@@ -191,7 +162,7 @@ const MemberDetail = ({ handleNext }) => {
 							marginBottom: "5px",
 							fontWeight: "bold",
 						}}>
-						{bookingdetails.type === "individual" ? "Email" : "Company Email"}
+						Email Address
 					</label>
 					<div style={{ marginBottom: "15px" }}>
 						<input
@@ -209,6 +180,33 @@ const MemberDetail = ({ handleNext }) => {
 							}}
 						/>
 						{formErrors.email && <span style={{ color: "red" }}>{formErrors.email}</span>}
+
+						{/* Designaion Field */}
+						<label
+							style={{
+								display: "block",
+								marginBottom: "5px",
+								fontWeight: "bold",
+							}}>
+							Designation
+						</label>
+						<div style={{ marginBottom: "15px" }}>
+							<input
+								type="text"
+								name="designation"
+								value={bookingdetails.designation}
+								onChange={handleChange}
+								style={{
+									width: "100%",
+									padding: "10px",
+									borderRadius: "5px",
+									border: "1px solid #ccc",
+									boxSizing: "border-box",
+									margin: 0,
+								}}
+							/>
+							{formErrors.designation && <span style={{ color: "red" }}>{formErrors.designation}</span>}
+						</div>
 					</div>
 
 					{/* Phone Number Field */}
@@ -218,7 +216,7 @@ const MemberDetail = ({ handleNext }) => {
 							marginBottom: "5px",
 							fontWeight: "bold",
 						}}>
-						{bookingdetails.type === "individual" ? "Phone No" : "Company Phone No"}
+						Primary Contact Number
 					</label>
 					<div style={{ marginBottom: "15px" }}>
 						<input
@@ -238,12 +236,20 @@ const MemberDetail = ({ handleNext }) => {
 						{formErrors.phone_no && <span style={{ color: "red" }}>{formErrors.phone_no}</span>}
 					</div>
 
-					{/* Individual/Company Dropdown */}
+					{/* Secondary Phone Number Field */}
+					<label
+						style={{
+							display: "block",
+							marginBottom: "5px",
+							fontWeight: "bold",
+						}}>
+						Secondary Contact Number
+					</label>
 					<div style={{ marginBottom: "15px" }}>
-						<label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Individual/Company</label>
-						<select
-							name="type"
-							value={bookingdetails.type}
+						<input
+							type="tel"
+							name="secondary_phone_no"
+							value={bookingdetails.secondary_phone_no}
 							onChange={handleChange}
 							style={{
 								width: "100%",
@@ -251,15 +257,41 @@ const MemberDetail = ({ handleNext }) => {
 								borderRadius: "5px",
 								border: "1px solid #ccc",
 								boxSizing: "border-box",
-							}}>
-							{totalSelectedChairs === 1 && <option value="individual">Individual</option>}
-							<option value="company">Company</option>
-						</select>
-						{errors.type_exists && <FormHelperText error>{errors.type_exists}</FormHelperText>}
+								margin: 0,
+							}}
+						/>
+						{formErrors.secondary_phone_no && <span style={{ color: "red" }}>{formErrors.secondary_phone_no}</span>}
+					</div>
+
+					{/* Secondary Phone Number Field */}
+					<label
+						style={{
+							display: "block",
+							marginBottom: "5px",
+							fontWeight: "bold",
+						}}>
+						CNIC Number
+					</label>
+					<div style={{ marginBottom: "15px" }}>
+						<input
+							type="text"
+							name="cnic"
+							value={bookingdetails.cnic}
+							onChange={handleChange}
+							style={{
+								width: "100%",
+								padding: "10px",
+								borderRadius: "5px",
+								border: "1px solid #ccc",
+								boxSizing: "border-box",
+								margin: 0,
+							}}
+						/>
+						{formErrors.cnic && <span style={{ color: "red" }}>{formErrors.cnic}</span>}
 					</div>
 
 					{/* Image Upload Field */}
-					<label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>{bookingdetails.type === "individual" ? "Profile Picture" : "Company Logo"} (Optional)</label>
+					<label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Upload CNIC Copy</label>
 					<input
 						type="file"
 						accept="image/*"
@@ -280,6 +312,8 @@ const MemberDetail = ({ handleNext }) => {
 							<img src={imagePreview} alt="Preview" style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%" }} />
 						</div>
 					)}
+
+					{formErrors.cnic_image && <span style={{ color: "red" }}>{formErrors.cnic_image}</span>}
 
 					<div style={{ textAlign: "right", marginTop: "20px" }}>
 						<button
