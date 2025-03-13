@@ -10,7 +10,7 @@ const ProtectedSuperRoute = ({ children, role, permission }) => {
 	if (loading) return <p>Loading...</p>;
 
 	if (!user || (role && userRole !== role)) {
-		return <Navigate to={`/${branch}/login`} replace />;
+		return <Navigate to={`/`} replace />;
 	}
 
 	if (permission && !permissions.includes(permission)) {

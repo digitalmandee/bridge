@@ -34,7 +34,7 @@ const SuperAuthProvider = ({ children }) => {
 
 	const logout = async () => {
 		try {
-			await axiosInstance.post("logout", {});
+			await axiosInstance.post("super/logout", {});
 			setUser(null);
 			setRole("");
 			setPermissions([]);
