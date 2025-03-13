@@ -7,11 +7,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import "./style.css";
 
 const CategoryDetail = ({ handleNext }) => {
-	const { bookingdetails, setBookingDetails, formErrors, validateCatgeoryDetails } = useContext(FloorPlanContext);
-	const [searchQuery, setSearchQuery] = useState("");
-	const [searchResults, setSearchResults] = useState([]);
-	const [loadingSearch, setLoadingSearch] = useState(false);
-	const [imagePreview, setImagePreview] = useState(null);
+	const { bookingdetails, setBookingDetails, formErrors, validateCategoryDetails } = useContext(FloorPlanContext);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -22,7 +18,7 @@ const CategoryDetail = ({ handleNext }) => {
 	};
 
 	const handleSubmit = () => {
-		if (validateCatgeoryDetails()) {
+		if (validateCategoryDetails()) {
 			handleNext();
 		}
 	};

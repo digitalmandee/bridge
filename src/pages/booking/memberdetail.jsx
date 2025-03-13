@@ -8,7 +8,8 @@ import "./style.css";
 import { FormHelperText } from "@mui/material";
 
 const MemberDetail = ({ handleNext }) => {
-	const { bookingdetails, setBookingDetails, formErrors, validateMemeberDetails } = useContext(FloorPlanContext);
+	const { bookingdetails, setBookingDetails, formErrors, validateMemeberDetails, selectedChairs, setCheckAvailability } = useContext(FloorPlanContext);
+	const [isLoading, setIsLoading] = useState(false);
 	const [imagePreview, setImagePreview] = useState(null); // image preview
 	const [searchQuery, setSearchQuery] = useState("");
 	const [searchResults, setSearchResults] = useState([]);
@@ -77,11 +78,59 @@ const MemberDetail = ({ handleNext }) => {
 	};
 
 	const handleSubmit = async () => {
+		const allChairs = Object.values(selectedChairs).flat();
+
 		if (validateMemeberDetails()) {
 			setErrors({});
-			handleNext();
+			const newErrors = {};
+			try {
+				setIsLoading(true);
+
+				const response = await axiosInstance.post("booking/check-availability", {
+					chairs: allChairs,
+					member: { name: bookingdetails.name, email: bookingdetails.email, type: bookingdetails.type === "individual" ? "user" : "company" },
+				});
+
+				if (response.data.success) {
+					setCheckAvailability(response.data.data);
+					updateTimeAndDuration(response.data.data); // Update time and duration based on availability
+					handleNext();
+				}
+			} catch (error) {
+				if (error.response.data.company_exists) newErrors.company_exists = error.response.data.company_exists;
+				else if (error.response.data.type_exists) newErrors.type_exists = error.response.data.type_exists;
+
+				setErrors(newErrors);
+			} finally {
+				setIsLoading(false);
+			}
 		}
 	};
+
+	const updateTimeAndDuration = (availabilityData) => {
+		const { available_durations, available_time } = availabilityData;
+
+		const { date, time } = extractDateAndTime(available_time);
+
+		setBookingDetails((prevDetails) => ({
+			...prevDetails,
+			start_date: date,
+			start_time: formatTimeForInput(time),
+			time_slot: available_durations.length > 0 ? available_durations[0] : "day",
+		}));
+	};
+
+	const extractDateAndTime = (availableTime) => {
+		const [date, time] = availableTime.split(" ");
+		return { date, time };
+	};
+
+	const formatTimeForInput = (time) => {
+		const [hours, minutes] = time.split(":");
+		return `${hours}:${minutes}`;
+	};
+
+	const totalSelectedChairs = Object.values(selectedChairs).flat().length;
 
 	return (
 		<>
@@ -96,6 +145,8 @@ const MemberDetail = ({ handleNext }) => {
 					marginBottom: "1rem",
 					position: "relative",
 				}}>
+				{isLoading && <Loader variant="B" />}
+
 				<h3 style={{ textAlign: "center", marginBottom: "20px" }}>
 					<img src={profile} alt="Member Icon" style={{ width: "25px", height: "25px", marginRight: "10px", marginBottom: "5px", verticalAlign: "middle" }} /> Primary Information
 				</h3>
@@ -147,12 +198,11 @@ const MemberDetail = ({ handleNext }) => {
 								border: "1px solid #ccc",
 								boxSizing: "border-box",
 							}}>
-							<option value="">Select your category</option>
 							<option value="company">Business Organizations</option>
 							<option value="individual">Freelancer</option>
 						</select>
 						{formErrors.type && <span style={{ color: "red" }}>{formErrors.type}</span>}
-						{/* {errors.type_exists && <FormHelperText error>{errors.type_exists}</FormHelperText>} */}
+						{errors.type_exists && <FormHelperText error>{errors.type_exists}</FormHelperText>}
 					</div>
 
 					{/* Email Field */}

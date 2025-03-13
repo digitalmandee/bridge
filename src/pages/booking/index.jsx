@@ -3,6 +3,7 @@ import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
 import MemberDetail from "./memberdetail";
 import CategoryDetail from "./categorydetail";
+import SeatDetail from "./seatdetail";
 import BookingDetail from "./BookingDetail/bookingdetail";
 import Payment from "./payment";
 import { useNavigate, useParams } from "react-router-dom";
@@ -153,6 +154,7 @@ const Booking = () => {
 					</div>
 					{currentStep === 1 && <MemberDetail handleNext={handleNext} />}
 					{currentStep === 2 && <CategoryDetail handleNext={handleNext} />}
+					{/* {currentStep === 3 && <SeatDetail handleNext={handleNext} />} */}
 					{currentStep === 3 && <BookingDetail handleNext={handleNext} handlePrevious={handlePrevious} />}
 					{currentStep === 4 && <Payment />}
 				</div>

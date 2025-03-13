@@ -45,58 +45,60 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 
 	const handleSubmit = () => {
 		if (validateBookingDetails()) {
-			const selectedPlan = bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan);
-			const planPrice = Number(selectedPlan?.price) || 0;
-			let totalPrice = 0;
-			let packageDetail = "";
-
-			if (bookingdetails.duration === "monthly") {
-				const today = new Date();
-				const currentYear = today.getFullYear();
-				const currentMonth = today.getMonth();
-				const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-				const remainingDays = lastDayOfMonth - today.getDate();
-
-				// Count total selected chairs
-				const totalChairs = Object.values(selectedChairs).flat().length;
-
-				if (remainingDays > 0) {
-					const dailyRate = planPrice / lastDayOfMonth;
-					let extraPricePerChair = 0;
-
-					if (remainingDays <= 5) {
-						// If remaining days are ≤ 5, add full month + extra days price
-						extraPricePerChair = planPrice + dailyRate * remainingDays;
-						packageDetail = `1 month, ${remainingDays} days`;
-					} else {
-						// If remaining days > 5, charge only for those days
-						extraPricePerChair = dailyRate * remainingDays;
-						packageDetail = `${remainingDays} days`;
-					}
-
-					totalPrice = (totalChairs * extraPricePerChair).toFixed(2);
-				} else {
-					// If there are no extra days, charge for only 1 full month
-					totalPrice = (totalChairs * planPrice).toFixed(2);
-					packageDetail = "1 month";
-				}
-			} else {
-				// Count total selected chairs
-				const totalChairs = Object.values(selectedChairs).flat().length;
-
-				totalPrice = (totalChairs * planPrice).toFixed(2);
-				packageDetail = `Full Day`;
-			}
-
-			setBookingDetails((prevDetails) => ({
-				...prevDetails,
-				total_price: totalPrice,
-				package_detail: packageDetail,
-			}));
-
 			handleNext();
 		}
 	};
+
+	useEffect(() => {
+		const selectedPlan = bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan);
+		const planPrice = Number(selectedPlan?.price) || 0;
+		let totalPrice = 0;
+		let packageDetail = "";
+
+		if (bookingdetails.duration === "monthly") {
+			const today = new Date();
+			const currentYear = today.getFullYear();
+			const currentMonth = today.getMonth();
+			const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+			const remainingDays = lastDayOfMonth - today.getDate();
+
+			// Count total selected chairs
+			const totalChairs = Object.values(selectedChairs).flat().length;
+
+			if (remainingDays > 0) {
+				const dailyRate = planPrice / lastDayOfMonth;
+				let extraPricePerChair = 0;
+
+				if (remainingDays <= 5) {
+					// If remaining days are ≤ 5, add full month + extra days price
+					extraPricePerChair = planPrice + dailyRate * remainingDays;
+					packageDetail = `1 month, ${remainingDays} days`;
+				} else {
+					// If remaining days > 5, charge only for those days
+					extraPricePerChair = dailyRate * remainingDays;
+					packageDetail = `${remainingDays} days`;
+				}
+
+				totalPrice = (totalChairs * extraPricePerChair).toFixed(2);
+			} else {
+				// If there are no extra days, charge for only 1 full month
+				totalPrice = (totalChairs * planPrice).toFixed(2);
+				packageDetail = "1 month";
+			}
+		} else {
+			// Count total selected chairs
+			const totalChairs = Object.values(selectedChairs).flat().length;
+
+			totalPrice = (totalChairs * planPrice).toFixed(2);
+			packageDetail = `Full Day`;
+		}
+
+		setBookingDetails((prevDetails) => ({
+			...prevDetails,
+			total_price: totalPrice,
+			package_detail: packageDetail,
+		}));
+	}, [bookingdetails.selectedPlan]);
 
 	return (
 		<>
@@ -138,7 +140,7 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 								fontWeight: "400", // Optional: for better label visibility
 								marginLeft: 0,
 							}}>
-							Date
+							Start Date
 						</label>
 						<input
 							type="date"
@@ -165,7 +167,7 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 								fontWeight: "400", // Optional: for better label visibility
 								marginLeft: 0,
 							}}>
-							Time
+							Start Time
 						</label>
 						<input
 							type="time"
@@ -183,10 +185,9 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 						/>
 					</div>
 
-					<FormControl>
-						<FormLabel
-							id="duration-change"
-							sx={{
+					<div style={{ marginBottom: "10px" }}>
+						<label
+							style={{
 								display: "block",
 								marginBottom: "5px",
 								fontWeight: "400", // Optional: for better label visibility
@@ -194,12 +195,25 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 								color: "black",
 							}}>
 							Duration
-						</FormLabel>
-						<RadioGroup row aria-labelledby="duration-change" name="duration" value={bookingdetails.duration} onChange={handleChange}>
-							<FormControlLabel value="full_day" control={<Radio />} label="Full Day" disabled={!checkAvailability?.available_durations?.includes("full_day")} />
-							<FormControlLabel value="monthly" control={<Radio />} label="Monthly" />
-						</RadioGroup>
-					</FormControl>
+						</label>
+						<select
+							name="duration"
+							value={bookingdetails.duration}
+							onChange={handleChange}
+							style={{
+								width: "100%",
+								padding: "10px",
+								borderRadius: "5px",
+								border: "1px solid #ccc",
+								boxSizing: "border-box", // Ensures padding doesn't mess with dimensions
+								margin: 0,
+							}}>
+							<option value="full_day" disabled={!checkAvailability?.available_durations?.includes("full_day")}>
+								Full Day
+							</option>
+							<option value="monthly">Monthly</option>
+						</select>
+					</div>
 
 					{/* Duration Field */}
 					{bookingdetails.duration === "monthly" && (
@@ -211,7 +225,7 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 									fontWeight: "400", // Optional: for better label visibility
 									marginLeft: 0,
 								}}>
-								Select Booking Time
+								Working Hours
 							</label>
 							<select
 								name="time_slot"
@@ -227,10 +241,16 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 								}}>
 								{checkAvailability?.available_durations?.map((duration) => (
 									<option key={duration} value={duration}>
-										{duration
-											.split("_")
-											.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-											.join(" ")}
+										{duration === "day"
+											? "Day (9AM to 5PM)"
+											: duration === "night"
+											? "Night (6PM to 8AM)"
+											: duration === "full_day"
+											? "Full Day"
+											: duration
+													.split("_")
+													.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+													.join(" ")}
 									</option>
 								))}
 							</select>
@@ -270,6 +290,33 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 								))}
 						</select>
 						{formErrors.selectedPlan && <span style={{ color: "red" }}>{formErrors.selectedPlan}</span>}
+					</div>
+
+					{/* Time Field */}
+					<div style={{ marginBottom: "15px" }}>
+						<label
+							style={{
+								display: "block",
+								marginBottom: "5px",
+								fontWeight: "400", // Optional: for better label visibility
+								marginLeft: 0,
+							}}>
+							Cost of Memebership
+						</label>
+						<input
+							type="text"
+							name="membership"
+							value={bookingdetails.total_price}
+							readOnly
+							style={{
+								width: "100%",
+								padding: "10px",
+								borderRadius: "5px",
+								border: "1px solid #ccc",
+								boxSizing: "border-box", // Ensures padding doesn't mess with dimensions
+								margin: 0,
+							}}
+						/>
 					</div>
 
 					{/* Buttons */}
