@@ -9,7 +9,7 @@ import colors from "@/assets/styles/color";
 import { useNavigate } from "react-router-dom";
 import DashboardNotifications from "@/components/notifications";
 import { width } from "@mui/system";
-import { SidebarContext } from "../../contexts/sidebar.context"
+import { SidebarContext } from "../../contexts/sidebar.context";
 
 // Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -88,14 +88,14 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 		// padding: '1.5rem',
 		backgroundColor: "transparent",
 		minHeight: "100vh",
-		width: '100%',
+		width: "100%",
 		transition: "all 0.3s ease-in-out",
 		marginLeft: "0px",
 	};
 
 	const cardStyle = {
 		backgroundColor: "#FFFFFF",
-		width: '100%',
+		width: "100%",
 		borderRadius: "0.2rem",
 		padding: "1rem",
 		boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
@@ -103,7 +103,7 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 	};
 
 	const metricsGridStyle = {
-		width: '100%',
+		width: "100%",
 		display: "grid",
 		gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
 		gap: "0.5rem",
@@ -116,14 +116,30 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 		gap: "1rem",
 	};
 
+	const [data, setData] = useState(null);
+
+	const getStats = async () => {
+		try {
+			const res = await axiosInstance.get("admin/dashboard");
+			setData(res.data);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	useEffect(() => {
+		getStats();
+	}, []);
+
 	return (
 		<>
 			<TopNavbar />
 			<div className="main">
-				<div className={`sideBarWrapper ${context.isToggleSidebar === true ? 'toggle' : ''}`}>
+				<div className={`sideBarWrapper ${context.isToggleSidebar === true ? "toggle" : ""}`}>
 					<Sidebar />
 				</div>
-				<div className={`content ${context.isToggleSidebar === true ? 'toggle' : ''}`}>
+				<div className={`content ${context.isToggleSidebar === true ? "toggle" : ""}`}>
+					{JSON.stringify(data)}
 					<div style={containerStyle}>
 						{/* Metrics */}
 						<div style={metricsGridStyle}>
@@ -145,25 +161,27 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 						</div>
 
 						{/* Analytics and Notifications */}
-						<div style={{
-							display: "grid",
-							gridTemplateColumns: "minmax(600px, 1fr) auto", 
-							// gridTemplateColumns: isSidebarOpen ? "minmax(500px, 1fr) 21rem" : "2fr 1fr",
-							gap: "0.5rem",
-							width: "100%",
-							transition: "grid-template-columns 0.3s ease-in-out",
-						}}>
-							<div style={{
-								marginTop: "1rem",
-								height: "30rem",
-								// width: '45rem',
-								transition: "width 0.3s ease-in-out",
-								width: isSidebarOpen ? "45rem" : "100%",
-								backgroundColor: "#FFFFFF",
-								borderRadius: "0.2rem",
-								boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
-								border: "1px solid #E5E7EB",
+						<div
+							style={{
+								display: "grid",
+								gridTemplateColumns: "minmax(600px, 1fr) auto",
+								// gridTemplateColumns: isSidebarOpen ? "minmax(500px, 1fr) 21rem" : "2fr 1fr",
+								gap: "0.5rem",
+								width: "100%",
+								transition: "grid-template-columns 0.3s ease-in-out",
 							}}>
+							<div
+								style={{
+									marginTop: "1rem",
+									height: "30rem",
+									// width: '45rem',
+									transition: "width 0.3s ease-in-out",
+									width: isSidebarOpen ? "45rem" : "100%",
+									backgroundColor: "#FFFFFF",
+									borderRadius: "0.2rem",
+									boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+									border: "1px solid #E5E7EB",
+								}}>
 								<div style={{ padding: "1rem" }}>
 									<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
 										<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Analytics</h2>
