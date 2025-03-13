@@ -75,7 +75,16 @@ const menuItems = [
 	},
 	// { to: "", label: "Inventory Management", icon: <MdOutlineInventory />, hasDropdown: true },
 	// { to: "", label: "Expense Management", icon: <LuListTodo />, hasDropdown: true },
-	// { to: "", label: "Financial Report", icon: <GoDatabase />, hasDropdown: true },
+	{
+		label: "Finance Management",
+		icon: <GoDatabase />,
+		hasDropdown: true,
+		dropdown: [
+			{to: "/branch/finance/dashboard", label: "Dashboard", permission: "employee-dashboard"},
+			{to: "/branch/payroll/dashboard", label: "Payroll", permission: "payroll", permission: "employee-dashboard"},
+			{to: "", label: "Groceries & Supplies", permission: "employee-dashboard"}
+		],
+	},
 	{
 		label: "Users Role Management",
 		icon: <SlCalender />,
@@ -90,7 +99,8 @@ const menuItems = [
 
 const Admin = () => {
 	const { permissions } = useContext(AuthContext);
-
+	// console.log("permissions\\\\\\\\", permissions);
+	
 	const { branch } = useParams();
 
 	const location = useLocation();
@@ -118,7 +128,6 @@ const Admin = () => {
 				}
 			});
 		}
-
 		setSelectedButton(activeLabel); // Update the state with the active button
 	}, [location.pathname]);
 
@@ -137,6 +146,8 @@ const Admin = () => {
 			setOpenDropdown(""); // Close any open dropdown
 		}
 	};
+
+	// console.log("Menu Items+++++++++++:", menuItems);
 
 	return (
 		<ul>

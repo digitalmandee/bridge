@@ -5,7 +5,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { MdArrowBackIos } from "react-icons/md";
-
+import colors from "@/assets/styles/color";
 const RoleForm = () => {
 	const { branch, id } = useParams();
 
