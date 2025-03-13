@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import user from "@/assets/user2.png";
 import axios from "axios";
@@ -9,6 +9,8 @@ import axiosInstance from "@/utils/axiosInstance";
 
 const AddStaff = () => {
 	const navigate = useNavigate();
+	const { branch } = useParams();
+
 	const fileInputRef = useRef(null);
 	const [avaiablePrintingQuota, setAvaiablePrintingQuota] = useState(0);
 	const [avaiableBookingQuota, setAvaiableBookingQuota] = useState(0);
@@ -118,7 +120,7 @@ const AddStaff = () => {
 				setBookingSeats((prevSeats) => prevSeats.filter((seat) => seat.id != seatNo));
 
 				// Optional: Redirect to staff management page or show success message
-				navigate("/company/staff/management");
+				navigate(`/${branch}/company/staff/management`);
 			} else {
 				console.log("Error in staff creation:", res.data.message);
 			}

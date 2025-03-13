@@ -7,7 +7,7 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import PaymentsIcon from "@mui/icons-material/Payments";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Bell, FileText } from "lucide-react";
 import axiosInstance from "@/utils/axiosInstance";
 import DashboardNotifications from "@/components/notifications";
@@ -15,6 +15,7 @@ import DashboardNotifications from "@/components/notifications";
 const UserDashboard = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [data, setData] = useState([]);
+	const { branch } = useParams();
 
 	useEffect(() => {
 		const getData = async () => {
@@ -47,7 +48,7 @@ const UserDashboard = () => {
 									Dashboard
 								</Typography>
 								<Box sx={{ display: "flex", gap: 2 }}>
-									<Link to="/user/booking-schedule">
+									<Link to={`/${branch}/user/booking-schedule`}>
 										<Button
 											variant="outlined"
 											sx={{
