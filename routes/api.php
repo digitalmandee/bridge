@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingController;
@@ -156,6 +157,11 @@ Route::group(['middleware' => ['set_tenant']], function () {
             Route::get('profile/report/{employeeId}', [AttendanceController::class, 'profileReport']);
             Route::post('all/report', [AttendanceController::class, 'allEmployeesReport']);
         });
+    });
+
+    // Admin Dasboard
+    Route::group(['prefix' => 'admin'], function () {
+        Route::get('dashboard', [AdminController::class, 'index']);
     });
 
     // User Dasboard

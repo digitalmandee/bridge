@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Chair;
+use App\Models\CompanyProfile;
 use App\Models\Invoice;
 use App\Models\User;
+use App\Models\UserProfile;
 use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -41,11 +43,31 @@ class BookingController extends Controller
                 $user = User::create([
                     'name' => $bookingDetails['name'],
                     'email' => $bookingDetails['email'],
-                    'phone_no' => $bookingDetails['phone_no'],
-                    'type' => $type,
                     'password' => Hash::make('password'),
+                    'type' => $type,
+                    'phone_no' => $bookingDetails['phone_no'],
+                    'secondary_phone_no' => $bookingDetails['secondary_phone_no'],
+                    'cnic_number' => $bookingDetails['cnic'],
                 ]);
                 $user->assignRole('user');
+
+                if ($type === 'company') {
+                    CompanyProfile::create([
+                        'user_id' => $user->id,
+                        'name' => $bookingDetails['company_name'],
+                        'website' => $bookingDetails['company_website'],
+                        'industry' => $bookingDetails['industry'],
+                        'employees' => $bookingDetails['employees'],
+                        'address' => $bookingDetails['company_address'],
+                    ]);
+                } else {
+                    UserProfile::create([
+                        'user_id' => $user->id,
+                        'linkedin' => $bookingDetails['linkedin'],
+                        'facebook' => $bookingDetails['facebook'],
+                        'freelance_site' => $bookingDetails['freelance_site'],
+                    ]);
+                }
             }
 
             $userId = $user->id;
@@ -54,6 +76,11 @@ class BookingController extends Controller
             if ($request->hasFile('profile_image')) {
                 $profileImagePath = $request->file('profile_image')->store('profile_images', 'public');
                 $user->update(['profile_image' => $profileImagePath]);
+            }
+
+            if ($request->hasFile('cnic_image')) {
+                $profileImagePath = $request->file('cnic_image')->store('cnics', 'public');
+                $user->update(['cnic_image' => $profileImagePath]);
             }
 
             // Handle receipt upload

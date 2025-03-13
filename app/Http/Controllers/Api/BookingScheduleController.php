@@ -235,16 +235,8 @@ class BookingScheduleController extends Controller
 
     public function getAvailabilityRooms()
     {
-        $user = auth()->user();
-        $branchId = $user->type === 'admin' ? $user->branch->id : $user->created_by_branch_id;
-
-        if (!$branchId) {
-            return response()->json(['message' => 'Branch ID parameter is required'], 400);
-        }
-
         // Fetch floors with rooms, selecting only 'id' and 'name' for rooms
-        $floors = ScheduleFloor::where('branch_id', $branchId)
-            ->select('id', 'name')  // Select only id and name for floors
+        $floors = ScheduleFloor::select('id', 'name')  // Select only id and name for floors
             ->with(['rooms' => function ($query) {
                 $query->select('id', 'name', 'schedule_floor_id');
             }])
