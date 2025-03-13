@@ -139,7 +139,7 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 					<Sidebar />
 				</div>
 				<div className={`content ${context.isToggleSidebar === true ? "toggle" : ""}`}>
-					{JSON.stringify(data)}
+					{/* {JSON.stringify(data)} */}
 					<div style={containerStyle}>
 						{/* Metrics */}
 						<div style={metricsGridStyle}>
