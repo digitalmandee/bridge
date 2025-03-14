@@ -95,6 +95,7 @@ class BookingController extends Controller
             if ($bookingDetails['duration'] === 'full_day') {
                 // Full day package: End time is 24 hours after start time
                 $bookingEndTime = $startTime->copy()->addDay();
+                $paidMonth = $startDate->format('F');
             } else {
                 // Monthly package: Check if start date is within last 5 days of the month
                 $monthDays = $startDate->daysInMonth;  // Total days in month
@@ -104,9 +105,11 @@ class BookingController extends Controller
                     // If start date is within the last 5 days of the month, extend to the next month's end
                     $nextMonth = $startDate->copy()->addMonth();
                     $bookingEndTime = Carbon::create($nextMonth->year, $nextMonth->month, $nextMonth->daysInMonth);
+                    $paidMonth = $nextMonth->format('F');
                 } else {
                     // Otherwise, package ends at the end of the current month
                     $bookingEndTime = $lastDayOfMonth;
+                    $paidMonth = $startDate->format('F');
                 }
             }
 
@@ -138,7 +141,7 @@ class BookingController extends Controller
                 'due_date' => Carbon::parse($booking->start_date)->addDay()->format('Y-m-d'),
                 'amount' => $booking->total_price,
                 'payment_type' => $booking->payment_method,
-                'paid_month' => Carbon::now()->format('F'),
+                'paid_month' => $paidMonth,
                 'paid_year' => Carbon::now()->year,
                 'plan' => ['id' => $selectedPlan['id'], 'name' => $selectedPlan['name'], 'price' => $selectedPlan['price']],
                 'receipt' => $receiptPath,
@@ -292,6 +295,22 @@ class BookingController extends Controller
                     // Set color based on time_slot
                     $chair->color = $this->getColorBasedOnDuration($chair->time_slot);
                     $chair->save();
+
+                    // Update the booking Invoice
+                    $startDate = Carbon::parse($booking->start_date);  // Start Date
+                    // Monthly package: Check if start date is within last 5 days of the month
+                    $monthDays = $startDate->daysInMonth;  // Total days in month
+                    if ($startDate->day >= ($monthDays - 5)) {
+                        // If start date is within the last 5 days of the month, extend to the next month's end
+                        $nextMonth = $startDate->copy()->addMonth();
+                        $paidMonth = $nextMonth->format('F');
+                    } else {
+                        $paidMonth = $startDate->format('F');
+                    }
+
+                    Invoice::where('booking_id', $booking->id)->where('invoice_type', 'Monthly')->where('paid_month', $paidMonth)->where('paid_year', Carbon::now()->year)->update([
+                        'status' => 'paid'
+                    ]);
                 } else if ($request->status === 'vacated' && $booking->status === 'confirmed') {
                     // Handle vacating a booking
                     if ($chair->time_slot === 'full_day') {
