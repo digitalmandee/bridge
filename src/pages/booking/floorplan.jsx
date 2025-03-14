@@ -1345,68 +1345,68 @@ const Floorplan = () => {
 							}
 						]
 					},
-					{
-						"id": "J",
-						"name": "Table J",
-						"chairs": [
-							{
-								"floor_id": 1,
-								"room_id": 6,
-								"table_id": 10,
-								"chair_id": 55,
-								"id": 1,
-								"position": {
-									"x": 76,
-									"y": 80
-								},
-								"rotation": 0,
-								"color": "gray",
-								"time_slot": "available"
-							},
-							{
-								"floor_id": 1,
-								"room_id": 6,
-								"table_id": 10,
-								"chair_id": 56,
-								"id": 2,
-								"position": {
-									"x": 81,
-									"y": 87
-								},
-								"rotation": 90,
-								"color": "gray",
-								"time_slot": "available"
-							},
-							{
-								"floor_id": 1,
-								"room_id": 6,
-								"table_id": 10,
-								"chair_id": 57,
-								"id": 3,
-								"position": {
-									"x": 72,
-									"y": 87
-								},
-								"rotation": 270,
-								"color": "gray",
-								"time_slot": "available"
-							},
-							{
-								"floor_id": 1,
-								"room_id": 6,
-								"table_id": 10,
-								"chair_id": 58,
-								"id": 4,
-								"position": {
-									"x": 77,
-									"y": 94
-								},
-								"rotation": 180,
-								"color": "gray",
-								"time_slot": "available"
-							}
-						]
-					}
+					// {
+					// 	"id": "J",
+					// 	"name": "Table J",
+					// 	"chairs": [
+					// 		{
+					// 			"floor_id": 1,
+					// 			"room_id": 6,
+					// 			"table_id": 10,
+					// 			"chair_id": 55,
+					// 			"id": 1,
+					// 			"position": {
+					// 				"x": 76,
+					// 				"y": 80
+					// 			},
+					// 			"rotation": 0,
+					// 			"color": "gray",
+					// 			"time_slot": "available"
+					// 		},
+					// 		{
+					// 			"floor_id": 1,
+					// 			"room_id": 6,
+					// 			"table_id": 10,
+					// 			"chair_id": 56,
+					// 			"id": 2,
+					// 			"position": {
+					// 				"x": 81,
+					// 				"y": 87
+					// 			},
+					// 			"rotation": 90,
+					// 			"color": "gray",
+					// 			"time_slot": "available"
+					// 		},
+					// 		{
+					// 			"floor_id": 1,
+					// 			"room_id": 6,
+					// 			"table_id": 10,
+					// 			"chair_id": 57,
+					// 			"id": 3,
+					// 			"position": {
+					// 				"x": 72,
+					// 				"y": 87
+					// 			},
+					// 			"rotation": 270,
+					// 			"color": "gray",
+					// 			"time_slot": "available"
+					// 		},
+					// 		{
+					// 			"floor_id": 1,
+					// 			"room_id": 6,
+					// 			"table_id": 10,
+					// 			"chair_id": 58,
+					// 			"id": 4,
+					// 			"position": {
+					// 				"x": 77,
+					// 				"y": 94
+					// 			},
+					// 			"rotation": 180,
+					// 			"color": "gray",
+					// 			"time_slot": "available"
+					// 		}
+					// 	]
+					// }
 				],);
 			} catch (error) {
 				console.error("Error fetching floor plan data", error);
