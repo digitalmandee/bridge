@@ -120,11 +120,15 @@ const Floorplan = () => {
 			try {
 				const response = await axiosInstance.get(`floor-plan?floor_id=${selectedFloor}`);
 
-				if (response.data && Array.isArray(response.data.tables)) {
+				if (response.data && Array.isArray(response.data.tables)) 
+					{
 					setTotalAvailableChairs(response.data.totalAvailableChairs);
 					setTotalOccupiedChairs(response.data.totalOccupiedChairs);
 					setTables(response.data.tables);
 				}
+				// setTotalAvailableChairs();
+				// setTotalOccupiedChairs();
+				// setTables();
 			} catch (error) {
 				console.error("Error fetching floor plan data", error);
 			} finally {
@@ -132,6 +136,7 @@ const Floorplan = () => {
 					setIsLoading(false);
 				}, 500);
 			}
+
 		};
 
 		fetchFloorPlanData();
