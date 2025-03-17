@@ -81,6 +81,9 @@ import ManageCheque from "./pages/payroll/cheque";
 import CreateCheque from "./pages/payroll/create";
 import PayrollMonthly from "./pages/payroll/monthly";
 import PayrollSummary from "./pages/payroll/summary";
+import EmployeSalary from "./pages/payroll/empsalary";
+import SalaryComponent from "./pages/payroll/salarycomp";
+import PaySlip from "./pages/payroll/payslip";
 
 function AuthRoutes() {
 	return (
@@ -673,6 +676,33 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="admin" permission="employee-dashboard">
 						<PayrollSummary />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/payroll/employee/salary"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<EmployeSalary />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/salary/component"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<SalaryComponent />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/payroll/payslip"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<PaySlip />
 					</ProtectedRoute>
 				}
 			/>

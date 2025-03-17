@@ -102,18 +102,38 @@ const PayrollDashboard = () => {
                     <Container fluid className="py-4 px-4 bg-light min-vh-100">
                         <div className="d-flex justify-content-between align-items-center mb-4">
                             <h2 className="mb-0 fw-bold">Payroll Dashboard</h2>
-                            <Button
-                                variant="primary"
-                                style={{
-                                    backgroundColor: '#0A2647',
-                                    borderColor: '#0A2647',
-                                    borderRadius: '4px',
-                                    padding: '8px 16px'
-                                }}
-                                onClick={() => navigate(`/${branch}/branch/run-payroll`)}
-                            >
-                                Run Payroll
-                            </Button>
+                            <div style={{
+                                alignItems:'center',
+                                justifyContent:'center'
+                            }}>
+                                <Button
+                                    variant="primary"
+                                    style={{
+                                        backgroundColor: '#FFFFFF',
+                                        borderColor: '#DCDCDC',
+                                        borderRadius: '4px',
+                                        color: 'black',
+                                        padding: '8px 16px',
+                                        marginRight:'1.5rem',
+                                        // height: "45px"
+                                    }}
+                                    onClick={ () => navigate(`/${branch}/branch/salary/component`)}
+                                >
+                                    Salary Component
+                                </Button>
+                                <Button
+                                    variant="primary"
+                                    style={{
+                                        backgroundColor: '#0A2647',
+                                        borderColor: '#0A2647',
+                                        borderRadius: '4px',
+                                        padding: '8px 16px'
+                                    }}
+                                    onClick={() => navigate(`/${branch}/branch/run-payroll`)}
+                                >
+                                    Run Payroll
+                                </Button>
+                            </div>
                         </div>
 
                         <Row className="g-4 mb-4">
@@ -205,7 +225,11 @@ const PayrollDashboard = () => {
                                         </thead>
                                         <tbody>
                                             {tableData.map((row, index) => (
-                                                <tr key={index}>
+                                                <tr key={index} style={{
+                                                    cursor: 'pointer'
+                                                }}
+                                                    onClick={() => navigate(`/${branch}/branch/payroll/employee/salary`)}
+                                                >
                                                     <td>{row.period}</td>
                                                     <td>{row.totalEmploy}</td>
                                                     <td>{row.totalSalary}</td>
