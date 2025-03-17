@@ -104,9 +104,17 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 
 	const metricsGridStyle = {
 		width: "100%",
-		display: "grid",
-		gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-		gap: "0.5rem",
+		display: "flex",
+		justifyContent: "space-between",
+		alignItems: "flex-start",
+		// gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+		gap: "2rem",
+	};
+
+	const columnStyle = {
+		display: "flex",
+		flexDirection: "column",
+		width: "50%",
 	};
 
 	const statsGridStyle = {
@@ -143,21 +151,49 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 					<div style={containerStyle}>
 						{/* Metrics */}
 						<div style={metricsGridStyle}>
-							{metrics.map((metric, i) => (
-								<div key={i} style={cardStyle}>
-									<div style={{ display: "flex", flexDirection: "column" }}>
-										<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
-										<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
-											<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
-											<span style={{ fontSize: "0.875rem", color: "#6B7280" }}>{metric.unit}</span>
+							{/* Revenue Section */}
+							<div style={columnStyle}>
+								<h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "0.5rem" }}>Revenue</h3>
+								<div style={{ display: "flex", gap: "0.5rem" }}>
+									{metrics.slice(0, 3).map((metric, i) => (
+										<div key={i} style={cardStyle}>
+											<div style={{ display: "flex", flexDirection: "column" }}>
+												<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
+												<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
+													<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
+													<span style={{ fontSize: "0.875rem", color: "#6B7280" }}>{metric.unit}</span>
+												</div>
+												<div style={{ display: "flex", alignItems: "center", marginTop: "1rem", fontSize: "0.875rem", color: metric.increase ? "#16A34A" : "#DC2626" }}>
+													{metric.increase ? "↑" : "↓"}
+													<span>{metric.change}%</span>
+												</div>
+											</div>
 										</div>
-										<div style={{ display: "flex", alignItems: "center", marginTop: "1rem", fontSize: "0.875rem", color: metric.increase ? "#16A34A" : "#DC2626" }}>
-											{metric.increase ? <ArrowUpIcon style={{ width: "0.75rem", height: "0.75rem", marginRight: "0.25rem" }} /> : <ArrowDownIcon style={{ width: "0.75rem", height: "0.75rem", marginRight: "0.25rem" }} />}
-											<span>{metric.change}%</span>
-										</div>
-									</div>
+									))}
 								</div>
-							))}
+							</div>
+
+							{/* Occupancy Section */}
+							<div style={columnStyle}>
+								<h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "0.5rem" }}>Occupancy</h3>
+								<div style={{ display: "flex", gap: "0.5rem" }}>
+									{metrics.slice(3, 6).map((metric, i) => (
+										<div key={i} style={cardStyle}>
+											<div style={{ display: "flex", flexDirection: "column" }}>
+												<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
+												<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
+													<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
+													<span style={{ fontSize: "0.875rem", color: "#6B7280" }}>{metric.unit}</span>
+												</div>
+												<div style={{ display: "flex", alignItems: "center", marginTop: "1rem", fontSize: "0.875rem", color: metric.increase ? "#16A34A" : "#DC2626" }}>
+													{metric.increase ? "↑" : "↓"}
+													<span>{metric.change}%</span>
+												</div>
+											</div>
+										</div>
+									))}
+								</div>
+							</div>
 						</div>
 
 						{/* Analytics and Notifications */}
