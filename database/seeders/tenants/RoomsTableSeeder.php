@@ -22,13 +22,13 @@ class RoomsTableSeeder extends Seeder
                         'id' => 'A',
                         'name' => 'Table A',
                         'chairs' => [
-                            ['id' => 1, 'positionx' => 12, 'positiony' => 3, 'rotation' => 0, 'color' => 'gray'],
-                            ['id' => 2, 'positionx' => 15, 'positiony' => 3, 'rotation' => 0, 'color' => 'gray'],
-                            ['id' => 3, 'positionx' => 18, 'positiony' => 3, 'rotation' => 0, 'color' => 'gray'],
-                            ['id' => 4, 'positionx' => 12, 'positiony' => 13, 'rotation' => 180, 'color' => 'gray'],
-                            ['id' => 5, 'positionx' => 15, 'positiony' => 13, 'rotation' => 180, 'color' => 'gray'],
-                            ['id' => 6, 'positionx' => 18, 'positiony' => 13, 'rotation' => 180, 'color' => 'gray'],
-                            ['id' => 7, 'positionx' => 23.7, 'positiony' => 8, 'rotation' => 90, 'color' => 'gray'],
+                            ['id' => 1, 'positionx' => 15, 'positiony' => 5.5, 'rotation' => 0, 'color' => 'gray'],
+                            ['id' => 2, 'positionx' => 19, 'positiony' => 5.5, 'rotation' => 0, 'color' => 'gray'],
+                            ['id' => 3, 'positionx' => 23, 'positiony' => 5.5, 'rotation' => 0, 'color' => 'gray'],
+                            ['id' => 4, 'positionx' => 15, 'positiony' => 10.2, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 5, 'positionx' => 19, 'positiony' => 10.2, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 6, 'positionx' => 23, 'positiony' => 10.2, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 7, 'positionx' => 31, 'positiony' => 7.8, 'rotation' => 90, 'color' => 'gray'],
                         ]
                     ]]
                 ],
@@ -39,13 +39,13 @@ class RoomsTableSeeder extends Seeder
                         'id' => 'B',
                         'name' => 'Table B',
                         'chairs' => [
-                            ['id' => 1, 'positionx' => 14, 'positiony' => 22.5, 'rotation' => 0, 'color' => 'gray'],
-                            ['id' => 2, 'positionx' => 17, 'positiony' => 22.5, 'rotation' => 0, 'color' => 'gray'],
-                            ['id' => 3, 'positionx' => 20, 'positiony' => 22.5, 'rotation' => 0, 'color' => 'gray'],
-                            ['id' => 4, 'positionx' => 14, 'positiony' => 32.5, 'rotation' => 180, 'color' => 'gray'],
-                            ['id' => 5, 'positionx' => 17, 'positiony' => 32.5, 'rotation' => 180, 'color' => 'gray'],
-                            ['id' => 6, 'positionx' => 20, 'positiony' => 32.5, 'rotation' => 180, 'color' => 'gray'],
-                            ['id' => 7, 'positionx' => 25.3, 'positiony' => 27, 'rotation' => 90, 'color' => 'gray'],
+                            ['id' => 1, 'positionx' => 17, 'positiony' => 14.5, 'rotation' => 0, 'color' => 'gray'],
+                            ['id' => 2, 'positionx' => 21, 'positiony' => 14.5, 'rotation' => 0, 'color' => 'gray'],
+                            ['id' => 3, 'positionx' => 25, 'positiony' => 14.5, 'rotation' => 0, 'color' => 'gray'],
+                            ['id' => 4, 'positionx' => 17, 'positiony' => 19.1, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 5, 'positionx' => 21, 'positiony' => 19.1, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 6, 'positionx' => 25, 'positiony' => 19.1, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 7, 'positionx' => 32.5, 'positiony' => 17, 'rotation' => 90, 'color' => 'gray'],
                         ]
                     ]]
                 ],
@@ -56,10 +56,11 @@ class RoomsTableSeeder extends Seeder
                         'id' => 'C',
                         'name' => 'Table C',
                         'chairs' => [
-                            ['id' => 1, 'positionx' => 54.5, 'positiony' => 3, 'rotation' => 0, 'color' => 'gray'],
-                            ['id' => 2, 'positionx' => 50, 'positiony' => 10, 'rotation' => 270, 'color' => 'gray'],
-                            ['id' => 3, 'positionx' => 59.2, 'positiony' => 10, 'rotation' => 90, 'color' => 'gray'],
-                            ['id' => 4, 'positionx' => 54.5, 'positiony' => 17, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 1, 'positionx' => 46.5, 'positiony' => 13, 'rotation' => -90, 'color' => 'gray'],
+                            ['id' => 2, 'positionx' => 46.5, 'positiony' => 10, 'rotation' => 270, 'color' => 'gray'],
+                            ['id' => 3, 'positionx' => 55.5, 'positiony' => 10, 'rotation' => 90, 'color' => 'gray'],
+                            ['id' => 4, 'positionx' => 55.5, 'positiony' => 13, 'rotation' => 90, 'color' => 'gray'],
+                            ['id' => 5, 'positionx' => 51, 'positiony' => 15, 'rotation' => 180, 'color' => 'gray'],
                         ]
                     ]]
                 ],
@@ -70,24 +71,33 @@ class RoomsTableSeeder extends Seeder
                         'id' => 'D',
                         'name' => 'Table D',
                         'chairs' => [
-                            ['id' => 1, 'positionx' => 77.5, 'positiony' => 3, 'rotation' => 0, 'color' => 'gray'],
-                            ['id' => 2, 'positionx' => 81.2, 'positiony' => 8.5, 'rotation' => 90, 'color' => 'gray'],
-                            ['id' => 3, 'positionx' => 81.2, 'positiony' => 14, 'rotation' => 90, 'color' => 'gray'],
-                            ['id' => 4, 'positionx' => 81.2, 'positiony' => 19.5, 'rotation' => 90, 'color' => 'gray'],
-                            ['id' => 5, 'positionx' => 81.2, 'positiony' => 25, 'rotation' => 90, 'color' => 'gray'],
-                            ['id' => 6, 'positionx' => 81.2, 'positiony' => 30.5, 'rotation' => 90, 'color' => 'gray'],
-                            ['id' => 7, 'positionx' => 81.2, 'positiony' => 36, 'rotation' => 90, 'color' => 'gray'],
-                            ['id' => 8, 'positionx' => 81.2, 'positiony' => 41.5, 'rotation' => 90, 'color' => 'gray'],
-                            ['id' => 9, 'positionx' => 81.2, 'positiony' => 47, 'rotation' => 90, 'color' => 'gray'],
-                            ['id' => 10, 'positionx' => 73.8, 'positiony' => 8.5, 'rotation' => 270, 'color' => 'gray'],
-                            ['id' => 11, 'positionx' => 73.8, 'positiony' => 14, 'rotation' => 270, 'color' => 'gray'],
-                            ['id' => 12, 'positionx' => 73.8, 'positiony' => 19.5, 'rotation' => 270, 'color' => 'gray'],
-                            ['id' => 13, 'positionx' => 73.8, 'positiony' => 25, 'rotation' => 270, 'color' => 'gray'],
-                            ['id' => 14, 'positionx' => 73.8, 'positiony' => 30.5, 'rotation' => 270, 'color' => 'gray'],
-                            ['id' => 15, 'positionx' => 73.8, 'positiony' => 36, 'rotation' => 270, 'color' => 'gray'],
-                            ['id' => 16, 'positionx' => 73.8, 'positiony' => 41.5, 'rotation' => 270, 'color' => 'gray'],
-                            ['id' => 17, 'positionx' => 73.8, 'positiony' => 47, 'rotation' => 270, 'color' => 'gray'],
-                            ['id' => 18, 'positionx' => 77.5, 'positiony' => 51.7, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 1, 'positionx' => 70, 'positiony' => 5.5, 'rotation' => -90, 'color' => 'gray'],
+                            ['id' => 2, 'positionx' => 70, 'positiony' => 7.8, 'rotation' => -90, 'color' => 'gray'],
+                            ['id' => 3, 'positionx' => 70, 'positiony' => 10, 'rotation' => -90, 'color' => 'gray'],
+                            ['id' => 4, 'positionx' => 70, 'positiony' => 12.2, 'rotation' => -90, 'color' => 'gray'],
+                            ['id' => 5, 'positionx' => 70, 'positiony' => 14.5, 'rotation' => -90, 'color' => 'gray'],
+                            ['id' => 6, 'positionx' => 80, 'positiony' => 5.5, 'rotation' => 90, 'color' => 'gray'],
+                            ['id' => 7, 'positionx' => 80, 'positiony' => 7.8, 'rotation' => 90, 'color' => 'gray'],
+                            ['id' => 8, 'positionx' => 80, 'positiony' => 10, 'rotation' => 90, 'color' => 'gray'],
+                            ['id' => 9, 'positionx' => 80, 'positiony' => 12.2, 'rotation' => 90, 'color' => 'gray'],
+                            ['id' => 10, 'positionx' => 80, 'positiony' => 14.5, 'rotation' => 90, 'color' => 'gray'],
+                            ['id' => 11, 'positionx' => 75, 'positiony' => 19, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 12, 'positionx' => 65, 'positiony' => 24, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 13, 'positionx' => 71, 'positiony' => 24, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 14, 'positionx' => 77, 'positiony' => 24, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 15, 'positionx' => 83, 'positiony' => 24, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 16, 'positionx' => 71, 'positiony' => 27.5, 'rotation' => 0, 'color' => 'gray'],
+                            ['id' => 17, 'positionx' => 77.5, 'positiony' => 27.5, 'rotation' => 0, 'color' => 'gray'],
+                            ['id' => 18, 'positionx' => 84, 'positiony' => 27.5, 'rotation' => 0, 'color' => 'gray'],
+                            ['id' => 19, 'positionx' => 84, 'positiony' => 33.5, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 20, 'positionx' => 77.5, 'positiony' => 33.5, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 21, 'positionx' => 71, 'positiony' => 33.5, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 22, 'positionx' => 84, 'positiony' => 36.5, 'rotation' => 0, 'color' => 'gray'],
+                            ['id' => 23, 'positionx' => 77.5, 'positiony' => 36.5, 'rotation' => 0, 'color' => 'gray'],
+                            ['id' => 24, 'positionx' => 71, 'positiony' => 36.5, 'rotation' => 0, 'color' => 'gray'],
+                            ['id' => 25, 'positionx' => 84, 'positiony' => 42.5, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 26, 'positionx' => 77.5, 'positiony' => 42.5, 'rotation' => 180, 'color' => 'gray'],
+                            ['id' => 27, 'positionx' => 71, 'positiony' => 42.5, 'rotation' => 180, 'color' => 'gray'],
                         ]
                     ]]
                 ],
@@ -99,29 +109,43 @@ class RoomsTableSeeder extends Seeder
                             'id' => 'E',
                             'name' => 'Table E',
                             'chairs' => [
-                                ['id' => 1, 'positionx' => 19, 'positiony' => 72, 'rotation' => 90, 'color' => 'gray'],
-                                ['id' => 2, 'positionx' => 19, 'positiony' => 78, 'rotation' => 90, 'color' => 'gray'],
-                                ['id' => 3, 'positionx' => 19, 'positiony' => 84, 'rotation' => 90, 'color' => 'gray'],
+                                ['id' => 1, 'positionx' => 30, 'positiony' => 54.3, 'rotation' => 82, 'color' => 'gray'],
+                                ['id' => 2, 'positionx' => 31, 'positiony' => 58, 'rotation' => 82, 'color' => 'gray'],
+                                ['id' => 3, 'positionx' => 32, 'positiony' => 62, 'rotation' => 82, 'color' => 'gray'],
+                                ['id' => 4, 'positionx' => 33, 'positiony' => 65, 'rotation' => 82, 'color' => 'gray'],
+                                ['id' => 5, 'positionx' => 34, 'positiony' => 69, 'rotation' => 82, 'color' => 'gray'],
+                                ['id' => 6, 'positionx' => 35, 'positiony' => 73, 'rotation' => 82, 'color' => 'gray'],
+                                ['id' => 7, 'positionx' => 36, 'positiony' => 77, 'rotation' => 82, 'color' => 'gray'],
+                                ['id' => 8, 'positionx' => 37, 'positiony' => 80.5, 'rotation' => 82, 'color' => 'gray'],
+                                ['id' => 9, 'positionx' => 38, 'positiony' => 84, 'rotation' => 82, 'color' => 'gray'],
+                                ['id' => 10, 'positionx' => 43, 'positiony' => 86.3, 'rotation' => 0, 'color' => 'gray'],
+                                ['id' => 11, 'positionx' => 51, 'positiony' => 86.3, 'rotation' => 0, 'color' => 'gray'],
+                                ['id' => 12, 'positionx' => 59, 'positiony' => 86.3, 'rotation' => 0, 'color' => 'gray'],
                             ]
                         ],
                         [
                             'id' => 'F',
                             'name' => 'Table F',
                             'chairs' => [
-                                ['id' => 1, 'positionx' => 31.5, 'positiony' => 59, 'rotation' => 0, 'color' => 'gray'],
-                                ['id' => 2, 'positionx' => 36.2, 'positiony' => 66, 'rotation' => 90, 'color' => 'gray'],
-                                ['id' => 3, 'positionx' => 27, 'positiony' => 66, 'rotation' => 270, 'color' => 'gray'],
-                                ['id' => 4, 'positionx' => 31.5, 'positiony' => 72.5, 'rotation' => 180, 'color' => 'gray']
+                                ['id' => 1, 'positionx' => 38.5, 'positiony' => 55, 'rotation' => -90, 'color' => 'gray'],
+                                ['id' => 2, 'positionx' => 38.5, 'positiony' => 58.3, 'rotation' => -90, 'color' => 'gray'],
+                                ['id' => 3, 'positionx' => 38.5, 'positiony' => 62, 'rotation' => -90, 'color' => 'gray'],
+                                ['id' => 4, 'positionx' => 38.5, 'positiony' => 65, 'rotation' => -90, 'color' => 'gray'],
+                                ['id' => 5, 'positionx' => 50, 'positiony' => 65, 'rotation' => 90, 'color' => 'gray'],
+                                ['id' => 6, 'positionx' => 50, 'positiony' => 61.5, 'rotation' => 90, 'color' => 'gray'],
+                                ['id' => 7, 'positionx' => 50, 'positiony' => 58, 'rotation' => 90, 'color' => 'gray'],
+                                ['id' => 8, 'positionx' => 50, 'positiony' => 55, 'rotation' => 90, 'color' => 'gray'],
                             ]
                         ],
                         [
                             'id' => 'G',
                             'name' => 'Table G',
                             'chairs' => [
-                                ['id' => 1, 'positionx' => 31.5, 'positiony' => 80, 'rotation' => 0, 'color' => 'gray'],
-                                ['id' => 2, 'positionx' => 36.2, 'positiony' => 87, 'rotation' => 90, 'color' => 'gray'],
-                                ['id' => 3, 'positionx' => 27, 'positiony' => 87, 'rotation' => 270, 'color' => 'gray'],
-                                ['id' => 4, 'positionx' => 31.5, 'positiony' => 93.5, 'rotation' => 180, 'color' => 'gray']
+                                ['id' => 1, 'positionx' => 58, 'positiony' => 52, 'rotation' => -90, 'color' => 'gray'],
+                                ['id' => 2, 'positionx' => 58, 'positiony' => 55, 'rotation' => -90, 'color' => 'gray'],
+                                ['id' => 3, 'positionx' => 58, 'positiony' => 58, 'rotation' => -90, 'color' => 'gray'],
+                                ['id' => 4, 'positionx' => 58, 'positiony' => 61.5, 'rotation' => -90, 'color' => 'gray'],
+                                ['id' => 5, 'positionx' => 58, 'positiony' => 65, 'rotation' => -90, 'color' => 'gray'],
                             ]
                         ]
                     ]
@@ -134,31 +158,26 @@ class RoomsTableSeeder extends Seeder
                             'id' => 'H',
                             'name' => 'Table H',
                             'chairs' => [
-                                ['id' => 1, 'positionx' => 63.6, 'positiony' => 72, 'rotation' => 90, 'color' => 'gray'],
-                                ['id' => 2, 'positionx' => 63.6, 'positiony' => 78, 'rotation' => 90, 'color' => 'gray'],
-                                ['id' => 3, 'positionx' => 63.6, 'positiony' => 84, 'rotation' => 90, 'color' => 'gray']
+                                ['id' => 1, 'positionx' => 60, 'positiony' => 68, 'rotation' => 0, 'color' => 'gray'],
+                                ['id' => 2, 'positionx' => 54, 'positiony' => 68, 'rotation' => 0, 'color' => 'gray'],
+                                ['id' => 3, 'positionx' => 43, 'positiony' => 68, 'rotation' => 0, 'color' => 'gray'],
+                                ['id' => 4, 'positionx' => 43, 'positiony' => 74, 'rotation' => 180, 'color' => 'gray'],
+                                ['id' => 5, 'positionx' => 54, 'positiony' => 74, 'rotation' => 180, 'color' => 'gray'],
+                                ['id' => 6, 'positionx' => 60, 'positiony' => 74, 'rotation' => 180, 'color' => 'gray'],
                             ]
                         ],
                         [
                             'id' => 'I',
                             'name' => 'Table I',
                             'chairs' => [
-                                ['id' => 1, 'positionx' => 76, 'positiony' => 59, 'rotation' => 0, 'color' => 'gray'],
-                                ['id' => 2, 'positionx' => 80.7, 'positiony' => 66, 'rotation' => 90, 'color' => 'gray'],
-                                ['id' => 3, 'positionx' => 71.7, 'positiony' => 66, 'rotation' => 270, 'color' => 'gray'],
-                                ['id' => 4, 'positionx' => 76.5, 'positiony' => 72.5, 'rotation' => 180, 'color' => 'gray']
+                                ['id' => 1, 'positionx' => 47, 'positiony' => 77, 'rotation' => 0, 'color' => 'gray'],
+                                ['id' => 2, 'positionx' => 54, 'positiony' => 77, 'rotation' => 0, 'color' => 'gray'],
+                                ['id' => 3, 'positionx' => 60, 'positiony' => 77, 'rotation' => 0, 'color' => 'gray'],
+                                ['id' => 4, 'positionx' => 60, 'positiony' => 83, 'rotation' => 180, 'color' => 'gray'],
+                                ['id' => 5, 'positionx' => 54, 'positiony' => 83, 'rotation' => 180, 'color' => 'gray'],
+                                ['id' => 6, 'positionx' => 47, 'positiony' => 83, 'rotation' => 180, 'color' => 'gray'],
                             ]
                         ],
-                        [
-                            'id' => 'J',
-                            'name' => 'Table J',
-                            'chairs' => [
-                                ['id' => 1, 'positionx' => 76, 'positiony' => 80, 'rotation' => 0, 'color' => 'gray'],
-                                ['id' => 2, 'positionx' => 80.7, 'positiony' => 87, 'rotation' => 90, 'color' => 'gray'],
-                                ['id' => 3, 'positionx' => 71.7, 'positiony' => 87, 'rotation' => 270, 'color' => 'gray'],
-                                ['id' => 4, 'positionx' => 76.5, 'positiony' => 93.5, 'rotation' => 180, 'color' => 'gray']
-                            ]
-                        ]
                     ]
                 ]
             ];
