@@ -341,6 +341,24 @@ class BookingScheduleController extends Controller
         }
     }
 
+    // Destroy Booking
+    public function destroy($id)
+    {
+        try {
+            $userId = auth()->user()->id;
+
+            $bookingSchedule = BookingSchedule::where('user_id', $userId)->where('status', 'pending')->find($id);
+            if (!$bookingSchedule) {
+                return response()->json(['success' => false, 'message' => 'Booking Schedule not found'], 404);
+            }
+
+            $bookingSchedule->delete();
+            return response()->json(['success' => true, 'message' => 'Booking Schedule deleted successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
     // c
     private function checkBookingHours($bookingStartTime, $bookingEndTime)
     {

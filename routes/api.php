@@ -101,6 +101,7 @@ Route::group(['middleware' => ['set_tenant']], function () {
         Route::get('availability-rooms', [BookingScheduleController::class, 'getAvailabilityRooms']);
         Route::get('requests', [BookingScheduleController::class, 'getRequests']);
         Route::post('update', [BookingScheduleController::class, 'update']);
+        Route::delete('{id}', [BookingScheduleController::class, 'destroy']);
     });
 
     // Invoices
@@ -167,6 +168,8 @@ Route::group(['middleware' => ['set_tenant']], function () {
     // User Dasboard
     Route::group(['prefix' => 'user'], function () {
         Route::get('dashboard', [UserController::class, 'index']);
+        Route::get('profile', [UserController::class, 'profile']);
+        Route::post('profile/update', [UserController::class, 'updateProfile']);
     });
 
     // Company Dashboard
