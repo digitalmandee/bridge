@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingController;
@@ -100,6 +101,7 @@ Route::group(['middleware' => ['set_tenant']], function () {
         Route::get('availability-rooms', [BookingScheduleController::class, 'getAvailabilityRooms']);
         Route::get('requests', [BookingScheduleController::class, 'getRequests']);
         Route::post('update', [BookingScheduleController::class, 'update']);
+        Route::delete('{id}', [BookingScheduleController::class, 'destroy']);
     });
 
     // Invoices
@@ -158,9 +160,16 @@ Route::group(['middleware' => ['set_tenant']], function () {
         });
     });
 
+    // Admin Dasboard
+    Route::group(['prefix' => 'admin'], function () {
+        Route::get('dashboard', [AdminController::class, 'index']);
+    });
+
     // User Dasboard
     Route::group(['prefix' => 'user'], function () {
         Route::get('dashboard', [UserController::class, 'index']);
+        Route::get('profile', [UserController::class, 'profile']);
+        Route::post('profile/update', [UserController::class, 'updateProfile']);
     });
 
     // Company Dashboard
