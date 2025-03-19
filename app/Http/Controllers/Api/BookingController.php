@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Chair;
+use App\Models\CompanyProfile;
 use App\Models\Invoice;
 use App\Models\User;
+use App\Models\UserProfile;
 use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -41,11 +43,31 @@ class BookingController extends Controller
                 $user = User::create([
                     'name' => $bookingDetails['name'],
                     'email' => $bookingDetails['email'],
-                    'phone_no' => $bookingDetails['phone_no'],
-                    'type' => $type,
                     'password' => Hash::make('password'),
+                    'type' => $type,
+                    'phone_no' => $bookingDetails['phone_no'],
+                    'secondary_phone_no' => $bookingDetails['secondary_phone_no'],
+                    'cnic_number' => $bookingDetails['cnic'],
                 ]);
                 $user->assignRole('user');
+
+                if ($type === 'company') {
+                    CompanyProfile::create([
+                        'user_id' => $user->id,
+                        'name' => $bookingDetails['company_name'],
+                        'website' => $bookingDetails['company_website'],
+                        'industry' => $bookingDetails['industry'],
+                        'employees' => $bookingDetails['employees'],
+                        'address' => $bookingDetails['company_address'],
+                    ]);
+                } else {
+                    UserProfile::create([
+                        'user_id' => $user->id,
+                        'linkedin' => $bookingDetails['linkedin'],
+                        'facebook' => $bookingDetails['facebook'],
+                        'freelance_site' => $bookingDetails['freelance_site'],
+                    ]);
+                }
             }
 
             $userId = $user->id;
@@ -54,6 +76,11 @@ class BookingController extends Controller
             if ($request->hasFile('profile_image')) {
                 $profileImagePath = $request->file('profile_image')->store('profile_images', 'public');
                 $user->update(['profile_image' => $profileImagePath]);
+            }
+
+            if ($request->hasFile('cnic_image')) {
+                $profileImagePath = $request->file('cnic_image')->store('cnics', 'public');
+                $user->update(['cnic_image' => $profileImagePath]);
             }
 
             // Handle receipt upload
@@ -68,6 +95,7 @@ class BookingController extends Controller
             if ($bookingDetails['duration'] === 'full_day') {
                 // Full day package: End time is 24 hours after start time
                 $bookingEndTime = $startTime->copy()->addDay();
+                $paidMonth = $startDate->format('F');
             } else {
                 // Monthly package: Check if start date is within last 5 days of the month
                 $monthDays = $startDate->daysInMonth;  // Total days in month
@@ -77,9 +105,11 @@ class BookingController extends Controller
                     // If start date is within the last 5 days of the month, extend to the next month's end
                     $nextMonth = $startDate->copy()->addMonth();
                     $bookingEndTime = Carbon::create($nextMonth->year, $nextMonth->month, $nextMonth->daysInMonth);
+                    $paidMonth = $nextMonth->format('F');
                 } else {
                     // Otherwise, package ends at the end of the current month
                     $bookingEndTime = $lastDayOfMonth;
+                    $paidMonth = $startDate->format('F');
                 }
             }
 
@@ -111,7 +141,7 @@ class BookingController extends Controller
                 'due_date' => Carbon::parse($booking->start_date)->addDay()->format('Y-m-d'),
                 'amount' => $booking->total_price,
                 'payment_type' => $booking->payment_method,
-                'paid_month' => Carbon::now()->format('F'),
+                'paid_month' => $paidMonth,
                 'paid_year' => Carbon::now()->year,
                 'plan' => ['id' => $selectedPlan['id'], 'name' => $selectedPlan['name'], 'price' => $selectedPlan['price']],
                 'receipt' => $receiptPath,
@@ -265,6 +295,22 @@ class BookingController extends Controller
                     // Set color based on time_slot
                     $chair->color = $this->getColorBasedOnDuration($chair->time_slot);
                     $chair->save();
+
+                    // Update the booking Invoice
+                    $startDate = Carbon::parse($booking->start_date);  // Start Date
+                    // Monthly package: Check if start date is within last 5 days of the month
+                    $monthDays = $startDate->daysInMonth;  // Total days in month
+                    if ($startDate->day >= ($monthDays - 5)) {
+                        // If start date is within the last 5 days of the month, extend to the next month's end
+                        $nextMonth = $startDate->copy()->addMonth();
+                        $paidMonth = $nextMonth->format('F');
+                    } else {
+                        $paidMonth = $startDate->format('F');
+                    }
+
+                    Invoice::where('booking_id', $booking->id)->where('invoice_type', 'Monthly')->where('paid_month', $paidMonth)->where('paid_year', Carbon::now()->year)->update([
+                        'status' => 'paid'
+                    ]);
                 } else if ($request->status === 'vacated' && $booking->status === 'confirmed') {
                     // Handle vacating a booking
                     if ($chair->time_slot === 'full_day') {

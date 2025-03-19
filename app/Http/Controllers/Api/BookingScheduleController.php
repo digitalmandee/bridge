@@ -235,8 +235,6 @@ class BookingScheduleController extends Controller
 
     public function getAvailabilityRooms()
     {
-        $user = auth()->user();
-
         // Fetch floors with rooms, selecting only 'id' and 'name' for rooms
         $floors = ScheduleFloor::select('id', 'name')  // Select only id and name for floors
             ->with(['rooms' => function ($query) {
@@ -340,6 +338,24 @@ class BookingScheduleController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
+        }
+    }
+
+    // Destroy Booking
+    public function destroy($id)
+    {
+        try {
+            $userId = auth()->user()->id;
+
+            $bookingSchedule = BookingSchedule::where('user_id', $userId)->where('status', 'pending')->find($id);
+            if (!$bookingSchedule) {
+                return response()->json(['success' => false, 'message' => 'Booking Schedule not found'], 404);
+            }
+
+            $bookingSchedule->delete();
+            return response()->json(['success' => true, 'message' => 'Booking Schedule deleted successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
