@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Models\Floor;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Chair extends Model
 {
@@ -18,6 +18,7 @@ class Chair extends Model
         'positiony',
         'rotation',
         'color',
+        'activeColor',
         'time_slot'
     ];
 
@@ -25,7 +26,6 @@ class Chair extends Model
     {
         return $this->belongsTo(Floor::class);
     }
-
 
     public static function getChairs()
     {
@@ -66,6 +66,7 @@ class Chair extends Model
     {
         return $this->belongsTo(Table::class, 'table_id', 'id');
     }
+
     public function room()
     {
         return $this->belongsTo(Room::class, 'room_id', 'id');

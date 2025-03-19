@@ -155,7 +155,34 @@ class BranchController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'floors' => 'required|integer',
+            'rooms' => 'required|integer',
+            'seats' => 'required|integer',
+            'tables' => 'required|integer',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $tenant = Tenant::findOrFail($id);
+            Log::info($validatedData);
+            $tenant->update($validatedData);
+
+            tenancy()->initialize($tenant);
+
+            $user = User::where('email', $tenant->email)->first();
+            $user->name = $request->name;
+            $user->save();
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Branch updated successfully']);
+        } catch (\Exception $e) {
+            Log::info($e->getMessage());
+            return response()->json(['error' => 'Something went wrong.'], 500);
+        }
     }
 
     /**
