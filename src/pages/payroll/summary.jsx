@@ -9,6 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css"
 
 const PayrollSummary = () => {
     const navigate = useNavigate();
+    const { branch } = useParams();
 
     const [open, setOpen] = useState(false)
 
@@ -28,7 +29,7 @@ const PayrollSummary = () => {
 
     // Handle form submission
     const handleSubmit = () => {
-        console.log("Form submitted!")
+        navigate(`/${branch}/branch/payroll/payslip`)
         handleClose()
     }
 
@@ -46,7 +47,7 @@ const PayrollSummary = () => {
                             <div onClick={() => navigate(-1)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
                                 <MdArrowBackIos style={{ fontSize: "20px", marginRight: "10px" }} />
                             </div>
-                            <Typography variant="h6" component="div" style={{ marginLeft: 8 }}>
+                            <Typography variant="h5" component="div" style={{ marginLeft: 8, color: 'black' }}>
                                 Payroll Process Summary
                             </Typography>
                         </div>
@@ -251,7 +252,7 @@ const PayrollSummary = () => {
                                             "&:hover": {
                                                 bgcolor: "#0a2e5c",
                                             },
-                                        }}
+                                        }}   
                                     >
                                         Submit
                                     </Button>
