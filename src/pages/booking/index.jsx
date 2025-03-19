@@ -51,7 +51,6 @@ const Booking = () => {
 		{ id: 3, label: "Step 3" },
 	];
 
-
 	return (
 		<>
 			<TopNavbar />
@@ -99,37 +98,39 @@ const Booking = () => {
 								alignItems: "center",
 								marginBottom: "20px",
 								// marginLeft:'12rem',
-								gap: '3rem',
+								gap: "3rem",
 							}}>
 							{steps.map((step, index) => (
-								<div key={step.id} style={{
-									display: "flex",
-									// width:'50%',
-									// backgroundColor: "black",
-									alignItems: "center",
-									// textAlign: "center",
-								}}>
+								<div
+									key={step.id}
+									style={{
+										display: "flex",
+										// width:'50%',
+										// backgroundColor: "black",
+										alignItems: "center",
+										// textAlign: "center",
+									}}>
 									<div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-										<div style={{
-											width: "40px",
-											height: "40px",
-											borderRadius: "50%",
-											display: "flex",
-											alignItems: "center",
-											justifyContent: "center",
-											fontWeight: "100",
-											fontSize: "16px",
-											color: "white",
-											backgroundColor: currentStep > step.id ? colors.primary : currentStep === step.id ? colors.primary : "#ccc",
-											cursor: "pointer",
-											// position:'relative',
-											zIndex:2
-										}}
-											onClick={() => setCurrentStep(step.id)}
-										>
+										<div
+											style={{
+												width: "40px",
+												height: "40px",
+												borderRadius: "50%",
+												display: "flex",
+												alignItems: "center",
+												justifyContent: "center",
+												fontWeight: "100",
+												fontSize: "16px",
+												color: "white",
+												backgroundColor: currentStep > step.id ? colors.primary : currentStep === step.id ? colors.primary : "#ccc",
+												cursor: "pointer",
+												// position:'relative',
+												zIndex: 2,
+											}}
+											onClick={() => setCurrentStep(step.id)}>
 											{currentStep > step.id ? <FaCheck size={14} /> : step.id}
 										</div>
-										<p style={{ marginTop: "5px", fontSize: "14px", fontWeight: "500", textAlign: "center", minWidth: '60px' }}>{step.label}</p>
+										<p style={{ marginTop: "5px", fontSize: "14px", fontWeight: "500", textAlign: "center", minWidth: "60px" }}>{step.label}</p>
 									</div>
 									{index < steps.length - 1 && (
 										<div
@@ -138,14 +139,13 @@ const Booking = () => {
 												height: "2px",
 												backgroundColor: currentStep > step.id ? colors.primary : "#ccc",
 												position: "relative",
-												top:'-20px',
-												right:'-20px',
+												top: "-20px",
+												right: "-20px",
 												// left:'10px',
-												zIndex:'1'
+												zIndex: "1",
 											}}
 										/>
 									)}
-
 								</div>
 							))}
 						</div>
@@ -154,7 +154,7 @@ const Booking = () => {
 					{currentStep === 2 && <BookingDetail handleNext={handleNext} handlePrevious={handlePrevious} />}
 					{currentStep === 3 && <Payment />}
 				</div>
-			</div >
+			</div>
 		</>
 	);
 };
