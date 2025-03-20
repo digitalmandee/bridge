@@ -31,6 +31,8 @@ const menuItems = [
 		icon: <SlCalender />,
 		hasDropdown: true,
 		dropdown: [
+			{ to: "/branch/booking-schedule/floors", label: "Meeting Locations", permission: "room-booking" },
+			{ to: "/branch/booking-schedule/rooms", label: "Meeting Rooms", permission: "room-booking" },
 			{ to: "/branch/booking-schedule", label: "Room Booking", permission: "room-booking" },
 			{ to: "/branch/booking-schedule/requests", label: "Booking Requests", permission: "booking-requests" },
 		],
