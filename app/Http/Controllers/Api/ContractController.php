@@ -43,16 +43,21 @@ class ContractController extends Controller
             return response()->json(['success' => false, 'message' => 'A contract is already in progress for this user'], 400);
         }
 
-        if (Contract::where('user_id', $request->user_id)->where('status', 'signed')->where(function ($query) use ($request) {
-            $query
-                ->whereBetween('start_date', [$request->start_date, $request->end_date])
-                ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
-                ->orWhere(function ($q) use ($request) {
+        $signedContractsQuery = Contract::where('user_id', $request->user_id)
+            ->where('status', 'signed')
+            ->where(function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    $q
+                        ->whereBetween('start_date', [$request->start_date, $request->end_date ?? $request->start_date])
+                        ->orWhereBetween('end_date', [$request->start_date, $request->end_date ?? $request->start_date]);
+                })->orWhere(function ($q) use ($request) {
                     $q
                         ->where('start_date', '<=', $request->start_date)
-                        ->where('end_date', '>=', $request->end_date);
+                        ->where('end_date', '>=', $request->end_date ?? $request->start_date);
                 });
-        })->exists()) {
+            });
+
+        if ($signedContractsQuery->exists()) {
             return response()->json(['success' => false, 'message' => 'A signed contract already exists within this period'], 400);
         }
 
