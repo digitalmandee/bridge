@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\LeaveCategoryController;
 use App\Http\Controllers\Api\MemberController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\RolePermissionController;
+use App\Http\Controllers\Api\ScheduleFloorController;
+use App\Http\Controllers\Api\ScheduleRoomController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -93,6 +95,11 @@ Route::group(['middleware' => ['set_tenant']], function () {
     Route::resource('booking-plans', BookingPlanController::class)->except(['create', 'show', 'edit']);
 
     // Booking Schedule Calendar
+    Route::group(['prefix' => 'schedule'], function () {
+        Route::resource('floor', ScheduleFloorController::class)->except(['create', 'show', 'edit']);
+        Route::resource('room', ScheduleRoomController::class)->except(['create', 'show', 'edit']);
+    });
+
     Route::get('booking-schedules', [BookingScheduleController::class, 'index']);
     Route::group(['prefix' => 'booking-schedule'], function () {
         Route::post('create', [BookingScheduleController::class, 'create']);

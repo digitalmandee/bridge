@@ -21,8 +21,9 @@ class ScheduleRoom extends Model
     {
         return $this->hasMany(BookingSchedule::class);
     }
+
     public function floor()
     {
-        return $this->belongsTo(ScheduleFloor::class);
+        return $this->belongsTo(ScheduleFloor::class, 'schedule_floor_id');
     }
 }
