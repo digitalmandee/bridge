@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -42,7 +43,15 @@ class UserController extends Controller
         try {
             $user = auth()->user();
 
-            return response()->json(['success' => true, 'data' => $user->only('id', 'name', 'email', 'phone_no', 'profile_image')]);
+            // Check if profile_image exists
+            if ($user->profile_image) {
+                $user->profile_image = url($user->profile_image);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $user->only('id', 'name', 'email', 'phone_no', 'profile_image')
+            ]);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
@@ -63,7 +72,7 @@ class UserController extends Controller
             $user->password = $request->password ? Hash::make($request->password) : $user->password;
             $user->phone_no = $request->phone_no;
             if ($request->hasFile('profile_image')) {
-                $profileImagePath = $request->file('profile_image')->store('profile_images', 'public');
+                $profileImagePath = FileHelper::saveImage($request->file('profile_image'), 'profile_images');
                 $user->profile_image = $profileImagePath;
             }
 
