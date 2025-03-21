@@ -30,7 +30,8 @@ const Payment = () => {
 		// Create a FormData object to send the image and other data
 		const formData = new FormData();
 		formData.append("floor_id", selectedFloor);
-		formData.append("profile_image", bookingdetails.profile_image); // Add the receipt file
+		formData.append("profile_image", bookingdetails.cnic_image); // Add the receipt file
+		// formData.append("cnic_image", bookingdetails.cnic_image); // Add the receipt file
 		formData.append("receipt", receiptFile); // Add the receipt file
 		formData.append("bookingdetails", JSON.stringify(bookingdetails));
 		formData.append("selectedPlan", JSON.stringify(bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan)));
@@ -46,6 +47,35 @@ const Payment = () => {
 		try {
 			const res = await axiosInstance.post("booking/create", formData);
 			if (res.data.success) {
+				setBookingDetails({
+					profile_image: "",
+					cnic_image: "",
+					name: "",
+					email: "",
+					phone_no: "",
+					secondary_phone_no: "",
+					type: "individual",
+					designation: "",
+					cnic: "",
+					start_date: "",
+					start_time: "",
+					duration: "monthly",
+					time_slot: "day",
+					selectedPlan: "",
+					package_detail: 0,
+					total_price: 0,
+					payment_method: "cash",
+					// Freelancer Fields
+					linkedin: "",
+					facebook: "",
+					freelance_site: "",
+					// Business Fields
+					company_name: "",
+					company_website: "",
+					industry: "",
+					employees: "",
+					company_address: "",
+				});
 				setShowModal(true); // Show the modal
 			}
 		} catch (error) {
