@@ -23,6 +23,7 @@ const SplashScreen = ({ onComplete }) => {
       backgroundColor: "#FFCC16", // Color of the underline
       bottom: "0",
       left: "0",
+      bottom:'-3px'
     },
     logo: {
       width: "100px", // Adjust the width as needed

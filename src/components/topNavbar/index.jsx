@@ -85,8 +85,8 @@ const TopNavbar = () => {
 							<img
 								src={logo}
 								style={{
-									width: "100px",
-									height: "50px",
+									width: "90px",
+									height: "40px",
 								}}
 							/>
 						</div>
