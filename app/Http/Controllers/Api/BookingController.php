@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Chair;
@@ -74,19 +75,19 @@ class BookingController extends Controller
 
             // Handle profile_image upload
             if ($request->hasFile('profile_image')) {
-                $profileImagePath = $request->file('profile_image')->store('profile_images', 'public');
+                $profileImagePath = FileHelper::saveImage($request->file('profile_image'), 'profile_images');
                 $user->update(['profile_image' => $profileImagePath]);
             }
 
             if ($request->hasFile('cnic_image')) {
-                $profileImagePath = $request->file('cnic_image')->store('cnics', 'public');
+                $profileImagePath = FileHelper::saveImage($request->file('cnic_image'), 'cnics');
                 $user->update(['cnic_image' => $profileImagePath]);
             }
 
             // Handle receipt upload
             $receiptPath = null;
             if ($request->hasFile('receipt')) {
-                $receiptPath = $request->file('receipt')->store('invoices', 'public');
+                $receiptPath = FileHelper::saveImage($request->file('receipt'), 'invoices');
             }
 
             $startDate = Carbon::parse($bookingDetails['start_date']);  // Start Date
