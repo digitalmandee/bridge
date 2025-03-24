@@ -161,26 +161,36 @@ class BranchController extends Controller
             'rooms' => 'required|integer',
             'seats' => 'required|integer',
             'tables' => 'required|integer',
+            'status' => 'required|in:active,inactive,blocked',
         ]);
 
         try {
             DB::beginTransaction();
 
-            $tenant = Tenant::findOrFail($id);
-            Log::info($validatedData);
-            $tenant->update($validatedData);
+            $tenant = Tenant::find($id);
 
+            if (!$tenant) {
+                return response()->json(['error' => 'Invalid Branch ID'], 404);
+            }
+
+            $tenant->name = $validatedData['name'];
+            $tenant->floors = $validatedData['floors'];
+            $tenant->rooms = $validatedData['rooms'];
+            $tenant->seats = $validatedData['seats'];
+            $tenant->tables = $validatedData['tables'];
+            $tenant->status = $validatedData['status'];
+            $tenant->save();
+
+            // Update tenant database
             tenancy()->initialize($tenant);
 
-            $user = User::where('email', $tenant->email)->first();
-            $user->name = $request->name;
-            $user->save();
-
+            User::where('email', $tenant->email)->update([
+                'name' => $validatedData['name'],
+            ]);
             DB::commit();
 
             return response()->json(['success' => true, 'message' => 'Branch updated successfully']);
         } catch (\Exception $e) {
-            Log::info($e->getMessage());
             return response()->json(['error' => 'Something went wrong.'], 500);
         }
     }

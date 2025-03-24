@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Chair;
@@ -67,49 +68,6 @@ class InvoicesController extends Controller
         return response()->json(['success' => true, 'customer' => $customer]);
     }
 
-    public function update(Request $request)
-    {
-        $validatedData = $request->validate([
-            'invoice_id' => 'required|exists:invoices,id',
-            'status' => 'required|string',
-            'due_date' => 'required|date',
-            'paid_date' => 'required_if:status,paid,overdue|date',
-            'payment_type' => 'required_if:status,paid,overdue|string',
-        ]);
-
-        $admin = auth()->user();
-
-        $invoice = Invoice::find($validatedData['invoice_id']);
-
-        if (!$invoice) {
-            return response()->json(['success' => false, 'message' => 'Invoice not found or does not match with user'], 404);
-        }
-
-        $invoiceReceipt = $request->hasFile('receipt') && in_array($validatedData['status'], ['paid', 'overdue'])
-            ? $request->file('receipt')->store('invoices', 'public')
-            : $invoice->receipt;
-
-        $invoice->update([
-            'status' => $validatedData['status'],
-            'due_date' => $validatedData['due_date'],
-            'paid_date' => in_array($validatedData['status'], ['paid', 'overdue']) ? $validatedData['paid_date'] : $invoice->paid_date,
-            'payment_type' => in_array($validatedData['status'], ['paid', 'overdue']) ? $validatedData['payment_type'] : $invoice->payment_type,
-            'receipt' => $invoiceReceipt
-        ]);
-
-        $isCurrentMonth = $request->paidMonth === Carbon::now()->format('F') && $request->paidYear == Carbon::now()->year;
-
-        // Update user quotas based on invoice type
-        if ($isCurrentMonth) {
-            $this->updateUserQuotaByInvoice($invoice);
-        }
-
-        // Notify user & admin
-        $this->sendNotifications($admin, $invoice, 'Updated');
-
-        return response()->json(['success' => true, 'message' => 'Invoice updated successfully']);
-    }
-
     public function store(Request $request)
     {
         // Validate request
@@ -147,7 +105,7 @@ class InvoicesController extends Controller
 
             // Handle receipt upload
             $InvoiceReciept = $request->hasFile('reciept') && in_array($request->status, ['paid', 'overdue'])
-                ? $request->file('reciept')->store('invoices', 'public')
+                ? FileHelper::saveImage($request->file('receipt'), 'invoices')
                 : null;
 
             if ($request->invoiceType === 'Monthly') {
@@ -235,6 +193,49 @@ class InvoicesController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
         }
+    }
+
+    public function update(Request $request)
+    {
+        $validatedData = $request->validate([
+            'invoice_id' => 'required|exists:invoices,id',
+            'status' => 'required|string',
+            'due_date' => 'required|date',
+            'paid_date' => 'required_if:status,paid,overdue|date',
+            'payment_type' => 'required_if:status,paid,overdue|string',
+        ]);
+
+        $admin = auth()->user();
+
+        $invoice = Invoice::find($validatedData['invoice_id']);
+
+        if (!$invoice) {
+            return response()->json(['success' => false, 'message' => 'Invoice not found or does not match with user'], 404);
+        }
+
+        $invoiceReceipt = $request->hasFile('receipt') && in_array($validatedData['status'], ['paid', 'overdue'])
+            ? FileHelper::saveImage($request->file('receipt'), 'invoices')
+            : $invoice->receipt;
+
+        $invoice->update([
+            'status' => $validatedData['status'],
+            'due_date' => $validatedData['due_date'],
+            'paid_date' => in_array($validatedData['status'], ['paid', 'overdue']) ? $validatedData['paid_date'] : $invoice->paid_date,
+            'payment_type' => in_array($validatedData['status'], ['paid', 'overdue']) ? $validatedData['payment_type'] : $invoice->payment_type,
+            'receipt' => $invoiceReceipt
+        ]);
+
+        $isCurrentMonth = $request->paidMonth === Carbon::now()->format('F') && $request->paidYear == Carbon::now()->year;
+
+        // Update user quotas based on invoice type
+        if ($isCurrentMonth) {
+            $this->updateUserQuotaByInvoice($invoice);
+        }
+
+        // Notify user & admin
+        $this->sendNotifications($admin, $invoice, 'Updated');
+
+        return response()->json(['success' => true, 'message' => 'Invoice updated successfully']);
     }
 
     /**

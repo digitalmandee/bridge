@@ -13,7 +13,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
 
     public static function getCustomColumns(): array
     {
-        return ['id', 'name', 'email', 'username', 'location', 'floors', 'rooms', 'seats', 'tables'];
+        return ['id', 'name', 'email', 'username', 'location', 'floors', 'rooms', 'seats', 'tables', 'status'];
     }
 
     // public function setPasswordAttribute($value)
