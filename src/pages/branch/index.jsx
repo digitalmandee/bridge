@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import TopNavbar from "@/components/superadmin/topNavbar";
 import Sidebar from "@/components/superadmin/leftSideBar";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, MenuItem, Select, CircularProgress, Pagination, Modal } from "@mui/material";
+import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, MenuItem, Select, CircularProgress, Pagination, Modal, FormControl, InputLabel } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "@/utils/axiosInstance";
@@ -48,6 +48,7 @@ const BranchManagement = () => {
 			rooms: branch.rooms,
 			seats: branch.seats,
 			tables: branch.tables,
+			status: branch.status,
 		});
 		setErrors({});
 		setOpen(true);
@@ -175,20 +176,35 @@ const BranchManagement = () => {
 				</div>
 			</div>
 
-			<Modal open={open} onClose={handleClose} style={{ overflowY: "auto" }}>
+			<Modal open={open} onClose={handleClose} style={{ overflowY: "auto" }} position="top">
 				<Box className="modal-box" sx={modalStyle}>
 					<Typography variant="h6">Edit Branch</Typography>
-					<TextField fullWidth margin="normal" label="Username" value={selectedBranch?.username} InputProps={{ readOnly: true }} />
-					<TextField fullWidth margin="normal" label="Email" value={selectedBranch?.email} InputProps={{ readOnly: true }} />
-					<TextField fullWidth margin="normal" label="Location" value={selectedBranch?.location} InputProps={{ readOnly: true }} />
-					<TextField fullWidth margin="normal" label="Branch Name" name="name" value={formData.name} onChange={handleChange} error={!!errors.name} helperText={errors.name} />
-					<TextField fullWidth margin="normal" label="Floors" name="floors" value={formData.floors} onChange={handleChange} error={!!errors.floors} helperText={errors.floors} />
-					<TextField fullWidth margin="normal" label="Rooms" name="rooms" value={formData.rooms} onChange={handleChange} error={!!errors.rooms} helperText={errors.rooms} />
-					<TextField fullWidth margin="normal" label="Tables" name="tables" value={formData.tables} onChange={handleChange} error={!!errors.tables} helperText={errors.tables} />
-					<TextField fullWidth margin="normal" label="Seats" name="seats" value={formData.seats} onChange={handleChange} error={!!errors.seats} helperText={errors.seats} />
-					<Button variant="contained" fullWidth onClick={handleSubmit} sx={{ mt: 2 }}>
-						Save
-					</Button>
+					<Box display="flex" flexWrap="wrap" justifyContent="space-between" gap={1}>
+						<TextField fullWidth margin="normal" label="Username" value={selectedBranch?.username} InputProps={{ readOnly: true, style: { color: "#888" } }} sx={{ flex: "0 0 48%" }} />
+						<TextField fullWidth margin="normal" label="Email" value={selectedBranch?.email} InputProps={{ readOnly: true, style: { color: "#888" } }} sx={{ flex: "0 0 48%" }} />
+						<TextField fullWidth margin="normal" label="Location" value={selectedBranch?.location} InputProps={{ readOnly: true, style: { color: "#888" } }} sx={{ flex: "0 0 48%" }} />
+						<TextField fullWidth margin="normal" label="Branch Name" name="name" value={formData.name} onChange={handleChange} error={!!errors.name} helperText={errors.name} sx={{ flex: "0 0 48%" }} />
+						<TextField fullWidth margin="normal" label="Floors" name="floors" value={formData.floors} onChange={handleChange} error={!!errors.floors} helperText={errors.floors} sx={{ flex: "0 0 48%" }} />
+						<TextField fullWidth margin="normal" label="Rooms" name="rooms" value={formData.rooms} onChange={handleChange} error={!!errors.rooms} helperText={errors.rooms} sx={{ flex: "0 0 48%" }} />
+						<TextField fullWidth margin="normal" label="Tables" name="tables" value={formData.tables} onChange={handleChange} error={!!errors.tables} helperText={errors.tables} sx={{ flex: "0 0 48%" }} />
+						<TextField fullWidth margin="normal" label="Seats" name="seats" value={formData.seats} onChange={handleChange} error={!!errors.seats} helperText={errors.seats} sx={{ flex: "0 0 48%" }} />
+						<FormControl fullWidth>
+							<InputLabel id="status">Status</InputLabel>
+							<Select name="status" labelId="status" value={formData.status} onChange={handleChange}>
+								<MenuItem value="active">Active</MenuItem>
+								<MenuItem value="inactive">Inactive</MenuItem>
+								<MenuItem value="blocked">Blocked</MenuItem>
+							</Select>
+						</FormControl>
+					</Box>
+					<Box display="flex" justifyContent="end" sx={{ mt: 2 }}>
+						<Button variant="outlined" onClick={handleClose} sx={{ mr: 1 }}>
+							Close
+						</Button>
+						<Button variant="contained" onClick={handleSubmit}>
+							Save
+						</Button>
+					</Box>
 				</Box>
 			</Modal>
 		</>

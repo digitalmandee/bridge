@@ -123,6 +123,8 @@ const Floorplan = () => {
 				if (response.data && Array.isArray(response.data.tables)) {
 					setTotalAvailableChairs(response.data.totalAvailableChairs);
 					setTotalOccupiedChairs(response.data.totalOccupiedChairs);
+					console.log(response.data.tables);
+
 					setTables(response.data.tables);
 				}
 			} catch (error) {

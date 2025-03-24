@@ -88,23 +88,21 @@ const GFloorPlan = () => {
 							tables.map((table) =>
 								table.chairs.length > 0
 									? table.chairs.map((chair) => (
-										<Chair
-											className="chair"
-											key={`${table.id}${chair.id}`}
-											sx={{
-												color: chair.activeColor ? chair.activeColor : chair.color,
-												position: "absolute",
-												top: `${(chair.position.y / 100) * floorSize.height}px`,
-												left: `${(chair.position.x / 100) * floorSize.width}px`,
-												transform: `rotate(${chair.rotation}deg)`,
-												cursor: chair.time_slot === "full_day" ? "not-allowed" : "pointer",
-												fontSize: "30px",
-											}}
-											onClick={() =>
-												chair.time_slot !== "full_day" && toggleChairColor(table.id, chair.id)
-											}
-										/>
-									))
+											<Chair
+												className="chair"
+												key={`${table.id}${chair.id}`}
+												sx={{
+													color: `${chair.activeColor ? chair.activeColor : chair.color} !important`,
+													position: "absolute",
+													top: `${(chair.position.y / 100) * floorSize.height}px`,
+													left: `${(chair.position.x / 100) * floorSize.width}px`,
+													transform: `rotate(${chair.rotation}deg)`,
+													cursor: chair.time_slot === "full_day" ? "not-allowed" : "pointer",
+													fontSize: "30px",
+												}}
+												onClick={() => chair.time_slot !== "full_day" && toggleChairColor(table.id, chair.id)}
+											/>
+									  ))
 									: null
 							)}
 					</div>
@@ -123,8 +121,7 @@ const GFloorPlan = () => {
 						boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // Optional shadow
 						overflow: "hidden", // Enable vertical scrolling
 						border: "1px solid #ddd",
-					}}
-				>
+					}}>
 					<h4
 						style={{
 							backgroundColor: colors.primary,
@@ -134,8 +131,7 @@ const GFloorPlan = () => {
 							borderTopLeftRadius: "0.5rem",
 							borderTopRightRadius: "0.5rem",
 							textAlign: "center",
-						}}
-					>
+						}}>
 						Selected Items:
 					</h4>
 
@@ -151,8 +147,7 @@ const GFloorPlan = () => {
 								scrollbarWidth: "none",
 								msOverflowStyle: "none",
 							}}
-							className="hide-scrollbar"
-						>
+							className="hide-scrollbar">
 							{Object.entries(selectedChairs).map(([tableId, chairs]) =>
 								chairs.map((chair) => (
 									<div
@@ -162,10 +157,9 @@ const GFloorPlan = () => {
 											background: "#E3F2FD", // Light blue for contrast
 											borderRadius: "5px",
 											fontSize: "14px",
-											fontWeight:'bold',
+											fontWeight: "bold",
 											whiteSpace: "nowrap", // Prevents breaking inside the box
-										}}
-									>
+										}}>
 										{tableId} - {chair.id}
 									</div>
 								))

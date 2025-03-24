@@ -136,7 +136,7 @@ const EditContract = ({ contract, open, onClose }) => {
 			case 0:
 				return true;
 			case 1:
-				return formData.type && formData.company_number && formData.start_date && formData.end_date && formData.notice_period > 0;
+				return formData.type && formData.company_number && formData.start_date && formData.notice_period > 0;
 			case 2:
 				return formData.plan && formData.amount && formData.plan_start_date;
 			case 3:
@@ -179,7 +179,7 @@ const EditContract = ({ contract, open, onClose }) => {
 								required
 								disabled={isReadOnly}
 							/>
-							<TextField fullWidth label="End Date" type="date" value={formData.end_date} onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} inputProps={{ min: formData.start_date || "" }} required disabled={isReadOnly} />
+							<TextField fullWidth label="End Date (optional)" type="date" value={formData.end_date} onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} inputProps={{ min: formData.start_date || "" }} required disabled={isReadOnly} />
 						</div>
 
 						{/* Notice Period Selection */}

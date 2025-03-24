@@ -3,7 +3,7 @@ import { TextField, Button, Grid, Typography, Tabs, Tab, FormControl, InputLabel
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { MdArrowBackIos } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -12,6 +12,8 @@ import dayjs from "dayjs";
 import colors from "@/assets/styles/color";
 const InvoiceCreate = () => {
 	const navigate = useNavigate();
+	const { branch } = useParams();
+
 	const [selectedTab, setSelectedTab] = useState("individual");
 
 	const [formData, setFormData] = useState({
@@ -243,7 +245,7 @@ const InvoiceCreate = () => {
 				setSnackbarMessage("Invoice successfully created!"); // Set success message
 				setSnackbarSeverity("success");
 				setSnackbarOpen(true); // Show the snackbar
-				navigate("/branch/invoice/management");
+				navigate(`/${branch}/branch/invoice/management`);
 			}
 		} catch (error) {
 			console.log(error.response.data);

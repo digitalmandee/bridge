@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import { Menu, MenuItem, IconButton, Modal, Box, TextField, Button, Select, Snackbar, Alert, Typography } from "@mui/material";
+import { Menu, MenuItem, IconButton, Modal, Box, TextField, Button, Select, Snackbar, Alert, Typography, Pagination } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
@@ -28,6 +28,10 @@ const Requests = () => {
 	const [startTime, setStartTime] = useState("");
 	const [endDate, setEndDate] = useState("");
 	const [endTime, setEndTime] = useState("");
+
+	const [currentPage, setCurrentPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(1);
+	const [limit] = useState(10);
 
 	const handleMenuOpen = (event, booking) => {
 		setAnchorEl(event.currentTarget);
@@ -95,24 +99,25 @@ const Requests = () => {
 
 	const handleSnackbarClose = () => setSnackbarOpen(false);
 
-	useEffect(() => {
-		const fetchBookings = async () => {
-			setIsLoading(true);
-			try {
-				const response = await axiosInstance.get(`bookings`);
+	const fetchBookings = async (page = 1) => {
+		setIsLoading(true);
+		try {
+			const res = await axiosInstance.get(`bookings`, { params: { page, limit } });
 
-				if (response.data && Array.isArray(response.data.bookings)) {
-					setBookings(response.data.bookings);
-				}
-			} catch (error) {
-				console.error("Error fetching bookings:", error);
-			} finally {
-				setIsLoading(false);
+			if (res.data.success) {
+				setBookings(res.data.bookings.data);
+				setTotalPages(res.data.bookings.last_page);
+				setCurrentPage(res.data.bookings.current_page);
 			}
-		};
-
-		fetchBookings();
-	}, []);
+		} catch (error) {
+			console.error("Error fetching bookings:", error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+	useEffect(() => {
+		fetchBookings(currentPage);
+	}, [currentPage]);
 
 	return (
 		<>
@@ -135,34 +140,6 @@ const Requests = () => {
 								display: "flex",
 								gap: "16px",
 							}}>
-							{/* Check-in and Check-out Buttons */}
-							<Button
-								variant="contained"
-								sx={{
-									borderRadius: "20px",
-									backgroundColor: "transparent",
-									color: "#000",
-									"&:hover": {
-										backgroundColor: colors.primary,
-										color: "white",
-									},
-								}}>
-								Check in
-							</Button>
-							<Button
-								variant="outlined"
-								sx={{
-									borderRadius: "20px",
-									color: "#000",
-									borderColor: "#dcdcdc",
-									backgroundColor: "#fff",
-									"&:hover": {
-										backgroundColor: "#f1f1f1",
-									},
-								}}>
-								Check out
-							</Button>
-
 							{/* Filter and Search Box */}
 							<Box
 								className="filter-search-container"
@@ -271,6 +248,10 @@ const Requests = () => {
 									)}
 								</tbody>
 							</table>
+						</div>
+						{/* Pagination */}
+						<div className="d-flex justify-content-end mt-4">
+							<Pagination count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} shape="rounded" />
 						</div>
 					</Box>
 				</div>

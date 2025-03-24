@@ -38,6 +38,7 @@ const ScheduleRoomManagement = () => {
 	useEffect(() => {
 		fetchScheduleRooms(currentPage);
 	}, [currentPage]);
+
 	useEffect(() => {
 		fetchScheduleFloors();
 	}, []);
