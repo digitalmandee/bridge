@@ -201,27 +201,30 @@ class BookingController extends Controller
         }
     }
 
-    public function getBookings()
+    public function getBookings(Request $request)
     {
         try {
-            // Fetch bookings with user and floor relationships
-            $bookings = Booking::with(['user:id,name,email', 'floor:id,name'])->orderBy('created_at', 'desc')->get();
+            // Get per-page limit from request, default to 10
+            $perPage = $request->query('limit', 10);
 
-            // Fetch all chairs that are associated with any booking
-            $allChairIds = $bookings->pluck('chair_ids')->flatten()->unique()->toArray();
+            // Fetch paginated bookings with user and floor relationships
+            $bookings = Booking::with(['user:id,name,email', 'floor:id,name'])
+                ->orderBy('created_at', 'desc')
+                ->paginate($perPage);
+
+            // Fetch all chairs associated with any booking on the current page
+            $allChairIds = collect($bookings->items())->pluck('chair_ids')->flatten()->unique()->toArray();
             $chairs = Chair::whereIn('id', $allChairIds)->with(['table:id,table_id,name', 'room:id,name'])->get()->keyBy('id');
 
             // Format bookings with related chair, table, and room details
             $formattedBookings = $bookings->map(function ($booking) use ($chairs) {
-                $chairIds = $booking->chair_ids ?? [];
-
                 return [
                     'id' => $booking->id,
                     'name' => $booking->name,
                     'user' => $booking->user,
                     'floor' => $booking->floor,
                     'plan' => $booking->plan,
-                    'chairs' => collect($chairIds)->map(function ($chairId) use ($chairs) {
+                    'chairs' => collect($booking->chair_ids ?? [])->map(function ($chairId) use ($chairs) {
                         $chair = $chairs[$chairId] ?? null;
                         return $chair ? [
                             'id' => $chair->id,
@@ -246,7 +249,19 @@ class BookingController extends Controller
                 ];
             });
 
-            return response()->json(['success' => true, 'message' => 'Bookings retrieved successfully', 'bookings' => $formattedBookings], 200);
+            return response()->json([
+                'success' => true,
+                'message' => 'Bookings retrieved successfully',
+                'bookings' => [
+                    'data' => $formattedBookings,
+                    'current_page' => $bookings->currentPage(),
+                    'last_page' => $bookings->lastPage(),
+                    'per_page' => $bookings->perPage(),
+                    'total' => $bookings->total(),
+                    'next_page_url' => $bookings->nextPageUrl(),
+                    'prev_page_url' => $bookings->previousPageUrl(),
+                ]
+            ], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
