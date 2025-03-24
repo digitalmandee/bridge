@@ -187,7 +187,6 @@ class BranchController extends Controller
             User::where('email', $tenant->email)->update([
                 'name' => $validatedData['name'],
             ]);
-
             DB::commit();
 
             return response()->json(['success' => true, 'message' => 'Branch updated successfully']);

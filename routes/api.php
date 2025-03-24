@@ -52,10 +52,11 @@ Route::post('/branch/login', [AuthController::class, 'userlogin'])->middleware('
 Route::get('/branch/check', [BranchController::class, 'checkBranch'])->middleware('guest');
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::get('/super/user', [AuthController::class, 'getUser']);
-    Route::post('/super/logout', [AuthController::class, 'logout']);
+    Route::get('super/user', [AuthController::class, 'getUser']);
+    Route::post('super/logout', [AuthController::class, 'logout']);
+    // Branches
     Route::resource('branches', BranchController::class)->except(['create', 'edit']);
-
+    // Dashboard
     Route::get('/dashboard/branches', [BranchController::class, 'getBranches']);
     Route::get('/dashboard/branch/stats', [BranchController::class, 'getBranchStats']);
     // Booking Seats
