@@ -182,11 +182,11 @@ class BranchController extends Controller
             $tenant->save();
 
             // Update tenant database
-            tenancy()->initialize($tenant);
+            // tenancy()->initialize($tenant);
 
-            User::where('email', $tenant->email)->update([
-                'name' => $validatedData['name'],
-            ]);
+            // User::where('email', $tenant->email)->update([
+            //     'name' => $validatedData['name'],
+            // ]);
             DB::commit();
 
             return response()->json(['success' => true, 'message' => 'Branch updated successfully']);
