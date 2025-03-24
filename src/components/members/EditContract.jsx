@@ -12,7 +12,6 @@ const EditContract = ({ contract, open, onClose }) => {
 	const [loading, setLoading] = useState(false);
 	const [alertOpen, setAlertOpen] = useState(false);
 	const [companies, setCompanies] = useState([]);
-	const [members, setMembers] = useState([]);
 	const [bookingPlans, setBookingPlans] = useState([]);
 
 	const isReadOnly = user.type == "admin" ? contract.status !== "not signed" : true;

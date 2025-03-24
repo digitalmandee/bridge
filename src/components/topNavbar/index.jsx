@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import logo from "../../assets/Blogo.png"
+import logo from "../../assets/Blogo.png";
 import { FaRegBell } from "react-icons/fa6";
 import SearchBar from "./searchBar";
 import profile from "../../assets/profile.png";
@@ -141,7 +141,7 @@ const TopNavbar = () => {
 								<Button className="myAcc d-flex align-items-center" onClick={handleOpenMyAccDr}>
 									<div className="userImg">
 										<span className="rounded-circle">
-											<img src={user.profile_image ? import.meta.env.VITE_ASSET_API + profile_image : profile} alt={user.name} />
+											<img src={user.profile_image ? import.meta.env.VITE_ASSET_API + user.profile_image : profile} alt={user.name} />
 										</span>
 									</div>
 									<div className="userInfo">
