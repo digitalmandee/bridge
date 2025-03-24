@@ -307,7 +307,7 @@ const InvoiceManagement = () => {
 															color: "white",
 															"&:hover": { opacity: 0.8 },
 														}}
-														onClick={() => handleStatusClick(invoice)}
+														onClick={() => user.type === "admin" && handleStatusClick(invoice)}
 														disabled={invoice.status === "paid" || invoice.status === "overdue"}>
 														{invoice.status}
 													</Button>

@@ -103,6 +103,7 @@ const Requests = () => {
 		setIsLoading(true);
 		try {
 			const res = await axiosInstance.get(`bookings`, { params: { page, limit } });
+			console.log(res.data);
 
 			if (res.data.success) {
 				setBookings(res.data.bookings.data);
