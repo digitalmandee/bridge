@@ -6,6 +6,7 @@ import "./login.css";
 import axios from "axios";
 import { AuthContext } from "../../../contexts/AuthContext";
 import axiosInstance from "@/utils/axiosInstance";
+import SplashScreen from "@/components/splashscreen";
 
 const LoginPage = () => {
 	const { branch } = useParams();
@@ -34,7 +35,7 @@ const LoginPage = () => {
 	}, [branch]); // Ensure it re-runs if `branch` changes
 
 	if (isExist === null) {
-		return <p>Loading...</p>; // Show loading state before check completes
+		return <SplashScreen />;
 	}
 
 	if (!isExist) {
