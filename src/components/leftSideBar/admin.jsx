@@ -82,7 +82,7 @@ const menuItems = [
 		dropdown: [
 			{to: "/branch/finance/dashboard", label: "Dashboard", permission: "employee-dashboard"},
 			{to: "/branch/payroll/dashboard", label: "Payroll", permission: "payroll", permission: "employee-dashboard"},
-			{to: "", label: "Groceries & Supplies", permission: "employee-dashboard"}
+			{to: "/branch/groceries/supplies", label: "Groceries & Supplies", permission: "employee-dashboard"}
 		],
 	},
 	{

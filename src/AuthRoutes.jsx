@@ -68,6 +68,7 @@ import NoPermission from "./pages/nopermission";
 // Finance
 import FinanceDashboard from "./pages/finance/dashboard";
 import CreateReport from "./pages/finance/create";
+import GrocerySupply from "./pages/finance/grocery";
 
 // Payroll
 import PayrollDashboard from "./pages/payroll/dashboard";
@@ -576,6 +577,15 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="admin" permission="employee-dashboard">
 						<CreateReport />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/groceries/supplies"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<GrocerySupply />
 					</ProtectedRoute>
 				}
 			/>
