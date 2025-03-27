@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress, Pagination, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Snackbar, Alert } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
 
 const Management = () => {
 	const navigate = useNavigate();
+	const { branch } = useParams();
+
 	const [financeCategories, setFinanceCategories] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSaving, setIsSaving] = useState(false);
@@ -154,7 +156,9 @@ const Management = () => {
 									) : financeCategories.length > 0 ? (
 										financeCategories.map((category) => (
 											<TableRow key={category.id}>
-												<TableCell>{category.name}</TableCell>
+												<TableCell style={{ cursor: "pointer" }} onClick={() => navigate(`/${branch}/branch/finance/category/${category.id}`)}>
+													{category.name}
+												</TableCell>
 												<TableCell>
 													<Button onClick={() => handleOpen(category)} color="primary">
 														Edit
