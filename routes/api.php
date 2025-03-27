@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\ContractController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\EmployeeController;
+use App\Http\Controllers\Api\FinanceCategoryController;
+use App\Http\Controllers\Api\FinanceController;
 use App\Http\Controllers\Api\FloorPlanController;
 use App\Http\Controllers\Api\GlobalController;
 use App\Http\Controllers\Api\InvoicesController;
@@ -188,6 +190,14 @@ Route::group(['middleware' => ['set_tenant']], function () {
         Route::post('staff/create', [CompanyController::class, 'createStaff']);
         Route::put('staffs/{id}', [CompanyController::class, 'updateStaff']);
         Route::delete('staffs/{id}', [CompanyController::class, 'deleteStaff']);
+    });
+
+    // finance management
+    Route::group(['prefix' => 'finance'], function () {
+        Route::resource('/', FinanceController::class);
+        Route::get('stats', [FinanceController::class, 'getStats']);
+        Route::get('category/{categoryId}', [FinanceController::class, 'getFinanceByCategory']);
+        Route::resource('categories', FinanceCategoryController::class)->except(['create', 'edit']);
     });
 
     // -------------- Roles Management
