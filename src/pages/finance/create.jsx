@@ -1,177 +1,163 @@
-import React from 'react'
-import TopNavbar from "@/components/topNavbar";
-import Sidebar from "@/components/leftSideBar";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
-import { Box, TextField, Typography, Button, Card, CardContent, Grid } from "@mui/material"
+import { Box, TextField, Typography, Button, Card, CardContent, Grid, Snackbar, FormHelperText, Autocomplete } from "@mui/material";
+import TopNavbar from "@/components/topNavbar";
+import Sidebar from "@/components/leftSideBar";
+import axiosInstance from "@/utils/axiosInstance";
 
-const CreateReport = () => {
-    const navigate = useNavigate();
+const CreateFinanceEntry = () => {
+	const navigate = useNavigate();
+	const [formData, setFormData] = useState({
+		name: "",
+		category: null,
+		description: "",
+		amount: "",
+		quantity: "",
+		status: "unpaid",
+		issue_date: "",
+		due_date: "",
+	});
+	const [errors, setErrors] = useState({});
+	const [loading, setLoading] = useState(false);
+	const [categories, setCategories] = useState([]);
+	const [searchTerm, setSearchTerm] = useState("");
+	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
-    return (
-        <>
-            <TopNavbar />
-            <div className="main d-flex">
-                <div className="sideBarWrapper">
-                    <Sidebar />
-                </div>
-                <div className="content">
-                    <div style={{ paddingTop: "1rem", display: "flex", alignItems: "center", marginBottom: "20px", cursor: "pointer" }}>
-                        <div onClick={() => navigate(-1)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
-                            <MdArrowBackIos style={{ fontSize: "20px", marginRight: "10px" }} />
-                        </div>
-                        <h4 style={{ margin: 0 }}>New Entry</h4>
-                    </div>
-                    <Box
-                        sx={{
-                            minHeight: "100vh",
-                            display: "flex",
-                            alignItems: "flex-start",
-                            justifyContent: "center",
-                            p: 3,
-                            bgcolor: "#f8f9fa",
-                        }}
-                    >
-                        <Card
-                            sx={{
-                                width: "100%",
-                                maxWidth: 800,
-                                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
-                                borderRadius: 2,
-                            }}
-                        >
-                            <CardContent sx={{ p: 4 }}>
-                                <Grid container spacing={3}>
-                                    {/* Category and Description */}
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="body2" sx={{ mb: 1 }}>
-                                            Category
-                                        </Typography>
-                                        <TextField
-                                            fullWidth
-                                            placeholder="Rent Income"
-                                            variant="outlined"
-                                            size="small"
-                                            sx={{
-                                                "& .MuiOutlinedInput-root": {
-                                                    backgroundColor: "#fff",
-                                                },
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="body2" sx={{ mb: 1 }}>
-                                            Description
-                                        </Typography>
-                                        <TextField
-                                            fullWidth
-                                            placeholder="Description"
-                                            variant="outlined"
-                                            size="small"
-                                            sx={{
-                                                "& .MuiOutlinedInput-root": {
-                                                    backgroundColor: "#fff",
-                                                },
-                                            }}
-                                        />
-                                    </Grid>
+	// Fetch categories based on search input
+	useEffect(() => {
+		if (searchTerm) {
+			axiosInstance
+				.get(`finance/categories?type=search&query=${searchTerm}`)
+				.then((res) => setCategories(res.data.results))
+				.catch((err) => console.error("Error fetching categories", err));
+		}
+	}, [searchTerm]);
 
-                                    {/* Amount and Quantity */}
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="body2" sx={{ mb: 1 }}>
-                                            Amount
-                                        </Typography>
-                                        <TextField
-                                            fullWidth
-                                            placeholder="Enter Amount"
-                                            variant="outlined"
-                                            size="small"
-                                            sx={{
-                                                "& .MuiOutlinedInput-root": {
-                                                    backgroundColor: "#fff",
-                                                },
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="body2" sx={{ mb: 1 }}>
-                                            Quantity
-                                        </Typography>
-                                        <TextField
-                                            fullWidth
-                                            defaultValue="2"
-                                            variant="outlined"
-                                            size="small"
-                                            sx={{
-                                                "& .MuiOutlinedInput-root": {
-                                                    backgroundColor: "#fff",
-                                                },
-                                            }}
-                                        />
-                                    </Grid>
+	// Form Validation
+	const validate = () => {
+		let tempErrors = {};
+		if (!formData.name) tempErrors.name = "Name is required";
+		if (!formData.category) tempErrors.category = "Category is required";
+		if (!formData.amount || isNaN(formData.amount) || Number(formData.amount) <= 0) tempErrors.amount = "Valid amount is required";
+		if (!formData.quantity || isNaN(formData.quantity) || Number(formData.quantity) <= 0) tempErrors.quantity = "Valid quantity is required";
+		if (!formData.issue_date) tempErrors.issue_date = "Issue date is required";
+		if (!formData.due_date) tempErrors.due_date = "Due date is required";
+		setErrors(tempErrors);
+		return Object.keys(tempErrors).length === 0;
+	};
 
-                                    {/* Status and Date */}
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="body2" sx={{ mb: 1 }}>
-                                            Status
-                                        </Typography>
-                                        <TextField
-                                            fullWidth
-                                            placeholder="Paid"
-                                            variant="outlined"
-                                            size="small"
-                                            sx={{
-                                                "& .MuiOutlinedInput-root": {
-                                                    backgroundColor: "#fff",
-                                                },
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="body2" sx={{ mb: 1 }}>
-                                            Date
-                                        </Typography>
-                                        <TextField
-                                            fullWidth
-                                            defaultValue="Dec 01, 2025"
-                                            variant="outlined"
-                                            size="small"
-                                            sx={{
-                                                "& .MuiOutlinedInput-root": {
-                                                    backgroundColor: "#fff",
-                                                },
-                                            }}
-                                        />
-                                    </Grid>
+	// Handle Form Submission
+	const handleSubmit = () => {
+		if (!validate()) return;
+		setLoading(true);
 
-                                    {/* Save Button */}
-                                    <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
-                                        <Button
-                                            variant="contained"
-                                            sx={{
-                                                mt: 2,
-                                                px: 6,
-                                                py: 1,
-                                                bgcolor: "#0A2647",
-                                                "&:hover": {
-                                                    bgcolor: "#0A2647",
-                                                },
-                                                textTransform: "none",
-                                                borderRadius: 1,
-                                                minWidth: "120px",
-                                            }}
-                                        >
-                                            Save
-                                        </Button>
-                                    </Grid>
-                                </Grid>
-                            </CardContent>
-                        </Card>
-                    </Box>
-                </div>
-            </div>
-        </>
-    )
-}
+		const payload = {
+			...formData,
+			category_id: formData.category?.id || null,
+		};
+		axiosInstance
+			.post("finance", payload)
+			.then(() => {
+				setSnackbar({ open: true, message: "Finance entry created successfully!", severity: "success" });
+				navigate(-1);
+			})
+			.catch((error) => {
+				setSnackbar({ open: true, message: "Failed to create entry", severity: "error" });
+				console.error("API Error:", error);
+			})
+			.finally(() => setLoading(false));
+	};
 
-export default CreateReport
+	return (
+		<>
+			<TopNavbar />
+			<div className="main d-flex">
+				<div className="sideBarWrapper">
+					<Sidebar />
+				</div>
+				<div className="content">
+					<div style={{ paddingTop: "1rem", display: "flex", alignItems: "center", marginBottom: "20px" }}>
+						<div onClick={() => navigate(-1)} style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+							<MdArrowBackIos style={{ fontSize: "20px", marginRight: "10px" }} />
+							<h4 style={{ margin: 0 }}>New Finance Entry</h4>
+						</div>
+					</div>
+					<Box sx={{ display: "flex", justifyContent: "center", p: 3, bgcolor: "#f8f9fa" }}>
+						<Card sx={{ width: "100%", maxWidth: 800, boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)", borderRadius: 2 }}>
+							<CardContent sx={{ p: 4 }}>
+								<Grid container spacing={3}>
+									{[
+										{ label: "Name", name: "name" },
+										{ label: "Description", name: "description" },
+										{ label: "Amount", name: "amount", type: "number" },
+										{ label: "Quantity", name: "quantity", type: "number" },
+									].map(({ label, name, type = "text" }) => (
+										<Grid item xs={12} md={6} key={name}>
+											<Typography variant="body2" sx={{ mb: 1 }}>
+												{label}
+											</Typography>
+											<TextField fullWidth type={type} variant="outlined" size="small" sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "#fff" } }} value={formData[name]} onChange={(e) => setFormData({ ...formData, [name]: e.target.value })} error={!!errors[name]} helperText={errors[name]} />
+										</Grid>
+									))}
+									<Grid item xs={12} md={6}>
+										<Typography variant="body2" sx={{ mb: 1 }}>
+											Category
+										</Typography>
+										<Autocomplete options={categories} getOptionLabel={(option) => option.name} value={formData.category} onInputChange={(event, value) => setSearchTerm(value)} onChange={(event, value) => setFormData({ ...formData, category: value })} renderInput={(params) => <TextField {...params} variant="outlined" size="small" fullWidth error={!!errors.category} helperText={errors.category} />} />
+									</Grid>
+									{[
+										{ label: "Issue Date", name: "issue_date" },
+										{ label: "Due Date", name: "due_date" },
+									].map(({ label, name }) => (
+										<Grid item xs={12} md={6} key={name}>
+											<Typography variant="body2" sx={{ mb: 1 }}>
+												{label}
+											</Typography>
+											<TextField fullWidth type="date" variant="outlined" size="small" sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "#fff" } }} value={formData[name]} onChange={(e) => setFormData({ ...formData, [name]: e.target.value })} InputLabelProps={{ shrink: true }} error={!!errors[name]} helperText={errors[name]} />
+										</Grid>
+									))}
+
+									<Grid item xs={12} md={6}>
+										<Typography variant="body2" sx={{ mb: 1 }}>
+											Status
+										</Typography>
+										<TextField select fullWidth variant="outlined" size="small" sx={{ "& .MuiOutlinedInput-root": { backgroundColor: "#fff" } }} value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} SelectProps={{ native: true }} error={!!errors.status} helperText={errors.status}>
+											<option value="unpaid">Unpaid</option>
+											<option value="paid">Paid</option>
+										</TextField>
+									</Grid>
+
+									<Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
+										<Button
+											variant="contained"
+											sx={{
+												mt: 2,
+												px: 6,
+												py: 1,
+												bgcolor: "#0A2647",
+												"&:hover": {
+													bgcolor: "#0A2647",
+												},
+												textTransform: "none",
+												borderRadius: 1,
+												minWidth: "120px",
+											}}
+											onClick={handleSubmit}
+											disabled={loading}>
+											{loading ? "Saving..." : "Save"}
+										</Button>
+									</Grid>
+								</Grid>
+							</CardContent>
+						</Card>
+					</Box>
+					<Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar({ ...snackbar, open: false })} message={snackbar.message} />
+				</div>
+			</div>
+		</>
+	);
+};
+
+export default CreateFinanceEntry;

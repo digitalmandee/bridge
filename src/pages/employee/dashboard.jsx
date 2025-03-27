@@ -147,7 +147,7 @@ const EmployeeDashboard = () => {
 										) : (
 											<TableRow>
 												<TableCell colSpan={7} align="center">
-													No invoices found.
+													No employee found.
 												</TableCell>
 											</TableRow>
 										)}

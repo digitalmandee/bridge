@@ -80,9 +80,10 @@ const menuItems = [
 		icon: <GoDatabase />,
 		hasDropdown: true,
 		dropdown: [
-			{to: "/branch/finance/dashboard", label: "Dashboard", permission: "employee-dashboard"},
-			{to: "/branch/payroll/dashboard", label: "Payroll", permission: "payroll", permission: "employee-dashboard"},
-			{to: "", label: "Groceries & Supplies", permission: "employee-dashboard"}
+			{ to: "/branch/finance/dashboard", label: "Dashboard", permission: "employee-dashboard" },
+			{ to: "/branch/finance/category", label: "Category", permission: "employee-dashboard" },
+			{ to: "/branch/payroll/dashboard", label: "Payroll", permission: "payroll", permission: "employee-dashboard" },
+			{ to: "", label: "Groceries & Supplies", permission: "employee-dashboard" },
 		],
 	},
 	{
@@ -100,7 +101,7 @@ const menuItems = [
 const Admin = () => {
 	const { permissions } = useContext(AuthContext);
 	// console.log("permissions\\\\\\\\", permissions);
-	
+
 	const { branch } = useParams();
 
 	const location = useLocation();

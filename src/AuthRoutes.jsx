@@ -68,6 +68,7 @@ import NoPermission from "./pages/nopermission";
 // Finance
 import FinanceDashboard from "./pages/finance/dashboard";
 import CreateReport from "./pages/finance/create";
+import FinanceCategory from "./pages/finance/category";
 
 // Payroll
 import PayrollDashboard from "./pages/payroll/dashboard";
@@ -560,7 +561,6 @@ function AuthRoutes() {
 				}
 			/>
 
-
 			{/* Finance Management Routes */}
 			<Route
 				path="branch/finance/dashboard"
@@ -576,6 +576,15 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="admin" permission="employee-dashboard">
 						<CreateReport />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/finance/category"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<FinanceCategory />
 					</ProtectedRoute>
 				}
 			/>
