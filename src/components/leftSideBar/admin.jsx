@@ -83,7 +83,7 @@ const menuItems = [
 			{ to: "/branch/finance/dashboard", label: "Dashboard", permission: "employee-dashboard" },
 			{ to: "/branch/finance/category", label: "Category", permission: "employee-dashboard" },
 			{ to: "/branch/payroll/dashboard", label: "Payroll", permission: "payroll", permission: "employee-dashboard" },
-			{ to: "", label: "Groceries & Supplies", permission: "employee-dashboard" },
+			{ to: "/branch/groceries/supplies", label: "Groceries & Supplies", permission: "employee-dashboard" },
 		],
 	},
 	{
