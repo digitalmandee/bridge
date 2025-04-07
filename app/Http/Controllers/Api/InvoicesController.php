@@ -11,7 +11,6 @@ use App\Models\User;
 use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class InvoicesController extends Controller
@@ -267,12 +266,14 @@ class InvoicesController extends Controller
     private function updateUserQuota($booking)
     {
         $totalChairs = count($booking->chair_ids);
-        $bookingUser = User::find($booking->user_id);
+        $user = User::find($booking->user_id);
 
-        $bookingUser->increment('booking_quota', $totalChairs * 20);
-        $bookingUser->increment('total_booking_quota', $totalChairs * 20);
-        $bookingUser->increment('printing_quota', $totalChairs * 100);
-        $bookingUser->increment('total_printing_quota', $totalChairs * 100);
+        if ($booking->duration == 'monthly') {
+            $user->increment('booking_quota', $totalChairs * $booking->plan->booking_hours);
+            $user->increment('total_booking_quota', $totalChairs * $booking->plan->booking_hours);
+            $user->increment('printing_quota', $totalChairs * $booking->plan->printing_hours);
+            $user->increment('total_printing_quota', $totalChairs * $booking->plan->printing_hours);
+        }
     }
 
     /**

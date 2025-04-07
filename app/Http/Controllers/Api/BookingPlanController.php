@@ -16,7 +16,7 @@ class BookingPlanController extends Controller
     public function index(Request $request)
     {
         try {
-            $bookingPlans = BookingPlan::select('id', 'name', 'type', 'price')->get();
+            $bookingPlans = BookingPlan::select('id', 'name', 'type', 'price', 'booking_hours', 'printing_papers')->get();
 
             return response()->json(['success' => true, 'message' => 'Booking Plans retrieved successfully', 'data' => $bookingPlans], 200);
         } catch (\Throwable $th) {
@@ -36,7 +36,15 @@ class BookingPlanController extends Controller
             'name' => 'required|string',
             'type' => 'required|string',
             'price' => 'required|numeric',
+            'booking_hours' => 'required_if:type,monthly|numeric',
+            'printing_papers' => 'required_if:type,monthly|numeric',
         ]);
+        // Set booking_hours and printing_papers to 0 if type is 'full_day'
+        if ($validated['type'] === 'full_day') {
+            $validated['booking_hours'] = 0;
+            $validated['printing_papers'] = 0;
+        }
+
         try {
             // Create a new booking plan
             BookingPlan::firstOrCreate($validated);
@@ -60,7 +68,15 @@ class BookingPlanController extends Controller
             'name' => 'required|string',
             'type' => 'required|string',
             'price' => 'required|numeric',
+            'booking_hours' => 'required_if:type,monthly|numeric',
+            'printing_papers' => 'required_if:type,monthly|numeric',
         ]);
+
+        // Set booking_hours and printing_papers to 0 if type is 'full_day'
+        if ($validated['type'] === 'full_day') {
+            $validated['booking_hours'] = 0;
+            $validated['printing_papers'] = 0;
+        }
 
         try {
             $bookingPlan = BookingPlan::findOrFail($id);

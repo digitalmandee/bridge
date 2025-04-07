@@ -9,5 +9,5 @@ class BookingPlan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'type', 'price'];
+    protected $fillable = ['name', 'type', 'price', 'booking_hours', 'printing_papers'];
 }
