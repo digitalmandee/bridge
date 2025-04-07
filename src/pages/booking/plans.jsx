@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { Link, useParams } from "react-router-dom";
-import axios from "axios";
-import { IconButton, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Select, Snackbar, Alert } from "@mui/material";
+import axiosInstance from "@/utils/axiosInstance";
+import { IconButton, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Select, Snackbar, Alert, InputLabel, FormControl } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Loader from "@/components/Loader";
 import colors from "@/assets/styles/color";
-import axiosInstance from "@/utils/axiosInstance";
 
 const BookingPlans = () => {
 	const { branch } = useParams();
@@ -18,10 +17,17 @@ const BookingPlans = () => {
 	const [currentPlan, setCurrentPlan] = useState(null);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-	const [snackbarOpen, setSnackbarOpen] = useState(false);
-	const [snackbarMessage, setSnackbarMessage] = useState("");
-	const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-	const [editData, setEditData] = useState({ name: "", type: "", price: "" });
+
+	const [editData, setEditData] = useState({
+		name: "",
+		type: "",
+		price: "",
+		booking_hours: "",
+		printing_papers: "",
+	});
+
+	const [validationErrors, setValidationErrors] = useState({});
+	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
 	const handleMenuOpen = (event, plan) => {
 		setAnchorEl(event.currentTarget);
@@ -37,7 +43,10 @@ const BookingPlans = () => {
 			name: currentPlan.name,
 			type: currentPlan.type,
 			price: currentPlan.price,
+			booking_hours: currentPlan.booking_hours || "",
+			printing_papers: currentPlan.printing_papers || "",
 		});
+		setValidationErrors({});
 		setIsEditModalOpen(true);
 		handleMenuClose();
 	};
@@ -51,62 +60,74 @@ const BookingPlans = () => {
 		try {
 			await axiosInstance.delete(`booking-plans/${currentPlan.id}`);
 			setBookingPlans((prev) => prev.filter((plan) => plan.id !== currentPlan.id));
-			setSnackbarMessage("Plan deleted successfully!");
-			setSnackbarSeverity("success");
-			setSnackbarOpen(true);
+			setSnackbar({ open: true, message: "Plan deleted successfully!", severity: "success" });
 		} catch (error) {
 			console.error("Error deleting booking plan", error);
-			setSnackbarMessage("Failed to delete plan");
-			setSnackbarSeverity("error");
-			setSnackbarOpen(true);
+			setSnackbar({ open: true, message: error.response?.data?.message || "Failed to delete plan", severity: "error" });
 		} finally {
 			setIsDeleteDialogOpen(false);
 		}
 	};
 
 	const handleEditSubmit = async () => {
+		const errors = {};
+		if (!editData.name.trim()) errors.name = "Name is required";
+		if (!editData.type) errors.type = "Type is required";
+		if (!editData.price || Number(editData.price) <= 0) errors.price = "Valid price is required";
+
+		if (editData.type === "monthly") {
+			if (!editData.booking_hours || Number(editData.booking_hours) <= 0) errors.booking_hours = "Booking hours must be greater than 0";
+			if (!editData.printing_papers || Number(editData.printing_papers) <= 0) errors.printing_papers = "Printing papers must be greater than 0";
+		}
+
+		if (Object.keys(errors).length > 0) {
+			setValidationErrors(errors);
+			return;
+		}
+
 		try {
-			const response = await axiosInstance.put(`booking-plans/${currentPlan.id}`, editData);
+			const payload = {
+				name: editData.name.trim(),
+				type: editData.type,
+				price: Number(editData.price),
+				...(editData.type === "monthly" && {
+					booking_hours: Number(editData.booking_hours),
+					printing_papers: Number(editData.printing_papers),
+				}),
+			};
 
+			const response = await axiosInstance.put(`booking-plans/${currentPlan.id}`, payload);
 			setBookingPlans((prev) => prev.map((plan) => (plan.id === currentPlan.id ? response.data.data : plan)));
-
 			setIsEditModalOpen(false);
-			setSnackbarMessage("Plan updated successfully!");
-			setSnackbarSeverity("success");
-			setSnackbarOpen(true);
+			setSnackbar({ open: true, message: "Plan updated successfully!", severity: "success" });
+			setValidationErrors({});
 		} catch (error) {
 			console.error("Error updating booking plan", error);
-			setSnackbarMessage("Failed to update plan");
-			setSnackbarSeverity("error");
-			setSnackbarOpen(true);
+			setSnackbar({ open: true, message: error.response?.data?.message || "Failed to update plan", severity: "error" });
 		}
 	};
 
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;
 		setEditData({ ...editData, [name]: value });
+		setValidationErrors((prev) => ({ ...prev, [name]: "" }));
 	};
 
-	const handleSnackbarClose = (_, reason) => {
-		if (reason === "clickaway") return;
-		setSnackbarOpen(false);
+	const handleCloseSnackbar = () => {
+		setSnackbar({ ...snackbar, open: false });
 	};
 
 	useEffect(() => {
 		const fetchBookingPlanData = async () => {
 			setIsLoading(true);
 			try {
-				const branchId = 1;
 				const response = await axiosInstance.get(`booking-plans`);
-
 				if (response.data && Array.isArray(response.data.data)) {
 					setBookingPlans(response.data.data);
 				}
 			} catch (error) {
 				console.error("Error fetching booking plan data", error);
-				setSnackbarMessage("Failed to fetch booking plans");
-				setSnackbarSeverity("error");
-				setSnackbarOpen(true);
+				setSnackbar({ open: true, message: "Failed to fetch booking plans", severity: "error" });
 			} finally {
 				setIsLoading(false);
 			}
@@ -124,9 +145,7 @@ const BookingPlans = () => {
 				</div>
 				<div className="content">
 					<div className="d-flex justify-content-between align-items-center flex-wrap grid-margin py-4">
-						<div>
-							<h3>Price Plan</h3>
-						</div>
+						<h3>Price Plan</h3>
 						<Link
 							to={`/${branch}/branch/booking/plans/create`}
 							style={{
@@ -175,15 +194,7 @@ const BookingPlans = () => {
 												<IconButton onClick={(e) => handleMenuOpen(e, plan)}>
 													<MoreVertIcon />
 												</IconButton>
-												<Menu
-													anchorEl={anchorEl}
-													open={Boolean(anchorEl)}
-													onClose={handleMenuClose}
-													PaperProps={{
-														style: {
-															boxShadow: "0px 5px 10px rgba(0, 0, 0, 0.1)",
-														},
-													}}>
+												<Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
 													<MenuItem onClick={handleEditClick}>Edit</MenuItem>
 													<MenuItem onClick={handleDeleteClick}>Delete</MenuItem>
 												</Menu>
@@ -207,12 +218,24 @@ const BookingPlans = () => {
 			<Dialog open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
 				<DialogTitle>Edit Booking Plan</DialogTitle>
 				<DialogContent>
-					<TextField className="mb-3" margin="dense" label="Name" name="name" fullWidth value={editData.name} onChange={handleInputChange} />
-					<Select className="mb-3" margin="dense" id="select-status" name="type" fullWidth value={editData.type} onChange={handleInputChange}>
-						<MenuItem value="full_day">Full Day</MenuItem>
-						<MenuItem value="monthly">Monthly</MenuItem>
-					</Select>
-					<TextField margin="dense" label="Price" name="price" type="number" fullWidth value={editData.price} onChange={handleInputChange} />
+					<TextField className="mb-3" margin="dense" label="Name" name="name" fullWidth value={editData.name} onChange={handleInputChange} error={!!validationErrors.name} helperText={validationErrors.name} />
+					<FormControl fullWidth className="mb-3" error={!!validationErrors.type}>
+						<InputLabel>Type</InputLabel>
+						<Select label="Type" name="type" fullWidth value={editData.type} onChange={handleInputChange}>
+							<MenuItem value="full_day">Full Day</MenuItem>
+							<MenuItem value="monthly">Monthly</MenuItem>
+						</Select>
+						{validationErrors.type && <span style={{ color: "#d32f2f", fontSize: "0.75rem", marginTop: "3px" }}>{validationErrors.type}</span>}
+					</FormControl>
+
+					<TextField className="mb-3" margin="dense" label="Price" name="price" type="number" fullWidth value={editData.price} onChange={handleInputChange} error={!!validationErrors.price} helperText={validationErrors.price} />
+
+					{editData.type === "monthly" && (
+						<>
+							<TextField className="mb-3" margin="dense" label="Booking Hours" name="booking_hours" type="number" fullWidth value={editData.booking_hours} onChange={handleInputChange} error={!!validationErrors.booking_hours} helperText={validationErrors.booking_hours} />
+							<TextField className="mb-3" margin="dense" label="Printing Papers" name="printing_papers" type="number" fullWidth value={editData.printing_papers} onChange={handleInputChange} error={!!validationErrors.printing_papers} helperText={validationErrors.printing_papers} />
+						</>
+					)}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={() => setIsEditModalOpen(false)} color="secondary">
@@ -239,9 +262,9 @@ const BookingPlans = () => {
 			</Dialog>
 
 			{/* Snackbar */}
-			<Snackbar anchorOrigin={{ vertical: "top", horizontal: "right" }} open={snackbarOpen} autoHideDuration={1500} onClose={handleSnackbarClose}>
-				<Alert onClose={handleSnackbarClose} variant="filled" severity={snackbarSeverity} sx={{ width: "100%" }}>
-					{snackbarMessage}
+			<Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+				<Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+					{snackbar.message}
 				</Alert>
 			</Snackbar>
 		</>
