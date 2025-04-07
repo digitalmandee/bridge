@@ -15,40 +15,73 @@ class FinanceController extends Controller
     public function index(Request $request)
     {
         $limit = $request->query('limit') ?? 10;
+        $month = $request->query('month');
+        $year = $request->query('year');
 
-        $finances = Finance::with(['category:id,name'])->paginate($limit);
+        // Build the query
+        $query = Finance::with(['category:id,name']);
+
+        if ($month) {
+            $query->whereMonth('due_date', $month);  // Filter by month
+        }
+
+        if ($year) {
+            $query->whereYear('due_date', $year);  // Filter by year
+        }
+
+        // Paginate the results
+        $finances = $query->orderBy('created_at', 'desc')->paginate($limit);
+
         return response()->json(['success' => true, 'finances' => $finances], 200);
     }
 
     public function getStats(Request $request)
     {
-        $currentMonth = Carbon::now()->format('m');
-        $currentYear = Carbon::now()->year;
+        $month = $request->query('month');
+        $year = $request->query('year') ?? Carbon::now()->year;  // Default to current year
 
-        $previousMonth = Carbon::now()->subMonth()->format('m');
-        $previousYear = Carbon::now()->subMonth()->year;
+        // If "All months" is selected (i.e., month == 0 or 'all')
+        if ($month == 0) {
+            // Total Revenue (for the entire year)
+            $totalInvoice = Invoice::where('status', 'paid')->whereYear('paid_date', $year)->sum('amount');
+            $totalFinance = Finance::where('status', 'paid')->whereYear('due_date', $year)->sum('amount');
+            $totalRevenue = $totalInvoice + $totalFinance;
 
-        // Total Revenue (Current Month)
-        $totalInvoice = Invoice::where('status', 'paid')->whereMonth('paid_date', $currentMonth)->whereYear('paid_date', $currentYear)->sum('amount');
+            // Total Expense (same as Total Finance)
+            $totalExpense = $totalFinance;
 
-        $totalFinance = Finance::where('status', 'paid')->whereMonth('due_date', $currentMonth)->whereYear('due_date', $currentYear)->sum('amount');
+            // Total Profit & Loss (P&L)
+            $totalPL = $totalExpense;
 
-        $totalRevenue = $totalInvoice + $totalFinance;
+            // Growth Calculations - Compare with last year's data
+            $prevInvoice = Invoice::where('status', 'paid')->whereYear('paid_date', $year - 1)->sum('amount');
+            $prevFinance = Finance::where('status', 'paid')->whereYear('due_date', $year - 1)->sum('amount');
+            $prevRevenue = $prevInvoice + $prevFinance;
+            $prevExpense = $prevFinance;  // Since Expense = Finance
+            $prevPL = $prevRevenue;
+        } else {
+            // For a specific month
+            $previousMonth = Carbon::createFromFormat('Y-m', "$year-$month")->subMonth()->format('m');
+            $previousYear = Carbon::createFromFormat('Y-m', "$year-$month")->subMonth()->year;
 
-        // Total Expense is the same as Total Finance
-        $totalExpense = $totalFinance;
+            // Total Revenue (for the selected month and year)
+            $totalInvoice = Invoice::where('status', 'paid')->whereMonth('paid_date', $month)->whereYear('paid_date', $year)->sum('amount');
+            $totalFinance = Finance::where('status', 'paid')->whereMonth('due_date', $month)->whereYear('due_date', $year)->sum('amount');
+            $totalRevenue = $totalInvoice + $totalFinance;
 
-        // Total Profit & Loss (P&L)
-        $totalPL = $totalRevenue - $totalExpense;
+            // Total Expense (same as Total Finance)
+            $totalExpense = $totalFinance;
 
-        // Previous Month's Data for Growth Calculation
-        $prevInvoice = Invoice::where('status', 'paid')->whereMonth('paid_date', $previousMonth)->whereYear('paid_date', $previousYear)->sum('amount');
+            // Total Profit & Loss (P&L)
+            $totalPL = $totalExpense;
 
-        $prevFinance = Finance::where('status', 'paid')->whereMonth('due_date', $previousMonth)->whereYear('due_date', $previousYear)->sum('amount');
-
-        $prevRevenue = $prevInvoice + $prevFinance;
-        $prevExpense = $prevFinance;  // Since Expense = Finance
-        $prevPL = $prevRevenue - $prevExpense;
+            // Previous Month's Data for Growth Calculation
+            $prevInvoice = Invoice::where('status', 'paid')->whereMonth('paid_date', $previousMonth)->whereYear('paid_date', $previousYear)->sum('amount');
+            $prevFinance = Finance::where('status', 'paid')->whereMonth('due_date', $previousMonth)->whereYear('due_date', $previousYear)->sum('amount');
+            $prevRevenue = $prevInvoice + $prevFinance;
+            $prevExpense = $prevFinance;  // Since Expense = Finance
+            $prevPL = $prevRevenue;
+        }
 
         // Growth Calculations
         $revenueGrowth = $prevRevenue > 0 ? (($totalRevenue - $prevRevenue) / $prevRevenue) * 100 : 0;
@@ -56,13 +89,14 @@ class FinanceController extends Controller
         $plGrowth = $prevPL > 0 ? (($totalPL - $prevPL) / $prevPL) * 100 : 0;
 
         return response()->json([
-            'totalRevenue' => number_format($totalRevenue, 2) . 'kr',
-            'totalExpense' => number_format($totalExpense, 2) . 'kr',
-            'totalPL' => number_format($totalPL, 2) . 'kr',
+            'success' => true,
+            'total_revenue' => number_format($totalRevenue, 2),
+            'total_expense' => number_format($totalExpense, 2),
+            'total_pl' => number_format($totalPL, 2),
             'growth' => [
-                'totalRevenue' => number_format($revenueGrowth, 2) . '%',
-                'totalExpense' => number_format($expenseGrowth, 2) . '%',
-                'totalPL' => number_format($plGrowth, 2) . '%',
+                'total_revenue' => number_format($revenueGrowth, 2),
+                'total_expense' => number_format($expenseGrowth, 2),
+                'total_pl' => number_format($plGrowth, 2),
             ],
         ]);
     }
@@ -71,7 +105,7 @@ class FinanceController extends Controller
     public function getFinanceByCategory(Request $request, $categoryId)
     {
         $limit = $request->query('limit', 10);  // Default limit to 10
-        $finances = Finance::where('category_id', $categoryId)->paginate($limit);
+        $finances = Finance::where('category_id', $categoryId)->orderBy('created_at', 'desc')->paginate($limit);
 
         $category = FinanceCategory::select('id', 'name')->find($categoryId);
 
@@ -95,6 +129,31 @@ class FinanceController extends Controller
         $finance = Finance::create($request->all());
 
         return response()->json(['success' => true, 'message' => 'Finance entry created successfully!', 'finance' => $finance]);
+    }
+
+    // Update a finance entry
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            // 'category_id' => 'required|exists:finance_categories,id',
+            'description' => 'nullable|string',
+            'amount' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:1',
+            'status' => 'required|in:paid,unpaid',
+            // 'issue_date' => 'required|date',
+            // 'due_date' => 'required|date|after_or_equal:issue_date',
+        ]);
+
+        $finance = Finance::find($id);
+
+        if (!$finance) {
+            return response()->json(['success' => false, 'message' => 'Finance entry not found'], 404);
+        }
+
+        $finance->update($request->all());
+
+        return response()->json(['success' => true, 'message' => 'Finance entry updated successfully!']);
     }
 
     // Delete a finance entry

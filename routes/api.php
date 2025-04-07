@@ -163,7 +163,7 @@ Route::group(['middleware' => ['set_tenant']], function () {
         // Attendances
         Route::group(['prefix' => 'attendances'], function () {
             Route::get('', [AttendanceController::class, 'index']);
-            Route::get('/reports', [AttendanceController::class, 'attendanceReport']);
+            Route::get('reports', [AttendanceController::class, 'attendanceReport']);
             Route::put('{attendanceId}', [AttendanceController::class, 'updateAttendance']);
             Route::get('profile/report/{employeeId}', [AttendanceController::class, 'profileReport']);
             Route::post('all/report', [AttendanceController::class, 'allEmployeesReport']);
@@ -194,21 +194,21 @@ Route::group(['middleware' => ['set_tenant']], function () {
 
     // finance management
     Route::group(['prefix' => 'finance'], function () {
-        Route::resource('/', FinanceController::class);
         Route::get('stats', [FinanceController::class, 'getStats']);
         Route::get('category/{categoryId}', [FinanceController::class, 'getFinanceByCategory']);
         Route::resource('categories', FinanceCategoryController::class)->except(['create', 'edit']);
     });
+    Route::resource('finances', FinanceController::class)->except(['create', 'edit']);
 
     // -------------- Roles Management
-    Route::get('/permissions', [RolePermissionController::class, 'getPermissions']);
+    Route::get('permissions', [RolePermissionController::class, 'getPermissions']);
     // -------------- Roles
     Route::resource('roles', RolePermissionController::class)->except(['create', 'edit']);
     // -------------- Branch Users
     Route::resource('branch-users', BranchUserController::class)->except(['create', 'edit']);
 
     // Notifications
-    Route::get('/notifications', [NotificationController::class, 'getNotifications']);
-    Route::post('/notifications/send', [NotificationController::class, 'sendNotification']);
-    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::get('notifications', [NotificationController::class, 'getNotifications']);
+    Route::post('notifications/send', [NotificationController::class, 'sendNotification']);
+    Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 });
