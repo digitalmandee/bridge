@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate, useParams } from "react-router-dom";
-import { Box, Typography, Button, Card, CardContent, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, CircularProgress } from "@mui/material";
+import { Box, Typography, Button, Card, CardContent, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, CircularProgress, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ReceiptIcon from "@mui/icons-material/Receipt";
-import LocalGroceryStoreIcon from "@mui/icons-material/LocalGroceryStore";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { Bar, Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
@@ -17,83 +16,6 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 const FinanceDashboard = () => {
 	const navigate = useNavigate();
 	const { branch } = useParams();
-	const barChartData = {
-		labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
-		datasets: [
-			{
-				label: "Dataset 1",
-				data: [35000, 28000, 25000, 45000, 40000, 28000, 35000, 28000],
-				backgroundColor: "#8DADD2",
-				barThickness: 15,
-			},
-			{
-				label: "Dataset 2",
-				data: [30000, 25000, 20000, 35000, 32000, 22000, 30000, 25000],
-				backgroundColor: "#0D2B4E",
-				barThickness: 15,
-			},
-			{
-				label: "Dataset 3",
-				data: [25000, 20000, 15000, 30000, 25000, 18000, 25000, 20000],
-				backgroundColor: "#7986cb",
-				barThickness: 15,
-			},
-		],
-	};
-
-	const barChartOptions = {
-		responsive: true,
-		maintainAspectRatio: false,
-		scales: {
-			y: {
-				beginAtZero: true,
-				grid: {
-					display: true,
-					drawBorder: false,
-				},
-				ticks: {
-					stepSize: 10000,
-					callback: (value) => value / 1000 + "K",
-				},
-			},
-			x: {
-				grid: {
-					display: false,
-				},
-			},
-		},
-		plugins: {
-			legend: {
-				display: false,
-			},
-		},
-	};
-
-	// Donut Chart Data
-	const donutChartData = {
-		labels: ["Instock", "Out of Stock", "Damage"],
-		datasets: [
-			{
-				data: [28, 12, 6],
-				backgroundColor: ["#4285f4", "#fbbc04", "#34a853"],
-				borderWidth: 0,
-			},
-		],
-	};
-
-	const donutChartOptions = {
-		responsive: true,
-		maintainAspectRatio: false,
-		cutout: "70%",
-		plugins: {
-			legend: {
-				position: "bottom",
-				labels: {
-					usePointStyle: true,
-				},
-			},
-		},
-	};
 
 	const [finances, setFinances] = useState([]);
 	const [stats, setStats] = useState(null);
@@ -102,25 +24,28 @@ const FinanceDashboard = () => {
 	const [totalPages, setTotalPages] = useState(1);
 	const [limit, setLimit] = useState(10);
 
-	// Get Finance Data
+	// State for Month and Year
+	const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
+	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
 
-	// const getStats = async () => {
-	// 	try {
-	// 		const res = await axiosInstance.get("employees/dashboard");
-
-	// 		if (res.data.success) {
-	// 			setStats(res.data);
-	// 		}
-	// 	} catch (error) {
-	// 		console.log(error);
-	// 	}
-	// };
+	const getStats = async (month = selectedMonth, year = selectedYear) => {
+		try {
+			const res = await axiosInstance.get("finance/stats", {
+				params: { month, year },
+			});
+			if (res.data.success) {
+				setStats(res.data);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	const getFinances = async (page = 1) => {
 		setIsLoading(true);
 		try {
-			const res = await axiosInstance.get("finance", {
-				params: { page, limit },
+			const res = await axiosInstance.get("finances", {
+				params: { page, limit, month: selectedMonth, year: selectedYear },
 			});
 
 			if (res.data.success) {
@@ -136,12 +61,20 @@ const FinanceDashboard = () => {
 	};
 
 	useEffect(() => {
+		getStats();
 		getFinances(currentPage);
-	}, [currentPage, limit]);
+	}, [selectedMonth, selectedYear, currentPage]);
 
-	// useEffect(() => {
-	// 	getStats();
-	// }, []);
+	const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+	const handleMonthChange = (event) => {
+		setSelectedMonth(event.target.value);
+	};
+
+	const handleYearChange = (event) => {
+		setSelectedYear(event.target.value);
+	};
+
 	return (
 		<>
 			<TopNavbar />
@@ -156,7 +89,31 @@ const FinanceDashboard = () => {
 							<Typography variant="h5" sx={{ fontWeight: "bold" }}>
 								Dashboard
 							</Typography>
-							<Box sx={{ display: "flex", gap: 2 }}>
+							<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+								{/* Month and Year Selection */}
+								<Box sx={{ display: "flex", gap: 2 }}>
+									<FormControl>
+										<InputLabel>Month</InputLabel>
+										<Select value={selectedMonth} onChange={handleMonthChange} label="Month" size="small">
+											<MenuItem value={0}>All Months</MenuItem> {/* Added option for All Months */}
+											{monthNames.map((month, index) => (
+												<MenuItem key={index} value={index + 1}>
+													{month}
+												</MenuItem>
+											))}
+										</Select>
+									</FormControl>
+									<FormControl>
+										<InputLabel>Year</InputLabel>
+										<Select value={selectedYear} onChange={handleYearChange} label="Year" size="small">
+											{Array.from({ length: 5 }, (_, index) => (
+												<MenuItem key={index} value={new Date().getFullYear() - index}>
+													{new Date().getFullYear() - index}
+												</MenuItem>
+											))}
+										</Select>
+									</FormControl>
+								</Box>
 								<Button variant="outlined" color="primary">
 									Financial Report
 								</Button>
@@ -169,12 +126,12 @@ const FinanceDashboard = () => {
 						{/* Metric Cards */}
 						<Grid container spacing={2} sx={{ mb: 3 }}>
 							{[
-								{ title: "Total Revenue", amount: "632,000kr", change: "+1.29%", icon: <ShoppingCartIcon />, color: "#ff9800" },
-								{ title: "Total Expense", amount: "592,000kr", change: "+0.29%", icon: <ReceiptIcon />, color: "#e91e63" },
+								{ title: "Total Revenue", amount: (stats?.total_revenue || 0) + " Rs", change: stats?.growth?.total_revenue, icon: <ShoppingCartIcon />, color: "#ff9800" },
+								{ title: "Total Expense", amount: (stats?.total_expense || 0) + " Rs", change: stats?.growth?.total_expense, icon: <ReceiptIcon />, color: "#e91e63" },
 								{
 									title: "Total P&L",
-									amount: "238,000kr",
-									change: "+1.29%",
+									amount: (stats?.total_pl || 0) + " Rs",
+									change: stats?.growth?.total_pl,
 									icon: <AccountBalanceWalletIcon />,
 									color: "#f44336",
 								},
@@ -205,8 +162,12 @@ const FinanceDashboard = () => {
 											<Typography variant="h6" sx={{ mt: 1, fontWeight: "bold" }}>
 												{item.amount}
 											</Typography>
-											<Typography variant="body2" sx={{ color: "success.main" }}>
-												{item.change}
+											<Typography
+												variant="body2"
+												sx={{
+													color: item.change < 0 ? "error.main" : "success.main",
+												}}>
+												{item.change}%
 											</Typography>
 										</CardContent>
 									</Card>

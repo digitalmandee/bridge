@@ -58,7 +58,7 @@ const CreateFinanceEntry = () => {
 			category_id: formData.category?.id || null,
 		};
 		axiosInstance
-			.post("finance", payload)
+			.post("finances", payload)
 			.then(() => {
 				setSnackbar({ open: true, message: "Finance entry created successfully!", severity: "success" });
 				navigate(-1);
