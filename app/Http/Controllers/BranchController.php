@@ -9,6 +9,7 @@ use App\Models\Invoice;
 use App\Models\Tenant;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -43,6 +44,7 @@ class BranchController extends Controller
         ]);
 
         try {
+            DB::beginTransaction();
             $validatedData['id'] = strtolower(str_replace(' ', '-', $validatedData['location']));
 
             $tenant = Tenant::create($validatedData);
@@ -57,10 +59,21 @@ class BranchController extends Controller
             ]);
 
             $user->assignRole('admin');
+            DB::commit();
 
             return response()->json(['success' => true, 'message' => 'Branch created successfully']);
+        } catch (QueryException $e) {
+            DB::rollBack();
+
+            // Check if the error is for duplicate 'location'
+            if ($e->getCode() === '23000' && str_contains($e->getMessage(), 'tenants_location_unique')) {
+                return response()->json(['error' => 'branch already exists'], 422);
+            }
+
+            return response()->json(['error' => 'Branch not created.'], 500);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Something went wrong.'], 500);
+            DB::rollBack();
+            return response()->json(['error' => 'Branch not created.'], 500);
         }
     }
 
