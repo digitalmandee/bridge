@@ -355,12 +355,12 @@ class BookingController extends Controller
                 $totalChairs = count($booking->chair_ids);
                 $user = User::find($booking->user_id);
 
-                $user->update([
-                    'booking_quota' => $totalChairs * 20,
-                    'total_booking_quota' => $totalChairs * 20,
-                    'printing_quota' => $totalChairs * 100,
-                    'total_printing_quota' => $totalChairs * 100,
-                ]);
+                if ($booking->duration == 'monthly') {
+                    $user->increment('booking_quota', $totalChairs * $booking->plan->booking_hours);
+                    $user->increment('total_booking_quota', $totalChairs * $booking->plan->booking_hours);
+                    $user->increment('printing_quota', $totalChairs * $booking->plan->printing_hours);
+                    $user->increment('total_printing_quota', $totalChairs * $booking->plan->printing_hours);
+                }
 
                 $user->notify(new GeneralNotification([
                     'title' => 'Booking Confirmation - ' . tenant('name'),

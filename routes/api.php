@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\ContractController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\EmployeeController;
+use App\Http\Controllers\Api\FinanceCategoryController;
+use App\Http\Controllers\Api\FinanceController;
 use App\Http\Controllers\Api\FloorPlanController;
 use App\Http\Controllers\Api\GlobalController;
 use App\Http\Controllers\Api\InvoicesController;
@@ -161,7 +163,7 @@ Route::group(['middleware' => ['set_tenant']], function () {
         // Attendances
         Route::group(['prefix' => 'attendances'], function () {
             Route::get('', [AttendanceController::class, 'index']);
-            Route::get('/reports', [AttendanceController::class, 'attendanceReport']);
+            Route::get('reports', [AttendanceController::class, 'attendanceReport']);
             Route::put('{attendanceId}', [AttendanceController::class, 'updateAttendance']);
             Route::get('profile/report/{employeeId}', [AttendanceController::class, 'profileReport']);
             Route::post('all/report', [AttendanceController::class, 'allEmployeesReport']);
@@ -190,15 +192,23 @@ Route::group(['middleware' => ['set_tenant']], function () {
         Route::delete('staffs/{id}', [CompanyController::class, 'deleteStaff']);
     });
 
+    // finance management
+    Route::group(['prefix' => 'finance'], function () {
+        Route::get('stats', [FinanceController::class, 'getStats']);
+        Route::get('category/{categoryId}', [FinanceController::class, 'getFinanceByCategory']);
+        Route::resource('categories', FinanceCategoryController::class)->except(['create', 'edit']);
+    });
+    Route::resource('finances', FinanceController::class)->except(['create', 'edit']);
+
     // -------------- Roles Management
-    Route::get('/permissions', [RolePermissionController::class, 'getPermissions']);
+    Route::get('permissions', [RolePermissionController::class, 'getPermissions']);
     // -------------- Roles
     Route::resource('roles', RolePermissionController::class)->except(['create', 'edit']);
     // -------------- Branch Users
     Route::resource('branch-users', BranchUserController::class)->except(['create', 'edit']);
 
     // Notifications
-    Route::get('/notifications', [NotificationController::class, 'getNotifications']);
-    Route::post('/notifications/send', [NotificationController::class, 'sendNotification']);
-    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::get('notifications', [NotificationController::class, 'getNotifications']);
+    Route::post('notifications/send', [NotificationController::class, 'sendNotification']);
+    Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 });
