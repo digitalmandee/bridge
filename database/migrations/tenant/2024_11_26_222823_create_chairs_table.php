@@ -22,9 +22,9 @@ class CreateChairsTable extends Migration
             $table->bigInteger('positionx')->nullable();
             $table->bigInteger('positiony')->nullable();
             $table->bigInteger('rotation')->nullable();
-            $table->string('color')->nullable();
+            $table->string('color')->default('gray');
             $table->string('activeColor')->nullable();
-            $table->string('time_slot')->default('available');
+            $table->enum('time_slot', ['available', 'day', 'night', 'full_day'])->default('available');
             $table->timestamps();
 
             $table->foreign('floor_id')->references('id')->on('floors')->onDelete('cascade');
