@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { Box } from "@mui/system";
-import { Alert, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Typography } from "@mui/material";
+import { Alert, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Typography, Paper, CircularProgress } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
 
 const CreateChair = () => {
+	const { branch } = useParams();
+
 	const [floors, setFloors] = useState([]);
 	const [rooms, setRooms] = useState([]);
 	const [tables, setTables] = useState([]);
@@ -14,56 +17,70 @@ const CreateChair = () => {
 	const [selectedRoom, setSelectedRoom] = useState("");
 	const [selectedTable, setSelectedTable] = useState("");
 
-	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+	const [isLoading, setIsLoading] = useState(false);
+	const [isLoadingData, setIsLoadingData] = useState(false); // one shared loader
 
+	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+	const navigate = useNavigate();
 	const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
 
-	// Fetch floors on mount
 	useEffect(() => {
-		axiosInstance.get("floor-plan/floors").then((res) => {
-			setFloors(res.data.floors); // Assuming the response is structured as { success: true, floors: [...] }
-		});
+		setIsLoadingData(true);
+		axiosInstance
+			.get("floor-plan/floors")
+			.then((res) => {
+				setFloors(res.data.floors || []);
+			})
+			.finally(() => setIsLoadingData(false));
 	}, []);
 
-	// Fetch rooms and tables when floor changes
 	useEffect(() => {
 		if (selectedFloor) {
+			setIsLoadingData(true);
 			axiosInstance
-				.get(`floor-plan/${selectedFloor}/rooms`) // Get rooms for the selected floor
+				.get(`floor-plan/${selectedFloor}/rooms`)
 				.then((res) => {
-					setRooms(res.data.floor.rooms || []); // Assuming the response has the structure `{ success: true, floor: { rooms: [...] } }`
-					setSelectedRoom(""); // Reset room selection
-					setTables([]); // Reset tables
-					setSelectedTable(""); // Reset table selection
-				});
+					setRooms(res.data.floor.rooms || []);
+					setSelectedRoom("");
+					setTables([]);
+					setSelectedTable("");
+				})
+				.finally(() => setIsLoadingData(false));
 		}
 	}, [selectedFloor]);
 
-	// Fetch tables when room changes
 	useEffect(() => {
 		if (selectedRoom) {
-			const floorData = rooms.find((room) => room.id === selectedRoom);
-			// const roomData = floorData?.rooms.find((room) => room.id === selectedRoom);
-			setTables(floorData?.tables || []); // Set tables related to the selected room
-			setSelectedTable(""); // Reset table selection
+			const roomData = rooms.find((room) => room.id === selectedRoom);
+			setTables(roomData?.tables || []);
+			setSelectedTable("");
 		}
-	}, [selectedRoom, floors, selectedFloor]);
+	}, [selectedRoom]);
 
 	const handleSubmit = () => {
 		if (!selectedTable) {
 			setSnackbar({ open: true, message: "Please select a table", severity: "error" });
 			return;
 		}
+		setIsLoading(true);
 
 		axiosInstance
-			.post("floor-plan/chairs", { floor_id: selectedFloor, room_id: selectedRoom, table_id: selectedTable })
+			.post("floor-plan/chairs", {
+				floor_id: selectedFloor,
+				room_id: selectedRoom,
+				table_id: selectedTable,
+			})
 			.then(() => {
 				setSnackbar({ open: true, message: "Chair created successfully", severity: "success" });
+				setTimeout(() => navigate(`/${branch}/branch/floorplan`), 1200);
 			})
 			.catch(() => {
 				setSnackbar({ open: true, message: "Failed to create chair", severity: "error" });
-			});
+			})
+			.finally(() => setIsLoading(false));
 	};
+
+	const isCreateDisabled = !selectedTable || isLoading || isLoadingData;
 
 	return (
 		<>
@@ -78,47 +95,52 @@ const CreateChair = () => {
 							<Typography variant="h5">Create Chair</Typography>
 						</Box>
 
-						<Box display="flex" flexDirection="column" gap={2} maxWidth={400}>
-							<FormControl fullWidth>
-								<InputLabel>Floor</InputLabel>
-								<Select value={selectedFloor} label="Floor" onChange={(e) => setSelectedFloor(e.target.value)}>
-									{floors &&
-										floors.map((floor) => (
+						<Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+							{isLoadingData && (
+								<Box display="flex" justifyContent="center" my={2}>
+									<CircularProgress />
+								</Box>
+							)}
+
+							<Box display="flex" flexDirection="column" gap={3}>
+								<FormControl fullWidth disabled={isLoadingData}>
+									<InputLabel>Floor</InputLabel>
+									<Select value={selectedFloor} label="Floor" onChange={(e) => setSelectedFloor(e.target.value)}>
+										{floors.map((floor) => (
 											<MenuItem key={floor.id} value={floor.id}>
 												{floor.name}
 											</MenuItem>
 										))}
-								</Select>
-							</FormControl>
+									</Select>
+								</FormControl>
 
-							<FormControl fullWidth disabled={!rooms.length}>
-								<InputLabel>Room</InputLabel>
-								<Select value={selectedRoom} label="Room" onChange={(e) => setSelectedRoom(e.target.value)}>
-									{rooms &&
-										rooms.map((room) => (
+								<FormControl fullWidth disabled={!rooms.length || isLoadingData}>
+									<InputLabel>Room</InputLabel>
+									<Select value={selectedRoom} label="Room" onChange={(e) => setSelectedRoom(e.target.value)}>
+										{rooms.map((room) => (
 											<MenuItem key={room.id} value={room.id}>
 												{room.name}
 											</MenuItem>
 										))}
-								</Select>
-							</FormControl>
+									</Select>
+								</FormControl>
 
-							<FormControl fullWidth disabled={!tables.length}>
-								<InputLabel>Table</InputLabel>
-								<Select value={selectedTable} label="Table" onChange={(e) => setSelectedTable(e.target.value)}>
-									{tables &&
-										tables.map((table) => (
+								<FormControl fullWidth disabled={!tables.length || isLoadingData}>
+									<InputLabel>Table</InputLabel>
+									<Select value={selectedTable} label="Table" onChange={(e) => setSelectedTable(e.target.value)}>
+										{tables.map((table) => (
 											<MenuItem key={table.id} value={table.id}>
 												Table {table.table_id}
 											</MenuItem>
 										))}
-								</Select>
-							</FormControl>
+									</Select>
+								</FormControl>
 
-							<Button variant="contained" color="primary" onClick={handleSubmit} disabled={!selectedTable}>
-								Create Chair
-							</Button>
-						</Box>
+								<Button variant="contained" color="primary" onClick={handleSubmit} disabled={isCreateDisabled}>
+									{isLoading ? "Creating..." : "Create Chair"}
+								</Button>
+							</Box>
+						</Paper>
 					</Box>
 				</div>
 			</div>
