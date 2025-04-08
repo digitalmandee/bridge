@@ -30,6 +30,7 @@ import MemberCompanyDetail from "@/pages/members/detail";
 // Booking System
 import Booking from "@/pages/booking";
 import Floorplan from "@/pages/booking/floorplan";
+import FloorplanChairCreate from "@/pages/booking/floorplan/chairs/create";
 import BookingRequests from "@/pages/booking/requests";
 import ScheduleRequests from "@/pages/booking/calendar/requests";
 import ScheduleFloors from "@/pages/booking/calendar/floor";
@@ -196,6 +197,15 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="admin" permission="floor-plan">
 						<Floorplan />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/floorplan/chair/create"
+				element={
+					<ProtectedRoute role="admin" permission="floor-plan">
+						<FloorplanChairCreate />
 					</ProtectedRoute>
 				}
 			/>

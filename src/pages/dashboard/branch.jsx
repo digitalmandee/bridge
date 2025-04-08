@@ -101,6 +101,11 @@ const CreateBranch = () => {
 		fontSize: "14px",
 	};
 
+	const handleCloseModal = () => {
+		setIsModalOpen(false);
+		navigate("/super-admin/branch/management");
+	};
+
 	// Handle Form Submission
 	const handleSubmit = async (event) => {
 		event.preventDefault();
@@ -126,12 +131,6 @@ const CreateBranch = () => {
 				email: "",
 			});
 			setErrors({});
-
-			// Optional: Redirect after success
-			setTimeout(() => {
-				setIsModalOpen(false);
-				navigate("/branches"); // or any desired route
-			}, 2000);
 		} catch (error) {
 			console.error("Error creating branch:", error.response?.data || error.message);
 
@@ -194,7 +193,7 @@ const CreateBranch = () => {
 								{loading ? "Saving..." : "Save"}
 							</Button>
 
-							{isModalOpen && <Modal handleCloseModal={() => setIsModalOpen(false)} />}
+							{isModalOpen && <Modal handleCloseModal={handleCloseModal} />}
 						</form>
 					</div>
 				</div>
