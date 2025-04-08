@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import TopNavbar from "@/components/superadmin/topNavbar";
 import Sidebar from "@/components/superadmin/leftSideBar";
 import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import Modal from "./modal";
 import axiosInstance from "@/utils/axiosInstance";
-// import { colors } from "@mui/material";
 import colors from "@/assets/styles/color";
+import { Button } from "@mui/material";
+import { Snackbar, Alert } from "@mui/material";
+
 const CreateBranch = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [loading, setLoading] = useState(false);
+	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+
 	const [formData, setFormData] = useState({
 		name: "",
 		location: "",
@@ -22,6 +27,10 @@ const CreateBranch = () => {
 
 	const [errors, setErrors] = useState({});
 	const navigate = useNavigate();
+
+	const handleSnackbarClose = () => {
+		setSnackbar((prev) => ({ ...prev, open: false }));
+	};
 
 	// Handle Input Changes
 	const handleChange = (e) => {
@@ -40,19 +49,6 @@ const CreateBranch = () => {
 		});
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
-	};
-
-	// Handle Form Submission
-	const handleSubmit = async (event) => {
-		event.preventDefault();
-		if (!validateForm()) return; // Stop if validation fails
-		try {
-			const response = await axiosInstance.post("branches", formData);
-			console.log("Branch Created:", response.data);
-			setIsModalOpen(true);
-		} catch (error) {
-			console.error("Error creating branch:", error.response?.data || error.message);
-		}
 	};
 
 	const containerStyle = {
@@ -93,7 +89,7 @@ const CreateBranch = () => {
 	};
 
 	const buttonStyle = {
-		backgroundColor: colors.primary,
+		bgcolor: colors.primary,
 		color: "white",
 		padding: "10px",
 		border: "none",
@@ -101,9 +97,63 @@ const CreateBranch = () => {
 		width: "100%",
 		maxWidth: "200px",
 		margin: "20px auto 0",
-		cursor: "pointer",
 		display: "block",
 		fontSize: "14px",
+	};
+
+	// Handle Form Submission
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+		if (!validateForm()) return; // Stop if validation fails
+		setLoading(true); // Start loading
+		try {
+			const response = await axiosInstance.post("branches", formData);
+			setIsModalOpen(true);
+			setSnackbar({
+				open: true,
+				message: response.data.message || "Branch created successfully!",
+				severity: "success",
+			});
+			// Reset form fields
+			setFormData({
+				name: "",
+				location: "",
+				floors: "",
+				rooms: "",
+				seats: "",
+				tables: "",
+				username: "",
+				email: "",
+			});
+			setErrors({});
+
+			// Optional: Redirect after success
+			setTimeout(() => {
+				setIsModalOpen(false);
+				navigate("/branches"); // or any desired route
+			}, 2000);
+		} catch (error) {
+			console.error("Error creating branch:", error.response?.data || error.message);
+
+			const message = error.response?.data?.message || "Failed to create branch";
+
+			// Check if message says "already exists"
+			if (message.toLowerCase().includes("validation failed")) {
+				setSnackbar({
+					open: true,
+					message: "This Branch name already exists",
+					severity: "error",
+				});
+			} else {
+				setSnackbar({
+					open: true,
+					message,
+					severity: "error",
+				});
+			}
+		} finally {
+			setLoading(false); // Stop loading
+		}
 	};
 
 	return (
@@ -140,15 +190,22 @@ const CreateBranch = () => {
 									</div>
 								))}
 							</div>
+							<Button type="submit" sx={buttonStyle} disabled={loading} variant="contained">
+								{loading ? "Saving..." : "Save"}
+							</Button>
 
-							<button type="submit" style={buttonStyle}>
-								Save
-							</button>
 							{isModalOpen && <Modal handleCloseModal={() => setIsModalOpen(false)} />}
 						</form>
 					</div>
 				</div>
 			</div>
+
+			{/* Snackbar for success/error */}
+			<Snackbar open={snackbar.open} autoHideDuration={4000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: "top", horizontal: "right" }}>
+				<Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: "100%" }}>
+					{snackbar.message}
+				</Alert>
+			</Snackbar>
 		</>
 	);
 };
