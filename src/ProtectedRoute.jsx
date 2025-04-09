@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import axiosInstance from "./utils/axiosInstance"; // Import your Axios instance
 import { AuthContext } from "./contexts/AuthContext";
+import SplashScreen from "./components/splashscreen";
 
 const ProtectedRoute = ({ children, role, permission }) => {
 	const { user, userRole, permissions, loading } = useContext(AuthContext);
@@ -29,7 +30,7 @@ const ProtectedRoute = ({ children, role, permission }) => {
 
 	// If still checking branch existence, show a loading state
 	if (branchExists === null || loading) {
-		return <p>Loading...</p>;
+		return <SplashScreen />;
 	}
 
 	// If branch does not exist, redirect to a "Not Found" page
