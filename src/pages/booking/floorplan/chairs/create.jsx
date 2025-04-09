@@ -5,6 +5,7 @@ import Sidebar from "@/components/leftSideBar";
 import { Box } from "@mui/system";
 import { Alert, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Typography, Paper, CircularProgress } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
+import { MdArrowBackIos } from "react-icons/md";
 
 const CreateChair = () => {
 	const { branch } = useParams();
@@ -92,7 +93,25 @@ const CreateChair = () => {
 				<div className="content">
 					<Box className="page-content" p={2}>
 						<Box className="d-flex justify-content-between align-items-center flex-wrap" mb={3}>
-							<Typography variant="h5">Create Chair</Typography>
+							<div
+								style={{
+									paddingTop: "1rem",
+									display: "flex",
+									alignItems: "center",
+									marginBottom: "20px",
+								}}>
+								<div
+									onClick={() => navigate(-1)}
+									style={{
+										cursor: "pointer",
+										marginTop: "5px",
+										display: "flex",
+										alignItems: "center",
+									}}>
+									<MdArrowBackIos style={{ fontSize: "20px" }} />
+								</div>
+								<h3 style={{ margin: 0 }}>Create Chair</h3>
+							</div>
 						</Box>
 
 						<Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>

@@ -31,6 +31,7 @@ import MemberCompanyDetail from "@/pages/members/detail";
 import Booking from "@/pages/booking";
 import Floorplan from "@/pages/booking/floorplan";
 import FloorplanChairCreate from "@/pages/booking/floorplan/chairs/create";
+import FloorplanChairs from "@/pages/booking/floorplan/chairs/index";
 import BookingRequests from "@/pages/booking/requests";
 import ScheduleRequests from "@/pages/booking/calendar/requests";
 import ScheduleFloors from "@/pages/booking/calendar/floor";
@@ -202,7 +203,16 @@ function AuthRoutes() {
 			/>
 
 			<Route
-				path="branch/floorplan/chair/create"
+				path="branch/floorplan/chairs"
+				element={
+					<ProtectedRoute role="admin" permission="floor-plan">
+						<FloorplanChairs />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/floorplan/chairs/create"
 				element={
 					<ProtectedRoute role="admin" permission="floor-plan">
 						<FloorplanChairCreate />
