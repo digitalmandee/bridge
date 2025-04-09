@@ -269,10 +269,10 @@ class InvoicesController extends Controller
         $user = User::find($booking->user_id);
 
         if ($booking->duration == 'monthly') {
-            $user->increment('booking_quota', $totalChairs * $booking->plan->booking_hours);
-            $user->increment('total_booking_quota', $totalChairs * $booking->plan->booking_hours);
-            $user->increment('printing_quota', $totalChairs * $booking->plan->printing_hours);
-            $user->increment('total_printing_quota', $totalChairs * $booking->plan->printing_hours);
+            $user->increment('booking_quota', $totalChairs * $booking->plan['booking_hours']);
+            $user->increment('total_booking_quota', $totalChairs * $booking->plan['booking_hours']);
+            $user->increment('printing_quota', $totalChairs * $booking->plan['printing_hours']);
+            $user->increment('total_printing_quota', $totalChairs * $booking->plan['printing_hours']);
         }
     }
 

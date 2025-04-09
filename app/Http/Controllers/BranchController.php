@@ -79,7 +79,7 @@ class BranchController extends Controller
 
     public function checkBranch(Request $request)
     {
-        return response()->json(['exist' => Tenant::whereKey($request->query('branch'))->exists()]);
+        return response()->json(['exist' => Tenant::whereKey($request->query('branch'))->where('status', 'active')->exists()]);
     }
 
     /**

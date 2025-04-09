@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\BookingPlan;
 use App\Models\Chair;
 use App\Models\CompanyProfile;
 use App\Models\Invoice;
@@ -114,6 +115,8 @@ class BookingController extends Controller
                 }
             }
 
+            $bookingPlan = BookingPlan::select('id', 'name', 'price', 'booking_hours', 'printing_papers')->find($selectedPlan['id']);
+
             // Create booking
             $booking = Booking::create([
                 'user_id' => $userId,
@@ -131,7 +134,7 @@ class BookingController extends Controller
                 'total_price' => $bookingDetails['total_price'],
                 'package_detail' => $bookingDetails['package_detail'],
                 'payment_method' => $bookingDetails['payment_method'],
-                'plan' => ['id' => $selectedPlan['id'], 'name' => $selectedPlan['name'], 'price' => $selectedPlan['price']],
+                'plan' => $bookingPlan->toArray(),
                 'receipt' => $receiptPath,
             ]);
 
@@ -325,7 +328,8 @@ class BookingController extends Controller
                     }
 
                     Invoice::where('booking_id', $booking->id)->where('invoice_type', 'Monthly')->where('paid_month', $paidMonth)->where('paid_year', Carbon::now()->year)->update([
-                        'status' => 'paid'
+                        'status' => 'paid',
+                        'paid_date' => Carbon::now(),
                     ]);
                 } else if ($request->status === 'vacated' && $booking->status === 'confirmed') {
                     // Handle vacating a booking
@@ -356,10 +360,11 @@ class BookingController extends Controller
                 $user = User::find($booking->user_id);
 
                 if ($booking->duration == 'monthly') {
-                    $user->increment('booking_quota', $totalChairs * $booking->plan->booking_hours);
-                    $user->increment('total_booking_quota', $totalChairs * $booking->plan->booking_hours);
-                    $user->increment('printing_quota', $totalChairs * $booking->plan->printing_hours);
-                    $user->increment('total_printing_quota', $totalChairs * $booking->plan->printing_hours);
+                    Log::info($booking->plan);
+                    $user->increment('booking_quota', $totalChairs * $booking->plan['booking_hours']);
+                    $user->increment('total_booking_quota', $totalChairs * $booking->plan['booking_hours']);
+                    $user->increment('printing_quota', $totalChairs * $booking->plan['printing_papers']);
+                    $user->increment('total_printing_quota', $totalChairs * $booking->plan['printing_papers']);
                 }
 
                 $user->notify(new GeneralNotification([
