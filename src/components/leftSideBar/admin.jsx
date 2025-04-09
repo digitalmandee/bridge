@@ -66,7 +66,7 @@ const menuItems = [
 		dropdown: [
 			{ to: "/branch/employee/dashboard", label: "Dashboard", permission: "employee-dashboard" },
 			{ to: "/branch/employee/departments", label: "Departments", permission: "employee-dashboard" },
-			{ to: "/branch/payroll/dashboard", label: "Payroll", permission: "payroll", permission: "employee-dashboard" },
+			{ to: "/branch/payroll/dashboard", label: "Payroll", permission: "employee-dashboard" },
 			{ to: "/branch/employee/attendance", label: "Attendance", permission: "attendance" },
 			{ to: "/branch/employee/leave/category", label: "Leave Category", permission: "leave-category" },
 			{ to: "/branch/employee/leave/application", label: "Leave Application", permission: "leave-application" },
