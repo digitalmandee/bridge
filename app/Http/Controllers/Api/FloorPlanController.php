@@ -276,4 +276,27 @@ class FloorPlanController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Chair created successfully'], 200);
     }
+
+    //  fetch chairs
+    public function getChairs(Request $request)
+    {
+        $floorId = $request->query('floor_id');
+        try {
+            $chairs = Chair::where('floor_id', $floorId)->with('floor:id,name', 'table:id,table_id')->get();
+            return response()->json(['success' => true, 'chairs' => $chairs]);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
+        }
+    }
+
+    //  fetch floors
+    public function getFloorPlanList(Request $request)
+    {
+        try {
+            $floors = Floor::select('id', 'name')->get();
+            return response()->json(['success' => true, 'floors' => $floors]);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
+        }
+    }
 }

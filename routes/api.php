@@ -81,7 +81,9 @@ Route::group(['middleware' => ['set_tenant']], function () {
 
     // Booking Seats
     Route::get('floor-plan', [FloorPlanController::class, 'getFloorPlan']);
+    Route::get('floor-plan/floor-plan-list', [FloorPlanController::class, 'getFloorPlanList']);
     Route::get('floor-plan/floors', [FloorPlanController::class, 'getFloors']);
+    Route::get('floor-plan/chairs', [FloorPlanController::class, 'getChairs']);
     Route::post('floor-plan/chairs', [FloorPlanController::class, 'createChair']);
     Route::get('floor-plan/{floor_id}/rooms', [FloorPlanController::class, 'getRooms']);
     Route::get('seat-allocations', [FloorPlanController::class, 'getSeatAllocations']);
