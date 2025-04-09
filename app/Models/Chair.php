@@ -14,6 +14,7 @@ class Chair extends Model
         'floor_id',
         'room_id',
         'table_id',
+        'chair_id',
         'positionx',
         'positiony',
         'rotation',

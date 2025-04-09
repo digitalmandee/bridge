@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\Chair;
 use App\Models\Floor;
 use App\Models\Room;
+use App\Models\Table;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -220,6 +221,80 @@ class FloorPlanController extends Controller
                     'available_time' => $earliestAvailableTime->format('Y-m-d H:i:s')  // Return the earliest available time
                 ]
             ]);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
+        }
+    }
+
+    public function getFloors()
+    {
+        $floors = Floor::select('id', 'name')->get();
+        return response()->json(['success' => true, 'floors' => $floors], 200);
+    }
+
+    public function getRooms(Request $request, $floor_id)
+    {
+        $floorId = $floor_id;
+
+        if (empty($floorId)) {
+            // Optionally return all floors only
+            $floors = Floor::select('id', 'name')->get();
+            return response()->json(['success' => true, 'floors' => $floors], 200);
+        }
+
+        // Eager load rooms and their tables for the given floor
+        $floor = Floor::with(['rooms.tables:id,room_id,table_id,name,id'])->select('id', 'name')->find($floorId);
+
+        if (!$floor) {
+            return response()->json(['success' => false, 'message' => 'Floor not found'], 404);
+        }
+
+        return response()->json(['success' => true, 'floor' => $floor], 200);
+    }
+
+    public function createChair(Request $request)
+    {
+        $request->validate([
+            'floor_id' => 'required|integer',
+            'room_id' => 'required|integer',
+            'table_id' => 'required|integer',
+        ]);
+
+        // Count all chairs associated with the table
+        $chairsCount = Chair::where('table_id', $request->table_id)->count();
+
+        // Increment the chair count to set the new chair_id
+        $newChairId = $chairsCount + 1;
+        Log::info($newChairId);
+
+        Chair::create([
+            'floor_id' => $request->floor_id,
+            'room_id' => $request->room_id,
+            'table_id' => $request->table_id,
+            'chair_id' => $newChairId,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Chair created successfully'], 200);
+    }
+
+    //  fetch chairs
+    public function getChairs(Request $request)
+    {
+        $floorId = $request->query('floor_id');
+        try {
+            $chairs = Chair::where('floor_id', $floorId)->with('floor:id,name', 'table:id,table_id')->get();
+            return response()->json(['success' => true, 'chairs' => $chairs]);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
+        }
+    }
+
+    //  fetch floors
+    public function getFloorPlanList(Request $request)
+    {
+        try {
+            $floors = Floor::select('id', 'name')->get();
+            return response()->json(['success' => true, 'floors' => $floors]);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
         }
