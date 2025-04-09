@@ -70,6 +70,7 @@ const InvoiceCreate = () => {
 				});
 				if (res.data.success) {
 					setUserBooking(res.data);
+					setFormData({ ...formData, paidMonth: "" });
 				}
 			} catch (error) {
 				console.error("Error fetching data:", error.response.data);
@@ -330,6 +331,10 @@ const InvoiceCreate = () => {
 		}
 	}, [formData.paidMonth, userBooking]);
 
+	const allMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	const currentMonthIndex = new Date().getMonth(); // 0-based (Jan = 0)
+	const paidMonths = userBooking?.payed_months || []; // e.g., ["April"]
+
 	return (
 		<>
 			<TopNavbar />
@@ -407,7 +412,6 @@ const InvoiceCreate = () => {
 											/>
 										</Grid>
 									)}
-
 									{/* Invoice Type Dropdown */}
 									<Grid item xs={12}>
 										<FormControl fullWidth error={Boolean(errors.invoiceType)}>
@@ -420,7 +424,6 @@ const InvoiceCreate = () => {
 											{errors.invoiceType && <FormHelperText error>{errors.invoiceType}</FormHelperText>}
 										</FormControl>
 									</Grid>
-
 									{formData.invoiceType === "Monthly" && userBooking && (
 										<Grid item xs={12}>
 											Booking Status: {userBooking.message} <br />
@@ -435,14 +438,12 @@ const InvoiceCreate = () => {
 											TotalPrice: Rs. {formData.amount} <br />
 										</Grid>
 									)}
-
 									{/* Dynamic Fields: Quantity or Hours */}
 									{formData.invoiceType === "Printing Papers" && (
 										<Grid item xs={12}>
 											<TextField label="Quantity" type="number" fullWidth name="quantity" value={formData.quantity} onChange={handleChange} variant="outlined" error={Boolean(errors.quantity)} helperText={errors.quantity} />
 										</Grid>
 									)}
-
 									{formData.invoiceType === "Meeting Rooms" && (
 										<Grid item xs={12}>
 											<TextField label="Hours" type="number" fullWidth name="hours" value={formData.hours} onChange={handleChange} variant="outlined" error={Boolean(errors.hours)} helperText={errors.hours} />
@@ -453,7 +454,6 @@ const InvoiceCreate = () => {
 											<TextField label="Amount" type="number" fullWidth name="amount" value={formData.amount} onChange={handleChange} variant="outlined" error={Boolean(errors.amount)} helperText={errors.amount} />
 										</Grid>
 									)}
-
 									{/* Status Dropdown */}
 									<Grid item xs={12}>
 										<FormControl fullWidth error={Boolean(errors.status)}>
@@ -467,15 +467,27 @@ const InvoiceCreate = () => {
 										</FormControl>
 									</Grid>
 									{/* Dropdown to select the Paid month */}
+
 									{formData.invoiceType === "Monthly" && (
 										<Grid item xs={12}>
 											<FormControl fullWidth error={Boolean(errors.paidMonth)}>
 												<TextField select label="Select Booking Month" name="paidMonth" value={formData.paidMonth} onChange={handleChange} variant="outlined" fullWidth>
-													{["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((month, index) => (
-														<MenuItem key={index} value={month}>
-															{month}
-														</MenuItem>
-													))}
+													{allMonths
+														.filter((month, index) => {
+															// Remove current month and past months
+															const isPastOrCurrent = index <= currentMonthIndex;
+
+															// Remove months that are already paid for
+															const isPaid = paidMonths.includes(month);
+
+															// Show only future months and ones that are not paid yet
+															return !isPastOrCurrent && !isPaid;
+														})
+														.map((month, index) => (
+															<MenuItem key={index} value={month}>
+																{month}
+															</MenuItem>
+														))}
 												</TextField>
 												{errors.paidMonth && <FormHelperText error>{errors.paidMonth}</FormHelperText>}
 											</FormControl>
@@ -489,7 +501,6 @@ const InvoiceCreate = () => {
 											{errors.dueDate && <FormHelperText error>{errors.dueDate}</FormHelperText>}
 										</LocalizationProvider>
 									</Grid>
-
 									{/* Show Paid Date & Payment Type only if status is Paid or Overdue */}
 									{formData.status !== "pending" && (
 										<>
