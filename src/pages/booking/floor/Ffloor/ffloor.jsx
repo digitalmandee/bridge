@@ -91,7 +91,7 @@ const FFloorPlan = () => {
 											key={`${table.id}${chair.id}`}
 											sx={{
 												color: chair.activeColor ? chair.activeColor : chair.color,
-												position: "absolute",
+												position: `${chair.position.y && chair.position.x ? "absolute" : "static"}`,
 												top: `${(chair.position.y / 100) * floorSize.height}px`,
 												left: `${(chair.position.x / 100) * floorSize.width}px`,
 												transform: `rotate(${chair.rotation}deg)`,
@@ -117,8 +117,7 @@ const FFloorPlan = () => {
 						boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // Optional shadow
 						overflow: "hidden", // Enable vertical scrolling
 						border: "1px solid #ddd",
-					}}
-				>
+					}}>
 					<h4
 						style={{
 							backgroundColor: colors.primary,
@@ -128,8 +127,7 @@ const FFloorPlan = () => {
 							borderTopLeftRadius: "0.5rem",
 							borderTopRightRadius: "0.5rem",
 							textAlign: "center",
-						}}
-					>
+						}}>
 						Selected Items:
 					</h4>
 
@@ -145,8 +143,7 @@ const FFloorPlan = () => {
 								scrollbarWidth: "none",
 								msOverflowStyle: "none",
 							}}
-							className="hide-scrollbar"
-						>
+							className="hide-scrollbar">
 							{Object.entries(selectedChairs).map(([tableId, chairs]) =>
 								chairs.map((chair) => (
 									<div
@@ -156,10 +153,9 @@ const FFloorPlan = () => {
 											background: "#E3F2FD", // Light blue for contrast
 											borderRadius: "5px",
 											fontSize: "14px",
-											fontWeight:'bold',
+											fontWeight: "bold",
 											whiteSpace: "nowrap", // Prevents breaking inside the box
-										}}
-									>
+										}}>
 										{tableId} - {chair.id}
 									</div>
 								))

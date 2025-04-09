@@ -93,7 +93,7 @@ const GFloorPlan = () => {
 												key={`${table.id}${chair.id}`}
 												sx={{
 													color: `${chair.activeColor ? chair.activeColor : chair.color} !important`,
-													position: "absolute",
+													position: `${chair.position.y && chair.position.x ? "absolute" : "static"}`,
 													top: `${(chair.position.y / 100) * floorSize.height}px`,
 													left: `${(chair.position.x / 100) * floorSize.width}px`,
 													transform: `rotate(${chair.rotation}deg)`,
