@@ -69,6 +69,29 @@ import Welcome from "./pages/welcome/welcome";
 import LoginPage from "./pages/auth/login/login";
 import NoPermission from "./pages/nopermission";
 
+// Finance
+import FinanceDashboard from "./pages/finance/dashboard";
+import CreateReport from "./pages/finance/create";
+import FinanceCategory from "./pages/finance/category";
+import FinanceReport from "./pages/finance/report";
+import GrocerySupply from "./pages/finance/grocery";
+
+// Payroll
+import PayrollDashboard from "./pages/payroll/dashboard";
+import RunPayroll from "./pages/payroll/runpayroll";
+import SalaryRevesion from "./pages/payroll/salaryrev";
+import HoledEmployee from "./pages/payroll/holed";
+import Deduction from "./pages/payroll/deduction";
+import Reimbursement from "./pages/payroll/reimburse";
+import EmployeeLeave from "./pages/payroll/leaves";
+import ManageCheque from "./pages/payroll/cheque";
+import CreateCheque from "./pages/payroll/create";
+import PayrollMonthly from "./pages/payroll/monthly";
+import PayrollSummary from "./pages/payroll/summary";
+import EmployeSalary from "./pages/payroll/empsalary";
+import SalaryComponent from "./pages/payroll/salarycomp";
+import PaySlip from "./pages/payroll/payslip";
+
 function AuthRoutes() {
 	return (
 		<Routes>
@@ -577,6 +600,180 @@ function AuthRoutes() {
 					</ProtectedRoute>
 				}
 			/>
+
+			{/* Finance Management Routes */}
+			<Route
+				path="branch/finance/dashboard"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<FinanceDashboard />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/finance/create"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<CreateReport />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/finance/category"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<FinanceCategory />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/finance/category/:categoryid"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<FinanceReport />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/groceries/supplies"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<GrocerySupply />
+					</ProtectedRoute>
+				}
+			/>
+
+			{/* Payroll Routes */}
+			<Route
+				path="branch/payroll/dashboard"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<PayrollDashboard />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/run-payroll"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<RunPayroll />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/payroll/salary-revision"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<SalaryRevesion />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/payroll/holed-employee"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<HoledEmployee />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/payroll/deduction"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<Deduction />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/payroll/employee-leave"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<EmployeeLeave />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/payroll/cheque"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<ManageCheque />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/payroll/cheque/create"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<CreateCheque />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/payroll/reimbursement"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<Reimbursement />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/payroll/monthly"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<PayrollMonthly />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/payroll/summary"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<PayrollSummary />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/payroll/employee/salary"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<EmployeSalary />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/salary/component"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<SalaryComponent />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/payroll/payslip"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<PaySlip />
+					</ProtectedRoute>
+				}
+			/>
+
 			{/*No Permission */}
 			<Route
 				path="no-permission"

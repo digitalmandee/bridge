@@ -1,0 +1,228 @@
+import React, { useEffect, useState } from "react";
+import TopNavbar from "@/components/topNavbar";
+import Sidebar from "@/components/leftSideBar";
+import { useNavigate, useParams } from "react-router-dom";
+import { Box, Typography, Button, Card, CardContent, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, CircularProgress, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import ReceiptIcon from "@mui/icons-material/Receipt";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import { Bar, Doughnut } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
+import axiosInstance from "@/utils/axiosInstance";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
+
+const FinanceDashboard = () => {
+	const navigate = useNavigate();
+	const { branch } = useParams();
+
+	const [finances, setFinances] = useState([]);
+	const [stats, setStats] = useState(null);
+	const [isLoading, setIsLoading] = useState(true);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(1);
+	const [limit, setLimit] = useState(10);
+
+	// State for Month and Year
+	const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
+	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
+
+	const getStats = async (month = selectedMonth, year = selectedYear) => {
+		try {
+			const res = await axiosInstance.get("finance/stats", {
+				params: { month, year },
+			});
+			if (res.data.success) {
+				setStats(res.data);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const getFinances = async (page = 1) => {
+		setIsLoading(true);
+		try {
+			const res = await axiosInstance.get("finances", {
+				params: { page, limit, month: selectedMonth, year: selectedYear },
+			});
+
+			if (res.data.success) {
+				setFinances(res.data.finances.data);
+				setTotalPages(res.data.finances.last_page);
+				setCurrentPage(res.data.finances.current_page);
+			}
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		getStats();
+		getFinances(currentPage);
+	}, [selectedMonth, selectedYear, currentPage]);
+
+	const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+	const handleMonthChange = (event) => {
+		setSelectedMonth(event.target.value);
+	};
+
+	const handleYearChange = (event) => {
+		setSelectedYear(event.target.value);
+	};
+
+	return (
+		<>
+			<TopNavbar />
+			<div className="main d-flex">
+				<div className="sideBarWrapper">
+					<Sidebar />
+				</div>
+				<div className="content">
+					<Box sx={{ mt: 1, bgcolor: "#f5f6fa" }}>
+						{/* Header */}
+						<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+							<Typography variant="h5" sx={{ fontWeight: "bold" }}>
+								Dashboard
+							</Typography>
+							<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+								{/* Month and Year Selection */}
+								<Box sx={{ display: "flex", gap: 2 }}>
+									<FormControl>
+										<InputLabel>Month</InputLabel>
+										<Select value={selectedMonth} onChange={handleMonthChange} label="Month" size="small">
+											<MenuItem value={0}>All Months</MenuItem> {/* Added option for All Months */}
+											{monthNames.map((month, index) => (
+												<MenuItem key={index} value={index + 1}>
+													{month}
+												</MenuItem>
+											))}
+										</Select>
+									</FormControl>
+									<FormControl>
+										<InputLabel>Year</InputLabel>
+										<Select value={selectedYear} onChange={handleYearChange} label="Year" size="small">
+											{Array.from({ length: 5 }, (_, index) => (
+												<MenuItem key={index} value={new Date().getFullYear() - index}>
+													{new Date().getFullYear() - index}
+												</MenuItem>
+											))}
+										</Select>
+									</FormControl>
+								</Box>
+								<Button variant="outlined" color="primary">
+									Financial Report
+								</Button>
+								<Button variant="contained" sx={{ bgcolor: "#0A2647" }} onClick={() => navigate(`/${branch}/branch/finance/create`)}>
+									Add New Entry
+								</Button>
+							</Box>
+						</Box>
+
+						{/* Metric Cards */}
+						<Grid container spacing={2} sx={{ mb: 3 }}>
+							{[
+								{ title: "Total Revenue", amount: (stats?.total_revenue || 0) + " Rs", change: stats?.growth?.total_revenue, icon: <ShoppingCartIcon />, color: "#ff9800" },
+								{ title: "Total Expense", amount: (stats?.total_expense || 0) + " Rs", change: stats?.growth?.total_expense, icon: <ReceiptIcon />, color: "#e91e63" },
+								{
+									title: "Total P&L",
+									amount: (stats?.total_pl || 0) + " Rs",
+									change: stats?.growth?.total_pl,
+									icon: <AccountBalanceWalletIcon />,
+									color: "#f44336",
+								},
+							].map((item, index) => (
+								<Grid item xs={12} sm={6} md={4} key={index}>
+									<Card sx={{ bgcolor: "white", boxShadow: "none", borderRadius: 3, border: "1px solid #e0e0e0" }}>
+										<CardContent>
+											<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "start" }}>
+												<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+													<Box
+														sx={{
+															bgcolor: `${item.color}15`,
+															p: 1,
+															borderRadius: 1,
+															display: "flex",
+															alignItems: "center",
+														}}>
+														{React.cloneElement(item.icon, { sx: { color: item.color } })}
+													</Box>
+												</Box>
+												<IconButton size="small">
+													<MoreVertIcon />
+												</IconButton>
+											</Box>
+											<Typography variant="body2" sx={{ mt: 2, color: "text.secondary" }}>
+												{item.title}
+											</Typography>
+											<Typography variant="h6" sx={{ mt: 1, fontWeight: "bold" }}>
+												{item.amount}
+											</Typography>
+											<Typography
+												variant="body2"
+												sx={{
+													color: item.change < 0 ? "error.main" : "success.main",
+												}}>
+												{item.change}%
+											</Typography>
+										</CardContent>
+									</Card>
+								</Grid>
+							))}
+						</Grid>
+
+						{/* Table */}
+						<TableContainer component={Paper} sx={{ boxShadow: "none", borderRadius: 3, border: "1px solid #e0e0e0" }}>
+							<Table>
+								<TableHead sx={{ bgcolor: "#C5D9F0" }}>
+									<TableRow>
+										<TableCell>Categories</TableCell>
+										<TableCell>Name</TableCell>
+										<TableCell>Description</TableCell>
+										<TableCell>Amount</TableCell>
+										<TableCell>Issue Date</TableCell>
+										<TableCell>Due Date</TableCell>
+										<TableCell>Quantity</TableCell>
+									</TableRow>
+								</TableHead>
+								<TableBody>
+									{isLoading ? (
+										<TableRow>
+											<TableCell colSpan={7} align="center">
+												<CircularProgress sx={{ color: "#0F172A" }} />
+											</TableCell>
+										</TableRow>
+									) : finances.length > 0 ? (
+										finances.map((row, index) => (
+											<TableRow key={index}>
+												<TableCell>{row.category.name}</TableCell>
+												<TableCell>{row.name}</TableCell>
+												<TableCell>{row.description}</TableCell>
+												<TableCell>{row.amount}</TableCell>
+												<TableCell>{row.issue_date}</TableCell>
+												<TableCell>{row.due_date}</TableCell>
+												<TableCell>{row.quantity}</TableCell>
+											</TableRow>
+										))
+									) : (
+										<TableRow>
+											<TableCell colSpan={7} align="center">
+												No finance found.
+											</TableCell>
+										</TableRow>
+									)}
+								</TableBody>
+							</Table>
+						</TableContainer>
+					</Box>
+				</div>
+			</div>
+		</>
+	);
+};
+
+export default FinanceDashboard;

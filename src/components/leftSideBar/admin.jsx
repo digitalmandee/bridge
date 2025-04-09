@@ -66,6 +66,7 @@ const menuItems = [
 		dropdown: [
 			{ to: "/branch/employee/dashboard", label: "Dashboard", permission: "employee-dashboard" },
 			{ to: "/branch/employee/departments", label: "Departments", permission: "employee-dashboard" },
+			{ to: "/branch/payroll/dashboard", label: "Payroll", permission: "payroll", permission: "employee-dashboard" },
 			{ to: "/branch/employee/attendance", label: "Attendance", permission: "attendance" },
 			{ to: "/branch/employee/leave/category", label: "Leave Category", permission: "leave-category" },
 			{ to: "/branch/employee/leave/application", label: "Leave Application", permission: "leave-application" },
@@ -74,6 +75,16 @@ const menuItems = [
 			{ to: "/branch/employee/manage/attendance", label: "Manage Attendance", permission: "manage-attendance" },
 			{ to: "/branch/employee/attendance/monthly/report", label: "Monthly Report", permission: "monthly-report" },
 			{ to: "/branch/employee/attendance/report", label: "Attendance Report", permission: "manage-attendance" },
+		],
+	},
+	{
+		label: "Finance Management",
+		icon: <GoDatabase />,
+		hasDropdown: true,
+		dropdown: [
+			{ to: "/branch/finance/dashboard", label: "Dashboard", permission: "employee-dashboard" },
+			{ to: "/branch/finance/category", label: "Category", permission: "employee-dashboard" },
+			{ to: "/branch/groceries/supplies", label: "Groceries & Supplies", permission: "employee-dashboard" },
 		],
 	},
 	// { to: "", label: "Inventory Management", icon: <MdOutlineInventory />, hasDropdown: true },

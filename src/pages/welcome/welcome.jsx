@@ -7,6 +7,7 @@ import investerLogo from "@/assets/investor.png";
 import userLogo from "@/assets/user.png";
 import logopic from "@/assets/logopic.png";
 import "./welcome.css";
+import SplashScreen from "@/components/splashscreen";
 
 const Welcome = () => {
 	const navigate = useNavigate();
@@ -34,7 +35,7 @@ const Welcome = () => {
 	};
 
 	if (isExist === null) {
-		return <p>Loading...</p>; // Show loading state before check completes
+		return <SplashScreen />;
 	}
 
 	if (!isExist) {
