@@ -198,12 +198,12 @@ Route::group(['middleware' => ['set_tenant']], function () {
     });
 
     // finance management
+    Route::resource('finances', FinanceController::class)->except(['create', 'edit']);
     Route::group(['prefix' => 'finance'], function () {
         Route::get('stats', [FinanceController::class, 'getStats']);
         Route::get('category/{categoryId}', [FinanceController::class, 'getFinanceByCategory']);
         Route::resource('categories', FinanceCategoryController::class)->except(['create', 'edit']);
     });
-    Route::resource('finances', FinanceController::class)->except(['create', 'edit']);
 
     // -------------- Roles Management
     Route::get('permissions', [RolePermissionController::class, 'getPermissions']);

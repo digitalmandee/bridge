@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Chair;
 use App\Models\Finance;
 use App\Models\FinanceCategory;
 use App\Models\Invoice;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -14,82 +16,79 @@ class FinanceController extends Controller
     // Fetch all finance entries
     public function index(Request $request)
     {
-        $limit = $request->query('limit') ?? 10;
+        $limit = (int) $request->query('limit', 10);
         $month = $request->query('month');
         $year = $request->query('year');
 
-        // Build the query
-        $query = Finance::with(['category:id,name']);
+        $finances = Finance::with('category:id,name')
+            ->when($month, fn($q) => $q->whereMonth('due_date', $month))
+            ->when($year, fn($q) => $q->whereYear('due_date', $year))
+            ->orderByDesc('created_at')
+            ->paginate($limit);
 
-        if ($month) {
-            $query->whereMonth('due_date', $month);  // Filter by month
-        }
-
-        if ($year) {
-            $query->whereYear('due_date', $year);  // Filter by year
-        }
-
-        // Paginate the results
-        $finances = $query->orderBy('created_at', 'desc')->paginate($limit);
-
-        return response()->json(['success' => true, 'finances' => $finances], 200);
+        return response()->json(['success' => true, 'finances' => $finances]);
     }
 
     public function getStats(Request $request)
     {
         $month = $request->query('month');
-        $year = $request->query('year') ?? Carbon::now()->year;
+        $year = $request->query('year') ?? now()->year;
 
-        if ($month == 0 || $month === 'all') {
-            // Yearly totals
-            $totalRevenue = Invoice::where('status', 'paid')->whereYear('paid_date', $year)->sum('amount');
+        $isYearly = $month == 0 || $month === 'all';
 
-            $totalExpense = Finance::where('status', 'paid')->whereYear('due_date', $year)->sum('amount');
-
-            $totalPL = $totalRevenue - $totalExpense;
-
-            // Previous year
-            $prevRevenue = Invoice::where('status', 'paid')->whereYear('paid_date', $year - 1)->sum('amount');
-
-            $prevExpense = Finance::where('status', 'paid')->whereYear('due_date', $year - 1)->sum('amount');
-
-            $prevPL = $prevRevenue - $prevExpense;
+        if ($isYearly) {
+            $currentRevenue = $this->getTotal(Invoice::class, 'paid_date', $year);
+            $currentExpense = $this->getTotal(Finance::class, 'due_date', $year);
+            $previousRevenue = $this->getTotal(Invoice::class, 'paid_date', $year - 1);
+            $previousExpense = $this->getTotal(Finance::class, 'due_date', $year - 1);
         } else {
-            // Monthly totals
-            $previousDate = Carbon::createFromDate($year, $month, 1)->subMonth();
-            $prevMonth = $previousDate->month;
-            $prevYear = $previousDate->year;
+            $previousDate = Carbon::create($year, $month)->subMonth();
+            $previousRevenue = $this->getTotal(Invoice::class, 'paid_date', $previousDate->year, $previousDate->month);
+            $previousExpense = $this->getTotal(Finance::class, 'due_date', $previousDate->year, $previousDate->month);
+            $currentRevenue = $this->getTotal(Invoice::class, 'paid_date', $year, $month);
+            $currentExpense = $this->getTotal(Finance::class, 'due_date', $year, $month);
 
-            $totalRevenue = Invoice::where('status', 'paid')->whereMonth('paid_date', $month)->whereYear('paid_date', $year)->sum('amount');
-
-            $totalExpense = Finance::where('status', 'paid')->whereMonth('due_date', $month)->whereYear('due_date', $year)->sum('amount');
-
-            $totalPL = $totalRevenue - $totalExpense;
-
-            // Previous month
-            $prevRevenue = Invoice::where('status', 'paid')->whereMonth('paid_date', $prevMonth)->whereYear('paid_date', $prevYear)->sum('amount');
-
-            $prevExpense = Finance::where('status', 'paid')->whereMonth('due_date', $prevMonth)->whereYear('due_date', $prevYear)->sum('amount');
-
-            $prevPL = $prevRevenue - $prevExpense;
+            $totalChairs = Chair::count('id');
+            $bookedChairs = Chair::whereIn('time_slot', ['day', 'night', 'full_day'])->count('id');
+            $availableChairs = Chair::whereIn('time_slot', ['available', 'day', 'night'])->count('id');
+            $totlaMembers = User::whereIn('type', ['user', 'company'])->whereNull('company_id')->count('id');
         }
 
-        // Growth calculations
-        $revenueGrowth = $prevRevenue > 0 ? (($totalRevenue - $prevRevenue) / $prevRevenue) * 100 : 0;
-        $expenseGrowth = $prevExpense > 0 ? (($totalExpense - $prevExpense) / $prevExpense) * 100 : 0;
-        $plGrowth = $prevPL != 0 ? (($totalPL - $prevPL) / abs($prevPL)) * 100 : 0;
+        $currentPL = $currentRevenue - $currentExpense;
+        $previousPL = $previousRevenue - $previousExpense;
+
+        $growth = fn($current, $previous) =>
+            $previous != 0 ? (($current - $previous) / abs($previous)) * 100 : 0;
 
         return response()->json([
             'success' => true,
-            'total_revenue' => number_format($totalRevenue, 2),
-            'total_expense' => number_format($totalExpense, 2),
-            'total_pl' => number_format($totalPL, 2),
+            'total_revenue' => number_format($currentRevenue, 2),
+            'total_expense' => number_format($currentExpense, 2),
+            'total_pl' => number_format($currentPL, 2),
+            'total_chairs' => $totalChairs,
+            'booked_chairs' => $bookedChairs,
+            'available_chairs' => $availableChairs,
+            'total_members' => $totlaMembers,
             'growth' => [
-                'total_revenue' => number_format($revenueGrowth, 2),
-                'total_expense' => number_format($expenseGrowth, 2),
-                'total_pl' => number_format($plGrowth, 2),
+                'total_revenue' => number_format($growth($currentRevenue, $previousRevenue), 2),
+                'total_expense' => number_format($growth($currentExpense, $previousExpense), 2),
+                'total_pl' => number_format($growth($currentPL, $previousPL), 2),
             ],
         ]);
+    }
+
+    /**
+     * Get total amount based on model, date field, year, and optional month.
+     */
+    private function getTotal(string $modelClass, string $dateField, int $year, ?int $month = null): float
+    {
+        $query = $modelClass::where('status', 'paid')->whereYear($dateField, $year);
+
+        if ($month) {
+            $query->whereMonth($dateField, $month);
+        }
+
+        return $query->sum('amount');
     }
 
     // get finance by category

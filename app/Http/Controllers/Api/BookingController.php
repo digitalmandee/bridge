@@ -136,6 +136,7 @@ class BookingController extends Controller
                 'payment_method' => $bookingDetails['payment_method'],
                 'plan' => $bookingPlan->toArray(),
                 'receipt' => $receiptPath,
+                'description' => $bookingDetails['description'],
             ]);
 
             $invoice = Invoice::create([

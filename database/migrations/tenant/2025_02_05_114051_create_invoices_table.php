@@ -24,7 +24,7 @@ class CreateInvoicesTable extends Migration
             $table->enum('status', ['pending', 'paid', 'overdue'])->default('pending');
             $table->date('due_date');
             $table->date('paid_date')->nullable();
-            $table->string('paid_month')->nullable();
+            $table->json('paid_month')->nullable();
             $table->string('paid_year')->nullable();
             $table->json('plan')->nullable();
             $table->string('payment_type')->nullable();
