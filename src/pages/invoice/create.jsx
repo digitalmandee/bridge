@@ -334,9 +334,10 @@ const InvoiceCreate = () => {
 		}
 	}, [formData.paidMonth, userBooking]);
 
+	// Get all months
 	const allMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-	const currentMonthIndex = new Date().getMonth(); // 0-based (Jan = 0)
-	const paidMonths = userBooking?.payed_months || []; // e.g., ["April"]
+	const currentMonthIndex = new Date().getMonth();
+	const paidMonths = userBooking?.payed_months || [];
 
 	return (
 		<>
