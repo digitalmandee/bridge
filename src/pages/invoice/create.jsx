@@ -136,6 +136,9 @@ const InvoiceCreate = () => {
 		const { name, value } = e.target;
 		setFormData({ ...formData, [name]: value });
 		setErrors({ ...errors, [name]: "" }); // Clear error on change
+		// if (name === "invoiceType" && value !== "Monthly") {
+		// 	setFormData({ ...formData, paidMonth: new Date().toLocaleString("default", { month: "long" }) });
+		// }
 	};
 
 	// Handle file selection
