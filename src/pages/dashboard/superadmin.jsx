@@ -276,7 +276,7 @@ const SuperAdminDashboard = () => {
 														</Box>
 														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
 															<Typography variant="h6" sx={{ fontWeight: "bold" }}>
-																$26,000
+																RS. 26,000
 															</Typography>
 															<Typography variant="body2" color="success.main">
 																10% ↑
@@ -293,7 +293,7 @@ const SuperAdminDashboard = () => {
 														</Box>
 														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
 															<Typography variant="h6" sx={{ fontWeight: "bold" }}>
-																$18,000
+																RS. 18,000
 															</Typography>
 															<Typography variant="body2" color="error.main">
 																10% ↑
@@ -310,7 +310,7 @@ const SuperAdminDashboard = () => {
 														</Box>
 														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
 															<Typography variant="h6" sx={{ fontWeight: "bold" }}>
-																$8,000
+																RS. 8,000
 															</Typography>
 															<Typography variant="body2" color="success.main">
 																3% ↑

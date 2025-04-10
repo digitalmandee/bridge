@@ -84,7 +84,7 @@ const menuItems = [
 		dropdown: [
 			{ to: "/branch/finance/dashboard", label: "Dashboard", permission: "employee-dashboard" },
 			{ to: "/branch/finance/category", label: "Category", permission: "employee-dashboard" },
-			{ to: "/branch/groceries/supplies", label: "Groceries & Supplies", permission: "employee-dashboard" },
+			// { to: "/branch/groceries/supplies", label: "Groceries & Supplies", permission: "employee-dashboard" },
 		],
 	},
 	// { to: "", label: "Inventory Management", icon: <MdOutlineInventory />, hasDropdown: true },
