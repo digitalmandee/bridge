@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "@/utils/axiosInstance";
 import { AuthContext } from "@/contexts/AuthContext";
 import { FileText } from "lucide-react";
-
+import colors from "@/assets/styles/color";
 const NotificationManagement = () => {
 	const { user } = useContext(AuthContext);
 	const { branch } = useParams();
@@ -108,11 +108,11 @@ const NotificationManagement = () => {
 											variant={statusFilter === label ? "contained" : "outlined"}
 											sx={{
 												bgcolor: statusFilter === label ? "#0F172A" : "",
-												color: statusFilter === label ? "white" : "#0D2B4E",
+												color: statusFilter === label ? "white" : colors.primary,
 												borderRadius: "20px",
-												border: "1px solid #0D2B4E",
+												border: `1px solid ${colors.primary}`,
 												"&:hover": {
-													bgcolor: "#0D2B4E",
+													bgcolor: colors.primary,
 													color: "#fff",
 												},
 											}}

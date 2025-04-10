@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import colors from "@/assets/styles/color";
+import colors from "../../assets/styles/color";
 import { Box, Card, CardContent, Typography, Grid, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -11,6 +11,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Bell, FileText } from "lucide-react";
 import axiosInstance from "@/utils/axiosInstance";
 import DashboardNotifications from "@/components/notifications";
+// import colors from "../../assets/styles/color";
 
 const UserDashboard = () => {
 	const [isLoading, setIsLoading] = useState(true);
@@ -52,9 +53,9 @@ const UserDashboard = () => {
 										<Button
 											variant="outlined"
 											sx={{
-												color: "text.primary",
+												color: "white",
 												borderColor: "divider",
-												bgcolor: "white",
+												backgroundColor: colors.primary,
 											}}>
 											Create Booking
 										</Button>
@@ -109,7 +110,7 @@ const UserDashboard = () => {
 								{/* Booking Table */}
 								<TableContainer component={Paper} style={{ width: "65%", backgroundColor: "#FFFFFF", borderRadius: "1rem", boxShadow: "none", border: "1px solid #ccc", marginBottom: "24px" }}>
 									<Table>
-										<TableHead style={{ backgroundColor: "#C5D9F0" }}>
+										<TableHead style={{ backgroundColor: "#FFF2C6" }}>
 											<TableRow>
 												<TableCell style={{ color: "black", fontWeight: "700" }}>Booking ID</TableCell>
 												<TableCell style={{ color: "black", fontWeight: "700" }}>Floor</TableCell>

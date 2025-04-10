@@ -6,6 +6,7 @@ import { Container, Card, Row, Col, Button } from "react-bootstrap"
 import { ArrowBack, AccessTime, Settings, GetApp, Description, ChevronLeft, ChevronRight } from "@mui/icons-material"
 import "bootstrap/dist/css/bootstrap.min.css"
 import { MdArrowBackIos } from "react-icons/md";
+import colors from '@/assets/styles/color';
 
 const RunPayroll = () => {
     const navigate = useNavigate();
@@ -131,7 +132,7 @@ const RunPayroll = () => {
                                                                 ? "bg-light text-muted"
                                                                 : "bg-light text-muted"
                                                             }`}
-                                                        style={{ fontSize: "12px", backgroundColor: item.status === "Current" ? "#0D2B4E" : "" }}
+                                                        style={{ fontSize: "12px", backgroundColor: item.status === "Current" ? colors.primary : "" }}
                                                     >
                                                         {item.status}
                                                     </div>
@@ -195,8 +196,8 @@ const RunPayroll = () => {
                         <div className="text-end mb-4">
                             <Button
                                 style={{
-                                    backgroundColor: "#0A2647",
-                                    borderColor: "#0A2647",
+                                    backgroundColor: colors.primary,
+                                    borderColor: colors.primary,
                                     fontSize: "14px",
                                 }}
                             >

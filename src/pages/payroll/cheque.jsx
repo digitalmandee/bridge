@@ -6,6 +6,7 @@ import { MdArrowBackIos } from "react-icons/md";
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import "bootstrap/dist/css/bootstrap.min.css";
+import colors from "@/assets/styles/color";
 
 const ManageCheque = () => {
 	const navigate = useNavigate();
@@ -87,8 +88,8 @@ const ManageCheque = () => {
 								<Button
 									variant="contained"
 									sx={{
-										bgcolor: "#0a2e52",
-										"&:hover": { bgcolor: "#0a2e52cc" },
+										bgcolor: colors.primary,
+										"&:hover": { bgcolor: colors.primary },
 										minWidth: "100px",
 									}}
 									onClick={() => navigate(`/${branch}/branch/payroll/cheque/create`)}>
@@ -106,7 +107,7 @@ const ManageCheque = () => {
 							}}>
 							<Table sx={{ minWidth: 650 }}>
 								<TableHead>
-									<TableRow sx={{ backgroundColor: "#e9f0f8" }}>
+									<TableRow sx={{ backgroundColor: "#FFF2C6" }}>
 										<TableCell sx={{ fontWeight: "medium", color: "#444" }}>#</TableCell>
 										<TableCell sx={{ fontWeight: "medium", color: "#444" }}>Employ Name</TableCell>
 										<TableCell sx={{ fontWeight: "medium", color: "#444" }}>Amount</TableCell>

@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Table, Dropdown } from "react-bootstrap";
 import { People, AccountBalance, CalendarToday, TrendingUp, AccountBalanceWallet, Receipt } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
+import colors from "@/assets/styles/color";
 
 const PayrollDashboard = () => {
 	const navigate = useNavigate();
@@ -108,8 +109,8 @@ const PayrollDashboard = () => {
 								<Button
 									variant="primary"
 									style={{
-										backgroundColor: "#0A2647",
-										borderColor: "#0A2647",
+										backgroundColor: colors.primary,
+										borderColor: colors.primary,
 										borderRadius: "4px",
 										padding: "8px 16px",
 									}}

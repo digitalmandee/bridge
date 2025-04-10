@@ -6,6 +6,7 @@ import { MdArrowBackIos } from "react-icons/md";
 import { Box, Typography, TextField, Button, Paper, Container } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import "bootstrap/dist/css/bootstrap.min.css";
+import colors from "@/assets/styles/color";
 
 const CreateCheque = () => {
 	const navigate = useNavigate();
@@ -51,7 +52,7 @@ const CreateCheque = () => {
 							sx={{
 								display: "flex",
 								alignItems: "center",
-								mb: 3,
+								mb: 2,
 							}}>
 							<div onClick={() => navigate(-1)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
 								<MdArrowBackIos style={{ fontSize: "20px", marginRight: "10px" }} />
@@ -67,7 +68,7 @@ const CreateCheque = () => {
 								display: "flex",
 								justifyContent: "center",
 								alignItems: "center",
-								flexGrow: 1, // Makes this div take up the remaining space and center the form
+								flexGrow: 1,
 								width: "100%",
 							}}>
 							<div
@@ -91,7 +92,7 @@ const CreateCheque = () => {
 												fontWeight: "medium",
 												color: "#333",
 											}}>
-											Employ Name
+											Employee Name
 										</Typography>
 										<TextField
 											id="employName"
@@ -170,8 +171,8 @@ const CreateCheque = () => {
 											type="submit"
 											variant="contained"
 											sx={{
-												bgcolor: "#0a2e52",
-												"&:hover": { bgcolor: "#0a2e52cc" },
+												bgcolor: colors.primary,
+												"&:hover": { bgcolor: colors.primary },
 												borderRadius: "4px",
 												textTransform: "none",
 												px: 3,

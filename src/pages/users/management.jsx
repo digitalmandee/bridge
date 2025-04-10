@@ -136,7 +136,7 @@ const UserManagement = () => {
 
 						{/* Pagination */}
 						<div className="d-flex justify-content-end mt-4">
-							<Pagination count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} shape="rounded" style={{ color: "#0a2647" }} />
+							<Pagination count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} shape="rounded" style={{ color: colors.primary }} />
 						</div>
 					</div>
 				</div>

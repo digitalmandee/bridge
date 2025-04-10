@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Grid, Typography, FormControlLabel, Radio, RadioGroup, Select, Chip, FormControl, CardContent, TableCell, TableHead, TableContainer, Table, TableBody, TableRow, Button, Divider, Paper, MenuItem } from "@mui/material";
 import { FileDownload } from "@mui/icons-material";
 import axiosInstance from "@/utils/axiosInstance";
-
+import colors from "@/assets/styles/color";
 const AttendanceReport = ({ employeeId }) => {
 	const currentDate = new Date();
 	const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}`;
@@ -124,9 +124,9 @@ const AttendanceReport = ({ employeeId }) => {
 								variant="contained"
 								startIcon={<FileDownload />}
 								sx={{
-									bgcolor: "#0A2647",
+									bgcolor: colors.primary,
 									"&:hover": {
-										bgcolor: "#0A2647",
+										bgcolor: colors.primary,
 									},
 									textTransform: "none",
 								}}>

@@ -64,10 +64,10 @@ const GrocerySupply = () => {
                                 onClick={() => setTimeFilter('weekly')}
                                 sx={{
                                     px: 3,
-                                    bgcolor: timeFilter === 'weekly' ? '#0c4a6e' : 'white',
+                                    bgcolor: timeFilter === 'weekly' ? colors.primary : 'white',
                                     color: timeFilter === 'weekly' ? 'white' : '#64748b',
                                     '&:hover': {
-                                        bgcolor: timeFilter === 'weekly' ? '#0c4a6e' : '#f1f5f9',
+                                        bgcolor: timeFilter === 'weekly' ? colors.primary : '#f1f5f9',
                                     },
                                     textTransform: 'none',
                                     fontWeight: 500,
@@ -84,10 +84,10 @@ const GrocerySupply = () => {
                                 onClick={() => setTimeFilter('daily')}
                                 sx={{
                                     px: 3,
-                                    bgcolor: timeFilter === 'daily' ? '#0c4a6e' : 'white',
+                                    bgcolor: timeFilter === 'daily' ? colors.primary : 'white',
                                     color: timeFilter === 'daily' ? 'white' : '#64748b',
                                     '&:hover': {
-                                        bgcolor: timeFilter === 'daily' ? '#0c4a6e' : '#f1f5f9',
+                                        bgcolor: timeFilter === 'daily' ? colors.primary : '#f1f5f9',
                                     },
                                     textTransform: 'none',
                                     fontWeight: 500,
@@ -110,14 +110,14 @@ const GrocerySupply = () => {
                         >
                             <Table sx={{ minWidth: 650 }}>
                                 <TableHead>
-                                    <TableRow sx={{ bgcolor: '#dbeafe' }}>
-                                        <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>SL No</TableCell>
-                                        <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>Name</TableCell>
-                                        <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>Description</TableCell>
-                                        <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>Qty</TableCell>
-                                        <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>Amount</TableCell>
-                                        <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>Date</TableCell>
-                                        <TableCell sx={{ fontWeight: 'bold', color: '#1e293b', py: 2 }}>Status</TableCell>
+                                    <TableRow sx={{ bgcolor: '#FFF2C6' }}>
+                                        <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>SL No</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Name</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Description</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Qty</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Amount</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Date</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold', color: '#000000', py: 2 }}>Status</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>

@@ -112,7 +112,7 @@ const LeaveReport = () => {
 						<TableContainer component={Paper}>
 							<Table>
 								<TableHead>
-									<TableRow style={{ backgroundColor: "#C5D9F0" }}>
+									<TableRow style={{ backgroundColor: "#FFF2C6" }}>
 										<TableCell sx={{ fontWeight: "bold" }}>#</TableCell>
 										<TableCell sx={{ fontWeight: "bold" }}>Employ Name</TableCell>
 										<TableCell sx={{ fontWeight: "bold" }}>Casual Leave</TableCell>

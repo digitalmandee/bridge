@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress, Pagination, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Snackbar, Alert } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
+import colors from '../../assets/styles/color'
 
 const Management = () => {
 	const navigate = useNavigate();
@@ -126,12 +127,16 @@ const Management = () => {
 								<div onClick={() => navigate(-1)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
 									<MdArrowBackIos style={{ fontSize: "20px" }} />
 								</div>
-								<Typography variant="h6" className="mb-0 ms-2">
+								<Typography variant="h6" className="mb-0 ms-2" style={{
+									color:'#202224',
+									fontSize:'30px',
+									fontWeight:'500'
+								}}>
 									Finance Categories
 								</Typography>
 							</div>
 							<div className="col-auto ms-auto">
-								<Button variant="contained" sx={{ bgcolor: "#0F172A", borderRadius: "10px", "&:hover": { bgcolor: "#1E293B" } }} onClick={() => handleOpen()}>
+								<Button variant="contained" sx={{ bgcolor: colors.primary, borderRadius: "10px", "&:hover": { bgcolor: colors.primary } }} onClick={() => handleOpen()}>
 									New Finance Category
 								</Button>
 							</div>
@@ -209,10 +214,12 @@ const Management = () => {
 					<TextField fullWidth label="Finance Category Name" variant="outlined" margin="normal" value={name} onChange={(e) => setName(e.target.value)} error={!!error} helperText={error} />
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose} color="secondary">
+					<Button onClick={handleClose}>
 						Cancel
 					</Button>
-					<Button onClick={handleSubmit} variant="contained" color="primary" disabled={isSaving}>
+					<Button onClick={handleSubmit} variant="contained" disabled={isSaving} style={{
+						backgroundColor: colors.primary
+					}}>
 						{editCategory ? "Update" : "Save"}
 					</Button>
 				</DialogActions>

@@ -7,6 +7,7 @@ import { Container, Row, Col, Button, Form, Table } from "react-bootstrap"
 import { ArrowBack, Search, Download } from "@mui/icons-material" // Added Download import
 import { Box, Pagination, IconButton } from "@mui/material" // Added IconButton import
 import "bootstrap/dist/css/bootstrap.min.css"
+import colors from '@/assets/styles/color';
 
 const PayrollMonthly = () => {
     const navigate = useNavigate();
@@ -99,13 +100,13 @@ const PayrollMonthly = () => {
             fontWeight: "bold",
         },
         processButton: {
-            backgroundColor: "#0f2a4a",
+            backgroundColor: colors.primary,
             border: "none",
             borderRadius: "4px",
             padding: "8px 15px",
         },
         runPayrollButton: {
-            backgroundColor: "#0f2a4a",
+            backgroundColor: colors.primary,
             border: "none",
             borderRadius: "4px",
             padding: "8px 15px",
@@ -120,7 +121,7 @@ const PayrollMonthly = () => {
         },
         searchIcon: {
             position: "absolute",
-            left: "10px",
+            left: "25px",
             top: "50%",
             transform: "translateY(-50%)",
             color: "#999",
@@ -138,7 +139,7 @@ const PayrollMonthly = () => {
             fontWeight: "bold",
         },
         modifyButton: {
-            backgroundColor: "#0f2a4a",
+            backgroundColor: colors.primary,
             border: "none",
             borderRadius: "4px",
             padding: "5px 10px",
@@ -246,7 +247,7 @@ const PayrollMonthly = () => {
                                         <Search style={styles.searchIcon} />
                                         <Form.Control
                                             type="text"
-                                            placeholder="Search for employ"
+                                            placeholder="Search for Employee"
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
                                             style={{ paddingLeft: "35px", width: "250px" }}
