@@ -25,6 +25,8 @@ const EmployeeCreate = () => {
 	const [errors, setErrors] = useState({});
 	const [departments, setDepartments] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");
+
+	// Snackbar
 	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
 	// Fetch departments based on search input
@@ -116,20 +118,30 @@ const EmployeeCreate = () => {
 									<Typography variant="body1" sx={{ fontWeight: 500, color: "#000000", marginBottom: "1rem" }}>
 										{field.label}
 									</Typography>
-									<TextField sx={{
-										backgroundColor: '#FFFFFF',
-										'& .MuiOutlinedInput-root': {
-											'& fieldset': {
-												border: '1px solid #E9E9E9',
+									<TextField
+										sx={{
+											backgroundColor: "#FFFFFF",
+											"& .MuiOutlinedInput-root": {
+												"& fieldset": {
+													border: "1px solid #E9E9E9",
+												},
+												"&:hover fieldset": {
+													border: "1px solid #E9E9E9", // Lock border on hover
+												},
+												"&.Mui-focused fieldset": {
+													border: "1px solid #E9E9E9", // Optional: lock on focus too
+												},
 											},
-											'&:hover fieldset': {
-												border: '1px solid #E9E9E9', // Lock border on hover
-											},
-											'&.Mui-focused fieldset': {
-												border: '1px solid #E9E9E9', // Optional: lock on focus too
-											},
-										},
-									}} name={field.name} value={formData[field.name]} onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })} placeholder={field.placeholder} variant="outlined" fullWidth error={!!errors[field.name]} helperText={errors[field.name]} />
+										}}
+										name={field.name}
+										value={formData[field.name]}
+										onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+										placeholder={field.placeholder}
+										variant="outlined"
+										fullWidth
+										error={!!errors[field.name]}
+										helperText={errors[field.name]}
+									/>
 								</Box>
 							))}
 
@@ -145,20 +157,25 @@ const EmployeeCreate = () => {
 									onChange={(event, value) => setFormData({ ...formData, department: value })}
 									renderInput={(params) => (
 										<>
-											<TextField sx={{
-												backgroundColor: '#FFFFFF',
-												'& .MuiOutlinedInput-root': {
-													'& fieldset': {
-														border: '1px solid #E9E9E9',
+											<TextField
+												sx={{
+													backgroundColor: "#FFFFFF",
+													"& .MuiOutlinedInput-root": {
+														"& fieldset": {
+															border: "1px solid #E9E9E9",
+														},
+														"&:hover fieldset": {
+															border: "1px solid #E9E9E9", // Lock border on hover
+														},
+														"&.Mui-focused fieldset": {
+															border: "1px solid #E9E9E9", // Optional: lock on focus too
+														},
 													},
-													'&:hover fieldset': {
-														border: '1px solid #E9E9E9', // Lock border on hover
-													},
-													'&.Mui-focused fieldset': {
-														border: '1px solid #E9E9E9', // Optional: lock on focus too
-													},
-												},
-											}} {...params} label="Search Department" variant="outlined" />
+												}}
+												{...params}
+												label="Search Department"
+												variant="outlined"
+											/>
 											{errors.department && <FormHelperText error>{errors.department}</FormHelperText>}
 										</>
 									)}
@@ -169,40 +186,60 @@ const EmployeeCreate = () => {
 								<Typography variant="body1" sx={{ fontWeight: 500, color: "#000000", marginBottom: "1rem" }}>
 									Joining Date*
 								</Typography>
-								<TextField sx={{
-									backgroundColor: '#FFFFFF',
-									'& .MuiOutlinedInput-root': {
-										'& fieldset': {
-											border: '1px solid #E9E9E9',
+								<TextField
+									sx={{
+										backgroundColor: "#FFFFFF",
+										"& .MuiOutlinedInput-root": {
+											"& fieldset": {
+												border: "1px solid #E9E9E9",
+											},
+											"&:hover fieldset": {
+												border: "1px solid #E9E9E9", // Lock border on hover
+											},
+											"&.Mui-focused fieldset": {
+												border: "1px solid #E9E9E9", // Optional: lock on focus too
+											},
 										},
-										'&:hover fieldset': {
-											border: '1px solid #E9E9E9', // Lock border on hover
-										},
-										'&.Mui-focused fieldset': {
-											border: '1px solid #E9E9E9', // Optional: lock on focus too
-										},
-									},
-								}} type="date" name="joining_date" value={formData.joining_date} onChange={(e) => setFormData({ ...formData, joining_date: e.target.value })} InputLabelProps={{ shrink: true }} fullWidth error={!!errors.joining_date} helperText={errors.joining_date} />
+									}}
+									type="date"
+									name="joining_date"
+									value={formData.joining_date}
+									onChange={(e) => setFormData({ ...formData, joining_date: e.target.value })}
+									InputLabelProps={{ shrink: true }}
+									fullWidth
+									error={!!errors.joining_date}
+									helperText={errors.joining_date}
+								/>
 							</Box>
 
 							<Box>
 								<Typography variant="body1" sx={{ fontWeight: 500, color: "#000000", marginBottom: "1rem" }}>
 									Gender*
 								</Typography>
-								<TextField sx={{
-									backgroundColor: '#FFFFFF',
-									'& .MuiOutlinedInput-root': {
-										'& fieldset': {
-											border: '1px solid #E9E9E9',
+								<TextField
+									sx={{
+										backgroundColor: "#FFFFFF",
+										"& .MuiOutlinedInput-root": {
+											"& fieldset": {
+												border: "1px solid #E9E9E9",
+											},
+											"&:hover fieldset": {
+												border: "1px solid #E9E9E9", // Lock border on hover
+											},
+											"&.Mui-focused fieldset": {
+												border: "1px solid #E9E9E9", // Optional: lock on focus too
+											},
 										},
-										'&:hover fieldset': {
-											border: '1px solid #E9E9E9', // Lock border on hover
-										},
-										'&.Mui-focused fieldset': {
-											border: '1px solid #E9E9E9', // Optional: lock on focus too
-										},
-									},
-								}} select name="gender" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} fullWidth variant="outlined" error={!!errors.gender} helperText={errors.gender} SelectProps={{ native: true }}>
+									}}
+									select
+									name="gender"
+									value={formData.gender}
+									onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+									fullWidth
+									variant="outlined"
+									error={!!errors.gender}
+									helperText={errors.gender}
+									SelectProps={{ native: true }}>
 									<option value="">Select Gender</option>
 									<option value="male">Male</option>
 									<option value="female">Female</option>

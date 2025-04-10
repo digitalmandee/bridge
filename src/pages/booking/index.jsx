@@ -5,12 +5,13 @@ import MemberDetail from "./memberdetail";
 import CategoryDetail from "./categorydetail";
 import BookingDetail from "./BookingDetail/bookingdetail";
 import Payment from "./payment";
-import { useNavigate } from "react-router-dom";
-import { FloorPlanContext } from "../../contexts/floorplan.context";
+import { useNavigate, useParams } from "react-router-dom";
+import { FloorPlanContext } from "@/contexts/floorplan.context";
 import { FaCheck } from "react-icons/fa";
 import colors from "@/assets/styles/color";
 // import './style.css';
 const Booking = () => {
+	const { branch } = useParams();
 	const navigate = useNavigate();
 
 	const { selectedChairs } = useContext(FloorPlanContext);
@@ -35,7 +36,7 @@ const Booking = () => {
 	};
 
 	useEffect(() => {
-		if (Object.entries(selectedChairs).length === 0) return navigate("/branch/floorplan");
+		if (Object.entries(selectedChairs).length === 0) return navigate(`/${branch}/branch/floorplan`);
 	}, []);
 
 	// const handleConfirm = () => {
@@ -50,6 +51,7 @@ const Booking = () => {
 		{ id: 1, label: "Step 1" },
 		{ id: 2, label: "Step 2" },
 		{ id: 3, label: "Step 3" },
+		{ id: 4, label: "Step 4" },
 	];
 
 	return (

@@ -196,6 +196,7 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 							</Box>
 						</Box>
 						{/* Metrics */}
+
 						<div style={metricsGridStyle}>
 							{/* Revenue Section */}
 							<div style={columnStyle}>
@@ -205,9 +206,10 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 										{ label: "Total Revenue", value: stats1.total_revenue, unit: "Pkr", change: stats1?.growth?.total_revenue, increase: true },
 										{ label: "Total Expense", value: stats1.total_expense, unit: "Pkr", change: stats1?.growth?.total_expense, increase: false },
 										{ label: "Total PNL", value: stats1.total_pl, unit: "Pkr", change: stats1?.growth?.total_pl, increase: true },
-										{ label: "Desk Occupancy", value: "20", unit: "%", change: 5, increase: false },
-										{ label: "Occupied Desk Rate", value: "20,000", unit: "Pkr", change: 21.5, increase: true },
-										{ label: "Members Revenue", value: "30,000", unit: "Pkr", change: 5, increase: false },
+										{ label: "Total Seats", value: stats1.total_chairs },
+										{ label: "Occupied Seats", value: stats1.booked_chairs },
+										{ label: "Available Seats", value: stats1.available_chairs },
+										{ label: "Total Members", value: stats1.total_members },
 									]
 										.slice(0, 3)
 										.map((metric, i) => (
@@ -228,30 +230,33 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 										))}
 								</div>
 							</div>
-
 							{/* Occupancy Section */}
 							<div style={columnStyle}>
 								<h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "0.5rem" }}>Occupancy</h3>
 								<div style={{ display: "flex", gap: "0.5rem" }}>
-									{metrics.slice(3, 6).map((metric, i) => (
-										<div key={i} style={cardStyle}>
-											<div style={{ display: "flex", flexDirection: "column" }}>
-												<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
-												<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
-													<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
-													<span style={{ fontSize: "0.875rem", color: "#6B7280" }}>{metric.unit}</span>
-												</div>
-												<div style={{ display: "flex", alignItems: "center", marginTop: "1rem", fontSize: "0.875rem", color: metric.increase ? "#16A34A" : "#DC2626" }}>
-													{metric.increase ? "↑" : "↓"}
-													<span>{metric.change}%</span>
+									{[
+										{ label: "Total Revenue", value: stats1.total_revenue, unit: "Pkr", change: stats1?.growth?.total_revenue, increase: true },
+										{ label: "Total Expense", value: stats1.total_expense, unit: "Pkr", change: stats1?.growth?.total_expense, increase: false },
+										{ label: "Total PNL", value: stats1.total_pl, unit: "Pkr", change: stats1?.growth?.total_pl, increase: true },
+										{ label: "Total Seats", value: stats1.total_chairs },
+										{ label: "Occupied Seats", value: stats1.booked_chairs },
+										{ label: "Available Seats", value: stats1.available_chairs },
+										{ label: "Total Members", value: stats1.total_members },
+									]
+										.slice(3, 7)
+										.map((metric, i) => (
+											<div key={i} style={cardStyle}>
+												<div style={{ display: "flex", flexDirection: "column" }}>
+													<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
+													<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
+														<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
+													</div>
 												</div>
 											</div>
-										</div>
-									))}
+										))}
 								</div>
 							</div>
 						</div>
-
 						{/* Analytics and Notifications */}
 						<div
 							style={{
@@ -290,7 +295,6 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 							{/* Notifications */}
 							<DashboardNotifications />
 						</div>
-
 						{/* Stats */}
 						<div style={statsGridStyle}>
 							{stats.map((stat, i) => (

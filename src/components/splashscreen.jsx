@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import logo from "@/assets/Blogo.png";
-const SplashScreen = ({ onComplete }) => {
+const SplashScreen = ({ onComplete = () => {} }) => {
 	const styles = {
 		splashContainer: {
 			display: "flex",

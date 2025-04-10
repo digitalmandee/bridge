@@ -40,6 +40,7 @@ const FloorPlanProvider = ({ children }) => {
 		industry: "",
 		employees: "",
 		company_address: "",
+		description: "",
 	});
 
 	const [formErrors, setFormErrors] = useState({});
