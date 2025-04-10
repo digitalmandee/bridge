@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class InvoicesController extends Controller
@@ -366,6 +367,8 @@ class InvoicesController extends Controller
             return response()->json(['success' => false, 'message' => 'No booking found'], 400);
         }
 
+        $PayedMonths = Invoice::where(['booking_id' => $latestBooking->id, 'status' => 'paid', 'invoice_type' => 'Monthly', 'paid_year' => date('Y')])->pluck('paid_month')->toArray();
+
         $unavailableChairs = [];
         $availableChairs = [];
         $chairs = [];
@@ -401,6 +404,7 @@ class InvoicesController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Chairs are not available for booking.',
+                'payed_months' => $PayedMonths,
                 'unavailable_chairs' => $unavailableChairs,
                 'booking' => $latestBooking
             ]);
@@ -410,6 +414,7 @@ class InvoicesController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Chairs are available for booking.',
+            'payed_months' => $PayedMonths,
             'booking' => $latestBooking
         ]);
     }
