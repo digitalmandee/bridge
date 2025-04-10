@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { Button } from "@mui/material";
 import { RxDashboard } from "react-icons/rx";
+import { FaRegCalendarAlt } from "react-icons/fa";
 import { MdOutlineInventory } from "react-icons/md";
 import { SlCalender } from "react-icons/sl";
 import { LuListTodo } from "react-icons/lu";
@@ -9,6 +10,10 @@ import { GoDatabase } from "react-icons/go";
 import { BsGraphUpArrow } from "react-icons/bs";
 import { IoMdContact } from "react-icons/io";
 import { FaAngleRight } from "react-icons/fa6";
+import { TbFileInvoice } from "react-icons/tb";
+import { MdPeopleOutline } from "react-icons/md";
+import { MdOutlinePeople } from "react-icons/md";
+import { FaUserCheck } from "react-icons/fa";
 ("react-icons/all");
 import "./style.css";
 import { AuthContext } from "@/contexts/AuthContext";
@@ -17,7 +22,7 @@ const menuItems = [
 	{ to: "/branch/dashboard", label: "Dashboard", icon: <RxDashboard />, hasDropdown: false, permission: "admin-dashboard" },
 	{
 		label: "Seat Booking",
-		icon: <RxDashboard />,
+		icon: <FaRegCalendarAlt />,
 		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/floorplan", label: "Floor Plan", permission: "floor-plan" },
@@ -28,7 +33,7 @@ const menuItems = [
 	},
 	{
 		label: "Booking Management",
-		icon: <SlCalender />,
+		icon: <MdOutlineInventory />,
 		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/booking-schedule", label: "Room Booking", permission: "room-booking" },
@@ -37,7 +42,7 @@ const menuItems = [
 	},
 	{
 		label: "Invoice",
-		icon: <SlCalender />,
+		icon: <TbFileInvoice />,
 		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/invoice/dashboard", label: "Dashboard", permission: "invoice-dashboard" },
@@ -47,7 +52,7 @@ const menuItems = [
 	},
 	{
 		label: "Member",
-		icon: <SlCalender />,
+		icon: <MdPeopleOutline />,
 		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/floorplan", label: "Add New", permission: "floor-plan" },
@@ -58,7 +63,7 @@ const menuItems = [
 	},
 	{
 		label: "Employee Management",
-		icon: <SlCalender />,
+		icon: <MdOutlinePeople />,
 		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/employee/dashboard", label: "Dashboard", permission: "employee-dashboard" },
@@ -87,7 +92,7 @@ const menuItems = [
 	},
 	{
 		label: "Users Role Management",
-		icon: <SlCalender />,
+		icon: <FaUserCheck />,
 		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/users/roles", label: "Roles", permission: "roles" },
