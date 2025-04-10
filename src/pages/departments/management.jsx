@@ -125,12 +125,16 @@ const Management = () => {
 								<div onClick={() => navigate(-1)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
 									<MdArrowBackIos style={{ fontSize: "20px" }} />
 								</div>
-								<Typography variant="h6" className="mb-0 ms-2">
+								<Typography variant="h5" className="mb-0 ms-2" style={{
+									// fontWeight:'700',
+									fontSize: '30px',
+									color: '#202224',
+								}}>
 									Departments
 								</Typography>
 							</div>
 							<div className="col-auto ms-auto">
-								<Button variant="contained" sx={{ bgcolor: colors.primary, borderRadius: "10px", "&:hover": { bgcolor: "#1E293B" } }} onClick={() => handleOpen()}>
+								<Button variant="contained" sx={{ bgcolor: colors.primary, borderRadius: "10px", "&:hover": { bgcolor: colors.primary } }} onClick={() => handleOpen()}>
 									New Department
 								</Button>
 							</div>
@@ -205,10 +209,24 @@ const Management = () => {
 				<DialogContent>
 					<TextField fullWidth label="Department Name" variant="outlined" margin="normal" value={name} onChange={(e) => setName(e.target.value)} error={!!error} helperText={error} />
 					<DialogActions>
-						<Button onClick={handleClose} color="secondary">
+						<Button
+							onClick={handleClose}
+							color="secondary"
+							sx={{
+								backgroundColor: '#FFFFFF',
+								border: '1px solid #000000',
+								color: '#000000', // Ensures text is visible on white
+								'&:hover': {
+									backgroundColor: '#f5f5f5', // Optional: light gray on hover
+									border: '1px solid #000000',
+								},
+							}}
+						>
 							Cancel
 						</Button>
-						<Button onClick={handleSubmit} variant="contained" color="primary" disabled={isSaving} loading={isSaving}>
+						<Button sx={{
+							bgcolor: colors.primary
+						}} onClick={handleSubmit} variant="contained" disabled={isSaving} loading={isSaving}>
 							{editDepartment ? "Update" : "Save"}
 						</Button>
 					</DialogActions>

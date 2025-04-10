@@ -92,11 +92,11 @@ const EmployeeCreate = () => {
 					<Box
 						sx={{
 							padding: "2rem",
-							backgroundColor: "white",
+							backgroundColor: "transparent",
 							borderRadius: "1rem",
 							maxWidth: "65rem",
 							margin: "auto",
-							boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+							// boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
 						}}>
 						<form
 							style={{
@@ -113,15 +113,28 @@ const EmployeeCreate = () => {
 								{ label: "Salary*", name: "salary", placeholder: "300-10000" },
 							].map((field, index) => (
 								<Box key={index}>
-									<Typography variant="body1" sx={{ fontWeight: 500, color: "rgba(0, 0, 0, 0.6)", marginBottom: "1rem" }}>
+									<Typography variant="body1" sx={{ fontWeight: 500, color: "#000000", marginBottom: "1rem" }}>
 										{field.label}
 									</Typography>
-									<TextField name={field.name} value={formData[field.name]} onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })} placeholder={field.placeholder} variant="outlined" fullWidth error={!!errors[field.name]} helperText={errors[field.name]} />
+									<TextField sx={{
+										backgroundColor: '#FFFFFF',
+										'& .MuiOutlinedInput-root': {
+											'& fieldset': {
+												border: '1px solid #E9E9E9',
+											},
+											'&:hover fieldset': {
+												border: '1px solid #E9E9E9', // Lock border on hover
+											},
+											'&.Mui-focused fieldset': {
+												border: '1px solid #E9E9E9', // Optional: lock on focus too
+											},
+										},
+									}} name={field.name} value={formData[field.name]} onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })} placeholder={field.placeholder} variant="outlined" fullWidth error={!!errors[field.name]} helperText={errors[field.name]} />
 								</Box>
 							))}
 
 							<Box>
-								<Typography variant="body1" sx={{ fontWeight: 500, color: "rgba(0, 0, 0, 0.6)", marginBottom: "1rem" }}>
+								<Typography variant="body1" sx={{ fontWeight: 500, color: "#000000", marginBottom: "1rem" }}>
 									Department*
 								</Typography>
 								<Autocomplete
@@ -132,7 +145,20 @@ const EmployeeCreate = () => {
 									onChange={(event, value) => setFormData({ ...formData, department: value })}
 									renderInput={(params) => (
 										<>
-											<TextField {...params} label="Search Department" variant="outlined" />
+											<TextField sx={{
+												backgroundColor: '#FFFFFF',
+												'& .MuiOutlinedInput-root': {
+													'& fieldset': {
+														border: '1px solid #E9E9E9',
+													},
+													'&:hover fieldset': {
+														border: '1px solid #E9E9E9', // Lock border on hover
+													},
+													'&.Mui-focused fieldset': {
+														border: '1px solid #E9E9E9', // Optional: lock on focus too
+													},
+												},
+											}} {...params} label="Search Department" variant="outlined" />
 											{errors.department && <FormHelperText error>{errors.department}</FormHelperText>}
 										</>
 									)}
@@ -140,17 +166,43 @@ const EmployeeCreate = () => {
 							</Box>
 
 							<Box>
-								<Typography variant="body1" sx={{ fontWeight: 500, color: "rgba(0, 0, 0, 0.6)", marginBottom: "1rem" }}>
+								<Typography variant="body1" sx={{ fontWeight: 500, color: "#000000", marginBottom: "1rem" }}>
 									Joining Date*
 								</Typography>
-								<TextField type="date" name="joining_date" value={formData.joining_date} onChange={(e) => setFormData({ ...formData, joining_date: e.target.value })} InputLabelProps={{ shrink: true }} fullWidth error={!!errors.joining_date} helperText={errors.joining_date} />
+								<TextField sx={{
+									backgroundColor: '#FFFFFF',
+									'& .MuiOutlinedInput-root': {
+										'& fieldset': {
+											border: '1px solid #E9E9E9',
+										},
+										'&:hover fieldset': {
+											border: '1px solid #E9E9E9', // Lock border on hover
+										},
+										'&.Mui-focused fieldset': {
+											border: '1px solid #E9E9E9', // Optional: lock on focus too
+										},
+									},
+								}} type="date" name="joining_date" value={formData.joining_date} onChange={(e) => setFormData({ ...formData, joining_date: e.target.value })} InputLabelProps={{ shrink: true }} fullWidth error={!!errors.joining_date} helperText={errors.joining_date} />
 							</Box>
 
 							<Box>
-								<Typography variant="body1" sx={{ fontWeight: 500, color: "rgba(0, 0, 0, 0.6)", marginBottom: "1rem" }}>
+								<Typography variant="body1" sx={{ fontWeight: 500, color: "#000000", marginBottom: "1rem" }}>
 									Gender*
 								</Typography>
-								<TextField select name="gender" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} fullWidth variant="outlined" error={!!errors.gender} helperText={errors.gender} SelectProps={{ native: true }}>
+								<TextField sx={{
+									backgroundColor: '#FFFFFF',
+									'& .MuiOutlinedInput-root': {
+										'& fieldset': {
+											border: '1px solid #E9E9E9',
+										},
+										'&:hover fieldset': {
+											border: '1px solid #E9E9E9', // Lock border on hover
+										},
+										'&.Mui-focused fieldset': {
+											border: '1px solid #E9E9E9', // Optional: lock on focus too
+										},
+									},
+								}} select name="gender" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} fullWidth variant="outlined" error={!!errors.gender} helperText={errors.gender} SelectProps={{ native: true }}>
 									<option value="">Select Gender</option>
 									<option value="male">Male</option>
 									<option value="female">Female</option>

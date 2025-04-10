@@ -113,15 +113,15 @@ const EmployeeDashboard = () => {
 							{/* Booking Table */}
 							<TableContainer component={Paper} style={{ width: "98%", backgroundColor: "#FFFFFF", borderRadius: "1rem", boxShadow: "none", border: "1px solid #ccc", marginBottom: "24px" }}>
 								<Table>
-									<TableHead style={{ backgroundColor: "#C5D9F0" }}>
+									<TableHead style={{ backgroundColor: "#FFF2C6" }}>
 										<TableRow>
-											<TableCell style={{ color: "black", fontWeight: "700" }}>EMP ID</TableCell>
-											<TableCell style={{ color: "black", fontWeight: "700" }}>Name</TableCell>
-											<TableCell style={{ color: "black", fontWeight: "700" }}>Department</TableCell>
-											<TableCell style={{ color: "black", fontWeight: "700" }}>Designation</TableCell>
-											<TableCell style={{ color: "black", fontWeight: "700" }}>Joining Date</TableCell>
-											<TableCell style={{ color: "black", fontWeight: "700" }}>Email Address</TableCell>
-											<TableCell style={{ color: "black", fontWeight: "700" }}>Branch Name</TableCell>
+											<TableCell style={{ color: "#000000", fontWeight: "500", fontSize:'14px' }}>EMP ID</TableCell>
+											<TableCell style={{ color: "#000000", fontWeight: "500", fontSize:'14px' }}>Name</TableCell>
+											<TableCell style={{ color: "#000000", fontWeight: "500", fontSize:'14px' }}>Department</TableCell>
+											<TableCell style={{ color: "#000000", fontWeight: "500", fontSize:'14px' }}>Designation</TableCell>
+											<TableCell style={{ color: "#000000", fontWeight: "500", fontSize:'14px' }}>Joining Date</TableCell>
+											<TableCell style={{ color: "#000000", fontWeight: "500", fontSize:'14px' }}>Email Address</TableCell>
+											<TableCell style={{ color: "#000000", fontWeight: "500", fontSize:'14px' }}>Branch Name</TableCell>
 										</TableRow>
 									</TableHead>
 									<TableBody>

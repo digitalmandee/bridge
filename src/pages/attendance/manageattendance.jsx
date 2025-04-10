@@ -9,6 +9,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import colors from "@/assets/styles/color";
 // import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 // import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 // import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -131,7 +132,7 @@ const ManageAttendance = () => {
 						{/* Search Field */}
 						<div style={{ display: "flex", gap: "10px" }}>
 							<TextField size="small" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ backgroundColor: "white" }} />
-							<Button variant="contained" onClick={handleSearch} style={{ backgroundColor: "#0A2647", color: "white", textTransform: "none", minWidth: "80px" }}>
+							<Button variant="contained" onClick={handleSearch} style={{ backgroundColor: colors.primary, color: "white", textTransform: "none", minWidth: "80px" }}>
 								Go
 							</Button>
 						</div>
@@ -215,8 +216,8 @@ const ManageAttendance = () => {
 													size="small"
 													disabled={loadingRows[row.id] || false} // Disable only if that row is loading
 													style={{
-														backgroundColor: row.check_in && row.check_out ? "#e3f2fd" : "#0A2647",
-														color: row.check_in && row.check_out ? "#0A2647" : "white",
+														backgroundColor: row.check_in && row.check_out ? "#e3f2fd" : colors.primary,
+														color: row.check_in && row.check_out ? colors.primary : "white",
 														textTransform: "none",
 													}}>
 													{loadingRows[row.id] ? <CircularProgress size={20} color="inherit" /> : row.check_in && row.check_out ? "Update" : "Save"}
@@ -237,7 +238,7 @@ const ManageAttendance = () => {
 
 					{/* Pagination */}
 					<div className="d-flex justify-content-end mt-4">
-						<Pagination count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} shape="rounded" style={{ color: "#0a2647" }} />
+						<Pagination count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} shape="rounded" style={{ color: colors.primary }} />
 					</div>
 				</div>
 			</div>

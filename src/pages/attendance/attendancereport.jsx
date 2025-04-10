@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { Button, TextField, Checkbox, Pagination, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper, CircularProgress } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
+import colors from "@/assets/styles/color";
 
 const AttendanceReport = () => {
 	const navigate = useNavigate();
@@ -319,7 +320,7 @@ const AttendanceReport = () => {
 						</div>
 						{/* Pagination */}
 						<div className="d-flex justify-content-end mt-4">
-							<Pagination count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} shape="rounded" style={{ color: "#0a2647" }} />
+							<Pagination count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} shape="rounded" style={{ color: colors.primary }} />
 						</div>
 					</div>
 				</div>

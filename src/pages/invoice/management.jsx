@@ -228,9 +228,9 @@ const InvoiceManagement = () => {
 											variant={statusFilter === label ? "contained" : "outlined"}
 											sx={{
 												bgcolor: statusFilter === label ? colors.primary : "",
-												color: statusFilter === label ? "white" : "#0D2B4E",
+												color: statusFilter === label ? "white" : colors.primary,
 												borderRadius: "20px",
-												// border: "1px solid #0D2B4E",
+												
 												"&:hover": {
 													bgcolor: colors.primary,
 													color: "#fff",

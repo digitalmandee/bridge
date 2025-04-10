@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { Box, Typography, Button, TextField, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Select, MenuItem, InputAdornment, FormControl, InputLabel, Pagination, Stack, Divider, Modal, Checkbox, FormControlLabel } from "@mui/material";
 import { ArrowBack, Search, Add, GetApp, MoreVert, CheckCircle, Cancel } from "@mui/icons-material";
+import colors from "@/assets/styles/color";
 
 const salaryComponents = [
 	{ id: 1, name: "Basic Salary", unitType: "Fixed Salary", deduction: false, active: true },
@@ -82,8 +83,8 @@ const SalaryComponent = () => {
 							<Button
 								variant="contained"
 								sx={{
-									bgcolor: "#0A2647",
-									"&:hover": { bgcolor: "#0D3B66" },
+									bgcolor: colors.primary,
+									"&:hover": { bgcolor: colors.primary },
 									borderRadius: "4px",
 									textTransform: "none",
 								}}
@@ -164,7 +165,7 @@ const SalaryComponent = () => {
 
 							<TableContainer component={Paper} sx={{ boxShadow: "none", borderRadius: "8px", overflow: "hidden" }}>
 								<Table sx={{ minWidth: 650 }}>
-									<TableHead sx={{ bgcolor: "#F0F4F8" }}>
+									<TableHead sx={{ bgcolor: "#FFF2C6" }}>
 										<TableRow>
 											<TableCell sx={{ py: 1.5, width: "5%" }}>#</TableCell>
 											<TableCell sx={{ py: 1.5, width: "30%" }}>Component Name</TableCell>
@@ -288,21 +289,26 @@ const SalaryComponent = () => {
 
 									<Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
 										<Button
-											variant="outlined"
 											onClick={handleCloseModal}
+											color="secondary"
 											sx={{
-												borderRadius: "4px",
-												textTransform: "none",
-												minWidth: "100px",
-											}}>
+												backgroundColor: '#FFFFFF',
+												border: '1px solid #000000',
+												color: '#000000', // Ensures text is visible on white
+												'&:hover': {
+													backgroundColor: '#f5f5f5', // Optional: light gray on hover
+													border: '1px solid #000000',
+												},
+											}}
+										>
 											Cancel
 										</Button>
 										<Button
 											variant="contained"
 											onClick={handleSubmit}
 											sx={{
-												bgcolor: "#0A2647",
-												"&:hover": { bgcolor: "#0D3B66" },
+												bgcolor: colors.primary,
+												"&:hover": { bgcolor: colors.primary },
 												borderRadius: "4px",
 												textTransform: "none",
 												minWidth: "100px",

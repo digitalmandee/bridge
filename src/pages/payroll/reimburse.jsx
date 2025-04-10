@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { Box, Typography, IconButton, Select, MenuItem, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, InputAdornment, Pagination } from "@mui/material";
 import { ArrowBack, Search, Add, MoreVert, Edit, Delete } from "@mui/icons-material";
-
+import colors from "@/assets/styles/color";
 const Reimbursement = () => {
 	const navigate = useNavigate();
 
@@ -54,8 +54,8 @@ const Reimbursement = () => {
 							<Button
 								variant="contained"
 								sx={{
-									bgcolor: "#0A2647",
-									"&:hover": { bgcolor: "#0A2647" },
+									bgcolor: colors.primary,
+									"&:hover": { bgcolor: colors.primary },
 									px: 4,
 								}}>
 								Submit
@@ -77,9 +77,9 @@ const Reimbursement = () => {
 							/>
 							<IconButton
 								sx={{
-									bgcolor: "#0A2647",
+									bgcolor: colors.primary,
 									color: "white",
-									"&:hover": { bgcolor: "#0A2647" },
+									"&:hover": { bgcolor: colors.primary },
 								}}>
 								<Add />
 							</IconButton>
@@ -113,7 +113,7 @@ const Reimbursement = () => {
 												label={row.status}
 												size="small"
 												sx={{
-													bgcolor: row.status === "Paid" ? "#0A2647" : "#e0e0e0",
+													bgcolor: row.status === "Paid" ? colors.primary : "#e0e0e0",
 													color: row.status === "Paid" ? "white" : "text.primary",
 													borderRadius: 1,
 												}}

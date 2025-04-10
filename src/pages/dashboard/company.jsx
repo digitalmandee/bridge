@@ -9,7 +9,7 @@ import PrintIcon from "@mui/icons-material/Print";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import DashboardNotifications from "@/components/notifications";
-
+import colors from "@/assets/styles/color";
 const CompanyDashboard = () => {
 	const navigate = useNavigate();
 	const { branch } = useParams();
@@ -41,7 +41,7 @@ const CompanyDashboard = () => {
 							<Typography variant="h5" style={{ fontWeight: "bold" }}>
 								Dashboard
 							</Typography>
-							<Button style={{ color: "white", backgroundColor: "#0D2B4E" }} onClick={() => navigate(`/${branch}/company/staff/add`)}>
+							<Button style={{ color: "white", backgroundColor: colors.primary }} onClick={() => navigate(`/${branch}/company/staff/add`)}>
 								Add Staff
 							</Button>
 						</div>
@@ -49,10 +49,10 @@ const CompanyDashboard = () => {
 						{/* Metric Cards */}
 						<div style={{ display: "flex", justifyContent: "space-between", marginBottom: "24px" }}>
 							{[
-								{ title: "Available Seats", value: data.totalSeats ?? 0, icon: EventSeatIcon, color: "#0D2B4E" },
-								{ title: "Occupied Seats", value: data.occupiedSeats ?? 0, icon: PeopleIcon, color: "#0D2B4E" },
-								{ title: "Booking", value: data.remainingBookings ?? 0, icon: AssignmentIcon, color: "#0D2B4E" },
-								{ title: "Printing Papers", value: data.remainingPrinting ?? 0, icon: PrintIcon, color: "#0D2B4E" },
+								{ title: "Available Seats", value: data.totalSeats ?? 0, icon: EventSeatIcon, color: colors.primary },
+								{ title: "Occupied Seats", value: data.occupiedSeats ?? 0, icon: PeopleIcon, color: colors.primary },
+								{ title: "Booking", value: data.remainingBookings ?? 0, icon: AssignmentIcon, color: colors.primary },
+								{ title: "Printing Papers", value: data.remainingPrinting ?? 0, icon: PrintIcon, color: colors.primary },
 							].map((item, index) => (
 								<div key={index} style={{ flex: 1, margin: "0 10px" }}>
 									<Card style={{ boxShadow: "none", border: "1px solid #ccc", borderRadius: "8px", height: "100%", backgroundColor: "white" }}>
@@ -77,7 +77,7 @@ const CompanyDashboard = () => {
 							{/* Booking Table */}
 							<TableContainer component={Paper} style={{ width: "65%", backgroundColor: "#FFFFFF", borderRadius: "1rem", boxShadow: "none", border: "1px solid #ccc", marginBottom: "24px" }}>
 								<Table>
-									<TableHead style={{ backgroundColor: "#C5D9F0" }}>
+									<TableHead style={{ backgroundColor: "#FFF2C6" }}>
 										<TableRow>
 											<TableCell style={{ color: "black", fontWeight: "700" }}>Booking ID</TableCell>
 											<TableCell style={{ color: "black", fontWeight: "700" }}>Floor</TableCell>

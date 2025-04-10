@@ -201,10 +201,10 @@ const StaffManagement = () => {
 											<td style={{ padding: "12px", color: staff.status === "active" ? "green" : "red" }}>{staff.status}</td>
 											<td style={{ padding: "12px" }}>
 												<IconButton size="small" onClick={() => handleEditClick(staff)}>
-													<FaEdit color="#0D2B4E" />
+													<FaEdit color="#FFCC16" />
 												</IconButton>
 												<IconButton size="small" onClick={() => handleDeleteClick(staff)}>
-													<FaTrashAlt color="#0D2B4E" />
+													<FaTrashAlt color="#FFCC16" />
 												</IconButton>
 											</td>
 										</tr>
@@ -224,7 +224,7 @@ const StaffManagement = () => {
 							</div>
 							<div style={{ display: "flex", alignItems: "center" }}>
 								<button style={{ marginRight: "8px", backgroundColor: "#F8F9FA", border: "none", borderRadius: "4px", padding: "8px" }}>Previous</button>
-								<button style={{ marginRight: "8px", backgroundColor: "#0D2B4E", color: "white", border: "none", borderRadius: "4px", padding: "8px" }}>1</button>
+								<button style={{ marginRight: "8px", backgroundColor: "#FFCC16", color: "white", border: "none", borderRadius: "4px", padding: "8px" }}>1</button>
 								<button style={{ marginRight: "8px", backgroundColor: "white", border: "none", borderRadius: "4px", padding: "8px" }}>2</button>
 								<button style={{ marginRight: "8px", backgroundColor: "white", border: "none", borderRadius: "4px", padding: "8px" }}>3</button>
 								<button style={{ marginRight: "8px", backgroundColor: "white", border: "none", borderRadius: "4px", padding: "8px" }}>...</button>

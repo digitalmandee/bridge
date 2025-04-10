@@ -6,6 +6,7 @@ import { MdArrowBackIos } from "react-icons/md";
 import SearchIcon from "@mui/icons-material/Search";
 import axiosInstance from "@/utils/axiosInstance";
 import { CircularProgress, FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import colors from "@/assets/styles/color";
 
 const MonthlyReport = () => {
 	const navigate = useNavigate();
@@ -104,7 +105,7 @@ const MonthlyReport = () => {
 								<button
 									style={{
 										padding: "8px 24px",
-										backgroundColor: "#0A2647",
+										backgroundColor: colors.primary,
 										color: "white",
 										border: "none",
 										borderRadius: "4px",
@@ -265,7 +266,7 @@ const MonthlyReport = () => {
 													<div style={{ color: "#666", fontSize: "12px" }}>Time Late</div>
 												</div>
 											</div>
-											<div style={{ height: "8px", backgroundColor: "#0A2647", marginTop: "auto" }}></div>
+											<div style={{ height: "8px", backgroundColor: colors.primary, marginTop: "auto" }}></div>
 										</div>
 									</div>
 								))
@@ -289,7 +290,7 @@ const MonthlyReport = () => {
 
 						{/* Pagination */}
 						<div className="d-flex justify-content-end mt-4">
-							<Pagination count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} shape="rounded" style={{ color: "#0a2647" }} />
+							<Pagination count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} shape="rounded" style={{ color: colors.primary }} />
 						</div>
 					</div>
 				</div>

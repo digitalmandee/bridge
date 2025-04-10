@@ -8,7 +8,7 @@ import { FileDownload } from "@mui/icons-material";
 import axiosInstance from "@/utils/axiosInstance";
 import PersonalDetails from "@/components/employee/PersonalDetails";
 import AttendanceReport from "@/components/employee/AttendanceReport";
-
+import colors from "@/assets/styles/color";
 const EmployeeDetails = () => {
 	const location = useLocation();
 	const { employeeId } = useParams(); // Get invoice ID from URL
@@ -81,7 +81,7 @@ const EmployeeDetails = () => {
 											selected={selectedTab === option.key}
 											sx={{
 												width: "100%",
-												background: selectedTab === option.key ? "linear-gradient(to right, silver 98%, #0D2B4E 2%)" : "transparent",
+												background: selectedTab === option.key ? "linear-gradient(to right, silver 98%, #FFCC16 2%)" : "transparent",
 												paddingLeft: "2rem", // Remove any horizontal padding
 												paddingBottom: "1rem",
 												cursor: "pointer",
@@ -197,9 +197,9 @@ const EmployeeDetails = () => {
 																	<Button
 																		variant="contained"
 																		sx={{
-																			bgcolor: "#0A2647",
+																			bgcolor: colors.primary,
 																			"&:hover": {
-																				bgcolor: "#0A2647",
+																				bgcolor: colors.primary,
 																			},
 																			textTransform: "none",
 																		}}>

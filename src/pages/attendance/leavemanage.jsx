@@ -108,7 +108,7 @@ const LeaveManage = () => {
 						<TableContainer component={Paper}>
 							<Table>
 								<TableHead>
-									<TableRow style={{ backgroundColor: "#C5D9F0" }}>
+									<TableRow style={{ backgroundColor: "#FFF2C6" }}>
 										<TableCell sx={{ fontWeight: "bold" }}>#</TableCell>
 										<TableCell sx={{ fontWeight: "bold" }}>Employ Name</TableCell>
 										<TableCell sx={{ fontWeight: "bold" }}>Start date</TableCell>
@@ -139,7 +139,7 @@ const LeaveManage = () => {
 												<TableCell>
 													<span
 														style={{
-															backgroundColor: application.status === "approved" ? "#0D2B4E" : "#C5DCF7AB",
+															backgroundColor: application.status === "approved" ? colors.primary : "#C5DCF7AB",
 															color: application.status === "approved" ? "white" : "black",
 															padding: "6px 12px",
 															borderRadius: "50px",
@@ -164,7 +164,7 @@ const LeaveManage = () => {
 
 						{/* Pagination */}
 						<div className="d-flex justify-content-end mt-4">
-							<Pagination count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} shape="rounded" style={{ color: "#0a2647" }} />
+							<Pagination count={totalPages} page={currentPage} onChange={(e, page) => setCurrentPage(page)} shape="rounded" style={{ color: colors.primary }} />
 						</div>
 					</Box>
 				</div>

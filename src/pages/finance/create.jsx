@@ -6,6 +6,7 @@ import { Box, TextField, Typography, Button, Card, CardContent, Grid, Snackbar, 
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import axiosInstance from "@/utils/axiosInstance";
+import colors from '../../assets/styles/color'
 
 const CreateFinanceEntry = () => {
 	const navigate = useNavigate();
@@ -84,8 +85,8 @@ const CreateFinanceEntry = () => {
 							<h4 style={{ margin: 0 }}>New Finance Entry</h4>
 						</div>
 					</div>
-					<Box sx={{ display: "flex", justifyContent: "center", p: 3, bgcolor: "#f8f9fa" }}>
-						<Card sx={{ width: "100%", maxWidth: 800, boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)", borderRadius: 2 }}>
+					<Box sx={{ display: "flex", justifyContent: "center", p: 1 }}>
+						<Box sx={{ width: "100%", maxWidth: 900, borderRadius: 2, backgroundColor:'transparent' }}>
 							<CardContent sx={{ p: 4 }}>
 								<Grid container spacing={3}>
 									{[
@@ -136,9 +137,9 @@ const CreateFinanceEntry = () => {
 												mt: 2,
 												px: 6,
 												py: 1,
-												bgcolor: "#0A2647",
+												bgcolor: colors.primary,
 												"&:hover": {
-													bgcolor: "#0A2647",
+													bgcolor: colors.primary,
 												},
 												textTransform: "none",
 												borderRadius: 1,
@@ -151,7 +152,7 @@ const CreateFinanceEntry = () => {
 									</Grid>
 								</Grid>
 							</CardContent>
-						</Card>
+						</Box>
 					</Box>
 					<Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar({ ...snackbar, open: false })} message={snackbar.message} />
 				</div>

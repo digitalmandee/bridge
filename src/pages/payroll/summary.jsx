@@ -6,6 +6,7 @@ import { MdArrowBackIos } from "react-icons/md";
 import { Button, Modal, Box, Typography, Paper, Grid, IconButton } from "@mui/material"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import "bootstrap/dist/css/bootstrap.min.css"
+import colors from '@/assets/styles/color';
 
 const PayrollSummary = () => {
     const navigate = useNavigate();
@@ -208,7 +209,7 @@ const PayrollSummary = () => {
                                     variant="contained"
                                     onClick={handleOpen}
                                     style={{
-                                        backgroundColor: "#0a2e5c",
+                                        backgroundColor: colors.primary,
                                         color: "white",
                                         borderRadius: "4px",
                                         padding: "8px 16px",
@@ -239,7 +240,21 @@ const PayrollSummary = () => {
                                     Are you sure you want to submit?
                                 </Typography>
                                 <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-                                    <Button variant="outlined" onClick={handleClose} sx={{ borderRadius: 1, px: 3 }}>
+                                    <Button
+                                        onClick={handleClose}
+                                        color="secondary"
+                                        sx={{
+                                            backgroundColor: '#FFFFFF',
+                                            // width:'50px',
+                                            // p:2,
+                                            border: '1px solid #000000',
+                                            color: '#000000', // Ensures text is visible on white
+                                            '&:hover': {
+                                                backgroundColor: '#f5f5f5', // Optional: light gray on hover
+                                                border: '1px solid #000000',
+                                            },
+                                        }}
+                                    >
                                         Cancel
                                     </Button>
                                     <Button
@@ -248,11 +263,11 @@ const PayrollSummary = () => {
                                         sx={{
                                             borderRadius: 1,
                                             px: 3,
-                                            bgcolor: "#0a2e5c",
+                                            bgcolor: colors.primary,
                                             "&:hover": {
-                                                bgcolor: "#0a2e5c",
+                                                bgcolor: colors.primary,
                                             },
-                                        }}   
+                                        }}
                                     >
                                         Submit
                                     </Button>

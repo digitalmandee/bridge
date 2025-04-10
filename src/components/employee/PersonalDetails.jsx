@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Grid, Typography, Button, Divider, TextField, Snackbar, Alert } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
-
+import colors from "@/assets/styles/color";
 const PersonalDetails = ({ employeeId }) => {
 	const navigate = useNavigate();
 
@@ -187,7 +187,7 @@ const PersonalDetails = ({ employeeId }) => {
 				</Grid>
 
 				<Grid item xs={12} style={{ display: "flex", justifyContent: "flex-end" }}>
-					<Button disabled={isLoading} onClick={handleSubmit} variant="contained" sx={{ backgroundColor: "#0D2B4E", "&:hover": { backgroundColor: "#0A223D" } }}>
+					<Button disabled={isLoading} onClick={handleSubmit} variant="contained" sx={{ backgroundColor: colors.primary, "&:hover": { backgroundColor: colors.primary } }}>
 						Save
 					</Button>
 				</Grid>

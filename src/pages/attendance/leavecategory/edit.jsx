@@ -5,7 +5,7 @@ import Sidebar from "@/components/leftSideBar";
 import { MdArrowBackIos } from "react-icons/md";
 import axiosInstance from "@/utils/axiosInstance";
 import { Alert, Button, Snackbar } from "@mui/material";
-
+import colors from "@/assets/styles/color";
 const EditCategory = () => {
 	const navigate = useNavigate();
 	const { branch, id } = useParams();
@@ -228,7 +228,7 @@ const EditCategory = () => {
 								}}>
 								Cancel
 							</button>
-							<Button type="submit" disabled={isLoading} variant="contained" sx={{ backgroundColor: "#0D2B4E", color: "white" }}>
+							<Button type="submit" disabled={isLoading} variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }}>
 								{isLoading ? "Updating..." : "Update"}
 							</Button>
 						</div>

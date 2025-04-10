@@ -188,7 +188,7 @@ const CreateCategory = () => {
 								}}>
 								Cancel
 							</button>
-							<Button type="submit" disabled={isLoading} variant="contained" sx={{ backgroundColor: "#0D2B4E", color: "white" }}>
+							<Button type="submit" disabled={isLoading} variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }}>
 								Add
 							</Button>
 						</div>

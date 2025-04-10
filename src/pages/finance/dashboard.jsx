@@ -10,6 +10,7 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { Bar, Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
 import axiosInstance from "@/utils/axiosInstance";
+import colors from '../../assets/styles/color'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
@@ -86,16 +87,17 @@ const FinanceDashboard = () => {
 					<Box sx={{ mt: 1, bgcolor: "#f5f6fa" }}>
 						{/* Header */}
 						<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-							<Typography variant="h5" sx={{ fontWeight: "bold" }}>
+							<Typography variant="h5" sx={{ fontWeight: "bold", fontSize:'30px', color:'#202224' }}>
 								Dashboard
 							</Typography>
 							<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 								{/* Month and Year Selection */}
-								<Box sx={{ display: "flex", gap: 2 }}>
+								
+								{/* <Box sx={{ display: "flex", gap: 2 }}>
 									<FormControl>
 										<InputLabel>Month</InputLabel>
 										<Select value={selectedMonth} onChange={handleMonthChange} label="Month" size="small">
-											<MenuItem value={0}>All Months</MenuItem> {/* Added option for All Months */}
+											<MenuItem value={0}>All Months</MenuItem>
 											{monthNames.map((month, index) => (
 												<MenuItem key={index} value={index + 1}>
 													{month}
@@ -113,11 +115,15 @@ const FinanceDashboard = () => {
 											))}
 										</Select>
 									</FormControl>
-								</Box>
-								<Button variant="outlined" color="primary">
+								</Box> */}
+
+								<Button variant="outlined" color="#252525" style={{
+									border:'1px solid #D6D6D6',
+									backgroundColor:'#FFFFFF'
+								}}>
 									Financial Report
 								</Button>
-								<Button variant="contained" sx={{ bgcolor: "#0A2647" }} onClick={() => navigate(`/${branch}/branch/finance/create`)}>
+								<Button variant="contained" sx={{ bgcolor: colors.primary }} onClick={() => navigate(`/${branch}/branch/finance/create`)}>
 									Add New Entry
 								</Button>
 							</Box>
@@ -178,15 +184,15 @@ const FinanceDashboard = () => {
 						{/* Table */}
 						<TableContainer component={Paper} sx={{ boxShadow: "none", borderRadius: 3, border: "1px solid #e0e0e0" }}>
 							<Table>
-								<TableHead sx={{ bgcolor: "#C5D9F0" }}>
+								<TableHead sx={{ bgcolor: "#FFF2C6" }}>
 									<TableRow>
-										<TableCell>Categories</TableCell>
-										<TableCell>Name</TableCell>
-										<TableCell>Description</TableCell>
-										<TableCell>Amount</TableCell>
-										<TableCell>Issue Date</TableCell>
-										<TableCell>Due Date</TableCell>
-										<TableCell>Quantity</TableCell>
+										<TableCell style={{color:'#000000', fontSize:'16px', fontWeight:'500'}}>Categories</TableCell>
+										<TableCell style={{color:'#000000', fontSize:'16px', fontWeight:'500'}}>Name</TableCell>
+										<TableCell style={{color:'#000000', fontSize:'16px', fontWeight:'500'}}>Description</TableCell>
+										<TableCell style={{color:'#000000', fontSize:'16px', fontWeight:'500'}}>Amount</TableCell>
+										<TableCell style={{color:'#000000', fontSize:'16px', fontWeight:'500'}}>Issue Date</TableCell>
+										<TableCell style={{color:'#000000', fontSize:'16px', fontWeight:'500'}}>Due Date</TableCell>
+										<TableCell style={{color:'#000000', fontSize:'16px', fontWeight:'500'}}>Quantity</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
