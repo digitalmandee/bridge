@@ -95,10 +95,17 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 
 		setBookingDetails((prevDetails) => ({
 			...prevDetails,
-			total_price: totalPrice,
+			total_price: Math.round(totalPrice),
 			package_detail: packageDetail,
 		}));
 	}, [bookingdetails.selectedPlan]);
+
+	const selectedPlan = bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan);
+
+	const totalPrice = (plan) => {
+		if (!plan) return bookingdetails.total_price;
+		return plan.discount && plan.discount > 0 ? Math.round(parseInt(bookingdetails.total_price) - (parseInt(bookingdetails.total_price) * plan.discount) / 100) : bookingdetails.total_price;
+	};
 
 	return (
 		<>
@@ -283,11 +290,16 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 							<option value="">-- Select a Plan --</option>
 							{bookingPlans
 								.filter((plan) => plan.type === bookingdetails.duration)
-								.map((plan, index) => (
-									<option key={plan.id} value={plan.id}>
-										{plan.name} - Rs. {plan.price}
-									</option>
-								))}
+								.map((plan, index) => {
+									const discountAmount = (plan.price * plan.discount) / 100;
+									const discountedPrice = plan.price - discountAmount;
+									return (
+										<option key={plan.id} value={plan.id}>
+											{plan.name} - Rs. {discountedPrice.toFixed(2)}
+											{plan.discount > 0 ? ` (Rs. ${plan.price} - ${plan.discount}%)` : ""}
+										</option>
+									);
+								})}
 						</select>
 						{formErrors.selectedPlan && <span style={{ color: "red" }}>{formErrors.selectedPlan}</span>}
 					</div>
@@ -303,11 +315,7 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 							}}>
 							Cost of Memebership
 						</label>
-						<input
-							type="text"
-							name="membership"
-							value={bookingdetails.total_price}
-							readOnly
+						<div
 							style={{
 								width: "100%",
 								padding: "10px",
@@ -315,8 +323,9 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 								border: "1px solid #ccc",
 								boxSizing: "border-box", // Ensures padding doesn't mess with dimensions
 								margin: 0,
-							}}
-						/>
+							}}>
+							{totalPrice(selectedPlan)}
+						</div>
 					</div>
 
 					{/* Buttons */}

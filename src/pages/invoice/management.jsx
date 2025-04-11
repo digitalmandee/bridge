@@ -230,7 +230,7 @@ const InvoiceManagement = () => {
 												bgcolor: statusFilter === label ? colors.primary : "",
 												color: statusFilter === label ? "white" : colors.primary,
 												borderRadius: "20px",
-												
+
 												"&:hover": {
 													bgcolor: colors.primary,
 													color: "#fff",
@@ -313,7 +313,7 @@ const InvoiceManagement = () => {
 													</Button>
 												</TableCell>
 
-												<TableCell>Rs. {invoice.amount}</TableCell>
+												<TableCell>Rs. {invoice.discount > 0 ? Math.round(invoice.amount - invoice.amount * (invoice.discount / 100)) : invoice.amount}</TableCell>
 												{user.type === "admin" && (
 													<TableCell>
 														<Button size="small" variant="outlined" startIcon={<NotificationsIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }} onClick={() => sendNotification(invoice.user.id, invoice.user.id, invoice.status)}>

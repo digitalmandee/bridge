@@ -51,11 +51,27 @@ const MemberDetail = ({ handleNext }) => {
 
 	// Handle user selection from search results
 	const handleSelectUser = async (user) => {
+		console.log(user);
+
 		setBookingDetails({
 			...bookingdetails,
 			name: user.name,
 			email: user.email,
 			phone_no: user.phone_no || "",
+			secondary_phone_no: user.secondary_phone_no || "",
+			cnic: user.cnic_number || "",
+			cnic_image: user.cnic_image || "",
+			designation: user.designation || "",
+			// Freelancer Fields
+			linkedin: user?.user_profile?.linkedin || "",
+			facebook: user?.user_profile?.facebook || "",
+			freelance_site: user?.user_profile?.freelance_site || "",
+			// Business Fields
+			company_name: user?.company_profile?.name || "",
+			company_website: user?.company_profile?.website || "",
+			industry: user?.company_profile?.industry || "",
+			employees: user?.company_profile?.employees || "",
+			company_address: user?.company_profile?.address || "",
 		});
 		setSearchQuery(user.name);
 		setSearchResults([]);
@@ -129,8 +145,6 @@ const MemberDetail = ({ handleNext }) => {
 		const [hours, minutes] = time.split(":");
 		return `${hours}:${minutes}`;
 	};
-
-	const totalSelectedChairs = Object.values(selectedChairs).flat().length;
 
 	return (
 		<>

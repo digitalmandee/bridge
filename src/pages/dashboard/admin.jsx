@@ -220,9 +220,9 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 														<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
 														<span style={{ fontSize: "0.875rem", color: "#6B7280" }}>{metric.unit}</span>
 													</div>
-													<div style={{ display: "flex", alignItems: "center", marginTop: "1rem", fontSize: "0.875rem", color: metric.change >= 0 ? "#16A34A" : "#DC2626" }}>
+													<div style={{ display: "flex", alignItems: "center", marginTop: "1rem", fontSize: "0.875rem", color: parseFloat(metric.change) >= 0 ? "#16A34A" : "#DC2626" }}>
 														{/* {stats1?.growth?.total_pl >= 0 ? "↑" : "↓"} */}
-														{Number(metric.change) >= 0 ? "↑" : "↓"}
+														{parseFloat(metric.change) >= 0 ? "↑" : "↓"}
 														<span>{metric.change}%</span>
 													</div>
 												</div>

@@ -120,6 +120,8 @@ const Requests = () => {
 		fetchBookings(currentPage);
 	}, [currentPage]);
 
+	const totalPrice = (booking) => (booking?.plan?.discount && booking.plan.discount > 0 ? Math.round(booking.total_price - (booking.total_price * booking.plan.discount) / 100) : booking.total_price);
+
 	return (
 		<>
 			<TopNavbar />
@@ -226,7 +228,7 @@ const Requests = () => {
 												<td>{booking.chairs.length}</td>
 												<td>{booking.start_date}</td>
 												<td>{booking.end_date || "N/A"}</td>
-												<td>Rs. {booking.total_price}</td>
+												<td>Rs. {totalPrice(booking)}</td>
 												<td>
 													<div className="d-flex align-items-center">
 														<span className={`status ${booking.status}`}>{booking.status}</span>
@@ -272,7 +274,6 @@ const Requests = () => {
 						width: 700,
 					}}>
 					<h3 style={{ marginBottom: 20 }}>Edit Booking</h3>
-					<TextField label="Price" fullWidth value={newPrice} onChange={(e) => setNewPrice(e.target.value)} style={{ marginBottom: 20 }} />
 					<Select fullWidth value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
 						{selectedBooking?.status === "pending" && <MenuItem value="pending">Pending</MenuItem>}
 						{selectedBooking?.status !== "vacated" && <MenuItem value="confirmed">Confirmed</MenuItem>}
@@ -289,6 +290,9 @@ const Requests = () => {
 							<TextField label="End Time" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
 						</div>
 					)}
+					<div style={{ textTransform: "capitalize", marginBottom: 10 }}>
+						<b>Price:</b> Rs: {selectedBooking && totalPrice(selectedBooking)}
+					</div>
 					<div style={{ textTransform: "capitalize", marginBottom: 10 }}>
 						<b>Payment Method:</b> {selectedBooking?.payment_method}
 					</div>

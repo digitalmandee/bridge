@@ -14,6 +14,7 @@ const PlanCreate = () => {
 		name: "",
 		type: "monthly",
 		price: 0,
+		discount: 0,
 		bookingHours: "",
 		printingPapers: "",
 	});
@@ -55,6 +56,7 @@ const PlanCreate = () => {
 				name: form.name,
 				type: form.type,
 				price: form.price,
+				discount: form.discount,
 				...(form.type === "monthly" && {
 					booking_hours: Number(form.bookingHours),
 					printing_papers: Number(form.printingPapers),
@@ -64,7 +66,7 @@ const PlanCreate = () => {
 			const res = await axiosInstance.post("booking-plans", payload);
 			if (res.data.success) {
 				setSnackbar({ open: true, message: "Plan created successfully!", severity: "success" });
-				setForm({ name: "", type: "monthly", price: 0, bookingHours: "", printingPapers: "" });
+				setForm({ name: "", type: "monthly", price: 0, discount: 0, bookingHours: "", printingPapers: "" });
 			} else {
 				throw new Error("Failed to create plan");
 			}
@@ -109,6 +111,7 @@ const PlanCreate = () => {
 								{errors.type && <span className="text-danger">{errors.type}</span>}
 							</div>
 							{renderInput("Price", "price", "number", "Price")}
+							{renderInput("Discount (%) - Optional", "discount", "number", "Discount", { min: 0 })}
 							{form.type === "monthly" && (
 								<>
 									{renderInput("Booking Hours", "bookingHours", "number", "e.g. 160", { min: 1 })}

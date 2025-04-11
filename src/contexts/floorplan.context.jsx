@@ -30,6 +30,7 @@ const FloorPlanProvider = ({ children }) => {
 		package_detail: 0,
 		total_price: 0,
 		payment_method: "cash",
+		description: "",
 		// Freelancer Fields
 		linkedin: "",
 		facebook: "",
@@ -40,7 +41,6 @@ const FloorPlanProvider = ({ children }) => {
 		industry: "",
 		employees: "",
 		company_address: "",
-		description: "",
 	});
 
 	const [formErrors, setFormErrors] = useState({});

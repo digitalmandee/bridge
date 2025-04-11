@@ -26,6 +26,7 @@ const InvoiceCreate = () => {
 		plan: null,
 		quantity: "",
 		hours: "",
+		discount: "",
 		amount: "",
 		file: null,
 		status: "pending",
@@ -196,7 +197,7 @@ const InvoiceCreate = () => {
 		setLoading(true);
 
 		const newErrors = {};
-		const { invoiceType, member, company, dueDate, paidDate, paidMonth, paidYear, paymentType, quantity, hours, amount, packageDetail, status, file } = formData;
+		const { invoiceType, member, company, dueDate, paidDate, paidMonth, paidYear, paymentType, quantity, hours, amount, packageDetail, status, file, discount } = formData;
 
 		// ==== Validation ====
 		if (!invoiceType) newErrors.invoiceType = "Invoice Type is required";
@@ -247,6 +248,7 @@ const InvoiceCreate = () => {
 		formDataToSend.append("quantity", quantity || "");
 		formDataToSend.append("hours", hours || "");
 		formDataToSend.append("amount", amount || "");
+		formDataToSend.append("discount", discount || "");
 		formDataToSend.append("packageDetail", packageDetail || "");
 		formDataToSend.append("status", status);
 
@@ -273,6 +275,8 @@ const InvoiceCreate = () => {
 				navigate(`/${branch}/branch/invoice/management`);
 			}
 		} catch (error) {
+			console.log(error);
+
 			const message = error?.response?.data?.message;
 			if (message === "This month invoice already paid") {
 				setSnackbar({ open: true, message: "This month invoice already paid!", severity: "error" });
@@ -341,7 +345,7 @@ const InvoiceCreate = () => {
 		}
 
 		return {
-			totalPrice: totalPrice.toFixed(2),
+			totalPrice: Math.round(totalPrice),
 			packageDetail: packageDetail.trim().replace(/,\s*$/, ""), // clean trailing comma
 			dueDates,
 		};
@@ -521,6 +525,10 @@ const InvoiceCreate = () => {
 										</Grid>
 									)}
 
+									<Grid item xs={12}>
+										<TextField label="Discount (%) - Optional" type="number" name="discount" value={formData.discount} onChange={handleChange} variant="outlined" fullWidth placeholder="%" error={Boolean(errors.discount)} helperText={errors.discount} min={0} />
+									</Grid>
+
 									{/* Due Date */}
 									<Grid item xs={12} className="selectPicker">
 										<LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -576,6 +584,12 @@ const InvoiceCreate = () => {
 											</Select>
 											{errors.status && <FormHelperText error>{errors.status}</FormHelperText>}
 										</FormControl>
+									</Grid>
+
+									<Grid item xs={12}>
+										<Typography variant="h6" gutterBottom>
+											Total Amount: Rs. {formData.amount ? (formData.discount ? Math.round(formData.amount - formData.amount * (formData.discount / 100)) : formData.amount) : 0}
+										</Typography>
 									</Grid>
 								</Grid>
 

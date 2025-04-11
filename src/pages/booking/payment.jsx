@@ -31,8 +31,8 @@ const Payment = () => {
 		// Create a FormData object to send the image and other data
 		const formData = new FormData();
 		formData.append("floor_id", selectedFloor);
-		formData.append("profile_image", bookingdetails.cnic_image); // Add the receipt file
-		// formData.append("cnic_image", bookingdetails.cnic_image); // Add the receipt file
+		formData.append("cnic_image", bookingdetails.cnic_image); // Add the receipt file
+		// formData.append("profile_image", bookingdetails.profile_image); // Add the receipt file
 		formData.append("receipt", receiptFile); // Add the receipt file
 		formData.append("bookingdetails", JSON.stringify(bookingdetails));
 		formData.append("selectedPlan", JSON.stringify(bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan)));
@@ -89,6 +89,10 @@ const Payment = () => {
 	const handleClose = async () => {
 		setShowModal(false);
 	};
+
+	const selectedPlan = bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan);
+
+	const totalPrice = (plan) => (plan.discount && plan.discount ? Math.round(parseInt(bookingdetails.total_price) - (parseInt(bookingdetails.total_price) * plan.discount) / 100) : bookingdetails.total_price);
 
 	return (
 		<>
@@ -311,9 +315,38 @@ const Payment = () => {
 													marginTop: "5px",
 													fontSize: "14px",
 												}}>
-												<span>{bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan)?.name}</span>
+												<span>{selectedPlan?.name}</span>
 												<span>Rs. {bookingdetails.total_price}</span>
 											</div>
+
+											{selectedPlan?.discount && (
+												<>
+													<div
+														style={{
+															display: "flex",
+															padding: "0 1rem",
+															justifyContent: "space-between",
+															fontSize: "14px",
+															color: "green",
+														}}>
+														<span style={{ fontWeight: "bold" }}>Discount</span>
+														<span>{selectedPlan.discount} %</span>
+													</div>
+												</>
+											)}
+											<div
+												style={{
+													display: "flex",
+													padding: "0 1rem",
+													justifyContent: "space-between",
+													fontSize: "14px",
+													fontWeight: "bold",
+													color: "#444",
+												}}>
+												<span>Total Price</span>
+												<span>Rs. {selectedPlan && totalPrice(selectedPlan)}</span>
+											</div>
+
 											<div
 												style={{
 													borderBottom: "1px solid #ddd",
