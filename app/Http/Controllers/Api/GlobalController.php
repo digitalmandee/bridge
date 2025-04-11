@@ -30,13 +30,19 @@ class GlobalController extends Controller
             'status' => 'active'
         ];
 
+        $queryBuilder = User::where($conditions);
+
         if ($type === 'user') {
             $conditions['company_id'] = null;
+            $queryBuilder->with('userProfile:id,user_id,linkedin,facebook,freelance_site');
+        } elseif ($type === 'company') {
+            $queryBuilder->with('companyProfile:id,user_id,name,website,industry,employees,address');
         }
 
-        $results = User::where($conditions)
+        $results = $queryBuilder
+            ->where($conditions)
             ->where('name', 'like', "%$query%")
-            ->select('id', 'name', 'email', 'phone_no')
+            ->select('id', 'name', 'email', 'phone_no', 'secondary_phone_no', 'designation', 'cnic_number', 'cnic_image')
             ->get();
 
         return response()->json(['success' => true, 'results' => $results], 200);

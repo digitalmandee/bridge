@@ -10,8 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('invoices', function (Blueprint $table) {
-            $table->decimal('discount', 10, 2)->default(0)->after('hours');
+        Schema::table('booking_plans', function (Blueprint $table) {
+            $table->decimal('discount', 10, 2)->default(0)->after('type');
         });
     }
 
@@ -20,7 +20,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('invoices', function (Blueprint $table) {
+        Schema::table('booking_plans', function (Blueprint $table) {
             $table->dropColumn('discount');
         });
     }

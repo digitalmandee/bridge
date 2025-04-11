@@ -196,6 +196,7 @@ class InvoicesController extends Controller
                 'paid_date' => in_array($request->status, ['paid', 'overdue']) ? $request->paidDate : null,
                 'paid_month' => $request->paidMonth,
                 'paid_year' => $request->paidYear,
+                'discount' => $request->discount,
                 'amount' => $request->amount,
                 'payment_type' => $request->paymentType,
                 'receipt' => $InvoiceReciept,

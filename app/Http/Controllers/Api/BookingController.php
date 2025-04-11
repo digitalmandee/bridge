@@ -47,6 +47,7 @@ class BookingController extends Controller
                     'email' => $bookingDetails['email'],
                     'password' => Hash::make('password'),
                     'type' => $type,
+                    'designation' => $bookingDetails['designation'],
                     'phone_no' => $bookingDetails['phone_no'],
                     'secondary_phone_no' => $bookingDetails['secondary_phone_no'],
                     'cnic_number' => $bookingDetails['cnic'],
@@ -70,20 +71,21 @@ class BookingController extends Controller
                         'freelance_site' => $bookingDetails['freelance_site'],
                     ]);
                 }
+
+                // Handle profile_image upload
+                if ($request->hasFile('profile_image')) {
+                    $profileImagePath = FileHelper::saveImage($request->file('profile_image'), 'profile_images');
+                    $user->update(['profile_image' => $profileImagePath]);
+                }
+
+                if ($request->hasFile('cnic_image')) {
+                    Log::info($request->file('cnic_image'));
+                    $profileImagePath = FileHelper::saveImage($request->file('cnic_image'), 'cnics');
+                    $user->update(['cnic_image' => $profileImagePath]);
+                }
             }
 
             $userId = $user->id;
-
-            // Handle profile_image upload
-            if ($request->hasFile('profile_image')) {
-                $profileImagePath = FileHelper::saveImage($request->file('profile_image'), 'profile_images');
-                $user->update(['profile_image' => $profileImagePath]);
-            }
-
-            if ($request->hasFile('cnic_image')) {
-                $profileImagePath = FileHelper::saveImage($request->file('cnic_image'), 'cnics');
-                $user->update(['cnic_image' => $profileImagePath]);
-            }
 
             // Handle receipt upload
             $receiptPath = null;
@@ -115,7 +117,7 @@ class BookingController extends Controller
                 }
             }
 
-            $bookingPlan = BookingPlan::select('id', 'name', 'price', 'booking_hours', 'printing_papers')->find($selectedPlan['id']);
+            $bookingPlan = BookingPlan::select('id', 'name', 'price', 'discount', 'booking_hours', 'printing_papers')->find($selectedPlan['id']);
 
             // Create booking
             $booking = Booking::create([
@@ -144,6 +146,7 @@ class BookingController extends Controller
                 'user_id' => $userId,
                 'invoice_type' => $bookingDetails['duration'],
                 'due_date' => Carbon::parse($booking->start_date)->addDay()->format('Y-m-d'),
+                'discount' => $bookingPlan['discount'],
                 'amount' => $booking->total_price,
                 'payment_type' => $booking->payment_method,
                 'paid_month' => [$paidMonth],
