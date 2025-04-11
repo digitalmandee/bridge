@@ -201,7 +201,9 @@ class InvoicesController extends Controller
                 'receipt' => $InvoiceReciept,
             ]);
 
-            $this->updateUserQuotaByInvoice($invoice);
+            if (in_array($request->invoiceType, ['Meeting Rooms', 'Printing Papers'])) {
+                $this->updateUserQuotaByInvoice($invoice);
+            }
             $this->sendNotifications($admin, $invoice, 'Created');
 
             return response()->json(['success' => true, 'message' => 'Invoice created successfully', 'invoice' => $invoice]);
@@ -252,7 +254,7 @@ class InvoicesController extends Controller
         // Only update quotas if latest month is current
         $isCurrentMonth = $lastMonth === Carbon::now()->format('F') && ($request->paidYear ?? $invoice->paid_year) == Carbon::now()->year;
 
-        if ($isCurrentMonth) {
+        if ($isCurrentMonth && in_array($invoice->invoice_type, ['Meeting Rooms', 'Printing Papers'])) {
             $this->updateUserQuotaByInvoice($invoice);
         }
 
@@ -280,7 +282,6 @@ class InvoicesController extends Controller
                 $user->increment('total_booking_quota', $invoice->hours);
             }
         }
-
         $user->save();
     }
 
