@@ -52,6 +52,7 @@ const menuItems = [
 			{ to: "/branch/invoice/dashboard", label: "Dashboard", permission: "invoice-dashboard" },
 			{ to: "/branch/invoice/create", label: "New Invoice", permission: "new-invoice" },
 			{ to: "/branch/invoice/management", label: "Invoice Management", permission: "invoice-management" },
+			{ to: "/branch/invoice/types", label: "Invocie Types", permission: "invoice-dashboard" },
 		],
 	},
 	{

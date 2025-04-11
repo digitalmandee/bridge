@@ -39,6 +39,7 @@ const InvoiceCreate = () => {
 	const [errors, setErrors] = useState({});
 	const [searchloading, setSearchLoading] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const [invoiceTypes, setInvoiceTypes] = useState([]);
 	const [userBooking, setUserBooking] = useState(null);
 	const [userBookingError, setUserBookingError] = useState({
 		success: false,
@@ -135,14 +136,30 @@ const InvoiceCreate = () => {
 		setErrors({ ...errors, [field]: "" }); // Clear error on change
 	};
 
-	// Handle form field changes
 	const handleChange = (e) => {
 		const { name, value } = e.target;
-		setFormData({ ...formData, [name]: value });
-		setErrors({ ...errors, [name]: "" }); // Clear error on change
-		// if (name === "invoiceType" && value !== "Monthly") {
-		// 	setFormData({ ...formData, paidMonth: new Date().toLocaleString("default", { month: "long" }) });
-		// }
+
+		if (name === "paidMonth") {
+			const selected = typeof value === "string" ? value.split(",") : value;
+
+			const selectedIndexes = selected.map((month) => allMonths.indexOf(month)).sort((a, b) => a - b);
+
+			const firstIndex = selectedIndexes[0];
+			const expected = Array.from({ length: selectedIndexes.length }, (_, i) => firstIndex + i);
+
+			const isConsecutive = expected.every((val, idx) => val === selectedIndexes[idx]);
+
+			if (!isConsecutive) {
+				setSnackbar({ open: true, message: "Please select consecutive months starting from your first choice.", severity: "warning" });
+				return;
+			}
+
+			setFormData((prev) => ({ ...prev, [name]: selected }));
+		} else {
+			setFormData((prev) => ({ ...prev, [name]: value }));
+		}
+
+		setErrors((prev) => ({ ...prev, [name]: "" }));
 	};
 
 	// Handle file selection
@@ -157,6 +174,21 @@ const InvoiceCreate = () => {
 	const handleTabChange = (event, newValue) => {
 		setSelectedTab(newValue);
 	};
+
+	const fetchInvoiceTypes = async () => {
+		try {
+			const res = await axiosInstance.get("invoice-types", { params: { type: "search" } });
+			if (res.data.success) {
+				setInvoiceTypes(res.data.results);
+			}
+		} catch (error) {
+			setSnackbar({ open: true, message: "Error fetching invoice types!", severity: "error" });
+		}
+	};
+
+	useEffect(() => {
+		fetchInvoiceTypes();
+	}, []);
 
 	// Submit Form to API
 	const handleSubmit = async (e) => {
@@ -244,6 +276,8 @@ const InvoiceCreate = () => {
 			const message = error?.response?.data?.message;
 			if (message === "This month invoice already paid") {
 				setSnackbar({ open: true, message: "This month invoice already paid!", severity: "error" });
+			} else {
+				setSnackbar({ open: true, message: message ?? "Something went wrong", severity: "error" });
 			}
 		} finally {
 			setLoading(false);
@@ -413,9 +447,17 @@ const InvoiceCreate = () => {
 										<FormControl fullWidth error={Boolean(errors.invoiceType)}>
 											<InputLabel id="invoiceType">Invoice Type</InputLabel>
 											<Select label="Invoice Type" name="invoiceType" labelId="invoiceType" value={formData.invoiceType} onChange={handleChange}>
-												<MenuItem value="Monthly">Monthly</MenuItem>
-												<MenuItem value="Printing Papers">Printing Papers</MenuItem>
-												<MenuItem value="Meeting Rooms">Meeting Rooms</MenuItem>
+												{invoiceTypes.length > 0 ? (
+													invoiceTypes.map((type) => (
+														<MenuItem key={type.id} value={type.name}>
+															{type.name}
+														</MenuItem>
+													))
+												) : (
+													<MenuItem value="" disabled>
+														No invoice types found
+													</MenuItem>
+												)}
 											</Select>
 											{errors.invoiceType && <FormHelperText error>{errors.invoiceType}</FormHelperText>}
 										</FormControl>
@@ -451,7 +493,6 @@ const InvoiceCreate = () => {
 										</Grid>
 									)}
 									{/* Dropdown to select the Paid month */}
-
 									{formData.invoiceType === "Monthly" && (
 										<Grid item xs={12}>
 											<FormControl fullWidth error={Boolean(errors.paidMonth)}>
@@ -463,11 +504,17 @@ const InvoiceCreate = () => {
 															const isPaid = paidMonths.includes(month);
 															return !isPastOrCurrent && !isPaid;
 														})
-														.map((month, index) => (
-															<MenuItem key={index} value={month}>
-																{month}
-															</MenuItem>
-														))}
+														.map((month, index) => {
+															const selectedIndexes = formData.paidMonth.map((m) => allMonths.indexOf(m)).sort((a, b) => a - b);
+															const maxIndex = Math.max(...selectedIndexes, currentMonthIndex);
+															const isDisabled = selectedIndexes.length > 0 && index > maxIndex + 1;
+
+															return (
+																<MenuItem key={index} value={month} disabled={isDisabled}>
+																	{month}
+																</MenuItem>
+															);
+														})}
 												</Select>
 												{errors.paidMonth && <FormHelperText>{errors.paidMonth}</FormHelperText>}
 											</FormControl>

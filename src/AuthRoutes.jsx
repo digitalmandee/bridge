@@ -18,6 +18,7 @@ import LeaveCategoryEdit from "./pages/attendance/leavecategory/edit";
 
 // Invoice Management
 import InvoiceDashboard from "@/pages/invoice/dashboard";
+import InvoiceTypes from "@/pages/invoice/types";
 import InvoiceCreate from "@/pages/invoice/create";
 import InvoiceManagement from "@/pages/invoice/management";
 import InvoiceDetail from "@/pages/invoice/detail";
@@ -334,6 +335,14 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="admin" permission="invoice-dashboard">
 						<InvoiceDashboard />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="branch/invoice/types"
+				element={
+					<ProtectedRoute role="admin" permission="invoice-dashboard">
+						<InvoiceTypes />
 					</ProtectedRoute>
 				}
 			/>

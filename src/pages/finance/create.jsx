@@ -6,7 +6,6 @@ import { Box, TextField, Typography, Button, Card, CardContent, Grid, Snackbar, 
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import axiosInstance from "@/utils/axiosInstance";
-import colors from '../../assets/styles/color'
 
 const CreateFinanceEntry = () => {
 	const navigate = useNavigate();
@@ -17,9 +16,9 @@ const CreateFinanceEntry = () => {
 		amount: "",
 		quantity: "",
 		status: "unpaid",
+		file: null,
 		issue_date: "",
 		due_date: "",
-		file: null,
 	});
 	const [errors, setErrors] = useState({});
 	const [loading, setLoading] = useState(false);
@@ -61,13 +60,17 @@ const CreateFinanceEntry = () => {
 		payload.append("description", formData.description);
 		payload.append("amount", formData.amount);
 		payload.append("quantity", formData.quantity);
+		payload.append("status", formData.status);
+		payload.append("category_id", formData.category?.id || null);
+		payload.append("file", formData.file || null);
 		payload.append("issue_date", formData.issue_date);
 		payload.append("due_date", formData.due_date);
-		payload.append("category_id", formData.category?.id || null);
 
 		// Append file if selected
 		if (formData.file && formData.status === "paid") {
-			payload.append("reciept", formData.file);
+			console.log("Appending file:", formData.file);
+
+			payload.append("receipt", formData.file);
 		}
 
 		axiosInstance
@@ -81,7 +84,7 @@ const CreateFinanceEntry = () => {
 				navigate(-1);
 			})
 			.catch((error) => {
-				setSnackbar({ open: true, message: "Failed to create entry", severity: "error" });
+				setSnackbar({ open: true, message: error.response?.data?.message || "Failed to create entry", severity: "error" });
 				console.error("API Error:", error);
 			})
 			.finally(() => setLoading(false));
@@ -108,8 +111,8 @@ const CreateFinanceEntry = () => {
 							<h4 style={{ margin: 0 }}>New Finance Entry</h4>
 						</div>
 					</div>
-					<Box sx={{ display: "flex", justifyContent: "center", p: 1 }}>
-						<Box sx={{ width: "100%", maxWidth: 900, borderRadius: 2, backgroundColor:'transparent' }}>
+					<Box sx={{ display: "flex", justifyContent: "center", p: 3, bgcolor: "#f8f9fa" }}>
+						<Card sx={{ width: "100%", maxWidth: 800, boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)", borderRadius: 2 }}>
 							<CardContent sx={{ p: 4 }}>
 								<Grid container spacing={3}>
 									{[
@@ -186,9 +189,9 @@ const CreateFinanceEntry = () => {
 												mt: 2,
 												px: 6,
 												py: 1,
-												bgcolor: colors.primary,
+												bgcolor: "#0A2647",
 												"&:hover": {
-													bgcolor: colors.primary,
+													bgcolor: "#0A2647",
 												},
 												textTransform: "none",
 												borderRadius: 1,
@@ -201,7 +204,7 @@ const CreateFinanceEntry = () => {
 									</Grid>
 								</Grid>
 							</CardContent>
-						</Box>
+						</Card>
 					</Box>
 					<Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar({ ...snackbar, open: false })} message={snackbar.message} />
 				</div>

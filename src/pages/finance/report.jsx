@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Select, MenuItem, InputLabel, FormControl, Snackbar, Alert } from "@mui/material";
+import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Select, MenuItem, InputLabel, FormControl, Snackbar, Alert, Modal, IconButton, Typography, Pagination } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
 import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
+import CloseIcon from "@mui/icons-material/Close";
+import { Grid } from "@mui/system";
 
 const FinanceReport = () => {
 	const navigate = useNavigate();
 	const { categoryid } = useParams();
 
+	const [previewUrl, setPreviewUrl] = useState(null);
 	const [timeFilter, setTimeFilter] = useState("weekly");
 	const [category, setCategory] = useState("");
 	const [financeData, setFinanceData] = useState([]);
@@ -18,9 +21,46 @@ const FinanceReport = () => {
 	const [totalPages, setTotalPages] = useState(1);
 	const [limit, setLimit] = useState(10);
 	const [openModal, setOpenModal] = useState(false);
+
 	const [modalData, setModalData] = useState(null); // Holds data to show in modal
 	const [status, setStatus] = useState(""); // Track current status to show update or view
 	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+
+	const [open, setOpen] = React.useState(false);
+	const [selectedItem, setSelectedItem] = useState(null);
+
+	// add status modal by usama
+	const [openDialog, setOpenDialog] = useState(false);
+	const [dialogType, setDialogType] = useState(""); // 'view' or 'edit'
+	const [dialogData, setDialogData] = useState(null);
+
+	const handleFileChange1 = (e) => {
+		const file = e.target.files[0];
+		setDialogData((prevData) => ({
+			...prevData,
+			receipt: file,
+		}));
+		if (file && file.type.startsWith("image/")) {
+			const imageUrl = URL.createObjectURL(file);
+			setPreviewUrl(imageUrl);
+		}
+	};
+
+	// add modal by usama
+	// add functions by usama
+	const handleOpenDialog = (data, type) => {
+		setDialogData(data);
+		setDialogType(type); // 'view' or 'edit'
+		setOpenDialog(true);
+	};
+
+	const handleCloseDialog = () => {
+		setOpenDialog(false);
+		setDialogType("");
+		setDialogData(null);
+	};
+
+	// add functions by usama
 
 	const getStatusColor = (status) => {
 		switch (status) {
@@ -61,49 +101,62 @@ const FinanceReport = () => {
 		getFinances(currentPage);
 	}, [categoryid, currentPage, limit]);
 
-	const openDetailModal = (status, data) => {
-		setStatus(status); // Set the current status (paid or unpaid)
-		setModalData(data); // Pass data to the modal
-		setOpenModal(true); // Open modal
-	};
-
-	const closeModal = () => {
-		setOpenModal(false);
-		setModalData(null);
-		setStatus("");
-	};
-
-	const handleActionClick = (status, row) => {
-		if (status === "unpaid") {
-			openDetailModal("unpaid", row); // Open modal for update when unpaid
-		} else {
-			openDetailModal("paid", row); // Open modal for viewing when paid
-		}
-	};
-
 	// Handle form field changes
 	const handleChange = (e) => {
 		const { name, value } = e.target;
-		setModalData({ ...modalData, [name]: value });
-		// setErrors({ ...errors, [name]: "" }); // Clear error on change
+		setDialogData((prevData) => ({
+			...prevData,
+			[name]: value,
+		}));
 	};
 
 	const handleSaveUpdate = async () => {
 		// update logic for "unpaid" status
 		try {
-			const res = await axiosInstance.put(`finances/${modalData.id}`, modalData);
-			if (res.data.success) {
-				closeModal();
-				setSnackbar({ open: true, message: res.data.message, severity: "success" });
-				getFinances(currentPage);
-			}
+			const formData = new FormData();
+
+			formData.append("name", dialogData.name);
+			formData.append("description", dialogData.description);
+			formData.append("quantity", dialogData.quantity);
+			formData.append("amount", dialogData.amount);
+			formData.append("status", dialogData.status);
+			formData.append("receipt", dialogData.receipt || null);
+
+			const res = await axiosInstance.put(`finances/${dialogData.id}?_method=PUT`, formData, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			});
+			console.log("Update response:", res.data);
+			"Update response:", res.data;
 		} catch (error) {
+			console.log("Error updating finance:", error);
+
 			setSnackbar({ open: true, message: error.response.data.message, severity: "error" });
 		}
 	};
 
 	const handleCloseSnackbar = () => {
 		setSnackbar({ ...snackbar, open: false });
+	};
+	const handleDownload = async () => {
+		const fileName = selectedItem.receipt;
+
+		try {
+			const { data } = await axiosInstance.post("download", { fileName }, { responseType: "blob" });
+
+			const blob = new Blob([data]);
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = fileName;
+			document.body.appendChild(a);
+			a.click();
+			a.remove();
+			URL.revokeObjectURL(url); // Clean up blob URL
+		} catch (error) {
+			console.error("Download failed:", error);
+		}
 	};
 
 	return (
@@ -174,41 +227,139 @@ const FinanceReport = () => {
 										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>Due Date</TableCell>
 										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>Status</TableCell>
 										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>Actions</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>Receipt</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
 									{isLoading ? (
 										<TableRow>
-											<TableCell colSpan={8} align="center">
+											<TableCell colSpan={10} align="center">
 												<CircularProgress sx={{ color: "#0F172A" }} />
 											</TableCell>
 										</TableRow>
 									) : financeData.length > 0 ? (
-										financeData.map((row, index) => (
-											<TableRow key={row.id} sx={{ "&:nth-of-type(even)": { bgcolor: "#f8fafc" }, "&:last-child td, &:last-child th": { border: 0 } }}>
-												<TableCell component="th" scope="row" sx={{ py: 2 }}>
-													{row.id}
-												</TableCell>
-												<TableCell sx={{ py: 2 }}>{row.name}</TableCell>
-												<TableCell sx={{ py: 2 }}>{row.description}</TableCell>
-												<TableCell sx={{ py: 2 }}>{row.quantity}</TableCell>
-												<TableCell sx={{ py: 2 }}>Rs. {row.amount}</TableCell>
-												<TableCell sx={{ py: 2 }}>{row.issue_date}</TableCell>
-												<TableCell sx={{ py: 2 }}>{row.due_date}</TableCell>
-												<TableCell sx={{ py: 2 }}>
-													<Chip label={row.status} size="small" sx={{ bgcolor: getStatusColor(row.status).bg, color: getStatusColor(row.status).text, fontWeight: 500, borderRadius: 1, px: 0.5 }} />
-												</TableCell>
-												<TableCell sx={{ py: 2 }}>
-													<Button variant="contained" onClick={() => handleActionClick(row.status, row)} sx={{ bgcolor: row.status === "unpaid" ? "#d97706" : "#0c4a6e", color: "white", "&:hover": { bgcolor: row.status === "unpaid" ? "#b45309" : "#055b6e" } }}>
-														{row.status === "unpaid" ? "Edit" : "View"}
-													</Button>
-												</TableCell>
-											</TableRow>
-										))
+										financeData.map((row, index) => {
+											const { bg, text } = getStatusColor(row.status);
+											return (
+												<TableRow key={row.id}>
+													<TableCell>{index + 1}</TableCell>
+													<TableCell>{row.name}</TableCell>
+													<TableCell>{row.description}</TableCell>
+													<TableCell>{row.quantity}</TableCell>
+													<TableCell>Rs. {row.amount}</TableCell>
+													<TableCell>{row.issue_date}</TableCell>
+													<TableCell>{row.due_date}</TableCell>
+													<TableCell>
+														<Chip
+															label={row.status}
+															sx={{
+																bgcolor: bg,
+																color: text,
+																fontWeight: 500,
+																px: 1.5,
+																py: 0.5,
+																textTransform: "capitalize",
+															}}
+														/>
+													</TableCell>
+													<TableCell>
+														{row.status === "paid" ? (
+															<Button variant="outlined" size="small" sx={{ textTransform: "none" }} onClick={() => handleOpenDialog(row, "view")}>
+																View
+															</Button>
+														) : (
+															<Button variant="outlined" size="small" sx={{ textTransform: "none" }} onClick={() => handleOpenDialog(row, "edit")}>
+																Edit
+															</Button>
+														)}
+													</TableCell>
+													<TableCell>
+														{row.receipt ? (
+															<Button
+																variant="outlined"
+																size="small"
+																onClick={() => {
+																	setSelectedItem(row);
+																	setOpen(true);
+																}}>
+																View
+															</Button>
+														) : (
+															"N/A"
+														)}
+
+														<Modal
+															open={open}
+															onClose={() => setOpen(false)}
+															BackdropProps={{
+																sx: {
+																	backgroundColor: "transparent",
+																},
+															}}>
+															<Box
+																sx={{
+																	position: "absolute",
+																	top: "50%",
+																	left: "50%",
+																	transform: "translate(-50%, -50%)",
+																	width: 500,
+																	bgcolor: "background.paper",
+																	borderRadius: 2,
+																	boxShadow: 5,
+																	p: 4,
+																	maxHeight: "90vh",
+																	overflowY: "auto",
+																}}>
+																<IconButton
+																	onClick={() => setOpen(false)}
+																	sx={{
+																		position: "absolute",
+																		top: 8,
+																		right: 8,
+																		color: "text.primary",
+																	}}>
+																	<CloseIcon />
+																</IconButton>
+
+																{selectedItem ? (
+																	<>
+																		{selectedItem.receipt && (
+																			<Box mt={2}>
+																				<Typography variant="body2" gutterBottom>
+																					<strong>Receipt:</strong>
+																				</Typography>
+																				<img
+																					src={`${import.meta.env.VITE_ASSET_API}${selectedItem.receipt}`}
+																					alt="Receipt"
+																					style={{
+																						width: "100%",
+																						borderRadius: "8px",
+																						maxHeight: "300px",
+																						objectFit: "contain",
+																					}}
+																				/>
+																			</Box>
+																		)}
+
+																		<Box mt={3} display="flex" justifyContent="center">
+																			<Button variant="outlined" color="primary" onClick={handleDownload}>
+																				Download Receipt
+																			</Button>
+																		</Box>
+																	</>
+																) : (
+																	<Typography>Loading...</Typography>
+																)}
+															</Box>
+														</Modal>
+													</TableCell>
+												</TableRow>
+											);
+										})
 									) : (
 										<TableRow>
-											<TableCell colSpan={8} align="center">
-												No finance found.
+											<TableCell colSpan={10} align="center">
+												No records found.
 											</TableCell>
 										</TableRow>
 									)}
@@ -220,36 +371,109 @@ const FinanceReport = () => {
 			</div>
 
 			{/* Modal for viewing or updating finance */}
-			<Dialog open={openModal} onClose={closeModal}>
-				<DialogTitle>{status === "unpaid" ? "Update Finance" : "View Finance"}</DialogTitle>
+			{/* <Dialog open={openModal} onClose={closeModal}> */}
+
+			{/* VIEW DIALOG */}
+			<Dialog open={openDialog && dialogType === "view"} onClose={handleCloseDialog}>
+				<DialogTitle>View Finance</DialogTitle>
 				<DialogContent>
-					{modalData && (
+					{dialogData && (
 						<>
-							<TextField className="mt-2" fullWidth label="Name" value={modalData.name} onChange={handleChange} name="name" disabled={status === "paid"} sx={{ mb: 2 }} />
-							<TextField fullWidth label="Description" value={modalData.description} onChange={handleChange} name="description" disabled={status === "paid"} sx={{ mb: 2 }} />
-							<TextField fullWidth label="Quantity" value={modalData.quantity} onChange={handleChange} name="quantity" disabled={status === "paid"} sx={{ mb: 2 }} />
-							<TextField fullWidth label="Amount" value={modalData.amount} onChange={handleChange} name="amount" disabled={status === "paid"} sx={{ mb: 2 }} />
-							<FormControl fullWidth>
-								<InputLabel id="status">Status</InputLabel>
-								<Select label="Status" name="status" labelId="status" value={modalData.status} onChange={handleChange} disabled={status === "paid"}>
-									<MenuItem value="paid">Paid</MenuItem>
-									<MenuItem value="unpaid">UnPaid</MenuItem>
-								</Select>
-							</FormControl>
+							<TextField fullWidth label="Name" value={dialogData.name} disabled sx={{ mb: 2 }} />
+							<TextField fullWidth label="Description" value={dialogData.description} disabled sx={{ mb: 2 }} />
+							<TextField fullWidth label="Quantity" value={dialogData.quantity} disabled sx={{ mb: 2 }} />
+							<TextField fullWidth label="Amount" value={dialogData.amount} disabled sx={{ mb: 2 }} />
+							<TextField fullWidth label="Status" value={dialogData.status} disabled sx={{ mb: 2 }} />
+							{dialogData?.receipt && (
+								<img
+									src={`${import.meta.env.VITE_ASSET_API}${dialogData?.receipt}`}
+									alt="Receipt"
+									style={{
+										width: "100%",
+										borderRadius: "8px",
+										maxHeight: "150px",
+										objectFit: "contain",
+									}}
+								/>
+							)}
 						</>
 					)}
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={closeModal} color="primary">
-						Close
-					</Button>
-					{status === "unpaid" && (
-						<Button onClick={handleSaveUpdate} color="primary">
-							Save/Update
-						</Button>
-					)}
+					<Button onClick={handleCloseDialog}>Close</Button>
 				</DialogActions>
 			</Dialog>
+
+			{/* EDIT DIALOG */}
+			<Dialog open={openDialog && dialogType === "edit"} onClose={handleCloseDialog}>
+				<DialogTitle>Update Finance</DialogTitle>
+				<DialogContent>
+					{dialogData && (
+						<>
+							<TextField fullWidth label="Name" value={dialogData.name} onChange={handleChange} name="name" sx={{ mb: 2 }} />
+							<TextField fullWidth label="Description" value={dialogData.description} onChange={handleChange} name="description" sx={{ mb: 2 }} />
+							<TextField fullWidth label="Quantity" value={dialogData.quantity} onChange={handleChange} name="quantity" sx={{ mb: 2 }} />
+							<TextField fullWidth label="Amount" value={dialogData.amount} onChange={handleChange} name="amount" sx={{ mb: 2 }} />
+							<FormControl fullWidth sx={{ mb: 2 }}>
+								<InputLabel id="status-label">Status</InputLabel>
+								<Select label="Status" name="status" labelId="status-label" value={dialogData.status} onChange={handleChange}>
+									<MenuItem value="paid">Paid</MenuItem>
+									<MenuItem value="unpaid">Unpaid</MenuItem>
+								</Select>
+							</FormControl>
+
+							{dialogData.status === "paid" && (
+								<Grid>
+									<div
+										style={{
+											display: "flex",
+											flexDirection: "column",
+											alignItems: "center",
+											border: "2px dotted #ccc",
+											padding: "10px",
+											borderRadius: "10px",
+											textAlign: "center",
+										}}>
+										<div>
+											<input id="file-upload" type="file" accept="image/*" style={{ display: "none" }} onChange={handleFileChange1} />
+											<label htmlFor="file-upload" style={{ cursor: "pointer" }}>
+												{previewUrl ? (
+													<img
+														src={previewUrl}
+														alt="Uploaded preview"
+														style={{
+															width: "50%",
+															borderRadius: "8px",
+															maxHeight: "150px",
+															objectFit: "contain",
+														}}
+													/>
+												) : (
+													<label htmlFor="file-upload" style={{ cursor: "pointer" }}>
+														Upload Receipt (Optional)
+													</label>
+												)}
+											</label>
+										</div>
+									</div>
+									{dialogData.file && (
+										<Typography variant="body2" style={{ marginTop: "10px" }}>
+											{dialogData.file.name}
+										</Typography>
+									)}
+								</Grid>
+							)}
+						</>
+					)}
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleCloseDialog}>Close</Button>
+					<Button onClick={handleSaveUpdate}>Save/Update</Button>
+				</DialogActions>
+			</Dialog>
+			<Box mt={2} display="flex" justifyContent="center">
+				<Pagination count={totalPages} page={currentPage} onChange={(e, value) => setCurrentPage(value)} color="primary" />
+			</Box>
 
 			<Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
 				<Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
