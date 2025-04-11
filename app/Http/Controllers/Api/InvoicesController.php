@@ -70,7 +70,6 @@ class InvoicesController extends Controller
 
     public function store(Request $request)
     {
-        // Validate request
         $validator = Validator::make($request->all(), [
             'invoiceType' => 'required|string',
             'dueDate' => 'required|date',
@@ -81,6 +80,8 @@ class InvoicesController extends Controller
             'amount' => 'required_unless:invoiceType,Monthly|nullable|numeric',
             'status' => 'required|string',
             'paymentType' => 'nullable|required_unless:status,pending|string',
+            // 'paidMonth' => 'required_if:invoiceType,Monthly|array',
+            // 'paidYear' => 'required_if:invoiceType,Monthly|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -89,49 +90,68 @@ class InvoicesController extends Controller
 
         try {
             $admin = auth()->user();
-            $bookingId = null;
-            $bookingPlan = null;
-
-            // Determine user ID based on selected tab
             $userId = $request->selectedTab === 'individual' ? $request->member_id : $request->company_id;
 
+            // Check if any of the months were already paid
             if ($request->invoiceType === 'Monthly') {
-                $invoice = Invoice::where('user_id', $userId)->where('paid_month', $request->paidMonth)->where('paid_year', $request->paidYear)->where('status', 'paid')->where('invoice_type', 'Monthly')->first();
+                $alreadyPaid = Invoice::where('user_id', $userId)
+                    ->where('invoice_type', 'Monthly')
+                    ->where('paid_year', $request->paidYear)
+                    ->where(function ($query) use ($request) {
+                        foreach ($request->paidMonth as $month) {
+                            $query->orWhereJsonContains('paid_month', $month);
+                        }
+                    })
+                    ->where('status', 'paid')
+                    ->exists();
 
-                if ($invoice) {
-                    return response()->json(['success' => false, 'message' => 'This month invoice already paid'], 422);
+                if ($alreadyPaid) {
+                    return response()->json(['success' => false, 'message' => 'One or more months already have paid invoices.'], 422);
                 }
             }
 
             // Handle receipt upload
             $InvoiceReciept = $request->hasFile('reciept') && in_array($request->status, ['paid', 'overdue'])
-                ? FileHelper::saveImage($request->file('receipt'), 'invoices')
+                ? FileHelper::saveImage($request->file('reciept'), 'invoices')
                 : null;
 
+            $bookingId = null;
+            $bookingPlan = null;
+
             if ($request->invoiceType === 'Monthly') {
-                // Fetch latest confirmed booking
-                $booking = Booking::where('user_id', $userId)->where('duration', 'monthly')->whereNotIn('status', ['pending', 'rejected', 'upcoming'])->latest()->first();
+                $booking = Booking::where('user_id', $userId)
+                    ->where('duration', 'monthly')
+                    ->whereNotIn('status', ['pending', 'rejected', 'upcoming'])
+                    ->latest()
+                    ->first();
 
                 if (!$booking) {
                     return response()->json(['success' => false, 'message' => 'Booking not found.'], 400);
                 }
 
+                $bookingId = $booking->id;
+
                 $bookingPlan = $booking->plan;
 
-                $isCurrentMonth = $request->paidMonth === Carbon::now()->format('F') && $request->paidYear == Carbon::now()->year;
+                $currentMonth = Carbon::now()->format('F');
+                $currentYear = Carbon::now()->year;
 
-                $packageEndTime = Carbon::createFromDate($request->paidYear, date('m', strtotime($request->paidMonth)), 1)->endOfMonth();
+                $isCurrentMonth = in_array($currentMonth, $request->paidMonth) && $request->paidYear == $currentYear;
+
+                $paidMonths = $request->paidMonth;
+                $lastMonth = end($paidMonths);
+
+                $packageEndTime = Carbon::createFromDate($request->paidYear, date('m', strtotime($lastMonth)), 1)->endOfMonth();
 
                 if ($booking->status !== 'confirmed') {
                     $newBookingData = $booking->only(['user_id', 'floor_id', 'plan_id', 'chair_ids', 'name', 'phone_no', 'type', 'duration', 'time_slot', 'plan']);
                     $newBookingData += [
-                        'start_date' => Carbon::createFromDate($request->paidYear, $request->paidMonth, 1)->format('Y-m-d'),
-                        'start_time' => Carbon::createFromDate($request->paidYear, $request->paidMonth, 1)->format('H:i:s'),
+                        'start_date' => Carbon::createFromDate($request->paidYear, date('m', strtotime($request->paidMonth[0])), 1)->format('Y-m-d'),
+                        'start_time' => Carbon::createFromDate($request->paidYear, date('m', strtotime($request->paidMonth[0])), 1)->format('H:i:s'),
                         'end_date' => null,
                         'end_time' => null,
                         'status' => (
-                            in_array($request->status, ['paid', 'overdue']) &&
-                            $isCurrentMonth
+                            in_array($request->status, ['paid', 'overdue']) && $isCurrentMonth
                                 ? 'confirmed'
                                 : ($request->status === 'pending' ? 'pending' : 'upcoming')
                         ),
@@ -145,13 +165,11 @@ class InvoicesController extends Controller
                     $newBooking = Booking::create($newBookingData);
                     $bookingId = $newBooking->id;
 
-                    // If paid/overdue and for the current month, update chair booking
                     if (in_array($request->status, ['paid', 'overdue']) && $isCurrentMonth) {
                         $this->updateChairBooking($newBooking);
                         $this->updateUserQuota($newBooking);
                     }
                 } elseif ($booking->status === 'confirmed' && in_array($request->status, ['paid', 'overdue']) && $isCurrentMonth) {
-                    // Update confirmed booking
                     $bookingId = $booking->id;
                     $booking->update([
                         'total_price' => $request->amount,
@@ -165,7 +183,7 @@ class InvoicesController extends Controller
                 }
             }
 
-            // Create invoice
+            // Create single invoice
             $invoice = Invoice::create([
                 'user_id' => $userId,
                 'booking_id' => $request->invoiceType === 'Monthly' ? $bookingId : null,
@@ -183,10 +201,7 @@ class InvoicesController extends Controller
                 'receipt' => $InvoiceReciept,
             ]);
 
-            // Update user quotas based on invoice type
             $this->updateUserQuotaByInvoice($invoice);
-
-            // Notify user & admin
             $this->sendNotifications($admin, $invoice, 'Created');
 
             return response()->json(['success' => true, 'message' => 'Invoice created successfully', 'invoice' => $invoice]);
@@ -203,6 +218,8 @@ class InvoicesController extends Controller
             'due_date' => 'required|date',
             'paid_date' => 'required_if:status,paid,overdue|date',
             'payment_type' => 'required_if:status,paid,overdue|string',
+            'paidMonth' => 'nullable|array',
+            'paidYear' => 'nullable|integer',
         ]);
 
         $admin = auth()->user();
@@ -213,26 +230,32 @@ class InvoicesController extends Controller
             return response()->json(['success' => false, 'message' => 'Invoice not found or does not match with user'], 404);
         }
 
+        // Handle receipt upload if status is paid/overdue
         $invoiceReceipt = $request->hasFile('receipt') && in_array($validatedData['status'], ['paid', 'overdue'])
             ? FileHelper::saveImage($request->file('receipt'), 'invoices')
             : $invoice->receipt;
+
+        // Extract the last paid month if it's an array
+        $paidMonths = $request->paidMonth ?? [$invoice->paid_month];
+        $lastMonth = end($paidMonths);
 
         $invoice->update([
             'status' => $validatedData['status'],
             'due_date' => $validatedData['due_date'],
             'paid_date' => in_array($validatedData['status'], ['paid', 'overdue']) ? $validatedData['paid_date'] : $invoice->paid_date,
             'payment_type' => in_array($validatedData['status'], ['paid', 'overdue']) ? $validatedData['payment_type'] : $invoice->payment_type,
-            'receipt' => $invoiceReceipt
+            'receipt' => $invoiceReceipt,
+            'paid_month' => $lastMonth,
+            'paid_year' => $request->paidYear ?? $invoice->paid_year,
         ]);
 
-        $isCurrentMonth = $request->paidMonth === Carbon::now()->format('F') && $request->paidYear == Carbon::now()->year;
+        // Only update quotas if latest month is current
+        $isCurrentMonth = $lastMonth === Carbon::now()->format('F') && ($request->paidYear ?? $invoice->paid_year) == Carbon::now()->year;
 
-        // Update user quotas based on invoice type
         if ($isCurrentMonth) {
             $this->updateUserQuotaByInvoice($invoice);
         }
 
-        // Notify user & admin
         $this->sendNotifications($admin, $invoice, 'Updated');
 
         return response()->json(['success' => true, 'message' => 'Invoice updated successfully']);
@@ -367,7 +390,14 @@ class InvoicesController extends Controller
             return response()->json(['success' => false, 'message' => 'No booking found'], 400);
         }
 
-        $PayedMonths = Invoice::where(['booking_id' => $latestBooking->id, 'status' => 'paid', 'invoice_type' => 'Monthly', 'paid_year' => date('Y')])->pluck('paid_month')->toArray();
+        $PayedMonthsRaw = Invoice::where([
+            'booking_id' => $latestBooking->id,
+            'status' => 'paid',
+            'invoice_type' => 'Monthly',
+            'paid_year' => date('Y')
+        ])->pluck('paid_month');
+
+        $PayedMonths = collect($PayedMonthsRaw)->map(fn($months) => is_array($months) ? $months : json_decode($months, true))->flatten()->unique()->values()->toArray();
 
         $unavailableChairs = [];
         $availableChairs = [];

@@ -146,7 +146,7 @@ class BookingController extends Controller
                 'due_date' => Carbon::parse($booking->start_date)->addDay()->format('Y-m-d'),
                 'amount' => $booking->total_price,
                 'payment_type' => $booking->payment_method,
-                'paid_month' => $paidMonth,
+                'paid_month' => [$paidMonth],
                 'paid_year' => Carbon::now()->year,
                 'plan' => ['id' => $selectedPlan['id'], 'name' => $selectedPlan['name'], 'price' => $selectedPlan['price']],
                 'receipt' => $receiptPath,

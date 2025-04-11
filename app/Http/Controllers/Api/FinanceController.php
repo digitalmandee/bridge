@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Chair;
 use App\Models\Finance;
@@ -114,11 +115,27 @@ class FinanceController extends Controller
             'status' => 'required|in:paid,unpaid',
             'issue_date' => 'required|date',
             'due_date' => 'required|date|after_or_equal:issue_date',
+            // "receipt" => "nullable|required_if:status,paid|image",
         ]);
 
-        $finance = Finance::create($request->all());
+        // Handle receipt upload
+        $financeReciept = $request->hasFile('receipt') && in_array($request->status, ['paid'])
+            ? FileHelper::saveImage($request->file('receipt'), 'finance')
+            : null;
 
-        return response()->json(['success' => true, 'message' => 'Finance entry created successfully!', 'finance' => $finance]);
+        Finance::create([
+            'category_id' => $request->category_id,
+            'name' => $request->name,
+            'description' => $request->description,
+            'amount' => $request->amount,
+            'quantity' => $request->quantity,
+            'issue_date' => $request->issue_date,
+            'due_date' => $request->due_date,
+            'status' => $request->status,
+            'receipt' => $financeReciept,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Finance entry created successfully!']);
     }
 
     // Update a finance entry
@@ -131,9 +148,14 @@ class FinanceController extends Controller
             'amount' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
             'status' => 'required|in:paid,unpaid',
+            'receipt' => 'nullable|required_if:status,paid|image',
             // 'issue_date' => 'required|date',
             // 'due_date' => 'required|date|after_or_equal:issue_date',
         ]);
+        // Handle receipt upload
+        $financeReciept = $request->hasFile('receipt') && in_array($request->status, ['paid'])
+            ? FileHelper::saveImage($request->file('receipt'), 'finance')
+            : null;
 
         $finance = Finance::find($id);
 
@@ -141,7 +163,14 @@ class FinanceController extends Controller
             return response()->json(['success' => false, 'message' => 'Finance entry not found'], 404);
         }
 
-        $finance->update($request->all());
+        $finance->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'amount' => $request->amount,
+            'quantity' => $request->quantity,
+            'status' => $request->status,
+            'receipt' => $financeReciept,
+        ]);
 
         return response()->json(['success' => true, 'message' => 'Finance entry updated successfully!']);
     }
@@ -158,5 +187,20 @@ class FinanceController extends Controller
         $finance->delete();
 
         return response()->json(['success' => true, 'message' => 'Finance entry deleted successfully']);
+    }
+
+    public function download(Request $request)
+    {
+        $request->validate([
+            'fileName' => 'required|string',
+        ]);
+
+        $filePath = public_path($request->fileName);
+
+        if (!file_exists($filePath)) {
+            return response()->json(['success' => false, 'message' => 'File not found.'], 404);
+        }
+
+        return response()->download($filePath);
     }
 }
