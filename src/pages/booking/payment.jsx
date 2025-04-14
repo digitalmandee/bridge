@@ -65,6 +65,7 @@ const Payment = () => {
 					selectedPlan: "",
 					package_detail: 0,
 					total_price: 0,
+					description: "",
 					payment_method: "cash",
 					// Freelancer Fields
 					linkedin: "",
