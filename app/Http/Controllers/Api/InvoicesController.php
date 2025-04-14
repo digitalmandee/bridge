@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\FileHelper;
+use App\Helpers\MailHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Chair;
@@ -11,7 +12,6 @@ use App\Models\User;
 use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class InvoicesController extends Controller
@@ -40,6 +40,7 @@ class InvoicesController extends Controller
     public function dashboard()
     {
         $user = auth()->user();
+        $userId = $user->id;
 
         // Base query
         $query = Invoice::all();
@@ -200,6 +201,18 @@ class InvoicesController extends Controller
                 'amount' => $request->amount,
                 'payment_type' => $request->paymentType,
                 'receipt' => $InvoiceReciept,
+            ]);
+            $user = User::find($invoice->user_id);
+            // send invoice email by usama
+
+            MailHelper::sendInvoiceMail($user->email, [
+                'user' => $user,
+                'invoice_id' => $invoice->id,
+                'invoice' => $invoice,
+                'invoiceType' => $request->invoiceType,
+                'amount' => $request->amount,
+                'dueDate' => $request->dueDate,
+                'status' => $request->status,
             ]);
 
             if (in_array($request->invoiceType, ['Meeting Rooms', 'Printing Papers'])) {

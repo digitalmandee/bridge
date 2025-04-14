@@ -32,35 +32,35 @@
                     style="font-size: 16px; color: #333; background-color: #f9f9f9; border-radius: 6px;">
                     <tr>
                         <td><strong>Invoice #:</strong></td>
-                        <td>INV-000123</td>
+                        <td>{{ $data['invoice_id'] }}</td>
                     </tr>
-                    <tr>
+                    {{-- <tr>
                         <td><strong>Booking ID:</strong></td>
                         <td>INV-000123</td>
-                    </tr>
+                    </tr> --}}
                     <tr>
                         <td><strong>Type:</strong></td>
-                        <td>Monthly</td>
+                        <td>{{ $data['invoiceType'] }}</td>
                     </tr>
                     <tr>
                         <td><strong>Client:</strong></td>
-                        <td>John Doe</td>
+                        <td>{{ $data['user']['name'] }}</td>
                     </tr>
-                    <tr>
+                    {{-- <tr>
                         <td><strong>Issue Date:</strong></td>
-                        <td>April 10, 2025</td>
-                    </tr>
+                        <td>{}</td>
+                    </tr> --}}
                     <tr>
                         <td><strong>Payment Date:</strong></td>
-                        <td>April 17, 2025</td>
+                        <td>{{ $data['dueDate'] }}</td>
                     </tr>
                     <tr>
                         <td><strong>Status:</strong></td>
-                        <td style="color: green;">Paid</td>
+                        <td style="color: green;">{{ $data['status'] }}</td>
                     </tr>
                     <tr>
                         <td><strong>Amount:</strong></td>
-                        <td><strong>$120.00</strong></td>
+                        <td><strong>Rs. {{ $data['amount'] }}</strong></td>
                     </tr>
                 </table>
             </td>
@@ -70,7 +70,7 @@
         <!-- Footer -->
         <tr>
             <td style="text-align: left; font-size: 12px; color: #999;">
-                © 2025 Your Company Name. All rights reserved.
+                © 2025 Bridge. All rights reserved.
             </td>
         </tr>
     </table>

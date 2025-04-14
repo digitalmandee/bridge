@@ -17,6 +17,12 @@
                 <img src="{{ url('images/blogo.png') }}" alt="Logo" style="width: 120px;">
             </td>
         </tr>
+        <!-- Greeting -->
+        <tr>
+            <td style="text-align: left; font-size: 16px;  color: #333333; padding-bottom: 10px;">
+                Hi {{ $data['client']['name'] }},
+            </td>
+        </tr>
 
         <!-- Title -->
         <tr>
@@ -36,8 +42,8 @@
         <tr>
             <td
                 style="background-color: #f0f0f0; padding: 20px; border-radius: 6px; font-size: 16px; color: #333; line-height: 1.6; margin-bottom: 30px;">
-                <strong>Email:</strong> user@example.com<br>
-                <strong>Password:</strong> user_password123
+                <strong>Email:</strong> {{ $data['client']['email'] }}<br>
+                <strong>Password:</strong> password
             </td>
         </tr>
 
@@ -49,7 +55,7 @@
         <!-- Button -->
         <tr>
             <td align="left" style="padding-bottom: 40px;">
-                <a href="https://yourdomain.com/login"
+                <a href="https://app.bridgepk.com/login"
                     style="background-color: #4CAF50; color: white; padding: 14px 28px; text-decoration: none; border-radius: 5px; font-size: 16px;">
                     Login to Your Account
                 </a>
@@ -59,7 +65,7 @@
         <!-- Footer -->
         <tr>
             <td style="text-align: left; font-size: 12px; color: #999;">
-                © 2025 Your Company Name. All rights reserved.
+                © 2025 Bridge. All rights reserved.
             </td>
         </tr>
     </table>

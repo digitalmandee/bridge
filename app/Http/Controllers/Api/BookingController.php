@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\FileHelper;
+use App\Helpers\MailHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingPlan;
@@ -86,6 +87,7 @@ class BookingController extends Controller
             }
 
             $userId = $user->id;
+            $client = $user;
 
             // Handle receipt upload
             $receiptPath = null;
@@ -153,6 +155,11 @@ class BookingController extends Controller
                 'paid_year' => Carbon::now()->year,
                 'plan' => ['id' => $selectedPlan['id'], 'name' => $selectedPlan['name'], 'price' => $selectedPlan['price']],
                 'receipt' => $receiptPath,
+            ]);
+            // send seat booking email by usama
+            MailHelper::sendBookingMail($user->email, [
+                'user_id' => $userId,
+                'client' => $user,
             ]);
 
             $admin = User::find(1);  // Get the authenticated admin
