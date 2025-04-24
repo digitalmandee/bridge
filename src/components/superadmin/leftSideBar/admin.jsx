@@ -9,13 +9,15 @@ import { GoDatabase } from "react-icons/go";
 import { BsGraphUpArrow } from "react-icons/bs";
 import { IoMdContact } from "react-icons/io";
 import { FaAngleRight } from "react-icons/fa6";
+import { IoGitBranchOutline } from "react-icons/io5";
+
 ("react-icons/all");
 import "./style.css";
 import { AuthContext } from "@/contexts/SuperContext";
 
 const menuItems = [
 	{ to: "/super-admin/dashboard", label: "Dashboard", icon: <RxDashboard />, hasDropdown: false, permission: "dashboard" },
-	{ to: "/super-admin/branch/management", label: "Branch Management", icon: <RxDashboard />, hasDropdown: false, permission: "dashboard" },
+	{ to: "/super-admin/branch/management", label: "Branch Management", icon: <IoGitBranchOutline />, hasDropdown: false, permission: "dashboard" },
 ];
 
 const Admin = () => {
