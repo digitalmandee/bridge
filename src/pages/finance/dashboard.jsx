@@ -2,20 +2,24 @@ import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate, useParams } from "react-router-dom";
-import { Box, Typography, Button, Card, CardContent, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, CircularProgress, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
+import { Box, Typography, Button, Card, CardContent, Grid, Table, TableBody, TableCell, IconButton, TableContainer, TableHead, TableRow, Paper, CircularProgress, MenuItem, Select, InputLabel, FormControl, Modal } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import { Bar, Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
 import axiosInstance from "@/utils/axiosInstance";
+
+import CloseIcon from "@mui/icons-material/Close";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const FinanceDashboard = () => {
 	const navigate = useNavigate();
 	const { branch } = useParams();
+
+	const [open, setOpen] = React.useState(false);
+	const [selectedItem, setSelectedItem] = useState(null);
 
 	const [finances, setFinances] = useState([]);
 	const [stats, setStats] = useState(null);
@@ -73,6 +77,26 @@ const FinanceDashboard = () => {
 
 	const handleYearChange = (event) => {
 		setSelectedYear(event.target.value);
+	};
+
+	const handleDownload = async () => {
+		const fileName = selectedItem.receipt;
+
+		try {
+			const { data } = await axiosInstance.post("download", { fileName }, { responseType: "blob" });
+
+			const blob = new Blob([data]);
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = fileName;
+			document.body.appendChild(a);
+			a.click();
+			a.remove();
+			URL.revokeObjectURL(url); // Clean up blob URL
+		} catch (error) {
+			console.error("Download failed:", error);
+		}
 	};
 
 	return (
@@ -187,6 +211,7 @@ const FinanceDashboard = () => {
 										<TableCell>Issue Date</TableCell>
 										<TableCell>Due Date</TableCell>
 										<TableCell>Quantity</TableCell>
+										<TableCell>Receipt</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
@@ -206,6 +231,87 @@ const FinanceDashboard = () => {
 												<TableCell>{row.issue_date}</TableCell>
 												<TableCell>{row.due_date}</TableCell>
 												<TableCell>{row.quantity}</TableCell>
+
+												<TableCell>
+													{row.receipt ? (
+														<Button
+															variant="outlined"
+															size="small"
+															onClick={() => {
+																setSelectedItem(row);
+																setOpen(true);
+															}}>
+															View
+														</Button>
+													) : (
+														"N/A"
+													)}
+
+													<Modal
+														open={open}
+														onClose={() => setOpen(false)}
+														BackdropProps={{
+															sx: {
+																backgroundColor: "transparent",
+															},
+														}}>
+														<Box
+															sx={{
+																position: "absolute",
+																top: "50%",
+																left: "50%",
+																transform: "translate(-50%, -50%)",
+																width: 500,
+																bgcolor: "background.paper",
+																borderRadius: 2,
+																boxShadow: 5,
+																p: 4,
+																maxHeight: "90vh",
+																overflowY: "auto",
+															}}>
+															<IconButton
+																onClick={() => setOpen(false)}
+																sx={{
+																	position: "absolute",
+																	top: 8,
+																	right: 8,
+																	color: "text.primary",
+																}}>
+																<CloseIcon />
+															</IconButton>
+
+															{selectedItem ? (
+																<>
+																	{selectedItem.receipt && (
+																		<Box mt={2}>
+																			<Typography variant="body2" gutterBottom>
+																				<strong>Receipt:</strong>
+																			</Typography>
+																			<img
+																				src={`${import.meta.env.VITE_ASSET_API}${selectedItem.receipt}`}
+																				alt="Receipt"
+																				style={{
+																					width: "100%",
+																					borderRadius: "8px",
+																					maxHeight: "300px",
+																					objectFit: "contain",
+																				}}
+																			/>
+																		</Box>
+																	)}
+
+																	<Box mt={3} display="flex" justifyContent="center">
+																		<Button variant="outlined" color="primary" onClick={handleDownload}>
+																			Download Receipt
+																		</Button>
+																	</Box>
+																</>
+															) : (
+																<Typography>Loading...</Typography>
+															)}
+														</Box>
+													</Modal>
+												</TableCell>
 											</TableRow>
 										))
 									) : (

@@ -26,6 +26,7 @@ const menuItems = [
 		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/floorplan", label: "Floor Plan", permission: "floor-plan" },
+			{ to: "/branch/floorplan/chairs", label: "Chairs", permission: "floor-plan" },
 			{ to: "/branch/booking/plans", label: "Price Plan", permission: "price-plan" },
 			{ to: "/branch/booking/requests", label: "Booking Request", permission: "booking-request" },
 			{ to: "/branch/booking/seats-allocation", label: "Seat Card", permission: "seat-card" },
@@ -36,6 +37,8 @@ const menuItems = [
 		icon: <MdOutlineInventory />,
 		hasDropdown: true,
 		dropdown: [
+			{ to: "/branch/booking-schedule/floors", label: "Meeting Locations", permission: "room-booking" },
+			{ to: "/branch/booking-schedule/rooms", label: "Meeting Rooms", permission: "room-booking" },
 			{ to: "/branch/booking-schedule", label: "Room Booking", permission: "room-booking" },
 			{ to: "/branch/booking-schedule/requests", label: "Booking Requests", permission: "booking-requests" },
 		],
@@ -48,6 +51,7 @@ const menuItems = [
 			{ to: "/branch/invoice/dashboard", label: "Dashboard", permission: "invoice-dashboard" },
 			{ to: "/branch/invoice/create", label: "New Invoice", permission: "new-invoice" },
 			{ to: "/branch/invoice/management", label: "Invoice Management", permission: "invoice-management" },
+			{ to: "/branch/invoice/types", label: "Invocie Types", permission: "invoice-dashboard" },
 		],
 	},
 	{
@@ -68,6 +72,7 @@ const menuItems = [
 		dropdown: [
 			{ to: "/branch/employee/dashboard", label: "Dashboard", permission: "employee-dashboard" },
 			{ to: "/branch/employee/departments", label: "Departments", permission: "employee-dashboard" },
+			{ to: "/branch/payroll/dashboard", label: "Payroll", permission: "employee-dashboard" },
 			{ to: "/branch/employee/attendance", label: "Attendance", permission: "attendance" },
 			{ to: "/branch/employee/leave/category", label: "Leave Category", permission: "leave-category" },
 			{ to: "/branch/employee/leave/application", label: "Leave Application", permission: "leave-application" },
@@ -78,8 +83,6 @@ const menuItems = [
 			{ to: "/branch/employee/attendance/report", label: "Attendance Report", permission: "manage-attendance" },
 		],
 	},
-	// { to: "", label: "Inventory Management", icon: <MdOutlineInventory />, hasDropdown: true },
-	// { to: "", label: "Expense Management", icon: <LuListTodo />, hasDropdown: true },
 	{
 		label: "Finance Management",
 		icon: <GoDatabase />,
@@ -87,10 +90,12 @@ const menuItems = [
 		dropdown: [
 			{ to: "/branch/finance/dashboard", label: "Dashboard", permission: "employee-dashboard" },
 			{ to: "/branch/finance/category", label: "Category", permission: "employee-dashboard" },
-			{ to: "/branch/payroll/dashboard", label: "Payroll", permission: "payroll", permission: "employee-dashboard" },
-			{ to: "/branch/groceries/supplies", label: "Groceries & Supplies", permission: "employee-dashboard" },
+			// { to: "/branch/groceries/supplies", label: "Groceries & Supplies", permission: "employee-dashboard" },
 		],
 	},
+	// { to: "", label: "Inventory Management", icon: <MdOutlineInventory />, hasDropdown: true },
+	// { to: "", label: "Expense Management", icon: <LuListTodo />, hasDropdown: true },
+	// { to: "", label: "Financial Report", icon: <GoDatabase />, hasDropdown: true },
 	{
 		label: "Users Role Management",
 		icon: <FaUserCheck />,

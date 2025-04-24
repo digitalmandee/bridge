@@ -9,7 +9,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import axiosInstance from "@/utils/axiosInstance";
 import dayjs from "dayjs";
-
+import colors from "@/assets/styles/color";
 const InvoiceCreate = () => {
 	const navigate = useNavigate();
 	const { branch } = useParams();
@@ -26,10 +26,11 @@ const InvoiceCreate = () => {
 		plan: null,
 		quantity: "",
 		hours: "",
+		discount: "",
 		amount: "",
 		file: null,
 		status: "pending",
-		paidMonth: new Date().toLocaleString("default", { month: "long" }),
+		paidMonth: [new Date().toLocaleString("default", { month: "long" })],
 		paidYear: new Date().getFullYear(),
 	});
 
@@ -39,14 +40,19 @@ const InvoiceCreate = () => {
 	const [errors, setErrors] = useState({});
 	const [searchloading, setSearchLoading] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const [invoiceTypes, setInvoiceTypes] = useState([]);
 	const [userBooking, setUserBooking] = useState(null);
 	const [userBookingError, setUserBookingError] = useState({
 		success: false,
 		message: "",
 	});
-	const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar state
-	const [snackbarMessage, setSnackbarMessage] = useState(""); // Snackbar message
-	const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+	// Snackbar
+	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+
+	const handleCloseSnackbar = () => {
+		setSnackbar({ ...snackbar, open: false });
+	};
 
 	// Fetch Members & Companies on Load
 	useEffect(() => {
@@ -70,6 +76,7 @@ const InvoiceCreate = () => {
 				});
 				if (res.data.success) {
 					setUserBooking(res.data);
+					setFormData({ ...formData, paidMonth: [] });
 				}
 			} catch (error) {
 				console.error("Error fetching data:", error.response.data);
@@ -130,11 +137,30 @@ const InvoiceCreate = () => {
 		setErrors({ ...errors, [field]: "" }); // Clear error on change
 	};
 
-	// Handle form field changes
 	const handleChange = (e) => {
 		const { name, value } = e.target;
-		setFormData({ ...formData, [name]: value });
-		setErrors({ ...errors, [name]: "" }); // Clear error on change
+
+		if (name === "paidMonth") {
+			const selected = typeof value === "string" ? value.split(",") : value;
+
+			const selectedIndexes = selected.map((month) => allMonths.indexOf(month)).sort((a, b) => a - b);
+
+			const firstIndex = selectedIndexes[0];
+			const expected = Array.from({ length: selectedIndexes.length }, (_, i) => firstIndex + i);
+
+			const isConsecutive = expected.every((val, idx) => val === selectedIndexes[idx]);
+
+			if (!isConsecutive) {
+				setSnackbar({ open: true, message: "Please select consecutive months starting from your first choice.", severity: "warning" });
+				return;
+			}
+
+			setFormData((prev) => ({ ...prev, [name]: selected }));
+		} else {
+			setFormData((prev) => ({ ...prev, [name]: value }));
+		}
+
+		setErrors((prev) => ({ ...prev, [name]: "" }));
 	};
 
 	// Handle file selection
@@ -150,113 +176,112 @@ const InvoiceCreate = () => {
 		setSelectedTab(newValue);
 	};
 
+	const fetchInvoiceTypes = async () => {
+		try {
+			const res = await axiosInstance.get("invoice-types", { params: { type: "search" } });
+			if (res.data.success) {
+				setInvoiceTypes(res.data.results);
+			}
+		} catch (error) {
+			setSnackbar({ open: true, message: "Error fetching invoice types!", severity: "error" });
+		}
+	};
+
+	useEffect(() => {
+		fetchInvoiceTypes();
+	}, []);
+
 	// Submit Form to API
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-
 		setLoading(true);
 
 		const newErrors = {};
+		const { invoiceType, member, company, dueDate, paidDate, paidMonth, paidYear, paymentType, quantity, hours, amount, packageDetail, status, file, discount } = formData;
 
-		// Basic Validation
-		if (!formData.invoiceType) {
-			newErrors.invoiceType = "Invoice Type is required";
-		}
+		// ==== Validation ====
+		if (!invoiceType) newErrors.invoiceType = "Invoice Type is required";
+		if (selectedTab === "individual" && !member) newErrors.member = "Member is required for Individual invoices";
+		if (selectedTab === "company" && !company) newErrors.company = "Company is required for Company invoices";
+		if (!dueDate) newErrors.dueDate = "Due Date is required";
 
-		if (selectedTab === "individual" && !formData.member) {
-			newErrors.member = "Member is required for Individual invoices";
-		}
+		const typeChecks = {
+			Monthly: () => {
+				if (!paidMonth || paidMonth.length === 0) newErrors.paidMonth = "At least one month must be selected";
+			},
+			"Printing Papers": () => {
+				if (!quantity) newErrors.quantity = "Quantity is required";
+			},
+			"Meeting Rooms": () => {
+				if (!hours) newErrors.hours = "Hours are required";
+			},
+		};
 
-		if (selectedTab === "company" && !formData.company) {
-			newErrors.company = "Company is required for Company invoices";
-		}
-
-		if (!formData.dueDate) {
-			newErrors.dueDate = "Due Date is required";
-		}
-
-		// Check dynamic fields
-
-		// if (formData.invoiceType === "Monthly" && !formData.plan) {
-		// 	newErrors.plan = "Plan is required for Monthly invoices";
-		// }
-
-		if (formData.invoiceType === "Monthly" && !formData.paidMonth) {
-			newErrors.paidMonth = "Paid Month is required for Monthly invoices";
-		}
-		if (formData.invoiceType === "Printing Papers" && !formData.quantity) {
-			newErrors.quantity = "Quantity is required for Printing Papers invoices";
-		}
-
-		if (formData.invoiceType === "Meeting Rooms" && !formData.hours) {
-			newErrors.hours = "Hours are required for Meeting Rooms invoices";
-		}
-
-		if (formData.invoiceType && formData.invoiceType !== "Monthly" && !formData.amount) {
+		if (invoiceType in typeChecks) {
+			typeChecks[invoiceType]();
+		} else if (!amount) {
 			newErrors.amount = "Amount is required";
 		}
 
-		// Show Paid Date & Payment Type validation only if status is Paid or Overdue
-		if (formData.status !== "pending") {
-			if (!formData.paidDate) {
-				newErrors.paidDate = "Paid Date is required";
-			}
-			if (!formData.paymentType) {
-				newErrors.paymentType = "Payment Type is required";
-			}
+		if (status !== "pending") {
+			if (!paidDate) newErrors.paidDate = "Paid Date is required";
+			if (!paymentType) newErrors.paymentType = "Payment Type is required";
 		}
 
+		// ==== Stop if errors ====
 		if (Object.keys(newErrors).length > 0) {
 			setErrors(newErrors);
+			setLoading(false);
 			return;
 		}
 
-		// Create FormData and append fields
+		// ==== Prepare FormData ====
 		const formDataToSend = new FormData();
 		formDataToSend.append("selectedTab", selectedTab);
-		formDataToSend.append("invoiceType", formData.invoiceType);
-		formDataToSend.append("paidMonth", new Date(formData.dueDate).toLocaleString("default", { month: "long" }));
-		formDataToSend.append("paidYear", formData.paidYear);
-		formDataToSend.append("dueDate", dayjs(formData.dueDate).format("YYYY-MM-DD"));
-		formDataToSend.append("paidDate", formData.paidDate ? dayjs(formData.paidDate).format("YYYY-MM-DD") : null);
-		formDataToSend.append("paymentType", formData.paymentType);
-		formDataToSend.append("company_id", formData.company?.id);
-		formDataToSend.append("member_id", formData.member?.id);
-		formDataToSend.append("quantity", formData.quantity);
-		formDataToSend.append("hours", formData.hours);
-		formDataToSend.append("amount", formData.amount);
-		formDataToSend.append("packageDetail", formData.packageDetail);
-		formDataToSend.append("status", formData.status);
+		formDataToSend.append("invoiceType", invoiceType);
+		formDataToSend.append("paidYear", paidYear);
+		formDataToSend.append("dueDate", dayjs(dueDate).format("YYYY-MM-DD"));
+		formDataToSend.append("paidDate", paidDate ? dayjs(paidDate).format("YYYY-MM-DD") : "");
+		formDataToSend.append("paymentType", paymentType || "");
+		formDataToSend.append("company_id", company?.id || "");
+		formDataToSend.append("member_id", member?.id || "");
+		formDataToSend.append("quantity", quantity || "");
+		formDataToSend.append("hours", hours || "");
+		formDataToSend.append("amount", amount || "");
+		formDataToSend.append("discount", discount || "");
+		formDataToSend.append("packageDetail", packageDetail || "");
+		formDataToSend.append("status", status);
 
-		// Append file if selected
-		if (formData.file) {
-			formDataToSend.append("reciept", formData.file);
+		// Handle multiple paid months (array)
+		if (Array.isArray(paidMonth)) {
+			paidMonth.forEach((month) => formDataToSend.append("paidMonth[]", month));
+		} else {
+			formDataToSend.append("paidMonth[]", paidMonth);
 		}
 
-		// Submit the form if no errors
+		// Append file if selected
+		if (file) {
+			formDataToSend.append("reciept", file);
+		}
+
+		// ==== Submit ====
 		try {
 			const response = await axiosInstance.post("invoices/create", formDataToSend, {
-				headers: {
-					"Content-Type": "multipart/form-data",
-				},
+				headers: { "Content-Type": "multipart/form-data" },
 			});
 
 			if (response.data.success) {
-				setSnackbarMessage("Invoice successfully created!"); // Set success message
-				setSnackbarSeverity("success");
-				setSnackbarOpen(true); // Show the snackbar
+				setSnackbar({ open: true, message: "Invoice successfully created!", severity: "success" });
 				navigate(`/${branch}/branch/invoice/management`);
 			}
 		} catch (error) {
-			console.log(error.response.data);
+			console.log(error);
 
-			switch (error.response.data.message) {
-				case "This month invoice already paid":
-					setSnackbarMessage("This month invoice already paid!"); // Set error message
-					setSnackbarSeverity("error");
-					setSnackbarOpen(true); // Show the snackbar
-					break;
-				default:
+			const message = error?.response?.data?.message;
+			if (message === "This month invoice already paid") {
+				setSnackbar({ open: true, message: "This month invoice already paid!", severity: "error" });
+			} else {
+				setSnackbar({ open: true, message: message ?? "Something went wrong", severity: "error" });
 			}
 		} finally {
 			setLoading(false);
@@ -267,54 +292,63 @@ const InvoiceCreate = () => {
 		const planPrice = Number(price) || 0;
 		let totalPrice = 0;
 		let packageDetail = "";
-		let dueDate = null; // Store adjusted due date
+		let dueDates = []; // Multiple due dates per selected month
 
 		if (formData.invoiceType === "Monthly" && userBooking) {
 			const today = new Date();
 			const currentYear = Number(formData.paidYear);
-			const currentMonth = new Date(`${formData.paidMonth} 1, ${formData.paidYear}`).getMonth();
-			const selectedMonth = new Date(currentYear, currentMonth, 1);
-
-			const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 			const totalChairs = userBooking.booking.chairs.length;
-			const dailyRate = planPrice / lastDayOfMonth;
 
-			let extraPricePerChair = 0;
+			// Ensure paidMonth is an array
+			const selectedMonths = Array.isArray(formData.paidMonth) ? formData.paidMonth : [formData.paidMonth];
 
-			if (currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
-				// If the selected month is the current month
-				const remainingDays = lastDayOfMonth - today.getDate();
+			selectedMonths.forEach((monthName) => {
+				const monthIndex = new Date(`${monthName} 1, ${currentYear}`).getMonth();
+				const lastDayOfMonth = new Date(currentYear, monthIndex + 1, 0).getDate();
+				const dailyRate = planPrice / lastDayOfMonth;
 
-				if (remainingDays >= lastDayOfMonth) {
-					// If a full month is booked
-					extraPricePerChair = planPrice;
-					packageDetail = "1 month";
-				} else if (remainingDays > 0) {
-					extraPricePerChair = dailyRate * remainingDays;
-					packageDetail = `${remainingDays} days`;
+				let extraPricePerChair = 0;
+				let detail = "";
+				let dueDate = null;
+
+				const isCurrentMonth = monthIndex === today.getMonth() && currentYear === today.getFullYear();
+
+				if (isCurrentMonth) {
+					const remainingDays = lastDayOfMonth - today.getDate();
+					if (remainingDays >= lastDayOfMonth) {
+						extraPricePerChair = planPrice;
+						detail = "1 month";
+					} else if (remainingDays > 0) {
+						extraPricePerChair = dailyRate * remainingDays;
+						detail = `${remainingDays} days`;
+					} else {
+						extraPricePerChair = planPrice;
+						detail = "1 month";
+					}
+					dueDate = dayjs(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5));
 				} else {
+					// Future month
 					extraPricePerChair = planPrice;
-					packageDetail = "1 month";
+					detail = "1 month";
+					dueDate = dayjs(new Date(currentYear, monthIndex, 5));
 				}
 
-				totalPrice = (totalChairs * extraPricePerChair).toFixed(2);
-
-				// Due date: today + 5 days
-				dueDate = dayjs(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5));
-			} else {
-				// If the selected month is a future month, charge full month
-				totalPrice = (totalChairs * planPrice).toFixed(2);
-				packageDetail = "1 month";
-
-				// Due date is always the 5th of the selected month
-				dueDate = dayjs(new Date(currentYear, currentMonth, 5));
-			}
+				totalPrice += totalChairs * extraPricePerChair;
+				dueDates.push({ month: monthName, dueDate });
+				packageDetail += `${monthName}: ${detail}, `;
+			});
 		} else {
-			// Default due date: 5th of the selected month
-			dueDate = dayjs(new Date(formData.paidYear, new Date(`${formData.paidMonth} 1, ${formData.paidYear}`).getMonth(), 5));
+			// Fallback if invoiceType is not monthly
+			const monthIndex = new Date(`${formData.paidMonth} 1, ${formData.paidYear}`).getMonth();
+			const fallbackDueDate = dayjs(new Date(formData.paidYear, monthIndex, 5));
+			dueDates.push({ month: formData.paidMonth, dueDate: fallbackDueDate });
 		}
 
-		return { totalPrice, packageDetail, dueDate };
+		return {
+			totalPrice: Math.round(totalPrice),
+			packageDetail: packageDetail.trim().replace(/,\s*$/, ""), // clean trailing comma
+			dueDates,
+		};
 	};
 
 	useEffect(() => {
@@ -329,6 +363,11 @@ const InvoiceCreate = () => {
 			}));
 		}
 	}, [formData.paidMonth, userBooking]);
+
+	// Get all months
+	const allMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	const currentMonthIndex = new Date().getMonth();
+	const paidMonths = userBooking?.payed_months || [];
 
 	return (
 		<>
@@ -407,20 +446,26 @@ const InvoiceCreate = () => {
 											/>
 										</Grid>
 									)}
-
 									{/* Invoice Type Dropdown */}
 									<Grid item xs={12}>
 										<FormControl fullWidth error={Boolean(errors.invoiceType)}>
 											<InputLabel id="invoiceType">Invoice Type</InputLabel>
 											<Select label="Invoice Type" name="invoiceType" labelId="invoiceType" value={formData.invoiceType} onChange={handleChange}>
-												<MenuItem value="Monthly">Monthly</MenuItem>
-												<MenuItem value="Printing Papers">Printing Papers</MenuItem>
-												<MenuItem value="Meeting Rooms">Meeting Rooms</MenuItem>
+												{invoiceTypes.length > 0 ? (
+													invoiceTypes.map((type) => (
+														<MenuItem key={type.id} value={type.name}>
+															{type.name}
+														</MenuItem>
+													))
+												) : (
+													<MenuItem value="" disabled>
+														No invoice types found
+													</MenuItem>
+												)}
 											</Select>
 											{errors.invoiceType && <FormHelperText error>{errors.invoiceType}</FormHelperText>}
 										</FormControl>
 									</Grid>
-
 									{formData.invoiceType === "Monthly" && userBooking && (
 										<Grid item xs={12}>
 											Booking Status: {userBooking.message} <br />
@@ -429,20 +474,18 @@ const InvoiceCreate = () => {
 													Unavailable Chairs: {userBooking.unavailable_chairs.map((chair) => chair).join(", ")} <br />
 												</>
 											)}
-											Booking Chairs: {userBooking.booking.chairs.map((chair) => chair).join(", ")} <br />
+											Booking Chairs: {userBooking.booking.chairs.length > 3 ? `${userBooking.booking.chairs.slice(0, 3).join(", ")} and ${userBooking.booking.chairs.length - 3} more` : userBooking.booking.chairs.map((chair) => chair).join(", ")} <br />
 											Booking Plan: {userBooking.booking.plan.name} - Rs. {userBooking.booking.plan.price} <br />
 											Package Detail: {formData.packageDetail} <br />
 											TotalPrice: Rs. {formData.amount} <br />
 										</Grid>
 									)}
-
 									{/* Dynamic Fields: Quantity or Hours */}
 									{formData.invoiceType === "Printing Papers" && (
 										<Grid item xs={12}>
 											<TextField label="Quantity" type="number" fullWidth name="quantity" value={formData.quantity} onChange={handleChange} variant="outlined" error={Boolean(errors.quantity)} helperText={errors.quantity} />
 										</Grid>
 									)}
-
 									{formData.invoiceType === "Meeting Rooms" && (
 										<Grid item xs={12}>
 											<TextField label="Hours" type="number" fullWidth name="hours" value={formData.hours} onChange={handleChange} variant="outlined" error={Boolean(errors.hours)} helperText={errors.hours} />
@@ -453,34 +496,38 @@ const InvoiceCreate = () => {
 											<TextField label="Amount" type="number" fullWidth name="amount" value={formData.amount} onChange={handleChange} variant="outlined" error={Boolean(errors.amount)} helperText={errors.amount} />
 										</Grid>
 									)}
-
-									{/* Status Dropdown */}
-									<Grid item xs={12}>
-										<FormControl fullWidth error={Boolean(errors.status)}>
-											<InputLabel id="status">Status</InputLabel>
-											<Select label="Status" labelId="status" name="status" value={formData.status} onChange={handleChange}>
-												<MenuItem value="pending">Pending</MenuItem>
-												<MenuItem value="paid">Paid</MenuItem>
-												<MenuItem value="overdue">Overdue</MenuItem>
-											</Select>
-											{errors.status && <FormHelperText error>{errors.status}</FormHelperText>}
-										</FormControl>
-									</Grid>
 									{/* Dropdown to select the Paid month */}
 									{formData.invoiceType === "Monthly" && (
 										<Grid item xs={12}>
 											<FormControl fullWidth error={Boolean(errors.paidMonth)}>
-												<TextField select label="Select Booking Month" name="paidMonth" value={formData.paidMonth} onChange={handleChange} variant="outlined" fullWidth>
-													{["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((month, index) => (
-														<MenuItem key={index} value={month}>
-															{month}
-														</MenuItem>
-													))}
-												</TextField>
-												{errors.paidMonth && <FormHelperText error>{errors.paidMonth}</FormHelperText>}
+												<InputLabel id="paidMonth-label">Select Booking Months</InputLabel>
+												<Select labelId="paidMonth-label" multiple value={formData.paidMonth} name="paidMonth" onChange={handleChange} variant="outlined" fullWidth renderValue={(selected) => (Array.isArray(selected) ? selected.join(", ") : "")}>
+													{allMonths
+														.filter((month, index) => {
+															const isPastOrCurrent = index <= currentMonthIndex;
+															const isPaid = paidMonths.includes(month);
+															return !isPastOrCurrent && !isPaid;
+														})
+														.map((month, index) => {
+															const selectedIndexes = formData.paidMonth.map((m) => allMonths.indexOf(m)).sort((a, b) => a - b);
+															const maxIndex = Math.max(...selectedIndexes, currentMonthIndex);
+															const isDisabled = selectedIndexes.length > 0 && index > maxIndex + 1;
+
+															return (
+																<MenuItem key={index} value={month} disabled={isDisabled}>
+																	{month}
+																</MenuItem>
+															);
+														})}
+												</Select>
+												{errors.paidMonth && <FormHelperText>{errors.paidMonth}</FormHelperText>}
 											</FormControl>
 										</Grid>
 									)}
+
+									<Grid item xs={12}>
+										<TextField label="Discount (%) - Optional" type="number" name="discount" value={formData.discount} onChange={handleChange} variant="outlined" fullWidth placeholder="%" error={Boolean(errors.discount)} helperText={errors.discount} min={0} />
+									</Grid>
 
 									{/* Due Date */}
 									<Grid item xs={12} className="selectPicker">
@@ -489,7 +536,6 @@ const InvoiceCreate = () => {
 											{errors.dueDate && <FormHelperText error>{errors.dueDate}</FormHelperText>}
 										</LocalizationProvider>
 									</Grid>
-
 									{/* Show Paid Date & Payment Type only if status is Paid or Overdue */}
 									{formData.status !== "pending" && (
 										<>
@@ -526,11 +572,30 @@ const InvoiceCreate = () => {
 											</Grid>
 										</>
 									)}
+
+									{/* Status Dropdown */}
+									<Grid item xs={12}>
+										<FormControl fullWidth error={Boolean(errors.status)}>
+											<InputLabel id="status">Status</InputLabel>
+											<Select label="Status" labelId="status" name="status" value={formData.status} onChange={handleChange}>
+												<MenuItem value="pending">Pending</MenuItem>
+												<MenuItem value="paid">Paid</MenuItem>
+												<MenuItem value="overdue">Overdue</MenuItem>
+											</Select>
+											{errors.status && <FormHelperText error>{errors.status}</FormHelperText>}
+										</FormControl>
+									</Grid>
+
+									<Grid item xs={12}>
+										<Typography variant="h6" gutterBottom>
+											Total Amount: Rs. {formData.amount ? (formData.discount ? Math.round(formData.amount - formData.amount * (formData.discount / 100)) : formData.amount) : 0}
+										</Typography>
+									</Grid>
 								</Grid>
 
 								{/* Save Button */}
 								<div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-									<Button disabled={formData.invoiceType === "Monthly" ? (userBooking && userBooking.success === true ? false : true) : loading} variant="contained" type="submit" sx={{ bgcolor: "#0D2B4E", "&:hover": { bgcolor: "#0B1E3E" } }}>
+									<Button disabled={formData.invoiceType === "Monthly" ? (userBooking && userBooking.success === true ? false : true) : loading} variant="contained" type="submit" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: colors.primary } }}>
 										Save Invoice
 									</Button>
 								</div>
@@ -539,10 +604,11 @@ const InvoiceCreate = () => {
 					</div>
 				</div>
 			</div>
+
 			{/* Snackbar for success/failure message */}
-			<Snackbar open={snackbarOpen} onClose={() => setSnackbarOpen(false)} autoHideDuration={6000}>
-				<Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity}>
-					{snackbarMessage}
+			<Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+				<Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+					{snackbar.message}
 				</Alert>
 			</Snackbar>
 		</>

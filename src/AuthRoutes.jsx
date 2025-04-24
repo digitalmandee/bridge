@@ -18,6 +18,7 @@ import LeaveCategoryEdit from "./pages/attendance/leavecategory/edit";
 
 // Invoice Management
 import InvoiceDashboard from "@/pages/invoice/dashboard";
+import InvoiceTypes from "@/pages/invoice/types";
 import InvoiceCreate from "@/pages/invoice/create";
 import InvoiceManagement from "@/pages/invoice/management";
 import InvoiceDetail from "@/pages/invoice/detail";
@@ -30,8 +31,12 @@ import MemberCompanyDetail from "@/pages/members/detail";
 // Booking System
 import Booking from "@/pages/booking";
 import Floorplan from "@/pages/booking/floorplan";
+import FloorplanChairCreate from "@/pages/booking/floorplan/chairs/create";
+import FloorplanChairs from "@/pages/booking/floorplan/chairs/index";
 import BookingRequests from "@/pages/booking/requests";
 import ScheduleRequests from "@/pages/booking/calendar/requests";
+import ScheduleFloors from "@/pages/booking/calendar/floor";
+import ScheduleRooms from "@/pages/booking/calendar/room";
 import BookingPlans from "@/pages/booking/plans";
 import BookingPlanCreate from "@/pages/booking/plancreate";
 import SeatsAllocation from "@/pages/booking/seatsallocation";
@@ -221,6 +226,24 @@ function AuthRoutes() {
 				}
 			/>
 
+			<Route
+				path="branch/floorplan/chairs"
+				element={
+					<ProtectedRoute role="admin" permission="floor-plan">
+						<FloorplanChairs />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/floorplan/chairs/create"
+				element={
+					<ProtectedRoute role="admin" permission="floor-plan">
+						<FloorplanChairCreate />
+					</ProtectedRoute>
+				}
+			/>
+
 			{/* Booking Requests */}
 			<Route
 				path="branch/booking"
@@ -289,6 +312,22 @@ function AuthRoutes() {
 					</ProtectedRoute>
 				}
 			/>
+			<Route
+				path="branch/booking-schedule/floors"
+				element={
+					<ProtectedRoute role="admin" permission="room-booking">
+						<ScheduleFloors />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="branch/booking-schedule/rooms"
+				element={
+					<ProtectedRoute role="admin" permission="room-booking">
+						<ScheduleRooms />
+					</ProtectedRoute>
+				}
+			/>
 
 			{/* Invoice Routes */}
 			<Route
@@ -296,6 +335,14 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="admin" permission="invoice-dashboard">
 						<InvoiceDashboard />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="branch/invoice/types"
+				element={
+					<ProtectedRoute role="admin" permission="invoice-dashboard">
+						<InvoiceTypes />
 					</ProtectedRoute>
 				}
 			/>

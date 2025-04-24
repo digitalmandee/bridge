@@ -16,6 +16,7 @@ const CreateFinanceEntry = () => {
 		amount: "",
 		quantity: "",
 		status: "unpaid",
+		file: null,
 		issue_date: "",
 		due_date: "",
 	});
@@ -53,21 +54,47 @@ const CreateFinanceEntry = () => {
 		if (!validate()) return;
 		setLoading(true);
 
-		const payload = {
-			...formData,
-			category_id: formData.category?.id || null,
-		};
+		// Create FormData and append fields
+		const payload = new FormData();
+		payload.append("name", formData.name);
+		payload.append("description", formData.description);
+		payload.append("amount", formData.amount);
+		payload.append("quantity", formData.quantity);
+		payload.append("status", formData.status);
+		payload.append("category_id", formData.category?.id || null);
+		payload.append("file", formData.file || null);
+		payload.append("issue_date", formData.issue_date);
+		payload.append("due_date", formData.due_date);
+
+		// Append file if selected
+		if (formData.file && formData.status === "paid") {
+			console.log("Appending file:", formData.file);
+
+			payload.append("receipt", formData.file);
+		}
+
 		axiosInstance
-			.post("finances", payload)
+			.post("finances", payload, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			})
 			.then(() => {
 				setSnackbar({ open: true, message: "Finance entry created successfully!", severity: "success" });
 				navigate(-1);
 			})
 			.catch((error) => {
-				setSnackbar({ open: true, message: "Failed to create entry", severity: "error" });
+				setSnackbar({ open: true, message: error.response?.data?.message || "Failed to create entry", severity: "error" });
 				console.error("API Error:", error);
 			})
 			.finally(() => setLoading(false));
+	};
+	// Handle file selection
+	const handleFileChange = (e) => {
+		const file = e.target.files[0];
+		if (file) {
+			setFormData({ ...formData, file });
+		}
 	};
 
 	return (
@@ -128,6 +155,32 @@ const CreateFinanceEntry = () => {
 											<option value="paid">Paid</option>
 										</TextField>
 									</Grid>
+
+									{/* Conditionally show receipt upload only when status is 'paid' */}
+									{formData.status === "paid" && (
+										<Grid item xs={12}>
+											<div
+												style={{
+													display: "flex",
+													flexDirection: "column",
+													alignItems: "center",
+													border: "2px dotted #ccc",
+													padding: "10px",
+													borderRadius: "10px",
+													textAlign: "center",
+												}}>
+												<label htmlFor="file-upload" style={{ cursor: "pointer" }}>
+													Upload Receipt (Optional)
+												</label>
+												<input id="file-upload" type="file" accept="image/*" style={{ display: "none" }} onChange={handleFileChange} />
+											</div>
+											{formData.file && (
+												<Typography variant="body2" style={{ marginTop: "10px" }}>
+													{formData.file.name}
+												</Typography>
+											)}
+										</Grid>
+									)}
 
 									<Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
 										<Button

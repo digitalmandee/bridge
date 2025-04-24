@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress, Pagination, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Snackbar, Alert } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
-import colors from "../../assets/styles/color";
+import colors from "@/assets/styles/color";
 
-const Management = () => {
+const ScheduleFloorManagement = () => {
 	const navigate = useNavigate();
-	const { branch } = useParams();
-
-	const [financeCategories, setFinanceCategories] = useState([]);
+	const [scheduleFloors, setScheduleFloors] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSaving, setIsSaving] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -19,38 +17,39 @@ const Management = () => {
 	const [limit] = useState(10);
 	const [open, setOpen] = useState(false);
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-	const [deleteCategoryId, setDeleteCategoryId] = useState(null);
-	const [editCategory, setEditCategory] = useState(null);
+	const [deleteScheduleFloorId, setDeleteScheduleFloorId] = useState(null);
+	const [editScheduleFloor, setEditScheduleFloor] = useState(null);
 	const [name, setName] = useState("");
 	const [error, setError] = useState("");
 	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
 	useEffect(() => {
-		fetchFinanceCategories(currentPage);
+		fetchScheduleFloors(currentPage);
 	}, [currentPage]);
 
-	const fetchFinanceCategories = async (page = 1) => {
+	const fetchScheduleFloors = async (page = 1) => {
 		setIsLoading(true);
 		try {
-			const res = await axiosInstance.get("finance/categories", { params: { page, limit } });
+			const res = await axiosInstance.get("schedule/floor", { params: { page, limit } });
+
 			if (res.data.success) {
-				setFinanceCategories(res.data.financeCategories.data);
-				setTotalPages(res.data.financeCategories.last_page);
-				setCurrentPage(res.data.financeCategories.current_page);
+				setScheduleFloors(res.data.scheduleFloors.data);
+				setTotalPages(res.data.scheduleFloors.last_page);
+				setCurrentPage(res.data.scheduleFloors.current_page);
 			}
 		} catch (error) {
-			setSnackbar({ open: true, message: "Error fetching finance categories!", severity: "error" });
+			setSnackbar({ open: true, message: "Error fetching Meeting Locations!", severity: "error" });
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
-	const handleOpen = (category = null) => {
-		if (category) {
-			setEditCategory(category);
-			setName(category.name);
+	const handleOpen = (scheduleFloor = null) => {
+		if (scheduleFloor) {
+			setEditScheduleFloor(scheduleFloor);
+			setName(scheduleFloor.name);
 		} else {
-			setEditCategory(null);
+			setEditScheduleFloor(null);
 			setName("");
 		}
 		setError("");
@@ -65,44 +64,44 @@ const Management = () => {
 
 	const handleSubmit = async () => {
 		if (!name.trim()) {
-			setError("Finance category name is required");
+			setError("Meeting Location name is required");
 			return;
 		}
 		setIsSaving(true);
 		try {
-			if (editCategory) {
-				await axiosInstance.put(`finance/categories/${editCategory.id}`, { name });
-				setSnackbar({ open: true, message: "Finance category updated successfully!", severity: "success" });
+			if (editScheduleFloor) {
+				await axiosInstance.put(`schedule/floor/${editScheduleFloor.id}`, { name });
+				setSnackbar({ open: true, message: "Meeting Location updated successfully!", severity: "success" });
 			} else {
-				await axiosInstance.post("finance/categories", { name });
-				setSnackbar({ open: true, message: "Finance category added successfully!", severity: "success" });
+				await axiosInstance.post("schedule/floor", { name });
+				setSnackbar({ open: true, message: "Meeting Location added successfully!", severity: "success" });
 			}
-			fetchFinanceCategories();
+			fetchScheduleFloors();
 			handleClose();
 		} catch (error) {
-			setSnackbar({ open: true, message: "Error saving finance category!", severity: "error" });
+			setSnackbar({ open: true, message: "Error saving Meeting Location!", severity: "error" });
 		} finally {
 			setIsSaving(false);
 		}
 	};
 
-	const openDeleteDialog = (categoryId) => {
-		setDeleteCategoryId(categoryId);
+	const openDeleteDialog = (scheduleFloorId) => {
+		setDeleteScheduleFloorId(scheduleFloorId);
 		setDeleteDialogOpen(true);
 	};
 
 	const closeDeleteDialog = () => {
 		setDeleteDialogOpen(false);
-		setDeleteCategoryId(null);
+		setDeleteScheduleFloorId(null);
 	};
 
 	const handleDelete = async () => {
 		try {
-			await axiosInstance.delete(`finance/categories/${deleteCategoryId}`);
-			setSnackbar({ open: true, message: "Finance category deleted successfully!", severity: "success" });
-			fetchFinanceCategories();
+			await axiosInstance.delete(`schedule/floor/${deleteScheduleFloorId}`);
+			setSnackbar({ open: true, message: "Meeting Location deleted successfully!", severity: "success" });
+			fetchScheduleFloors();
 		} catch (error) {
-			setSnackbar({ open: true, message: "Error deleting finance category!", severity: "error" });
+			setSnackbar({ open: true, message: "Error deleting Meeting Location!", severity: "error" });
 		} finally {
 			closeDeleteDialog();
 		}
@@ -127,20 +126,13 @@ const Management = () => {
 								<div onClick={() => navigate(-1)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
 									<MdArrowBackIos style={{ fontSize: "20px" }} />
 								</div>
-								<Typography
-									variant="h6"
-									className="mb-0 ms-2"
-									style={{
-										color: "#202224",
-										fontSize: "30px",
-										fontWeight: "500",
-									}}>
-									Finance Categories
+								<Typography variant="h6" className="mb-0 ms-2">
+									Meeting Locations
 								</Typography>
 							</div>
 							<div className="col-auto ms-auto">
-								<Button variant="contained" sx={{ bgcolor: colors.primary, borderRadius: "10px", "&:hover": { bgcolor: colors.primary } }} onClick={() => handleOpen()}>
-									New Finance Category
+								<Button variant="contained" sx={{ bgcolor: colors.primary, borderRadius: "10px", "&:hover": { bgcolor: "#1E293B" } }} onClick={() => handleOpen()}>
+									New Meeting Location
 								</Button>
 							</div>
 						</div>
@@ -161,17 +153,15 @@ const Management = () => {
 												<CircularProgress sx={{ color: "#0F172A" }} />
 											</TableCell>
 										</TableRow>
-									) : financeCategories.length > 0 ? (
-										financeCategories.map((category) => (
-											<TableRow key={category.id}>
-												<TableCell style={{ cursor: "pointer" }} onClick={() => navigate(`/${branch}/branch/finance/category/${category.id}`)}>
-													{category.name}
-												</TableCell>
+									) : scheduleFloors.length > 0 ? (
+										scheduleFloors.map((scheduleFloor) => (
+											<TableRow key={scheduleFloor.id}>
+												<TableCell>{scheduleFloor.name}</TableCell>
 												<TableCell>
-													<Button onClick={() => handleOpen(category)} color="primary">
+													<Button onClick={() => handleOpen(scheduleFloor)} color="primary">
 														Edit
 													</Button>
-													<Button onClick={() => openDeleteDialog(category.id)} color="secondary">
+													<Button onClick={() => openDeleteDialog(scheduleFloor.id)} color="secondary">
 														Delete
 													</Button>
 												</TableCell>
@@ -180,7 +170,7 @@ const Management = () => {
 									) : (
 										<TableRow>
 											<TableCell colSpan={2} align="center">
-												No finance categories found.
+												No Meeting Locations found.
 											</TableCell>
 										</TableRow>
 									)}
@@ -199,7 +189,7 @@ const Management = () => {
 			{/* Delete Confirmation Dialog */}
 			<Dialog open={deleteDialogOpen} onClose={closeDeleteDialog} maxWidth="xs" fullWidth>
 				<DialogTitle>Confirm Delete</DialogTitle>
-				<DialogContent>Are you sure you want to delete this finance category?</DialogContent>
+				<DialogContent>Are you sure you want to delete this Meeting Location?</DialogContent>
 				<DialogActions>
 					<Button onClick={closeDeleteDialog} color="secondary">
 						Cancel
@@ -210,34 +200,23 @@ const Management = () => {
 				</DialogActions>
 			</Dialog>
 
-			{/* Add/Edit Finance Category Modal */}
+			{/* Add/Edit Meeting Location Modal */}
 			<Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-				<DialogTitle>{editCategory ? "Edit Finance Category" : "New Finance Category"}</DialogTitle>
+				<DialogTitle>{editScheduleFloor ? "Edit Meeting Location" : "New Meeting Location"}</DialogTitle>
 				<DialogContent>
-					<TextField fullWidth label="Finance Category Name" variant="outlined" margin="normal" value={name} onChange={(e) => setName(e.target.value)} error={!!error} helperText={error} />
+					<TextField fullWidth label="Meeting Location Name" variant="outlined" margin="normal" value={name} onChange={(e) => setName(e.target.value)} error={!!error} helperText={error} />
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose}>Cancel</Button>
-					<Button
-						onClick={handleSubmit}
-						variant="contained"
-						disabled={isSaving}
-						style={{
-							backgroundColor: colors.primary,
-						}}>
-						{editCategory ? "Update" : "Save"}
+					<Button onClick={handleClose} color="secondary">
+						Cancel
+					</Button>
+					<Button onClick={handleSubmit} variant="contained" color="primary" disabled={isSaving}>
+						{editScheduleFloor ? "Update" : "Save"}
 					</Button>
 				</DialogActions>
 			</Dialog>
-
-			{/* Snackbar */}
-			<Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
-				<Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
-					{snackbar.message}
-				</Alert>
-			</Snackbar>
 		</>
 	);
 };
 
-export default Management;
+export default ScheduleFloorManagement;

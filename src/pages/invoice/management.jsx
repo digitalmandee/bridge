@@ -11,7 +11,7 @@ import { AuthContext } from "@/contexts/AuthContext";
 import dayjs from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-
+import colors from "@/assets/styles/color";
 const InvoiceManagement = () => {
 	const { user } = useContext(AuthContext);
 	const { branch } = useParams();
@@ -205,10 +205,10 @@ const InvoiceManagement = () => {
 									<Button
 										variant="contained"
 										sx={{
-											bgcolor: "#0F172A",
+											bgcolor: colors.primary,
 											borderRadius: "10px",
 											"&:hover": {
-												bgcolor: "#1E293B",
+												bgcolor: colors.primary,
 											},
 										}}
 										onClick={() => navigate(`/${branch}/branch/invoice/create`)}>
@@ -227,12 +227,12 @@ const InvoiceManagement = () => {
 											key={label}
 											variant={statusFilter === label ? "contained" : "outlined"}
 											sx={{
-												bgcolor: statusFilter === label ? "#0F172A" : "",
-												color: statusFilter === label ? "white" : "#0D2B4E",
+												bgcolor: statusFilter === label ? colors.primary : "",
+												color: statusFilter === label ? "white" : colors.primary,
 												borderRadius: "20px",
-												border: "1px solid #0D2B4E",
+
 												"&:hover": {
-													bgcolor: "#0D2B4E",
+													bgcolor: colors.primary,
 													color: "#fff",
 												},
 											}}
@@ -279,7 +279,7 @@ const InvoiceManagement = () => {
 									) : invoices.length > 0 ? (
 										invoices.map((invoice) => (
 											<TableRow key={invoice.id}>
-												<TableCell>#NASTP-{invoice.id}</TableCell>
+												<TableCell>#BRIDGE-{invoice.id}</TableCell>
 												<TableCell style={{ textTransform: "capitalize" }}>{invoice.invoice_type}</TableCell>
 												{user.type === "admin" && (
 													<TableCell>
@@ -303,17 +303,17 @@ const InvoiceManagement = () => {
 														size="small"
 														variant="contained"
 														sx={{
-															bgcolor: invoice.status === "paid" ? "#0F172A" : invoice.status === "overdue" ? "#E53935" : "#0D2B4E",
+															bgcolor: invoice.status === "paid" ? "#0F172A" : invoice.status === "overdue" ? "#E53935" : colors.primary,
 															color: "white",
 															"&:hover": { opacity: 0.8 },
 														}}
-														onClick={() => handleStatusClick(invoice)}
+														onClick={() => user.type === "admin" && handleStatusClick(invoice)}
 														disabled={invoice.status === "paid" || invoice.status === "overdue"}>
 														{invoice.status}
 													</Button>
 												</TableCell>
 
-												<TableCell>Rs. {invoice.amount}</TableCell>
+												<TableCell>Rs. {invoice.discount > 0 ? Math.round(invoice.amount - invoice.amount * (invoice.discount / 100)) : invoice.amount}</TableCell>
 												{user.type === "admin" && (
 													<TableCell>
 														<Button size="small" variant="outlined" startIcon={<NotificationsIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }} onClick={() => sendNotification(invoice.user.id, invoice.user.id, invoice.status)}>
@@ -340,7 +340,7 @@ const InvoiceManagement = () => {
 								Previous
 							</Button>
 							{[...Array(totalPages)].map((_, index) => (
-								<Button key={index} variant={currentPage === index + 1 ? "contained" : "outlined"} sx={currentPage === index + 1 ? { bgcolor: "#0F172A" } : {}} onClick={() => setCurrentPage(index + 1)}>
+								<Button key={index} variant={currentPage === index + 1 ? "contained" : "outlined"} sx={currentPage === index + 1 ? { bgcolor: colors.primary } : {}} onClick={() => setCurrentPage(index + 1)}>
 									{index + 1}
 								</Button>
 							))}

@@ -51,6 +51,7 @@ const Booking = () => {
 		{ id: 1, label: "Step 1" },
 		{ id: 2, label: "Step 2" },
 		{ id: 3, label: "Step 3" },
+		{ id: 4, label: "Step 4" },
 	];
 
 	return (

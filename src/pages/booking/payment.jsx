@@ -2,10 +2,12 @@ import React, { useContext, useState } from "react";
 import cash from "@/assets/cash.png";
 import payment from "@/assets/payment.png";
 import Modal from "./modal";
+import axios from "axios";
 import { FloorPlanContext } from "@/contexts/floorplan.context";
 import colors from "@/assets/styles/color";
 import axiosInstance from "@/utils/axiosInstance";
 import Loader from "@/components/Loader";
+import { TextareaAutosize } from "@mui/material";
 
 const Payment = () => {
 	const { selectedChairs, selectedFloor, bookingPlans, bookingdetails, setBookingDetails } = useContext(FloorPlanContext);
@@ -29,8 +31,8 @@ const Payment = () => {
 		// Create a FormData object to send the image and other data
 		const formData = new FormData();
 		formData.append("floor_id", selectedFloor);
-		// formData.append("profile_image", bookingdetails.profile_image); // Add the receipt file
 		formData.append("cnic_image", bookingdetails.cnic_image); // Add the receipt file
+		// formData.append("profile_image", bookingdetails.profile_image); // Add the receipt file
 		formData.append("receipt", receiptFile); // Add the receipt file
 		formData.append("bookingdetails", JSON.stringify(bookingdetails));
 		formData.append("selectedPlan", JSON.stringify(bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan)));
@@ -63,6 +65,7 @@ const Payment = () => {
 					selectedPlan: "",
 					package_detail: 0,
 					total_price: 0,
+					description: "",
 					payment_method: "cash",
 					// Freelancer Fields
 					linkedin: "",
@@ -87,6 +90,10 @@ const Payment = () => {
 	const handleClose = async () => {
 		setShowModal(false);
 	};
+
+	const selectedPlan = bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan);
+
+	const totalPrice = (plan) => (plan.discount && plan.discount ? Math.round(parseInt(bookingdetails.total_price) - (parseInt(bookingdetails.total_price) * plan.discount) / 100) : bookingdetails.total_price);
 
 	return (
 		<>
@@ -267,7 +274,7 @@ const Payment = () => {
 							{/* Header */}
 							<div
 								style={{
-									background: "#002855",
+									backgroundColor: colors.primary,
 									color: "white",
 									fontSize: "16px",
 									fontWeight: "bold",
@@ -309,9 +316,38 @@ const Payment = () => {
 													marginTop: "5px",
 													fontSize: "14px",
 												}}>
-												<span>{bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan)?.name}</span>
+												<span>{selectedPlan?.name}</span>
 												<span>Rs. {bookingdetails.total_price}</span>
 											</div>
+
+											{selectedPlan?.discount && (
+												<>
+													<div
+														style={{
+															display: "flex",
+															padding: "0 1rem",
+															justifyContent: "space-between",
+															fontSize: "14px",
+															color: "green",
+														}}>
+														<span style={{ fontWeight: "bold" }}>Discount</span>
+														<span>{selectedPlan.discount} %</span>
+													</div>
+												</>
+											)}
+											<div
+												style={{
+													display: "flex",
+													padding: "0 1rem",
+													justifyContent: "space-between",
+													fontSize: "14px",
+													fontWeight: "bold",
+													color: "#444",
+												}}>
+												<span>Total Price</span>
+												<span>Rs. {selectedPlan && totalPrice(selectedPlan)}</span>
+											</div>
+
 											<div
 												style={{
 													borderBottom: "1px solid #ddd",
@@ -330,6 +366,30 @@ const Payment = () => {
 										</li>
 									))
 								)}
+								<li
+									style={{
+										// borderBottom: "1px solid #ddd",
+										padding: "8px 14px",
+										fontSize: "14px",
+										color: "#333",
+									}}>
+									<span style={{ fontWeight: "bold" }}>Admin Help</span>
+									<textarea
+										name="description"
+										value={bookingdetails.description}
+										onChange={(e) => setBookingDetails({ ...bookingdetails, description: e.target.value })}
+										placeholder="Enter description..."
+										style={{
+											width: "100%",
+											height: "70px",
+											padding: "12px",
+											fontSize: "14px",
+											border: "1px solid rgb(181, 179, 179)",
+											borderRadius: "4px",
+											resize: "none",
+										}}
+									/>
+								</li>
 							</ul>
 						</>
 					)}

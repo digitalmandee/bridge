@@ -1,22 +1,22 @@
-import React, { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { ArrowDownIcon, ArrowUpIcon, Bell, Building2, FileText, Building } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
 import axiosInstance from "@/utils/axiosInstance";
-import colors from "@/assets/styles/color";
-import { useNavigate } from "react-router-dom";
 import DashboardNotifications from "@/components/notifications";
-import { width } from "@mui/system";
 import { SidebarContext } from "../../contexts/sidebar.context";
+// added code finance
+import { Box, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
+// added code finance
 
 // Register ChartJS components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const AdminDashboard = ({ isSidebarOpen }) => {
 	const context = useContext(SidebarContext);
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 
 	const chartData = {
 		labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
@@ -70,7 +70,7 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 
 	const metrics = [
 		{ label: "Total Revenue", value: "100,000", unit: "Pkr", change: 2.5, increase: true },
-		{ label: "Members Revenue", value: "90,000", unit: "Pkr", change: 5, increase: false },
+		{ label: "Total Expense", value: "90,000", unit: "Pkr", change: 5, increase: false },
 		{ label: "Total PNL", value: "0.00", unit: "Pkr", change: 2.5, increase: true },
 		{ label: "Desk Occupancy", value: "20", unit: "%", change: 5, increase: false },
 		{ label: "Occupied Desk Rate", value: "20,000", unit: "Pkr", change: 21.5, increase: true },
@@ -114,7 +114,7 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 	const columnStyle = {
 		display: "flex",
 		flexDirection: "column",
-		width: "50%",
+		width: "50%", // Each section takes half the width
 	};
 
 	const statsGridStyle = {
@@ -123,13 +123,22 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 		gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
 		gap: "1rem",
 	};
+	// added code finance
 
-	const [data, setData] = useState(null);
+	const [stats1, setStats1] = useState(0);
 
-	const getStats = async () => {
+	// State for Month and Year
+	const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
+	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
+
+	const getStats = async (month = selectedMonth, year = selectedYear) => {
 		try {
-			const res = await axiosInstance.get("admin/dashboard");
-			setData(res.data);
+			const res = await axiosInstance.get("finance/stats", {
+				params: { month, year },
+			});
+			if (res.data.success) {
+				setStats1(res.data);
+			}
 		} catch (error) {
 			console.log(error);
 		}
@@ -137,8 +146,19 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 
 	useEffect(() => {
 		getStats();
-	}, []);
+	}, [selectedMonth, selectedYear]);
 
+	const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+	const handleMonthChange = (event) => {
+		setSelectedMonth(event.target.value);
+	};
+
+	const handleYearChange = (event) => {
+		setSelectedYear(event.target.value);
+	};
+
+	// added code finance
 	return (
 		<>
 			<TopNavbar />
@@ -146,56 +166,97 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 				<div className={`sideBarWrapper ${context.isToggleSidebar === true ? "toggle" : ""}`}>
 					<Sidebar />
 				</div>
+
 				<div className={`content ${context.isToggleSidebar === true ? "toggle" : ""}`}>
-					{/* {JSON.stringify(data)} */}
 					<div style={containerStyle}>
+						<Box sx={{ display: "flex", justifyContent: "end", alignItems: "center", pt: 1 }}>
+							{/* Month and Year Selection */}
+							<Box sx={{ display: "flex", gap: 2 }}>
+								<FormControl>
+									<InputLabel>Month</InputLabel>
+									<Select value={selectedMonth} onChange={handleMonthChange} label="Month" size="small">
+										<MenuItem value={0}>All Months</MenuItem> {/* Added option for All Months */}
+										{monthNames.map((month, index) => (
+											<MenuItem key={index} value={index + 1}>
+												{month}
+											</MenuItem>
+										))}
+									</Select>
+								</FormControl>
+								<FormControl>
+									<InputLabel>Year</InputLabel>
+									<Select value={selectedYear} onChange={handleYearChange} label="Year" size="small">
+										{Array.from({ length: 5 }, (_, index) => (
+											<MenuItem key={index} value={new Date().getFullYear() - index}>
+												{new Date().getFullYear() - index}
+											</MenuItem>
+										))}
+									</Select>
+								</FormControl>
+							</Box>
+						</Box>
 						{/* Metrics */}
+
 						<div style={metricsGridStyle}>
 							{/* Revenue Section */}
 							<div style={columnStyle}>
 								<h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "0.5rem" }}>Revenue</h3>
 								<div style={{ display: "flex", gap: "0.5rem" }}>
-									{metrics.slice(0, 3).map((metric, i) => (
-										<div key={i} style={cardStyle}>
-											<div style={{ display: "flex", flexDirection: "column" }}>
-												<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
-												<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
-													<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
-													<span style={{ fontSize: "0.875rem", color: "#6B7280" }}>{metric.unit}</span>
-												</div>
-												<div style={{ display: "flex", alignItems: "center", marginTop: "1rem", fontSize: "0.875rem", color: metric.increase ? "#16A34A" : "#DC2626" }}>
-													{metric.increase ? "↑" : "↓"}
-													<span>{metric.change}%</span>
+									{[
+										{ label: "Total Revenue", value: stats1.total_revenue, unit: "Pkr", change: stats1?.growth?.total_revenue, increase: true },
+										{ label: "Total Expense", value: stats1.total_expense, unit: "Pkr", change: stats1?.growth?.total_expense, increase: false },
+										{ label: "Total PNL", value: stats1.total_pl, unit: "Pkr", change: stats1?.growth?.total_pl, increase: true },
+										{ label: "Total Seats", value: stats1.total_chairs },
+										{ label: "Occupied Seats", value: stats1.booked_chairs },
+										{ label: "Available Seats", value: stats1.available_chairs },
+										{ label: "Total Members", value: stats1.total_members },
+									]
+										.slice(0, 3)
+										.map((metric, i) => (
+											<div key={i} style={cardStyle}>
+												<div style={{ display: "flex", flexDirection: "column" }}>
+													<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
+													<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
+														<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
+														<span style={{ fontSize: "0.875rem", color: "#6B7280" }}>{metric.unit}</span>
+													</div>
+													<div style={{ display: "flex", alignItems: "center", marginTop: "1rem", fontSize: "0.875rem", color: parseFloat(metric.change) >= 0 ? "#16A34A" : "#DC2626" }}>
+														{/* {stats1?.growth?.total_pl >= 0 ? "↑" : "↓"} */}
+														{parseFloat(metric.change) >= 0 ? "↑" : "↓"}
+														<span>{metric.change}%</span>
+													</div>
 												</div>
 											</div>
-										</div>
-									))}
+										))}
 								</div>
 							</div>
-
 							{/* Occupancy Section */}
 							<div style={columnStyle}>
 								<h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "0.5rem" }}>Occupancy</h3>
 								<div style={{ display: "flex", gap: "0.5rem" }}>
-									{metrics.slice(3, 6).map((metric, i) => (
-										<div key={i} style={cardStyle}>
-											<div style={{ display: "flex", flexDirection: "column" }}>
-												<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
-												<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
-													<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
-													<span style={{ fontSize: "0.875rem", color: "#6B7280" }}>{metric.unit}</span>
-												</div>
-												<div style={{ display: "flex", alignItems: "center", marginTop: "1rem", fontSize: "0.875rem", color: metric.increase ? "#16A34A" : "#DC2626" }}>
-													{metric.increase ? "↑" : "↓"}
-													<span>{metric.change}%</span>
+									{[
+										{ label: "Total Revenue", value: stats1.total_revenue, unit: "Pkr", change: stats1?.growth?.total_revenue, increase: true },
+										{ label: "Total Expense", value: stats1.total_expense, unit: "Pkr", change: stats1?.growth?.total_expense, increase: false },
+										{ label: "Total PNL", value: stats1.total_pl, unit: "Pkr", change: stats1?.growth?.total_pl, increase: true },
+										{ label: "Total Seats", value: stats1.total_chairs },
+										{ label: "Occupied Seats", value: stats1.booked_chairs },
+										{ label: "Available Seats", value: stats1.available_chairs },
+										{ label: "Total Members", value: stats1.total_members },
+									]
+										.slice(3, 7)
+										.map((metric, i) => (
+											<div key={i} style={cardStyle}>
+												<div style={{ display: "flex", flexDirection: "column" }}>
+													<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
+													<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
+														<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
+													</div>
 												</div>
 											</div>
-										</div>
-									))}
+										))}
 								</div>
 							</div>
 						</div>
-
 						{/* Analytics and Notifications */}
 						<div
 							style={{
@@ -234,7 +295,6 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 							{/* Notifications */}
 							<DashboardNotifications />
 						</div>
-
 						{/* Stats */}
 						<div style={statsGridStyle}>
 							{stats.map((stat, i) => (

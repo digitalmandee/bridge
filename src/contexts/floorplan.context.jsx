@@ -30,6 +30,7 @@ const FloorPlanProvider = ({ children }) => {
 		package_detail: 0,
 		total_price: 0,
 		payment_method: "cash",
+		description: "",
 		// Freelancer Fields
 		linkedin: "",
 		facebook: "",
