@@ -6,20 +6,27 @@ import { FaAngleRight } from "react-icons/fa6";
 import { MdOutlineDateRange } from "react-icons/md";
 import "./style.css";
 import { SlCalender } from "react-icons/sl";
+import { TbContract } from "react-icons/tb";
+import { MdOutlinePeople } from "react-icons/md";
+import { RiBillLine } from "react-icons/ri";
 
 const menuItems = [
 	{ to: "/company/dashboard", label: "Dashboard", icon: <RxDashboard /> },
 	{
 		label: "Staff Management",
-		icon: <SlCalender />,
+		icon: <MdOutlinePeople />,
 		dropdown: [
 			{ to: "/company/staff/add", label: "Add Staff" },
 			{ to: "/company/staff/management", label: "Management" },
 		],
 	},
-	{ to: "/company/invoices/management", label: "Biling Management", icon: <MdOutlineDateRange /> },
+	{
+		to: "/company/invoices/management",
+		label: "Biling Management",
+		icon: <RiBillLine />,
+	},
 	{ to: "/company/booking-schedule/requests", label: "Booking Requests", icon: <MdOutlineDateRange /> },
-	{ to: "/company/contracts", label: "Contracts", icon: <MdOutlineDateRange /> },
+	{ to: "/company/contracts", label: "Contracts", icon: <TbContract /> },
 ];
 
 const Company = () => {

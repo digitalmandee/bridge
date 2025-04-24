@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import user from "@/assets/user2.png";
 import axios from "axios";
 import axiosInstance from "@/utils/axiosInstance";
-
+// import { colors } from "@mui/material";
+import colors from "@/assets/styles/color";
 const AddStaff = () => {
 	const navigate = useNavigate();
 	const { branch } = useParams();
@@ -214,7 +215,7 @@ const AddStaff = () => {
 												position: "absolute",
 												bottom: "0.1px",
 												right: "5px",
-												backgroundColor: "#0D2B4E",
+												backgroundColor: colors.primary,
 												color: "white",
 												borderRadius: "50%",
 												padding: "5px",
@@ -395,7 +396,7 @@ const AddStaff = () => {
 								style={{
 									width: "40%",
 									padding: "12px",
-									backgroundColor: "#0D2B4E",
+									backgroundColor: colors.primary,
 									color: "white",
 									border: "none",
 									borderRadius: "5px",

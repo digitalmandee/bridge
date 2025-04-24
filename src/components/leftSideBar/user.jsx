@@ -6,6 +6,7 @@ import { FaAngleRight } from "react-icons/fa6";
 import { MdOutlineDateRange } from "react-icons/md";
 import "./style.css";
 import { SlCalender } from "react-icons/sl";
+import { TbContract, TbFileInvoice } from "react-icons/tb";
 
 const menuItems = [
 	{ to: "/user/dashboard", label: "Dashboard", icon: <RxDashboard /> },
@@ -17,8 +18,8 @@ const menuItems = [
 			{ to: "/user/booking-schedule/requests", label: "Booking Requests" },
 		],
 	},
-	{ to: "/user/invoices/management", label: "Invoice Management", icon: <MdOutlineDateRange /> },
-	{ to: "/user/contracts", label: "Contracts", icon: <MdOutlineDateRange /> },
+	{ to: "/user/invoices/management", label: "Invoice Management", icon: <TbFileInvoice /> },
+	{ to: "/user/contracts", label: "Contracts", icon: <TbContract /> },
 ];
 
 const User = () => {
