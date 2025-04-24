@@ -141,7 +141,7 @@ const TopNavbar = () => {
 								<Button className="myAcc d-flex align-items-center" onClick={handleOpenMyAccDr}>
 									<div className="userImg">
 										<span className="rounded-circle">
-											<img src={user.profile_image ? import.meta.env.VITE_ASSET_API + user.profile_image : profile} alt={user.name} />
+											<img src={user.profile_image ? user.profile_image : profile} alt={user.name} />
 										</span>
 									</div>
 									<div className="userInfo">

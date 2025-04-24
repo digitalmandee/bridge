@@ -5,7 +5,7 @@ import Modal from "./modal";
 import axios from "axios";
 import { FloorPlanContext } from "@/contexts/floorplan.context";
 import colors from "@/assets/styles/color";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "@/utils/axiosInstance";
 import Loader from "@/components/Loader";
 import { TextareaAutosize } from "@mui/material";
 

@@ -3,11 +3,9 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import { Button } from "@mui/material";
 import { RxDashboard } from "react-icons/rx";
 import { FaAngleRight } from "react-icons/fa6";
-import { MdOutlineDateRange } from "react-icons/md";
-import { TbFileInvoice } from "react-icons/tb";
 import "./style.css";
 import { SlCalender } from "react-icons/sl";
-import { TbContract } from "react-icons/tb";
+import { TbContract, TbFileInvoice } from "react-icons/tb";
 
 const menuItems = [
 	{ to: "/user/dashboard", label: "Dashboard", icon: <RxDashboard /> },
