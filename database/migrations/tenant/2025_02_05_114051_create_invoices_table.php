@@ -17,14 +17,14 @@ class CreateInvoicesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('booking_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->enum('invoice_type', ['Monthly', 'Printing Papers', 'Meeting Rooms']);
+            $table->string('invoice_type')->nullable();
             $table->integer('quantity')->nullable();
             $table->decimal('hours', 10, 2)->nullable();
             $table->decimal('amount', 10, 2)->nullable();
             $table->enum('status', ['pending', 'paid', 'overdue'])->default('pending');
             $table->date('due_date');
             $table->date('paid_date')->nullable();
-            $table->string('paid_month')->nullable();
+            $table->json('paid_month')->nullable();
             $table->string('paid_year')->nullable();
             $table->json('plan')->nullable();
             $table->string('payment_type')->nullable();

@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\FinanceController;
 use App\Http\Controllers\Api\FloorPlanController;
 use App\Http\Controllers\Api\GlobalController;
 use App\Http\Controllers\Api\InvoicesController;
+use App\Http\Controllers\Api\InvoiceTypeController;
 use App\Http\Controllers\Api\LeaveApplicationController;
 use App\Http\Controllers\Api\LeaveCategoryController;
 use App\Http\Controllers\Api\MemberController;
@@ -32,6 +33,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\BranchAuthController;
 use App\Http\Controllers\BranchController;
+use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use PharIo\Manifest\AuthorCollection;
@@ -120,6 +122,7 @@ Route::group(['middleware' => ['set_tenant']], function () {
     });
 
     // Invoices
+    Route::resource('invoice-types', InvoiceTypeController::class)->except(['create', 'edit']);
     Route::group(['prefix' => 'invoices'], function () {
         Route::get('', [InvoicesController::class, 'index']);
         Route::get('customer-detail/{id}', [InvoicesController::class, 'customerDetail']);
@@ -198,12 +201,13 @@ Route::group(['middleware' => ['set_tenant']], function () {
     });
 
     // finance management
+    Route::resource('finances', FinanceController::class)->except(['create', 'edit']);
+    Route::post('download', [FinanceController::class, 'download']);
     Route::group(['prefix' => 'finance'], function () {
         Route::get('stats', [FinanceController::class, 'getStats']);
         Route::get('category/{categoryId}', [FinanceController::class, 'getFinanceByCategory']);
         Route::resource('categories', FinanceCategoryController::class)->except(['create', 'edit']);
     });
-    Route::resource('finances', FinanceController::class)->except(['create', 'edit']);
 
     // -------------- Roles Management
     Route::get('permissions', [RolePermissionController::class, 'getPermissions']);

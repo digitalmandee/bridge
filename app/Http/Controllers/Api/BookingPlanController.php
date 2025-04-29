@@ -16,7 +16,7 @@ class BookingPlanController extends Controller
     public function index(Request $request)
     {
         try {
-            $bookingPlans = BookingPlan::select('id', 'name', 'type', 'price', 'booking_hours', 'printing_papers')->get();
+            $bookingPlans = BookingPlan::select('id', 'name', 'type', 'price', 'discount', 'booking_hours', 'printing_papers')->get();
 
             return response()->json(['success' => true, 'message' => 'Booking Plans retrieved successfully', 'data' => $bookingPlans], 200);
         } catch (\Throwable $th) {
@@ -36,6 +36,7 @@ class BookingPlanController extends Controller
             'name' => 'required|string',
             'type' => 'required|string',
             'price' => 'required|numeric',
+            'discount' => 'nullable|numeric',
             'booking_hours' => 'required_if:type,monthly|numeric',
             'printing_papers' => 'required_if:type,monthly|numeric',
         ]);
