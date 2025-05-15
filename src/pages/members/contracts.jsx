@@ -81,7 +81,7 @@ const MemberContract = () => {
 							</Typography>
 							<Box sx={{ display: "flex", gap: 1 }}>
 								{/* Add Contract */}
-								{user.type === "admin" && <AddContract />}
+								{user.type === "admin" && <AddContract getContracts={getContracts} />}
 								{/* Download Contracts */}
 								<Button
 									variant="outlined"

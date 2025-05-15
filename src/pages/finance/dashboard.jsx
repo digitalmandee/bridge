@@ -11,6 +11,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import axiosInstance from "@/utils/axiosInstance";
 
 import CloseIcon from "@mui/icons-material/Close";
+import colors from "@/assets/styles/color";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
@@ -99,6 +100,25 @@ const FinanceDashboard = () => {
 		}
 	};
 
+	const downloadFinancialReport = () => {
+		if (!finances.length) return;
+
+		const headers = ["Category", "Name", "Description", "Amount", "Issue Date", "Due Date", "Quantity"];
+		const rows = finances.map((finance) => [finance.category?.name || "", finance.name, finance.description, `Rs. ${finance.amount}`, finance.issue_date, finance.due_date, finance.quantity]);
+
+		const csvString = [headers, ...rows].map((row) => row.map((field) => `"${String(field).replace(/"/g, '""')}"`).join(",")).join("\n");
+
+		const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `financial-report-${selectedMonth}-${selectedYear}.csv`;
+		document.body.appendChild(a);
+		a.click();
+		a.remove();
+		URL.revokeObjectURL(url);
+	};
+
 	return (
 		<>
 			<TopNavbar />
@@ -138,10 +158,11 @@ const FinanceDashboard = () => {
 										</Select>
 									</FormControl>
 								</Box>
-								<Button variant="outlined" color="primary">
+								<Button variant="outlined" color="primary" onClick={downloadFinancialReport}>
 									Financial Report
 								</Button>
-								<Button variant="contained" sx={{ bgcolor: "#0A2647" }} onClick={() => navigate(`/${branch}/branch/finance/create`)}>
+
+								<Button variant="contained" sx={{ bgcolor: colors.primary }} onClick={() => navigate(`/${branch}/branch/finance/create`)}>
 									Add New Entry
 								</Button>
 							</Box>

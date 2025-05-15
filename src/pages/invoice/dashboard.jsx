@@ -68,6 +68,28 @@ const InvoiceDashboard = () => {
 		}
 	};
 
+	const downloadCSV = () => {
+		if (!invoices.length) return;
+
+		const headers = ["Invoice #", "Type", "Client Name", "Client Email", "Issue Date", "Payment Date", "Status", "Amount"];
+
+		const rows = invoices.map((invoice) => [`#BRIDGE-${invoice.id}`, invoice.user.type, invoice.user.name, invoice.user.email, new Date(invoice.created_at).toISOString().split("T")[0], invoice.due_date, invoice.status, `Rs. ${invoice.amount}`]);
+
+		// Build CSV string
+		const csvString = [headers, ...rows].map((row) => row.map((field) => `"${String(field).replace(/"/g, '""')}"`).join(",")).join("\n");
+
+		// Create Blob and trigger download
+		const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+		const url = URL.createObjectURL(blob);
+		const link = document.createElement("a");
+		link.href = url;
+		link.setAttribute("download", "invoices.csv");
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(url);
+	};
+
 	useEffect(() => {
 		getDashboardStats();
 	}, [""]);
@@ -110,9 +132,10 @@ const InvoiceDashboard = () => {
 							</div>
 							<div className="col-auto">
 								<Box display="flex" gap={2}>
-									<Button variant="outlined" startIcon={<DownloadIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }}>
+									<Button variant="outlined" startIcon={<DownloadIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }} onClick={downloadCSV}>
 										CSV
 									</Button>
+
 									<Select value={month} onChange={(e) => setMonth(e.target.value)} size="small" sx={{ minWidth: 120 }}>
 										<MenuItem value="January">January</MenuItem>
 										{/* Add more months */}
@@ -206,10 +229,10 @@ const InvoiceDashboard = () => {
 															size="small"
 															variant="contained"
 															sx={{
-																bgcolor: invoice.status === "paid" ? "#0F172A" : "#E5E7EB",
-																color: invoice.status === "paid" ? "white" : "#6B7280",
-																"&:hover": { bgcolor: invoice.status === "paid" ? "#1E293B" : "#D1D5DB" },
-															}}>
+																bgcolor: invoice.status === "paid" ? "#0F172A" : invoice.status === "overdue" ? "#E53935" : colors.primary,
+																color: "white",
+															}}
+															disabled={invoice.status === "paid" || invoice.status === "overdue"}>
 															{invoice.status}
 														</Button>
 													</TableCell>

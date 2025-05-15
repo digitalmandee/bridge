@@ -4,7 +4,7 @@ import { Add as AddIcon, Remove as RemoveIcon, Close as CloseIcon } from "@mui/i
 import axiosInstance from "@/utils/axiosInstance";
 import colors from "@/assets/styles/color";
 
-const AddContract = () => {
+const AddContract = ({ getContracts }) => {
 	const [open, setOpen] = useState(false);
 	const [activeStep, setActiveStep] = useState(0);
 	const [contractType, setContractType] = useState("individual");
@@ -150,6 +150,7 @@ const AddContract = () => {
 			if (res.data.success) {
 				setAlertOpen(true);
 				handleClose();
+				getContracts();
 			}
 		} catch (error) {
 			console.error(error.response.data);
