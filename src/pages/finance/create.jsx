@@ -189,9 +189,9 @@ const CreateFinanceEntry = () => {
 												mt: 2,
 												px: 6,
 												py: 1,
-												bgcolor: "#0A2647",
+												bgcolor: "#ffcc16",
 												"&:hover": {
-													bgcolor: "#0A2647",
+													bgcolor: "#ffcc16",
 												},
 												textTransform: "none",
 												borderRadius: 1,

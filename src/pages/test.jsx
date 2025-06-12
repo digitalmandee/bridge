@@ -533,13 +533,13 @@ const BookingCalender = () => {
 										<div className="d-flex justify-content-between align-items-center mb-4">
 											<Typography variant="h5">{currentView === "day" ? format(selectedDate, "MMMM d, yyyy") : currentView === "week" ? `Week of ${format(startOfWeek(selectedDate), "MMMM d, yyyy")}` : format(selectedDate, "MMMM yyyy")}</Typography>
 											<div className="btn-group gap-2">
-												<Button variant={currentView === "day" ? "contained" : "outlined"} sx={currentView === "day" ? { backgroundColor: colors.primary, color: "white" } : { color: "#1976d2" }} onClick={() => setCurrentView("day")}>
+												<Button variant={currentView === "day" ? "contained" : "outlined"} sx={currentView === "day" ? { backgroundColor: colors.primary, color: "white" } : { color: "#ffcc17" }} onClick={() => setCurrentView("day")}>
 													Day
 												</Button>
-												<Button variant={currentView === "week" ? "contained" : "outlined"} sx={currentView === "week" ? { backgroundColor: colors.primary, color: "white" } : { color: "#1976d2" }} onClick={() => setCurrentView("week")}>
+												<Button variant={currentView === "week" ? "contained" : "outlined"} sx={currentView === "week" ? { backgroundColor: colors.primary, color: "white" } : { color: "#ffcc17" }} onClick={() => setCurrentView("week")}>
 													Week
 												</Button>
-												<Button variant={currentView === "month" ? "contained" : "outlined"} sx={currentView === "month" ? { backgroundColor: colors.primary, color: "white" } : { color: "#1976d2" }} onClick={() => setCurrentView("month")}>
+												<Button variant={currentView === "month" ? "contained" : "outlined"} sx={currentView === "month" ? { backgroundColor: colors.primary, color: "white" } : { color: "#ffcc17" }} onClick={() => setCurrentView("month")}>
 													Month
 												</Button>
 											</div>

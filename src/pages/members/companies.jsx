@@ -8,7 +8,6 @@ import axiosInstance from "@/utils/axiosInstance";
 import dayjs from "dayjs";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "@/contexts/AuthContext";
-import colors from "@/assets/styles/color";
 
 const Company = () => {
 	const { user: userData } = useContext(AuthContext);
@@ -161,7 +160,7 @@ const Company = () => {
 																	label={company.status}
 																	size="small"
 																	sx={{
-																		backgroundColor: colors.primary,
+																		backgroundColor: "#002B5B",
 																		color: "#fff",
 																		borderRadius: "4px",
 																		height: "24px",

@@ -7,7 +7,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import CloseIcon from "@mui/icons-material/Close";
 import { Grid } from "@mui/system";
-import colors from "@/assets/styles/color";
 
 const FinanceReport = () => {
 	const navigate = useNavigate();
@@ -66,7 +65,7 @@ const FinanceReport = () => {
 	const getStatusColor = (status) => {
 		switch (status) {
 			case "paid":
-				return { bg: "#e6f7ff", text: colors.primary };
+				return { bg: "#e6f7ff", text: "#0c4a6e" };
 			case "unpaid":
 				return { bg: "#fff7e6", text: "#d97706" };
 			case "received":
@@ -182,10 +181,10 @@ const FinanceReport = () => {
 								onClick={() => setTimeFilter("weekly")}
 								sx={{
 									px: 3,
-									bgcolor: timeFilter === "weekly" ? colors.primary : "white",
+									bgcolor: timeFilter === "weekly" ? "#0c4a6e" : "white",
 									color: timeFilter === "weekly" ? "white" : "#64748b",
 									"&:hover": {
-										bgcolor: timeFilter === "weekly" ? colors.primary : "#f1f5f9",
+										bgcolor: timeFilter === "weekly" ? "#0c4a6e" : "#f1f5f9",
 									},
 									textTransform: "none",
 									fontWeight: 500,
@@ -201,10 +200,10 @@ const FinanceReport = () => {
 								onClick={() => setTimeFilter("daily")}
 								sx={{
 									px: 3,
-									bgcolor: timeFilter === "daily" ? colors.primary : "white",
+									bgcolor: timeFilter === "daily" ? "#0c4a6e" : "white",
 									color: timeFilter === "daily" ? "white" : "#64748b",
 									"&:hover": {
-										bgcolor: timeFilter === "daily" ? colors.primary : "#f1f5f9",
+										bgcolor: timeFilter === "daily" ? "#0c4a6e" : "#f1f5f9",
 									},
 									textTransform: "none",
 									fontWeight: 500,

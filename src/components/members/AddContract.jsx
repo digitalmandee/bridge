@@ -165,9 +165,9 @@ const AddContract = ({ getContracts }) => {
 			case 0:
 				return contractType === "individual" ? formData.members !== "" : formData.company !== "";
 			case 1:
-				return formData.type !== "" && formData.company_number !== "" && formData.start_date !== "" && formData.notice_period > 0;
+				return formData.type !== "" && formData.company_number !== "" && formData.notice_period > 0;
 			case 2:
-				return formData.plan !== "" && formData.amount !== "" && formData.plan_start_date !== "";
+				return formData.plan !== "" && formData.amount !== "" && formData.start_date !== "";
 			case 3:
 				return formData.contract !== "" && formData.agreement;
 			default:
@@ -242,35 +242,6 @@ const AddContract = ({ getContracts }) => {
 					<Box sx={{ mt: 2 }}>
 						<TextField fullWidth label="Type" value={formData.type} onChange={handleInputChange("type")} sx={{ mb: 2 }} required />
 						<TextField fullWidth label="Registration Number" value={formData.company_number} onChange={handleInputChange("company_number")} sx={{ mb: 2 }} required />
-						<div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
-							<TextField
-								label="Start Date"
-								type="date"
-								InputLabelProps={{ shrink: true }}
-								value={formData.start_date}
-								onChange={(e) => {
-									const newStartDate = e.target.value;
-									setFormData({
-										...formData,
-										start_date: newStartDate,
-										end_date: formData.end_date && formData.end_date < newStartDate ? "" : formData.end_date, // Reset end date if it's before start date
-									});
-								}}
-								fullWidth
-								required
-							/>
-
-							<TextField
-								label="End Date (Optional)"
-								type="date"
-								InputLabelProps={{ shrink: true }}
-								value={formData.end_date}
-								onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-								inputProps={{ min: formData.start_date || "" }} // Restrict to only allow dates after Start Date
-								fullWidth
-								required
-							/>
-						</div>
 
 						{/* Notice Period Selection */}
 						<div style={{ display: "flex", alignItems: "center", border: "1px solid #ccc", borderRadius: "8px" }}>
@@ -318,13 +289,13 @@ const AddContract = ({ getContracts }) => {
 								label="Start Date"
 								type="date"
 								InputLabelProps={{ shrink: true }}
-								value={formData.plan_start_date}
+								value={formData.start_date}
 								onChange={(e) => {
 									const newStartDate = e.target.value;
 									setFormData({
 										...formData,
-										plan_start_date: newStartDate,
-										plan_end_date: formData.plan_end_date && formData.plan_end_date < newStartDate ? "" : formData.plan_end_date, // Reset end date if it's before start date
+										start_date: newStartDate,
+										end_date: formData.end_date && formData.end_date < newStartDate ? "" : formData.end_date, // Reset end date if it's before start date
 									});
 								}}
 								fullWidth
@@ -335,9 +306,9 @@ const AddContract = ({ getContracts }) => {
 								label="End Date (Optional)"
 								type="date"
 								InputLabelProps={{ shrink: true }}
-								value={formData.plan_end_date}
-								onChange={(e) => setFormData({ ...formData, plan_end_date: e.target.value })}
-								inputProps={{ min: formData.plan_start_date || "" }} // Restrict to only allow dates after Start Date
+								value={formData.end_date}
+								onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+								inputProps={{ min: formData.start_date || "" }} // Restrict to only allow dates after Start Date
 								fullWidth
 								required
 							/>

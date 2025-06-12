@@ -162,7 +162,7 @@ const AttendanceReport = () => {
 								className="mb-0"
 								style={{
 									width: "100%",
-									backgroundColor: "#C5D9F0",
+									backgroundColor: "#fff2c6",
 									borderCollapse: "separate",
 									// borderSpacing: "2px",
 									border: "1px solid #B9B9B9", // Light grey border around the table
@@ -174,7 +174,7 @@ const AttendanceReport = () => {
 											rowSpan={2}
 											style={{
 												width: "60px",
-												backgroundColor: "#C5D9F0",
+												backgroundColor: "#fff2c6",
 												padding: "10px",
 												boxShadow: "0 0 0 1px #B9B9B9",
 												textAlign: "center",
@@ -188,7 +188,7 @@ const AttendanceReport = () => {
 											style={{
 												// width: '100%',
 												maxWidth: "200px",
-												backgroundColor: "#C5D9F0",
+												backgroundColor: "#fff2c6",
 												padding: "10px",
 												boxShadow: "0 0 0 1px #B9B9B9",
 												textAlign: "center",
@@ -209,7 +209,7 @@ const AttendanceReport = () => {
 													width: "40px",
 													padding: "8px 4px",
 													boxShadow: "0 0 0 1px #B9B9B9",
-													backgroundColor: "#C5D9F0",
+													backgroundColor: "#fff2c6",
 												}}>
 												{(i + 1).toString().padStart(2, "0")}
 											</th>
@@ -220,7 +220,7 @@ const AttendanceReport = () => {
 											className="text-center"
 											style={{
 												maxWidth: "100px",
-												backgroundColor: "#C5D9F0",
+												backgroundColor: "#fff2c6",
 												boxShadow: "0 0 0 1px #B9B9B9",
 												textAlign: "center",
 												verticalAlign: "middle",

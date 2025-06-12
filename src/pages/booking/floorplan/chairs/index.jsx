@@ -140,7 +140,7 @@ const Management = () => {
 					<TableContainer component={Paper}>
 						<Table>
 							<TableHead>
-								<TableRow style={{ backgroundColor: "#C5D9F0" }}>
+								<TableRow style={{ backgroundColor: "#fff2c6" }}>
 									<TableCell sx={{ fontWeight: "bold" }}>#</TableCell>
 									<TableCell sx={{ fontWeight: "bold" }}>Floor</TableCell>
 									<TableCell sx={{ fontWeight: "bold" }}>Chair</TableCell>

@@ -135,9 +135,9 @@ const EditContract = ({ contract, open, onClose }) => {
 			case 0:
 				return true;
 			case 1:
-				return formData.type && formData.company_number && formData.start_date && formData.notice_period > 0;
+				return formData.type && formData.company_number && formData.notice_period > 0;
 			case 2:
-				return formData.plan && formData.amount && formData.plan_start_date;
+				return formData.plan && formData.amount && formData.start_date;
 			case 3:
 				return formData.contract && formData.agreement;
 			default:
@@ -161,25 +161,6 @@ const EditContract = ({ contract, open, onClose }) => {
 					<Box sx={{ mt: 2 }}>
 						<TextField fullWidth label="Type" value={formData.type} onChange={handleInputChange("type")} sx={{ mb: 2 }} required disabled={isReadOnly} />
 						<TextField fullWidth label="Registration Number" value={formData.company_number} onChange={handleInputChange("company_number")} sx={{ mb: 2 }} required disabled={isReadOnly} />
-						<div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
-							<TextField
-								fullWidth
-								label="Start Date"
-								type="date"
-								value={formData.start_date}
-								onChange={(e) => {
-									const newStartDate = e.target.value;
-									setFormData({
-										...formData,
-										start_date: newStartDate,
-										end_date: formData.end_date && formData.end_date < newStartDate ? "" : formData.end_date, // Reset end date if it's before start date
-									});
-								}}
-								required
-								disabled={isReadOnly}
-							/>
-							<TextField fullWidth label="End Date (optional)" type="date" value={formData.end_date} onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} inputProps={{ min: formData.start_date || "" }} required disabled={isReadOnly} />
-						</div>
 
 						{/* Notice Period Selection */}
 						<div style={{ display: "flex", alignItems: "center", border: "1px solid #ccc", borderRadius: "8px" }}>
@@ -225,34 +206,22 @@ const EditContract = ({ contract, open, onClose }) => {
 
 						<div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
 							<TextField
+								fullWidth
 								label="Start Date"
 								type="date"
-								InputLabelProps={{ shrink: true }}
-								value={formData.plan_start_date}
+								value={formData.start_date}
 								onChange={(e) => {
 									const newStartDate = e.target.value;
 									setFormData({
 										...formData,
-										plan_start_date: newStartDate,
-										plan_end_date: formData.plan_end_date && formData.plan_end_date < newStartDate ? "" : formData.plan_end_date, // Reset end date if it's before start date
+										start_date: newStartDate,
+										end_date: formData.end_date && formData.end_date < newStartDate ? "" : formData.end_date, // Reset end date if it's before start date
 									});
 								}}
-								disabled={isReadOnly}
-								fullWidth
-								required
-							/>
-
-							<TextField
-								label="End Date (Optional)"
-								type="date"
-								InputLabelProps={{ shrink: true }}
-								value={formData.plan_end_date}
-								onChange={(e) => setFormData({ ...formData, plan_end_date: e.target.value })}
-								inputProps={{ min: formData.plan_start_date || "" }} // Restrict to only allow dates after Start Date
-								fullWidth
 								required
 								disabled={isReadOnly}
 							/>
+							<TextField fullWidth label="End Date (optional)" type="date" value={formData.end_date} onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} inputProps={{ min: formData.start_date || "" }} required disabled={isReadOnly} />
 						</div>
 					</Box>
 				);

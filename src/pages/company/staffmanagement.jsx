@@ -178,7 +178,7 @@ const StaffManagement = () => {
 							</div>
 						</div>
 						<table style={{ width: "100%", marginTop: "1rem", borderCollapse: "collapse", backgroundColor: "white" }}>
-							<thead style={{ backgroundColor: "#C5D9F0", color: "black" }}>
+							<thead style={{ backgroundColor: "#fff2c6", color: "black" }}>
 								<tr>
 									<th style={{ padding: "12px" }}>ID</th>
 									<th style={{ padding: "12px" }}>Name</th>

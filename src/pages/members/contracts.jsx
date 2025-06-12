@@ -82,6 +82,7 @@ const MemberContract = () => {
 							<Box sx={{ display: "flex", gap: 1 }}>
 								{/* Add Contract */}
 								{user.type === "admin" && <AddContract getContracts={getContracts} />}
+
 								{/* Download Contracts */}
 								<Button
 									variant="outlined"
@@ -144,19 +145,22 @@ const MemberContract = () => {
 																size="small"
 																sx={{
 																	textTransform: "capitalize",
-																	bgcolor: contract.status === "Signed" ? "#E8E8E8" : "#1a3353",
+																	bgcolor: contract.status === "Signed" ? "#14c981" : "#e83348",
 																	color: contract.status === "Signed" ? "#666" : "white",
 																}}
 															/>
 															{contract.status === "not signed" && user.type === "admin" && (
 																<>
-																	<Chip label="New" size="small" sx={{ bgcolor: "#E3F5FF", color: "#2196F3" }} />
-																	<Button variant="contained" size="small" color="primary" onClick={() => handleEditContract(contract)}>
+																	<Chip label="New" size="small" sx={{ bgcolor: "#faefc9", color: "#ffcc17" }} />
+																	<Button variant="contained" size="small" color="#ffcc17" sx={{
+																		":hover":"ffcc17"
+																	}} onClick={() => handleEditContract(contract)}>
 																		Edit
 																	</Button>
 																</>
 															)}
-															<Button variant="contained" size="small" color="primary" onClick={() => handleViewContract(contract)}>
+															<Button variant="contained" size="small" color="#ffcc17" sx={{
+																		":hover":"ffcc17"}} onClick={() => handleViewContract(contract)}>
 																View
 															</Button>
 														</Box>
