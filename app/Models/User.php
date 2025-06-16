@@ -116,6 +116,11 @@ class User extends Authenticatable
         return $this->hasOne(UserProfile::class);
     }
 
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
+    }
+
     // public function employee()
     // {
     //     return $this->belongsTo(Employee::class, 'id', 'user_id');

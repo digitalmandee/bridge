@@ -18,7 +18,6 @@ use App\Http\Controllers\Api\FloorPlanController;
 use App\Http\Controllers\Api\GlobalController;
 use App\Http\Controllers\Api\InvoicesController;
 use App\Http\Controllers\Api\InvoiceTypeController;
-use App\Http\Controllers\Api\KitchenController;
 use App\Http\Controllers\Api\LeaveApplicationController;
 use App\Http\Controllers\Api\LeaveCategoryController;
 use App\Http\Controllers\Api\MemberController;
@@ -41,6 +40,7 @@ use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use PharIo\Manifest\AuthorCollection;
+use App\Http\Controllers\Api\KitchenController;
 
 /*
  * |--------------------------------------------------------------------------
@@ -106,6 +106,11 @@ Route::group(['middleware' => ['set_tenant']], function () {
     // booking seat request
     Route::get('booking-request', [BookingRequestController::class, 'index']);
     Route::post('booking-request', [BookingRequestController::class, 'store']);
+    // Kitchen
+    Route::get('/kitchens', [KitchenController::class, 'index']);
+    Route::post('/kitchens', [KitchenController::class, 'store']);
+    Route::put('/kitchens/{id}', [KitchenController::class, 'update']);
+    Route::delete('/kitchens/{id}', [KitchenController::class, 'destroy']);
 
     Route::group(['prefix' => 'booking'], function () {
         Route::post('create', [BookingController::class, 'createBooking']);
@@ -192,12 +197,6 @@ Route::group(['middleware' => ['set_tenant']], function () {
             Route::post('all/report', [AttendanceController::class, 'allEmployeesReport']);
         });
     });
-
-    // Kitchen
-    Route::get('/kitchens', [KitchenController::class, 'index']);
-    Route::post('/kitchens', [KitchenController::class, 'store']);
-    Route::put('/kitchens/{id}', [KitchenController::class, 'update']);
-    Route::delete('/kitchens/{id}', [KitchenController::class, 'destroy']);
 
     // Admin Dasboard
     Route::group(['prefix' => 'admin'], function () {
