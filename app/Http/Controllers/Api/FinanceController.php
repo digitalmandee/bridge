@@ -34,15 +34,33 @@ class FinanceController extends Controller
     {
         $month = $request->query('month');
         $year = $request->query('year') ?? now()->year;
+        $date = $request->query('date');  // NEW
 
-        $isYearly = $month == 0 || $month === 'all';
+        if ($date) {
+            // If a specific date is provided, we ignore month and perform "daily" totals.
+            $currentRevenue = Invoice::whereDate('paid_date', $date)->sum('amount');
+            $currentExpense = Finance::whereDate('due_date', $date)->sum('amount');
 
-        if ($isYearly) {
+            // Previous day's for comparison
+            $previousDate = Carbon::parse($date)->subDay();
+            $previousRevenue = Invoice::whereDate('paid_date', $previousDate)->sum('amount');
+            $previousExpense = Finance::whereDate('due_date', $previousDate)->sum('amount');
+
+            // Chairs, members, etc., remain the same across days
+            $totalChairs = Chair::count('id');
+            $bookedChairs = Chair::whereIn('time_slot', ['day', 'night', 'full_day'])->count('id');
+            $availableChairs = Chair::whereIn('time_slot', ['available', 'day', 'night'])->count('id');
+            $totalMembers = User::whereIn('type', ['user', 'company'])
+                ->whereNull('company_id')
+                ->count('id');
+        } else if ($month == 0 || $month === 'all') {
+            // Yearly
             $currentRevenue = $this->getTotal(Invoice::class, 'paid_date', $year);
             $currentExpense = $this->getTotal(Finance::class, 'due_date', $year);
             $previousRevenue = $this->getTotal(Invoice::class, 'paid_date', $year - 1);
             $previousExpense = $this->getTotal(Finance::class, 'due_date', $year - 1);
         } else {
+            // Monthly
             $previousDate = Carbon::create($year, $month)->subMonth();
             $previousRevenue = $this->getTotal(Invoice::class, 'paid_date', $previousDate->year, $previousDate->month);
             $previousExpense = $this->getTotal(Finance::class, 'due_date', $previousDate->year, $previousDate->month);
@@ -52,7 +70,9 @@ class FinanceController extends Controller
             $totalChairs = Chair::count('id');
             $bookedChairs = Chair::whereIn('time_slot', ['day', 'night', 'full_day'])->count('id');
             $availableChairs = Chair::whereIn('time_slot', ['available', 'day', 'night'])->count('id');
-            $totlaMembers = User::whereIn('type', ['user', 'company'])->whereNull('company_id')->count('id');
+            $totalMembers = User::whereIn('type', ['user', 'company'])
+                ->whereNull('company_id')
+                ->count('id');
         }
 
         $currentPL = $currentRevenue - $currentExpense;
@@ -69,7 +89,7 @@ class FinanceController extends Controller
             'total_chairs' => $totalChairs,
             'booked_chairs' => $bookedChairs,
             'available_chairs' => $availableChairs,
-            'total_members' => $totlaMembers,
+            'total_members' => $totalMembers,
             'growth' => [
                 'total_revenue' => number_format($growth($currentRevenue, $previousRevenue), 2),
                 'total_expense' => number_format($growth($currentExpense, $previousExpense), 2),
