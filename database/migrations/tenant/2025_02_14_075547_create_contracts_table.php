@@ -24,8 +24,6 @@ class CreateContractsTable extends Migration
             $table->enum('duration', ['week', 'month']);
             $table->integer('notice_period');
             $table->json('plan');
-            $table->date('plan_start_date');
-            $table->date('plan_end_date')->nullable();
             $table->decimal('amount', 10, 2)->default(0.0);
             $table->string('contract', 2000);
             $table->boolean('agreement')->default(false);
