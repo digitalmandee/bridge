@@ -3,42 +3,14 @@ import TopNavbar from "../../components/topNavbar";
 import Sidebar from "../../components/leftSideBar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ChairIcon from "@mui/icons-material/Chair";
-import { Menu, MenuItem, IconButton, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import colors from "../../assets/styles/color";
-import axios from "axios";
 import axiosInstance from "@/utils/axiosInstance";
 
 const SeatCard = ({ seatNumber, userName, planName, status, location, floor, profile_image }) => {
 	return (
 		<div className="col-md-3 mb-4">
 			<div className="card" style={{ position: "relative" }}>
-				{/* Three-dot Menu Button */}
-				{/* <IconButton
-          onClick={handleMenuOpen}
-          aria-label="menu"
-          style={{
-            position: "absolute",
-            top: "10px",
-            right: "10px",
-            zIndex: 1,
-          }}
-        >
-          <MoreVertIcon />
-        </IconButton> */}
-				{/* <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-          PaperProps={{
-            style: {
-              boxShadow: "0px 5px 10px rgba(0, 0, 0, 0.2)",
-            },
-          }}
-        >
-          <MenuItem onClick={() => alert("Edit clicked!")}>Edit</MenuItem>
-          <MenuItem onClick={() => alert("Delete clicked!")}>Delete</MenuItem>
-        </Menu> */}
-
 				{/* Chair Icon Section */}
 				<Box
 					className="chair-container mb-2"
@@ -143,20 +115,59 @@ const SeatsAllocation = () => {
 						</div>
 						<div className="row">
 							{seatData2.length > 0 ? (
-								seatData2.map((seat) =>
-									seat.chairs.map((chair) => (
-										<SeatCard
-											key={chair.id}
-											seatNumber={`${chair.room_name}-${chair.table_id}${chair.chair_id}`} // Use table_name for prefixing
-											userName={seat.name}
-											planName={seat.plan.name}
-											status={"Booked"}
-											location={seat.branch.name}
-											floor={seat.floor.name}
-											profile_image={seat.user.profile_image}
-										/>
-									))
-								)
+								seatData2.map((booking) => (
+									<div key={booking.booking_id} className="col-md-3 mb-4">
+										<div className="card" style={{ position: "relative" }}>
+											{/* Chair Icon Section */}
+											<Box className="chair-container mb-2" sx={{ textAlign: "center", marginTop: "20px" }}>
+												{booking?.user?.profile_image ? (
+													<img src={import.meta.env.VITE_ASSET_API + booking?.user?.profile_image} alt="profile" style={{ width: "80px", height: "80px", borderRadius: "10px" }} />
+												) : (
+													<Box className="chair-icon" sx={{ backgroundColor: colors.primary, padding: "15px", borderRadius: "10px", display: "inline-block" }}>
+														<ChairIcon sx={{ fontSize: 50, color: "white" }} />
+													</Box>
+												)}
+
+												<div className="chair-label" style={{ marginTop: "5px", fontSize: "14px", color: "#555" }}>
+													{booking?.name}
+												</div>
+											</Box>
+
+											{/* Card Body Section */}
+											<div className="card-body text-center" style={{ borderTop: "2px dotted #D8D8D8" }}>
+												<h6 className="card-title">{booking?.user?.name}</h6>
+
+												<div className="row text-center">
+													<div className="col-6">
+														<h6>{booking?.plan?.name}</h6>
+														<p className="mb-0 text-muted">Plan</p>
+													</div>
+													<div className="col-6">
+														<h6>Booked</h6>
+														<p className="mb-0 text-muted">Status</p>
+													</div>
+													<div className="col-6">
+														<h6>{booking?.branch?.name}</h6>
+														<p className="mb-0 text-muted">Location</p>
+													</div>
+													<div className="col-6">
+														<h6>{booking?.floor?.name}</h6>
+														<p className="mb-0 text-muted">Floor</p>
+													</div>
+												</div>
+
+												{/* Display seats in this booking */}
+												<ul className="list-group mt-2">
+													{booking.chairs?.map((chair) => (
+														<li key={chair.id} className="list-group-item">
+															{`${chair.room_name}-${chair.table_name}${chair.chair_id}`}
+														</li>
+													))}
+												</ul>
+											</div>
+										</div>
+									</div>
+								))
 							) : (
 								<p>No seats found.</p>
 							)}

@@ -3,7 +3,7 @@ import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
-import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, MenuItem, Avatar, Select, CircularProgress, Snackbar, Dialog, DialogTitle, DialogContent, FormControl, InputLabel, RadioGroup, FormControlLabel, DialogActions, Radio } from "@mui/material";
+import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, MenuItem, Avatar, Select, CircularProgress, Snackbar, Dialog, DialogTitle, DialogContent, FormControl, InputLabel, RadioGroup, FormControlLabel, DialogActions, Radio, Alert, Tooltip } from "@mui/material";
 import { Search as SearchIcon, Download as DownloadIcon, Notifications as NotificationsIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "@/utils/axiosInstance";
@@ -35,6 +35,13 @@ const InvoiceManagement = () => {
 		payment_type: "",
 		receipt: null,
 	});
+
+	// Snackbar
+	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+
+	const handleCloseSnackbar = () => {
+		setSnackbar({ ...snackbar, open: false });
+	};
 
 	const handleStatusClick = (invoice) => {
 		if (invoice.status === "pending") {
@@ -80,16 +87,16 @@ const InvoiceManagement = () => {
 			});
 
 			if (res.data.success) {
-				setSnackbarMessage("Notification sent successfully!");
-				setSnackbarOpen(true);
+				setSnackbar({ open: true, message: "Notification sent successfully!", severity: "success" });
+
+				// Update this particular invoice's notified to true
+				setInvoices((prev) => prev.map((inv) => (inv.id === invoiceId ? { ...inv, notified: true } : inv)));
 			} else {
-				setSnackbarMessage("Failed to send notification.");
-				setSnackbarOpen(true);
+				setSnackbar({ open: true, message: "Failed to send notification.", severity: "error" });
 			}
 		} catch (error) {
-			console.error("Error sending notification:", error.response.data);
-			setSnackbarMessage("An error occurred while sending the notification.");
-			setSnackbarOpen(true);
+			console.error("Error sending notification:", error?.response?.data);
+			setSnackbar({ open: true, message: "An error occurred while sending the notification.", severity: "error" });
 		}
 	};
 
@@ -139,18 +146,15 @@ const InvoiceManagement = () => {
 			});
 
 			if (response.data.success) {
-				setSnackbarMessage("Invoice updated successfully!");
-				setSnackbarOpen(true);
+				setSnackbar({ open: true, message: "Invoice updated successfully!", severity: "success" });
 				setOpenDialog(false);
 				getInvoices(); // Refresh invoices list
 			} else {
-				setSnackbarMessage("Failed to update invoice.");
-				setSnackbarOpen(true);
+				setSnackbar({ open: true, message: "Failed to update invoice.", severity: "error" });
 			}
 		} catch (error) {
 			console.error("Error updating invoice:", error);
-			setSnackbarMessage("An error occurred while updating the invoice.");
-			setSnackbarOpen(true);
+			setSnackbar({ open: true, message: "An error occurred while updating the invoice.", severity: "error" });
 		}
 	};
 
@@ -316,9 +320,24 @@ const InvoiceManagement = () => {
 												<TableCell>Rs. {invoice.discount > 0 ? Math.round(invoice.amount - invoice.amount * (invoice.discount / 100)) : invoice.amount}</TableCell>
 												{user.type === "admin" && (
 													<TableCell>
-														<Button size="small" variant="outlined" startIcon={<NotificationsIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }} onClick={() => sendNotification(invoice.user.id, invoice.user.id, invoice.status)}>
-															Notify
-														</Button>
+														<Tooltip title={invoice.notified ? "Invoice has already been notified." : "Click to notify this customer"}>
+															<span>
+																<Button
+																	size="small"
+																	variant="outlined"
+																	startIcon={<NotificationsIcon />}
+																	sx={{
+																		borderColor: "#e0e0e0",
+																		color: invoice.notified ? "green" : "text.secondary",
+																		backgroundColor: invoice.notified ? "#ccffcc" : "white",
+																		"&:hover": { backgroundColor: invoice.notified ? "#ccffcc" : "#f5f5f5" },
+																	}}
+																	onClick={() => sendNotification(invoice.id, invoice.user.id, invoice.status)}
+																	disabled={invoice.notified}>
+																	{invoice.notified ? "Notified" : "Notify"}
+																</Button>
+															</span>
+														</Tooltip>
 													</TableCell>
 												)}
 											</TableRow>
@@ -418,7 +437,11 @@ const InvoiceManagement = () => {
 			</Dialog>
 
 			{/* Snackbar */}
-			<Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} message={snackbarMessage} />
+			<Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+				<Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+					{snackbar.message}
+				</Alert>
+			</Snackbar>
 		</>
 	);
 };
