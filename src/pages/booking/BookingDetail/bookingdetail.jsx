@@ -149,11 +149,12 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 							}}>
 							Start Date
 						</label>
+						{/* Added onChange handler to update start_date in booking details */}
 						<input
 							type="date"
 							name="start_date"
 							value={bookingdetails.start_date}
-							readOnly // Make the date field read-only so the user cannot change it
+							onChange={handleChange}
 							style={{
 								width: "100%",
 								padding: "10px",
@@ -251,13 +252,13 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 										{duration === "day"
 											? "Day (9AM to 5PM)"
 											: duration === "night"
-											? "Night (6PM to 8AM)"
-											: duration === "full_day"
-											? "Full Day"
-											: duration
-													.split("_")
-													.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-													.join(" ")}
+												? "Night (6PM to 8AM)"
+												: duration === "full_day"
+													? "Full Day"
+													: duration
+														.split("_")
+														.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+														.join(" ")}
 									</option>
 								))}
 							</select>
@@ -326,6 +327,38 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 							}}>
 							{totalPrice(selectedPlan)}
 						</div>
+					</div>
+					<div
+						style={{
+							// borderBottom: "1px solid #ddd",
+							fontSize: "14px",
+							color: "#333",
+							marginBottom: "15px"
+						}}>
+						<label
+							style={{
+								display: "block",
+								marginBottom: "5px",
+								fontWeight: "400", // Optional: for better label visibility
+								marginLeft: 0,
+							}}>
+							Admin Help
+						</label>
+						<textarea
+							name="description"
+							value={bookingdetails.description}
+							onChange={(e) => setBookingDetails({ ...bookingdetails, description: e.target.value })}
+							placeholder="Enter description..."
+							style={{
+								width: "100%",
+								height: "70px",
+								padding: "12px",
+								fontSize: "14px",
+								border: "1px solid rgb(181, 179, 179)",
+								borderRadius: "4px",
+								resize: "none",
+							}}
+						/>
 					</div>
 
 					{/* Buttons */}

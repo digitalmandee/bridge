@@ -366,30 +366,7 @@ const Payment = () => {
 										</li>
 									))
 								)}
-								<li
-									style={{
-										// borderBottom: "1px solid #ddd",
-										padding: "8px 14px",
-										fontSize: "14px",
-										color: "#333",
-									}}>
-									<span style={{ fontWeight: "bold" }}>Admin Help</span>
-									<textarea
-										name="description"
-										value={bookingdetails.description}
-										onChange={(e) => setBookingDetails({ ...bookingdetails, description: e.target.value })}
-										placeholder="Enter description..."
-										style={{
-											width: "100%",
-											height: "70px",
-											padding: "12px",
-											fontSize: "14px",
-											border: "1px solid rgb(181, 179, 179)",
-											borderRadius: "4px",
-											resize: "none",
-										}}
-									/>
-								</li>
+
 							</ul>
 						</>
 					)}

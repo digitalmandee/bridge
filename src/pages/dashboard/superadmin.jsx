@@ -2,91 +2,14 @@ import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/superadmin/topNavbar";
 import Sidebar from "@/components/superadmin/leftSideBar";
 import colors from "@/assets/styles/color";
-import { Box, Card, CardContent, Typography, Grid, Button, Select, MenuItem } from "@mui/material";
-import { Bar, Doughnut } from "react-chartjs-2";
-import PeopleIcon from "@mui/icons-material/People";
-import SpaceBarIcon from "@mui/icons-material/SpaceBar";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useNavigate } from "react-router-dom";
+import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
+import { Box, InputLabel, FormControl, TextField, Button, Select, MenuItem } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/utils/axiosInstance";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
-
-// Revenue chart data
-const revenueChartData = {
-	labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov"],
-	datasets: [
-		{
-			label: "Income",
-			data: [400, 200, 600, 200, 400, 600, 400, 600, 400, 600, 400],
-			backgroundColor: "#4C6FFF",
-			barThickness: 12,
-			borderRadius: 4,
-		},
-		{
-			label: "Expenses",
-			data: [500, 600, 400, 600, 300, 400, 300, 400, 300, 400, 300],
-			backgroundColor: "#FF8F6B",
-			barThickness: 12,
-			borderRadius: 4,
-		},
-		{
-			label: "Profit",
-			data: [200, 200, 400, 200, 200, 300, 200, 300, 200, 400, 200],
-			backgroundColor: "#00E1C2",
-			barThickness: 12,
-			borderRadius: 4,
-		},
-	],
-};
-
-const revenueChartOptions = {
-	responsive: true,
-	plugins: {
-		legend: {
-			display: false,
-		},
-	},
-	scales: {
-		y: {
-			beginAtZero: true,
-			grid: {
-				drawBorder: false,
-			},
-			ticks: {
-				maxTicksLimit: 5,
-			},
-		},
-		x: {
-			grid: {
-				display: false,
-			},
-		},
-	},
-};
-
-const floorPlanData = {
-	labels: ["Available", "Occupied"],
-	datasets: [
-		{
-			data: [32, 14],
-			backgroundColor: ["#4C6FFF", "#34A853"],
-			borderWidth: 0,
-		},
-	],
-};
-
-const floorPlanOptions = {
-	cutout: "70%",
-	plugins: {
-		legend: {
-			display: false,
-		},
-	},
-};
 
 const SuperAdminDashboard = () => {
 	const navigate = useNavigate();
@@ -94,6 +17,134 @@ const SuperAdminDashboard = () => {
 	const [branches, setBranches] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [data, setData] = useState(null);
+
+	const [daySeats, setDaySeats] = useState(0);
+	const [nightSeats, setNightSeats] = useState(0);
+	const [fullSeats, setFullSeats] = useState(0);
+	const [totalSeats, setTotalSeats] = useState(0);
+
+	// const navigate = useNavigate();
+
+	const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+	// Mocked 12 months of revenue
+	const [revenue, setRevenue] = useState([]);
+
+	const [membershipRevenue, setMembershipRevenue] = useState([]);
+
+	const chartData = {
+		labels: months,
+		datasets: [
+			{
+				label: "Revenue",
+				data: revenue,
+				backgroundColor: "#FFF0BA",
+				barThickness: 15,
+			},
+			{
+				label: "Membership (Bookings)",
+				data: membershipRevenue,
+				backgroundColor: "#FFCC16",
+				barThickness: 15,
+			},
+		],
+	};
+
+	const chartOptions = {
+		responsive: true,
+		scales: {
+			y: {
+				beginAtZero: true,
+				max: Math.max([...revenue, ...membershipRevenue]) + 5000,
+				grid: { drawBorder: false },
+			},
+			x: { grid: { display: false } },
+		},
+		plugins: {
+			legend: {
+				position: "top",
+				align: "start",
+				labels: { boxWidth: 12, usePointStyle: true, pointStyle: "circle" },
+			},
+		},
+	};
+
+	const chartDataSeats = {
+		labels: ["Day seats", "Night seats", "Full day seats", "Total seats"],
+		datasets: [
+			{
+				label: "Seats Booked",
+				data: [daySeats, nightSeats, fullSeats, totalSeats],
+				backgroundColor: ["#60A5FA", "#34D399", "#FBB6CE", "#FACC15"],
+			},
+		],
+	};
+
+	const seatsChartOptions = {
+		responsive: true,
+		plugins: {
+			legend: { position: "top" },
+			title: { display: true, text: "Seats Booking Distribution" },
+		},
+	};
+
+	const stats = [
+		{ label: "Customer", new: { value: 0, change: 90.5 }, lost: { value: 0, change: 0.0 } },
+		{ label: "Invoice", paid: { value: 0, change: 90.5 }, overdue: { value: 0, change: 16.75 } },
+		{ label: "Booking", new: { value: 0, change: 84.5 }, lost: { value: 0, change: 0.0 } },
+	];
+
+	const containerStyle = {
+		// padding: '1.5rem',
+		backgroundColor: "transparent",
+		minHeight: "100vh",
+		width: "100%",
+		transition: "all 0.3s ease-in-out",
+		marginLeft: "0px",
+	};
+
+	const cardStyle = {
+		backgroundColor: "#FFFFFF",
+		width: "100%",
+		borderRadius: "0.2rem",
+		padding: "1rem",
+		boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+		border: "1px solid #E5E7EB",
+	};
+
+	const metricsGridStyle = {
+		width: "100%",
+		display: "flex",
+		justifyContent: "space-between",
+		alignItems: "flex-start",
+		// gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+		gap: "2rem",
+	};
+
+	const columnStyle = {
+		display: "flex",
+		flexDirection: "column",
+		width: "50%", // Each section takes half the width
+	};
+
+	const statsGridStyle = {
+		marginTop: "1rem",
+		display: "grid",
+		gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+		gap: "1rem",
+	};
+	// added code finance
+
+	const [stats1, setStats1] = useState(0);
+	const [selectedDate, setSelectedDate] = useState("");
+
+	const handleDateChange = (event) => {
+		setSelectedDate(event.target.value);
+	};
+
+	// State for Month and Year
+	const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
+	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
 
 	const getBranches = async () => {
 		await axiosInstance.get("/dashboard/branches").then((res) => {
@@ -106,10 +157,23 @@ const SuperAdminDashboard = () => {
 		});
 	};
 
-	const getStats = async () => {
+	const getStats = async (month = selectedMonth, year = selectedYear, date = selectedDate) => {
 		setIsLoading(true);
 		try {
-			const res = await axiosInstance.get(`/dashboard/branch/stats?branch=${selectedBranch}`);
+			const res = await axiosInstance.get(`/dashboard/branch/stats?branch=${selectedBranch}`, {
+				params: {
+					month,
+					year,
+					date, // pass this if it's not ''
+				},
+			});
+			setRevenue(res.data.revenue);
+			setMembershipRevenue(res.data.bookings);
+			setStats1(res.data);
+			setDaySeats(res.data.day_seats);
+			setNightSeats(res.data.night_seats);
+			setFullSeats(res.data.full_seats);
+			setTotalSeats(res.data.total_seats);
 			setData(res.data);
 		} catch (error) {
 			console.log(error);
@@ -126,7 +190,17 @@ const SuperAdminDashboard = () => {
 		if (selectedBranch) {
 			getStats();
 		}
-	}, [selectedBranch]);
+	}, [selectedBranch, selectedMonth, selectedYear, selectedDate]);
+
+	const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+	const handleMonthChange = (event) => {
+		setSelectedMonth(event.target.value);
+	};
+
+	const handleYearChange = (event) => {
+		setSelectedYear(event.target.value);
+	};
 
 	return (
 		<>
@@ -138,7 +212,7 @@ const SuperAdminDashboard = () => {
 				<div className="content">
 					<Box sx={{ p: 1 }}>
 						{/* Back to Dashboard Header */}
-						<Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+						<Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
 							<Button
 								// startIcon={<ArrowBackIcon />}
 								sx={{
@@ -151,51 +225,50 @@ const SuperAdminDashboard = () => {
 								}}>
 								Dashboard
 							</Button>
-						</Box>
-
-						{/* Action Buttons */}
-						<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-							<Box></Box> {/* Empty box for spacing */}
-							<Box sx={{ display: "flex", gap: 2 }}>
-								<Button
-									variant="outlined"
-									sx={{
-										backgroundColor: "background.paper",
-										color: "text.primary",
-										borderColor: "divider",
-										borderRadius: "4px",
-										textTransform: "none",
-									}}>
-									View Report
-								</Button>
-								<Select
-									value={selectedBranch}
-									size="small"
-									sx={{
-										bgcolor: "background.paper",
-										minWidth: 120,
-										height: "36px",
-										borderRadius: "4px",
-									}}
-									onChange={(e) => setSelectedBranch(e.target.value)}>
-									{branches.length > 0 &&
-										branches.map((item) => (
-											<MenuItem key={item.id} value={item.id}>
-												{item.name}
-											</MenuItem>
-										))}
-								</Select>
-								<Button
-									variant="contained"
-									sx={{
-										bgcolor: colors.primary,
-										"&:hover": { bgcolor: colors.primary },
-										borderRadius: "4px",
-										textTransform: "none",
-									}}
-									onClick={() => navigate("/super-admin/branch/create")}>
-									Add New Branch
-								</Button>
+							{/* Action Buttons */}
+							<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+								<Box></Box> {/* Empty box for spacing */}
+								<Box sx={{ display: "flex", gap: 2 }}>
+									<Button
+										variant="outlined"
+										sx={{
+											backgroundColor: "background.paper",
+											color: "text.primary",
+											borderColor: "divider",
+											borderRadius: "4px",
+											textTransform: "none",
+										}}>
+										View Report
+									</Button>
+									<Select
+										value={selectedBranch}
+										size="small"
+										sx={{
+											bgcolor: "background.paper",
+											minWidth: 120,
+											height: "36px",
+											borderRadius: "4px",
+										}}
+										onChange={(e) => setSelectedBranch(e.target.value)}>
+										{branches.length > 0 &&
+											branches.map((item) => (
+												<MenuItem key={item.id} value={item.id}>
+													{item.name}
+												</MenuItem>
+											))}
+									</Select>
+									<Button
+										variant="contained"
+										sx={{
+											bgcolor: colors.primary,
+											"&:hover": { bgcolor: colors.primary },
+											borderRadius: "4px",
+											textTransform: "none",
+										}}
+										onClick={() => navigate("/super-admin/branch/create")}>
+										Add New Branch
+									</Button>
+								</Box>
 							</Box>
 						</Box>
 
@@ -203,185 +276,206 @@ const SuperAdminDashboard = () => {
 						{isLoading}
 						{!isLoading ? (
 							<>
-								{/* Metric Cards */}
-								<Grid container spacing={2} sx={{ mb: 3 }}>
-									{[
-										{ title: "Total Members", value: data?.total_members, icon: PeopleIcon, color: colors.primary },
-										{ title: "Available Space", value: data?.total_available_chairs, icon: SpaceBarIcon, color: colors.primary },
-										{ title: "Total Revenue", value: data?.total_revenue, icon: AttachMoneyIcon, color: colors.primary },
-										{ title: "P&L", value: "329", icon: BarChartIcon, color: colors.primary },
-									].map((item, index) => (
-										<Grid item xs={12} sm={6} md={3} key={index}>
-											<Card
-												sx={{
-													boxShadow: "none",
-													border: "1px solid",
-													borderColor: "divider",
-													borderRadius: "8px",
-												}}>
-												<CardContent sx={{ p: 2 }}>
-													<Typography variant="body2" color="text.secondary" gutterBottom>
-														{item.title}
-													</Typography>
-													<Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 1 }}>
-														<Typography variant="h5" sx={{ fontWeight: "bold" }}>
-															{item.value}
-														</Typography>
-														<Box
-															sx={{
-																bgcolor: item.color,
-																borderRadius: "8px",
-																p: 1,
-																display: "flex",
-																alignItems: "center",
-																justifyContent: "center",
-															}}>
-															<item.icon sx={{ color: "#fff", fontSize: 24 }} />
-														</Box>
-													</Box>
-												</CardContent>
-											</Card>
-										</Grid>
-									))}
-								</Grid>
+								<div style={containerStyle}>
+									<Box sx={{ display: "flex", justifyContent: "end", alignItems: "center", pt: 1 }}>
+										{/* Month and Year Selection */}
+										<Box sx={{ display: "flex", gap: 2 }}>
+											<FormControl>
+												<TextField label="Select Date" type="date" InputLabelProps={{ shrink: true }} size="small" value={selectedDate} onChange={handleDateChange} />
+											</FormControl>
+											<FormControl>
+												<InputLabel>Month</InputLabel>
+												<Select value={selectedMonth} onChange={handleMonthChange} label="Month" size="small">
+													<MenuItem value={0}>All Months</MenuItem> {/* Added option for All Months */}
+													{monthNames.map((month, index) => (
+														<MenuItem key={index} value={index + 1}>
+															{month}
+														</MenuItem>
+													))}
+												</Select>
+											</FormControl>
+											<FormControl>
+												<InputLabel>Year</InputLabel>
+												<Select value={selectedYear} onChange={handleYearChange} label="Year" size="small">
+													{Array.from({ length: 5 }, (_, index) => (
+														<MenuItem key={index} value={new Date().getFullYear() - index}>
+															{new Date().getFullYear() - index}
+														</MenuItem>
+													))}
+												</Select>
+											</FormControl>
+										</Box>
+									</Box>
+									{/* Metrics */}
 
-								{/* Charts Section */}
-								<Grid container spacing={2}>
-									{/* Revenue Chart */}
-									<Grid item xs={12} md={7}>
-										<Card
-											sx={{
-												boxShadow: "none",
-												border: "1px solid",
-												borderColor: "divider",
-												borderRadius: "8px",
-												height: "100%",
+									<div style={metricsGridStyle}>
+										{/* Revenue Section */}
+										<div style={columnStyle}>
+											<h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "0.5rem" }}>Revenue</h3>
+											<div style={{ display: "flex", gap: "0.5rem" }}>
+												{[
+													{ label: "Total Revenue", value: stats1.total_revenue, unit: "Pkr", change: stats1?.growth?.total_revenue, increase: true },
+													{ label: "Total Expense", value: stats1.total_expense, unit: "Pkr", change: stats1?.growth?.total_expense, increase: false },
+													{ label: "Total PNL", value: stats1.total_pl, unit: "Pkr", change: stats1?.growth?.total_pl, increase: true },
+													{ label: "Total Seats", value: stats1.total_chairs },
+													{ label: "Occupied Seats", value: stats1.booked_chairs },
+													{ label: "Occupancy %", value: ((stats1.booked_chairs / stats1.total_chairs) * 100).toFixed(2) },
+													{ label: "Available Seats", value: stats1.available_chairs },
+													{ label: "Total Members", value: stats1.total_members },
+												]
+													.slice(0, 3)
+													.map((metric, i) => (
+														<div key={i} style={cardStyle}>
+															<div style={{ display: "flex", flexDirection: "column" }}>
+																<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
+																<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
+																	<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
+																	<span style={{ fontSize: "0.875rem", color: "#6B7280" }}>{metric.unit}</span>
+																</div>
+																<div style={{ display: "flex", alignItems: "center", marginTop: "1rem", fontSize: "0.875rem", color: parseFloat(metric.change) >= 0 ? "#16A34A" : "#DC2626" }}>
+																	{/* {stats1?.growth?.total_pl >= 0 ? "↑" : "↓"} */}
+																	{parseFloat(metric.change) >= 0 ? "↑" : "↓"}
+																	<span>{metric.change}%</span>
+																</div>
+															</div>
+														</div>
+													))}
+											</div>
+										</div>
+										{/* Occupancy Section */}
+										<div style={columnStyle}>
+											<h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "0.5rem" }}>Occupancy</h3>
+											<div style={{ display: "flex", gap: "0.5rem" }}>
+												{[
+													{ label: "Total Revenue", value: stats1.total_revenue, unit: "Pkr", change: stats1?.growth?.total_revenue, increase: true },
+													{ label: "Total Expense", value: stats1.total_expense, unit: "Pkr", change: stats1?.growth?.total_expense, increase: false },
+													{ label: "Total PNL", value: stats1.total_pl, unit: "Pkr", change: stats1?.growth?.total_pl, increase: true },
+													{ label: "Total Seats", value: stats1.total_chairs },
+													// { label: "Occupied Seats", value: stats1.booked_chairs },
+													{ label: "Occupancy Seats %", value: ((stats1.booked_chairs / stats1.total_chairs) * 100).toFixed(2) },
+													{ label: "Available Seats", value: stats1.available_chairs },
+													{ label: "Total Members", value: stats1.total_members },
+												]
+													.slice(3, 7)
+													.map((metric, i) => (
+														<div key={i} style={cardStyle}>
+															<div style={{ display: "flex", flexDirection: "column" }}>
+																<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
+																<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
+																	<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
+																</div>
+															</div>
+														</div>
+													))}
+											</div>
+										</div>
+									</div>
+									{/* Analytics and Notifications */}
+									<div
+										style={{
+											display: "grid",
+											gridTemplateColumns: "minmax(600px, 1fr) auto",
+											// gridTemplateColumns: isSidebarOpen ? "minmax(500px, 1fr) 21rem" : "2fr 1fr",
+											gap: "0.5rem",
+											width: "100%",
+											transition: "grid-template-columns 0.3s ease-in-out",
+										}}>
+										<div
+											style={{
+												marginTop: "1rem",
+												height: "30rem",
+												// width: '45rem',
+												transition: "width 0.3s ease-in-out",
+												width: "45rem",
+												backgroundColor: "#FFFFFF",
+												borderRadius: "0.2rem",
+												boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+												border: "1px solid #E5E7EB",
 											}}>
-											<CardContent sx={{ p: 3 }}>
-												<Typography variant="h6" sx={{ mb: 1 }}>
-													Revenue
-												</Typography>
-												<Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-													Your Revenue This Year
-												</Typography>
+											<div style={{ padding: "1rem" }}>
+												<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+													<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Analytics</h2>
+													<select style={{ fontSize: "0.875rem", border: "1px solid #D1D5DB", borderRadius: "1rem", padding: "0.25rem 0.5rem", backgroundColor: "white" }}>
+														<option>Dec</option>
+													</select>
+												</div>
+												<div style={{ height: "400px" }}>
+													<Bar data={chartData} options={chartOptions} />
+												</div>
+											</div>
+										</div>
 
-												{/* Revenue Summary */}
-												<Box sx={{ display: "flex", gap: 4, mb: 3 }}>
-													<Box>
-														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-															<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#4C6FFF" }}></Box>
-															<Typography variant="body2" color="text.secondary">
-																Income
-															</Typography>
-														</Box>
-														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-															<Typography variant="h6" sx={{ fontWeight: "bold" }}>
-																RS. 26,000
-															</Typography>
-															<Typography variant="body2" color="success.main">
-																10% ↑
-															</Typography>
-														</Box>
-													</Box>
-
-													<Box>
-														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-															<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#FF8F6B" }}></Box>
-															<Typography variant="body2" color="text.secondary">
-																Expenses
-															</Typography>
-														</Box>
-														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-															<Typography variant="h6" sx={{ fontWeight: "bold" }}>
-																RS. 18,000
-															</Typography>
-															<Typography variant="body2" color="error.main">
-																10% ↑
-															</Typography>
-														</Box>
-													</Box>
-
-													<Box>
-														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-															<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#00E1C2" }}></Box>
-															<Typography variant="body2" color="text.secondary">
-																Profit
-															</Typography>
-														</Box>
-														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-															<Typography variant="h6" sx={{ fontWeight: "bold" }}>
-																RS. 8,000
-															</Typography>
-															<Typography variant="body2" color="success.main">
-																3% ↑
-															</Typography>
-														</Box>
-													</Box>
-												</Box>
-
-												<Box sx={{ height: 300 }}>
-													<Bar data={revenueChartData} options={revenueChartOptions} />
-												</Box>
-											</CardContent>
-										</Card>
-									</Grid>
-
-									{/* Floor Plan Chart */}
-									<Grid item xs={12} md={5}>
-										<Card
-											sx={{
-												boxShadow: "none",
-												border: "1px solid",
-												borderColor: "divider",
-												borderRadius: "8px",
-												height: "100%",
+										{/* Second graph - Booked seats */}
+										<div
+											style={{
+												marginTop: "1rem",
+												height: "30rem",
+												backgroundColor: "#FFFFFF",
+												borderRadius: "0.2rem",
+												boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+												border: "1px solid #E5E7EB",
 											}}>
-											<CardContent sx={{ p: 3 }}>
-												<Box sx={{ position: "relative", height: 300, display: "flex", justifyContent: "center" }}>
-													<Doughnut data={floorPlanData} options={floorPlanOptions} />
-													<Box
-														sx={{
-															position: "absolute",
-															top: "50%",
-															left: "50%",
-															transform: "translate(-50%, -50%)",
-															textAlign: "center",
-														}}>
-														<Typography variant="body1" sx={{ fontWeight: "medium" }}>
-															Floor Plan
-														</Typography>
-														<Typography variant="h4" sx={{ fontWeight: "bold" }}>
-															46
-														</Typography>
-														<Typography variant="body2" color="text.secondary">
-															seats
-														</Typography>
-													</Box>
-												</Box>
-
-												{/* Floor Plan Stats */}
-												<Box sx={{ mt: 3 }}>
-													<Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-															<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#4C6FFF" }}></Box>
-															<Typography>Available</Typography>
-														</Box>
-														<Typography>32</Typography>
-														<Typography>62.5%</Typography>
-													</Box>
-													<Box sx={{ display: "flex", justifyContent: "space-between" }}>
-														<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-															<Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#34A853" }}></Box>
-															<Typography>Occupied</Typography>
-														</Box>
-														<Typography>14</Typography>
-														<Typography>38.2%</Typography>
-													</Box>
-												</Box>
-											</CardContent>
-										</Card>
-									</Grid>
-								</Grid>
+											<div style={{ padding: "1rem" }}>
+												<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+													<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Seats Booked</h2>
+												</div>
+												<div style={{ height: "400px" }}>
+													<Bar data={chartDataSeats} options={seatsChartOptions} />
+												</div>
+											</div>
+										</div>
+									</div>
+									{/* Stats */}
+									<div style={statsGridStyle}>
+										{stats.map((stat, i) => (
+											<div key={i} style={cardStyle}>
+												<h3 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827", marginBottom: "1rem" }}>{stat.label}</h3>
+												<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+													{"new" in stat && (
+														<>
+															<div>
+																<div style={{ fontSize: "0.875rem", color: "#6B7280" }}>New</div>
+																<div style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827", marginTop: "0.25rem" }}>{stat.new.value}</div>
+																<div style={{ fontSize: "0.875rem", color: "#16A34A", display: "flex", alignItems: "center", marginTop: "0.25rem" }}>
+																	<ArrowUpIcon style={{ width: "0.75rem", height: "0.75rem", marginRight: "0.25rem" }} />
+																	{stat.new.change}%
+																</div>
+															</div>
+															<div>
+																<div style={{ fontSize: "0.875rem", color: "#6B7280" }}>Lost</div>
+																<div style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827", marginTop: "0.25rem" }}>{stat.lost.value}</div>
+																<div style={{ fontSize: "0.875rem", color: "#DC2626", display: "flex", alignItems: "center", marginTop: "0.25rem" }}>
+																	<ArrowDownIcon style={{ width: "0.75rem", height: "0.75rem", marginRight: "0.25rem" }} />
+																	{stat.lost.change}%
+																</div>
+															</div>
+														</>
+													)}
+													{"paid" in stat && (
+														<>
+															<div>
+																<div style={{ fontSize: "0.875rem", color: "#6B7280" }}>Paid</div>
+																<div style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827", marginTop: "0.25rem" }}>{stat.paid.value}</div>
+																<div style={{ fontSize: "0.875rem", color: "#16A34A", display: "flex", alignItems: "center", marginTop: "0.25rem" }}>
+																	<ArrowUpIcon style={{ width: "0.75rem", height: "0.75rem", marginRight: "0.25rem" }} />
+																	{stat.paid.change}%
+																</div>
+															</div>
+															<div>
+																<div style={{ fontSize: "0.875rem", color: "#6B7280" }}>Overdue</div>
+																<div style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827", marginTop: "0.25rem" }}>{stat.overdue.value}</div>
+																<div style={{ fontSize: "0.875rem", color: "#DC2626", display: "flex", alignItems: "center", marginTop: "0.25rem" }}>
+																	<ArrowDownIcon style={{ width: "0.75rem", height: "0.75rem", marginRight: "0.25rem" }} />
+																	{stat.overdue.change}%
+																</div>
+															</div>
+														</>
+													)}
+												</div>
+											</div>
+										))}
+									</div>
+								</div>
 							</>
 						) : (
 							""

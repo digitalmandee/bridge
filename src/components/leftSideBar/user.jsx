@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { Button } from "@mui/material";
 import { RxDashboard } from "react-icons/rx";
@@ -6,9 +6,12 @@ import { FaAngleRight } from "react-icons/fa6";
 import "./style.css";
 import { SlCalender } from "react-icons/sl";
 import { TbContract, TbFileInvoice } from "react-icons/tb";
+import SeatBooking from "../SeatBooking";
+import axiosInstance from "@/utils/axiosInstance";
 
 const menuItems = [
 	{ to: "/user/dashboard", label: "Dashboard", icon: <RxDashboard /> },
+	{ to: "/user/booking-request", label: "Seats Booking Request", icon: <RxDashboard /> },
 	{
 		label: "Booking Management",
 		icon: <SlCalender />,
@@ -30,44 +33,72 @@ const User = () => {
 	const toggleDropdown = (label) => {
 		setOpenDropdown(openDropdown === label ? null : label);
 	};
+	const [bookings, setBookings] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
+
+	const fetchBookings = async () => {
+		setIsLoading(true);
+		try {
+			const res = await axiosInstance.get('/api/booking-request');
+			if (res.data && Array.isArray(res.data.data)) {
+				setBookings(res.data.data);
+			}
+		} catch (error) {
+			console.error("Error fetching bookings:", error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchBookings();
+	}, []);
+
 
 	return (
-		<ul>
-			{menuItems.map((item, index) => (
-				<li key={index}>
-					{item.dropdown ? (
-						<>
-							<Button className={`w-100 ${openDropdown === item.label ? "active-button" : ""}`} onClick={() => toggleDropdown(item.label)}>
-								<span className="icon">{item.icon}</span>
-								{item.label}
-								<span className={`arrow ${openDropdown === item.label ? "rotate" : ""}`}>
-									<FaAngleRight />
-								</span>
-							</Button>
-							{openDropdown === item.label && (
-								<ul className="submenu">
-									{item.dropdown.map((subItem, subIndex) => (
-										<li key={subIndex}>
-											<Link to={"/" + branch + subItem.to}>{subItem.label}</Link>
-										</li>
-									))}
-								</ul>
-							)}
-						</>
-					) : (
-						<Link to={"/" + branch + item.to}>
-							<Button className={`w-100 ${location.pathname === item.to ? "active-button" : ""}`}>
-								<span className="icon">{item.icon}</span>
-								{item.label}
-								<span className="arrow">
-									<FaAngleRight />
-								</span>
-							</Button>
-						</Link>
-					)}
-				</li>
-			))}
-		</ul>
+		<>
+			<div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: '16px' }}>
+				<SeatBooking />
+			</div>
+
+			<ul>
+				{menuItems.map((item, index) => (
+					<li key={index}>
+						{item.dropdown ? (
+							<>
+								<Button className={`w-100 ${openDropdown === item.label ? "active-button" : ""}`} onClick={() => toggleDropdown(item.label)}>
+									<span className="icon">{item.icon}</span>
+									{item.label}
+									<span className={`arrow ${openDropdown === item.label ? "rotate" : ""}`}>
+										<FaAngleRight />
+									</span>
+								</Button>
+								{openDropdown === item.label && (
+									<ul className="submenu">
+										{item.dropdown.map((subItem, subIndex) => (
+											<li key={subIndex}>
+												<Link to={"/" + branch + subItem.to}>{subItem.label}</Link>
+											</li>
+										))}
+									</ul>
+								)}
+							</>
+						) : (
+							<Link to={"/" + branch + item.to}>
+								<Button className={`w-100 ${location.pathname === item.to ? "active-button" : ""}`}>
+									<span className="icon">{item.icon}</span>
+									{item.label}
+									<span className="arrow">
+										<FaAngleRight />
+									</span>
+								</Button>
+							</Link>
+						)}
+					</li>
+				))}
+			</ul>
+		</>
+
 	);
 };
 

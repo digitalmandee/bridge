@@ -92,8 +92,19 @@ import PayrollSummary from "./pages/payroll/summary";
 import EmployeSalary from "./pages/payroll/empsalary";
 import SalaryComponent from "./pages/payroll/salarycomp";
 import PaySlip from "./pages/payroll/payslip";
+import TableManagement from "./pages/booking/floorplan/table";
+import CreateTable from "./pages/booking/floorplan/table/create";
+import RoomManagement from "./pages/booking/floorplan/rooms";
+import CreateRoom from "./pages/booking/floorplan/rooms/create";
+import BookingRequest from "./pages/booking/SeatsBookingRequest/BookingRequest";
+import { useState } from "react";
+import axiosInstance from "./utils/axiosInstance";
+import SeatBooking from "./components/SeatBooking";
 
 function AuthRoutes() {
+
+
+
 	return (
 		<Routes>
 			<Route path="" element={<Welcome />} />
@@ -104,6 +115,14 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="user">
 						<UserDashboard />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="/user/booking-request"
+				element={
+					<ProtectedRoute role="user">
+						<BookingRequest />
 					</ProtectedRoute>
 				}
 			/>
@@ -234,7 +253,40 @@ function AuthRoutes() {
 					</ProtectedRoute>
 				}
 			/>
+			<Route
+				path="branch/floorplan/tables"
+				element={
+					<ProtectedRoute role="admin" permission="floor-plan">
+						<TableManagement />
+					</ProtectedRoute>
+				}
+			/>
 
+			<Route
+				path="branch/floorplan/tables/create"
+				element={
+					<ProtectedRoute role="admin" permission="floor-plan">
+						<CreateTable />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="branch/floorplan/rooms"
+				element={
+					<ProtectedRoute role="admin" permission="floor-plan">
+						<RoomManagement />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/floorplan/rooms/create"
+				element={
+					<ProtectedRoute role="admin" permission="floor-plan">
+						<CreateRoom />
+					</ProtectedRoute>
+				}
+			/>
 			<Route
 				path="branch/floorplan/chairs/create"
 				element={
