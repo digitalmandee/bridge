@@ -5,7 +5,7 @@ import { Bell, FileText } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-const DashboardNotifications = () => {
+const DashboardNotifications = ({ mainStyle = true }) => {
 	const { user } = useContext(AuthContext);
 
 	const { branch } = useParams();
@@ -29,7 +29,7 @@ const DashboardNotifications = () => {
 		getNotifications();
 	}, []);
 	return (
-		<div style={notificationsStyle}>
+		<div style={mainStyle ? notificationsStyle : {}}>
 			<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
 				<h2 onClick={() => navigate(user.type === "admin" ? `/${branch}/branch/notifications` : `/${branch}/` + user.type + "/notifications")} style={{ cursor: "pointer", fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>
 					Notifications
@@ -79,3 +79,4 @@ const notificationsStyle = {
 	transition: "width 0.3s ease-in-out",
 	scrollbarWidth: "none",
 };
+

@@ -16,59 +16,92 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 
 const AdminDashboard = ({ isSidebarOpen }) => {
 	const context = useContext(SidebarContext);
+	const [daySeats, setDaySeats] = useState(0);
+	const [nightSeats, setNightSeats] = useState(0);
+	const [fullSeats, setFullSeats] = useState(0);
+	const [totalSeats, setTotalSeats] = useState(0);
+
 	// const navigate = useNavigate();
 
-	const months = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-];
+	const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-// Mocked 12 months of revenue
-const revenue = [40000, 32000, 35000, 45000, 35000, 45000, 35000, 30000, 37000, 41000, 38000, 44000];
-const membershipRevenue = [35000, 30000, 28000, 35000, 28000, 30000, 35000, 32000, 35000, 37000, 34000, 40000 ];
+	// Mocked 12 months of revenue
+	const [revenue, setRevenue] = useState([]);
 
-const chartData = {
-  labels: months,
-  datasets: [
-    {
-      label: "Revenue",
-      data: revenue,
-      backgroundColor: "#FFF0BA",
-      barThickness: 15,
-    },
-    {
-      label: "Membership Revenue",
-      data: membershipRevenue,
-      backgroundColor: "#FFCC16",
-      barThickness: 15,
-    },
-  ],
-};
+	const [membershipRevenue, setMembershipRevenue] = useState([]);
 
-const chartOptions = {
-  responsive: true,
-  scales: {
-    y: { 
-      beginAtZero: true, 
-      max: Math.max([...revenue, ...membershipRevenue]) + 5000,
-      grid: { drawBorder: false },
-    },
-    x: { grid: { display: false } },
-  },
-  plugins: {
-    legend: { 
-      position: "top", 
-      align: "start",
-      labels: { boxWidth: 12, usePointStyle: true, pointStyle: "circle" },
-    },
-  },
-};
+	useEffect(() => {
+		axiosInstance
+			.get("/finance/get-analytics")
+			.then((res) => res.data)
+			.then((data) => {
+				setRevenue(data.revenue);
+				setMembershipRevenue(data.bookings);
+			})
+			.catch((err) => console.error(err));
+	}, []);
+
+	const chartData = {
+		labels: months,
+		datasets: [
+			{
+				label: "Revenue",
+				data: revenue,
+				backgroundColor: "#FFF0BA",
+				barThickness: 15,
+			},
+			{
+				label: "Membership (Bookings)",
+				data: membershipRevenue,
+				backgroundColor: "#FFCC16",
+				barThickness: 15,
+			},
+		],
+	};
+
+	const chartOptions = {
+		responsive: true,
+		scales: {
+			y: {
+				beginAtZero: true,
+				max: Math.max([...revenue, ...membershipRevenue]) + 5000,
+				grid: { drawBorder: false },
+			},
+			x: { grid: { display: false } },
+		},
+		plugins: {
+			legend: {
+				position: "top",
+				align: "start",
+				labels: { boxWidth: 12, usePointStyle: true, pointStyle: "circle" },
+			},
+		},
+	};
+
+	const chartDataSeats = {
+		labels: ["Day seats", "Night seats", "Full day seats", "Total seats"],
+		datasets: [
+			{
+				label: "Seats Booked",
+				data: [daySeats, nightSeats, fullSeats, totalSeats],
+				backgroundColor: ["#60A5FA", "#34D399", "#FBB6CE", "#FACC15"],
+			},
+		],
+	};
+
+	const seatsChartOptions = {
+		responsive: true,
+		plugins: {
+			legend: { position: "top" },
+			title: { display: true, text: "Seats Booking Distribution" },
+		},
+	};
 
 	const stats = [
-		{ label: "Customer", new: { value: 35, change: 90.5 }, lost: { value: 0, change: 0.0 } },
-		{ label: "Member", new: { value: 70, change: 100 }, lost: { value: 0, change: 0.0 } },
-		{ label: "Invoice", paid: { value: 30, change: 90.5 }, overdue: { value: 4, change: 16.75 } },
-		{ label: "Booking", new: { value: 2, change: 84.5 }, lost: { value: 0, change: 0.0 } },
+		{ label: "Customer", new: { value: 0, change: 90.5 }, lost: { value: 0, change: 0.0 } },
+		{ label: "Member", new: { value: 0, change: 100 }, lost: { value: 0, change: 0.0 } },
+		{ label: "Invoice", paid: { value: 0, change: 90.5 }, overdue: { value: 0, change: 16.75 } },
+		{ label: "Booking", new: { value: 0, change: 84.5 }, lost: { value: 0, change: 0.0 } },
 	];
 
 	const containerStyle = {
@@ -134,6 +167,10 @@ const chartOptions = {
 			});
 			if (res.data.success) {
 				setStats1(res.data);
+				setDaySeats(res.data.day_seats);
+				setNightSeats(res.data.night_seats);
+				setFullSeats(res.data.full_seats);
+				setTotalSeats(res.data.total_seats);
 			}
 		} catch (error) {
 			console.log(error);
@@ -243,7 +280,8 @@ const chartOptions = {
 										{ label: "Total Expense", value: stats1.total_expense, unit: "Pkr", change: stats1?.growth?.total_expense, increase: false },
 										{ label: "Total PNL", value: stats1.total_pl, unit: "Pkr", change: stats1?.growth?.total_pl, increase: true },
 										{ label: "Total Seats", value: stats1.total_chairs },
-										{ label: "Occupied Seats", value: stats1.booked_chairs },
+										// { label: "Occupied Seats", value: stats1.booked_chairs },
+										{ label: "Occupancy Seats %", value: ((stats1.booked_chairs / stats1.total_chairs) * 100).toFixed(2) },
 										{ label: "Available Seats", value: stats1.available_chairs },
 										{ label: "Total Members", value: stats1.total_members },
 									]
@@ -296,8 +334,25 @@ const chartOptions = {
 								</div>
 							</div>
 
-							{/* Notifications */}
-							<DashboardNotifications />
+							{/* Second graph - Booked seats */}
+							<div
+								style={{
+									marginTop: "1rem",
+									height: "30rem",
+									backgroundColor: "#FFFFFF",
+									borderRadius: "0.2rem",
+									boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+									border: "1px solid #E5E7EB",
+								}}>
+								<div style={{ padding: "1rem" }}>
+									<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+										<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Seats Booked</h2>
+									</div>
+									<div style={{ height: "400px" }}>
+										<Bar data={chartDataSeats} options={seatsChartOptions} />
+									</div>
+								</div>
+							</div>
 						</div>
 						{/* Stats */}
 						<div style={statsGridStyle}>

@@ -41,6 +41,7 @@ const FloorPlanProvider = ({ children }) => {
 		industry: "",
 		employees: "",
 		company_address: "",
+		kyp_file:'',
 	});
 
 	const [formErrors, setFormErrors] = useState({});
@@ -78,6 +79,7 @@ const FloorPlanProvider = ({ children }) => {
 			if (!bookingdetails.employees.trim()) errors.employees = "Number of employees is required.";
 			if (!bookingdetails.company_address.trim()) errors.company_address = "Company address is required.";
 		}
+		if (!bookingdetails.kyp_file) errors.kyp_file = "KYP is required.";
 
 		setFormErrors(errors);
 		return Object.keys(errors).length === 0;

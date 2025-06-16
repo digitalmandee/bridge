@@ -18,6 +18,7 @@ import { SidebarContext } from "../../contexts/sidebar.context";
 import { FileText, Building2, Building } from "lucide-react";
 import { MdMenuOpen, MdOutlineMenu } from "react-icons/md";
 import colors from "@/assets/styles/color";
+import DashboardNotifications from "../notifications";
 
 const TopNavbar = () => {
 	const { user, logout } = useContext(AuthContext);
@@ -102,16 +103,17 @@ const TopNavbar = () => {
 									<FaRegBell />
 								</Button>
 								<Menu anchorEl={isOpennotificationDrop} className="notifications" id="notifications" open={openNotifications} onClose={handleClosenotificationsDr} onClick={handleClosenotificationsDr} transformOrigin={{ horizontal: "left", vertical: "top" }} anchorOrigin={{ horizontal: "right", vertical: "top" }}>
-									<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+									<DashboardNotifications mainStyle={false} />
+									{/* <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
 										<h3 style={{ fontSize: "1rem", fontWeight: "600", color: "#111827" }}>Notifications</h3>
 										<div style={{ backgroundColor: colors.primary, padding: "0.5rem", borderRadius: "5px" }}>
 											<FaRegBell style={{ color: "white", fontSize: "16px" }} />
 										</div>
-									</div>
+									</div> */}
 
 									{/* Notifications List */}
 									<div>
-										{notifications.map((notification, index) => (
+										{/* {notifications.map((notification, index) => (
 											<MenuItem key={index} style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "10px" }}>
 												<notification.icon style={{ color: colors.primary, width: "20px", height: "20px" }} />
 												<div style={{ flex: 1, padding: "0.2rem", maxWidth: "90%" }}>
@@ -133,7 +135,7 @@ const TopNavbar = () => {
 													</p>
 												</div>
 											</MenuItem>
-										))}
+										))} */}
 									</div>
 								</Menu>
 							</div>
