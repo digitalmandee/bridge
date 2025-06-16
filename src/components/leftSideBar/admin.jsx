@@ -108,6 +108,8 @@ const menuItems = [
 			{ to: "/branch/users/management", label: "User", permission: "employee-users" },
 		],
 	},
+	{ to: "/branch/kitchen", label: "Kitchen", icon: <RxDashboard />, hasDropdown: false, permission: "admin-dashboard" },
+
 	{ to: "", label: "Settings", icon: <RxDashboard />, hasDropdown: false },
 ];
 

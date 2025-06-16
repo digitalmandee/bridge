@@ -100,6 +100,7 @@ import BookingRequest from "./pages/booking/SeatsBookingRequest/BookingRequest";
 import { useState } from "react";
 import axiosInstance from "./utils/axiosInstance";
 import SeatBooking from "./components/SeatBooking";
+import Kitchen from "./pages/kitchen/Kitchen";
 
 function AuthRoutes() {
 
@@ -831,6 +832,14 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="admin" permission="employee-dashboard">
 						<PaySlip />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="/branch/kitchen"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<Kitchen />
 					</ProtectedRoute>
 				}
 			/>
