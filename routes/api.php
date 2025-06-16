@@ -205,6 +205,7 @@ Route::group(['middleware' => ['set_tenant']], function () {
     Route::post('download', [FinanceController::class, 'download']);
     Route::group(['prefix' => 'finance'], function () {
         Route::get('stats', [FinanceController::class, 'getStats']);
+        Route::get('get-analytics', [FinanceController::class, 'getMonthlyStats']);
         Route::get('category/{categoryId}', [FinanceController::class, 'getFinanceByCategory']);
         Route::resource('categories', FinanceCategoryController::class)->except(['create', 'edit']);
     });
