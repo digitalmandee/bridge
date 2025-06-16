@@ -8,7 +8,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import DashboardNotifications from "@/components/notifications";
 import { SidebarContext } from "../../contexts/sidebar.context";
 // added code finance
-import { Box, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
+import { Box, MenuItem, Select, InputLabel, FormControl, TextField } from "@mui/material";
 // added code finance
 
 // Register ChartJS components
@@ -18,64 +18,51 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 	const context = useContext(SidebarContext);
 	// const navigate = useNavigate();
 
-	const chartData = {
-		labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
-		datasets: [
-			{
-				label: "Revenue",
-				data: [40000, 32000, 35000, 45000, 35000, 45000, 35000, 30000],
-				backgroundColor: "#FFF0BA",
-				barThickness: 15,
-			},
-			{
-				label: "Membership Revenue",
-				data: [35000, 30000, 28000, 35000, 28000, 30000, 35000, 32000],
-				backgroundColor: "#FFCC16",
-				barThickness: 15,
-			},
-		],
-	};
+	const months = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
 
-	const chartOptions = {
-		responsive: true,
-		scales: {
-			y: {
-				beginAtZero: true,
-				max: 50000,
-				ticks: {
-					stepSize: 10000,
-				},
-				grid: {
-					drawBorder: false,
-				},
-			},
-			x: {
-				grid: {
-					display: false,
-				},
-			},
-		},
-		plugins: {
-			legend: {
-				position: "top",
-				align: "start",
-				labels: {
-					boxWidth: 12,
-					usePointStyle: true,
-					pointStyle: "circle",
-				},
-			},
-		},
-	};
+// Mocked 12 months of revenue
+const revenue = [40000, 32000, 35000, 45000, 35000, 45000, 35000, 30000, 37000, 41000, 38000, 44000];
+const membershipRevenue = [35000, 30000, 28000, 35000, 28000, 30000, 35000, 32000, 35000, 37000, 34000, 40000 ];
 
-	const metrics = [
-		{ label: "Total Revenue", value: "100,000", unit: "Pkr", change: 2.5, increase: true },
-		{ label: "Total Expense", value: "90,000", unit: "Pkr", change: 5, increase: false },
-		{ label: "Total PNL", value: "0.00", unit: "Pkr", change: 2.5, increase: true },
-		{ label: "Desk Occupancy", value: "20", unit: "%", change: 5, increase: false },
-		{ label: "Occupied Desk Rate", value: "20,000", unit: "Pkr", change: 21.5, increase: true },
-		{ label: "Members Revenue", value: "30,000", unit: "Pkr", change: 5, increase: false },
-	];
+const chartData = {
+  labels: months,
+  datasets: [
+    {
+      label: "Revenue",
+      data: revenue,
+      backgroundColor: "#FFF0BA",
+      barThickness: 15,
+    },
+    {
+      label: "Membership Revenue",
+      data: membershipRevenue,
+      backgroundColor: "#FFCC16",
+      barThickness: 15,
+    },
+  ],
+};
+
+const chartOptions = {
+  responsive: true,
+  scales: {
+    y: { 
+      beginAtZero: true, 
+      max: Math.max([...revenue, ...membershipRevenue]) + 5000,
+      grid: { drawBorder: false },
+    },
+    x: { grid: { display: false } },
+  },
+  plugins: {
+    legend: { 
+      position: "top", 
+      align: "start",
+      labels: { boxWidth: 12, usePointStyle: true, pointStyle: "circle" },
+    },
+  },
+};
 
 	const stats = [
 		{ label: "Customer", new: { value: 35, change: 90.5 }, lost: { value: 0, change: 0.0 } },
@@ -126,15 +113,24 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 	// added code finance
 
 	const [stats1, setStats1] = useState(0);
+	const [selectedDate, setSelectedDate] = useState("");
+
+	const handleDateChange = (event) => {
+		setSelectedDate(event.target.value);
+	};
 
 	// State for Month and Year
 	const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
 	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
 
-	const getStats = async (month = selectedMonth, year = selectedYear) => {
+	const getStats = async (month = selectedMonth, year = selectedYear, date = selectedDate) => {
 		try {
 			const res = await axiosInstance.get("finance/stats", {
-				params: { month, year },
+				params: {
+					month,
+					year,
+					date, // pass this if it's not ''
+				},
 			});
 			if (res.data.success) {
 				setStats1(res.data);
@@ -143,6 +139,10 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 			console.log(error);
 		}
 	};
+
+	useEffect(() => {
+		getStats();
+	}, [selectedMonth, selectedYear, selectedDate]);
 
 	useEffect(() => {
 		getStats();
@@ -172,6 +172,9 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 						<Box sx={{ display: "flex", justifyContent: "end", alignItems: "center", pt: 1 }}>
 							{/* Month and Year Selection */}
 							<Box sx={{ display: "flex", gap: 2 }}>
+								<FormControl>
+									<TextField label="Select Date" type="date" InputLabelProps={{ shrink: true }} size="small" value={selectedDate} onChange={handleDateChange} />
+								</FormControl>
 								<FormControl>
 									<InputLabel>Month</InputLabel>
 									<Select value={selectedMonth} onChange={handleMonthChange} label="Month" size="small">
@@ -208,6 +211,7 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 										{ label: "Total PNL", value: stats1.total_pl, unit: "Pkr", change: stats1?.growth?.total_pl, increase: true },
 										{ label: "Total Seats", value: stats1.total_chairs },
 										{ label: "Occupied Seats", value: stats1.booked_chairs },
+										{ label: "Occupancy %", value: ((stats1.booked_chairs / stats1.total_chairs) * 100).toFixed(2) },
 										{ label: "Available Seats", value: stats1.available_chairs },
 										{ label: "Total Members", value: stats1.total_members },
 									]
