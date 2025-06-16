@@ -17,10 +17,12 @@ class Table extends Model
         'name',
     ];
 
+
     public function chairs()
     {
         return $this->hasMany(Chair::class);
     }
+}
 
     // public function room()
     // {
@@ -66,4 +68,3 @@ class Table extends Model
     // {
     //     return self::find($id)->delete();
     // }
-}

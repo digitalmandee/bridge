@@ -63,6 +63,7 @@ class BranchController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Branch created successfully']);
         } catch (QueryException $e) {
+            Log::info("Error creating branch: " . $e->getMessage());
             DB::rollBack();
 
             // Check if the error is for duplicate 'location'
@@ -72,6 +73,7 @@ class BranchController extends Controller
 
             return response()->json(['error' => 'Branch not created.'], 500);
         } catch (\Exception $e) {
+            Log::info("Error creating branch: " . $e->getMessage());
             DB::rollBack();
             return response()->json(['error' => 'Branch not created.'], 500);
         }

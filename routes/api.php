@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\BookingPlanController;
+use App\Http\Controllers\Api\BookingRequestController;
 use App\Http\Controllers\Api\BookingScheduleController;
 use App\Http\Controllers\Api\BranchUserController;
 use App\Http\Controllers\Api\CompanyController;
@@ -22,8 +23,10 @@ use App\Http\Controllers\Api\LeaveCategoryController;
 use App\Http\Controllers\Api\MemberController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\RolePermissionController;
+use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\ScheduleFloorController;
 use App\Http\Controllers\Api\ScheduleRoomController;
+use App\Http\Controllers\Api\TableController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -90,8 +93,19 @@ Route::group(['middleware' => ['set_tenant']], function () {
     Route::get('floor-plan/{floor_id}/rooms', [FloorPlanController::class, 'getRooms']);
     Route::get('seat-allocations', [FloorPlanController::class, 'getSeatAllocations']);
 
+    // tables
+    Route::get('floor-plan/tables', [TableController::class, 'getTables']);
+    Route::post('floor-plan/tables', [TableController::class, 'createTable']);
+    // tables
+    Route::get('floor-plan/rooms', [RoomController::class, 'index']);
+    Route::post('floor-plan/rooms', [RoomController::class, 'create']);
+
     // Bookings
     Route::get('bookings', [BookingController::class, 'getBookings']);
+    // booking seat request
+    Route::get('booking-request', [BookingRequestController::class, 'index']);
+    Route::post('booking-request', [BookingRequestController::class, 'store']);
+
     Route::group(['prefix' => 'booking'], function () {
         Route::post('create', [BookingController::class, 'createBooking']);
         Route::post('update', [BookingController::class, 'updateBooking']);
