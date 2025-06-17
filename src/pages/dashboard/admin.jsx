@@ -29,17 +29,20 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 	const [revenue, setRevenue] = useState([]);
 
 	const [membershipRevenue, setMembershipRevenue] = useState([]);
+	const [analyticsYear, setAnalyticsYear] = useState(new Date().getFullYear());
 
 	useEffect(() => {
 		axiosInstance
-			.get("/finance/get-analytics")
+			.get("/finance/get-analytics", {
+				params: { year: analyticsYear },
+			})
 			.then((res) => res.data)
 			.then((data) => {
 				setRevenue(data.revenue);
 				setMembershipRevenue(data.bookings);
 			})
 			.catch((err) => console.error(err));
-	}, []);
+	}, [analyticsYear]);
 
 	const chartData = {
 		labels: months,
@@ -324,9 +327,16 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 								<div style={{ padding: "1rem" }}>
 									<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
 										<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Analytics</h2>
-										<select style={{ fontSize: "0.875rem", border: "1px solid #D1D5DB", borderRadius: "1rem", padding: "0.25rem 0.5rem", backgroundColor: "white" }}>
-											<option>Dec</option>
-										</select>
+										<FormControl>
+											<InputLabel>Year</InputLabel>
+											<Select value={analyticsYear} onChange={(event) => setAnalyticsYear(event.target.value)} label="Year" size="small">
+												{Array.from({ length: 5 }, (_, index) => (
+													<MenuItem key={index} value={new Date().getFullYear() - index}>
+														{new Date().getFullYear() - index}
+													</MenuItem>
+												))}
+											</Select>
+										</FormControl>
 									</div>
 									<div style={{ height: "400px" }}>
 										<Bar data={chartData} options={chartOptions} />
