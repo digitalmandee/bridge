@@ -31,6 +31,7 @@ const menuItems = [
 			{ to: "/branch/floorplan/tables", label: "Table", permission: "floor-plan" },
 			{ to: "/branch/floorplan/rooms", label: "Rooms", permission: "floor-plan" },
 			{ to: "/branch/booking/plans", label: "Price Plan", permission: "price-plan" },
+			{ to: "/branch/booking/seat/requests", label: "Seat Request", permission: "booking-request" },
 			{ to: "/branch/booking/requests", label: "Booking Request", permission: "booking-request" },
 			{ to: "/branch/booking/seats-allocation", label: "Seat Card", permission: "seat-card" },
 		],

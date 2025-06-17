@@ -97,15 +97,9 @@ import CreateTable from "./pages/booking/floorplan/table/create";
 import RoomManagement from "./pages/booking/floorplan/rooms";
 import CreateRoom from "./pages/booking/floorplan/rooms/create";
 import BookingRequest from "./pages/booking/SeatsBookingRequest/BookingRequest";
-import { useState } from "react";
-import axiosInstance from "./utils/axiosInstance";
-import SeatBooking from "./components/SeatBooking";
 import Kitchen from "./pages/kitchen/Kitchen";
 
 function AuthRoutes() {
-
-
-
 	return (
 		<Routes>
 			<Route path="" element={<Welcome />} />
@@ -311,6 +305,14 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="admin" permission="booking-request">
 						<BookingRequests />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="branch/booking/seat/requests"
+				element={
+					<ProtectedRoute role="admin" permission="booking-request">
+						<BookingRequest />
 					</ProtectedRoute>
 				}
 			/>
