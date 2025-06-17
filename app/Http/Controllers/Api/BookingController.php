@@ -156,7 +156,8 @@ class BookingController extends Controller
                 'plan' => ['id' => $selectedPlan['id'], 'name' => $selectedPlan['name'], 'price' => $selectedPlan['price']],
                 'receipt' => $receiptPath,
             ]);
-            // send seat booking email by usama
+
+            // send seat booking email
             MailHelper::sendBookingMail($user->email, [
                 'user_id' => $userId,
                 'client' => $user,

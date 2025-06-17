@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\MailHelper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\GeneralNotification;
@@ -63,7 +64,7 @@ class NotificationController extends Controller
         ]);
 
         $admin = auth()->user();
-        $user = User::where('id', $request->user_id)->first();
+        $user = User::findOrFail($request->user_id);
         $invoiceStatus = $request->invoice_status;
 
         $notificationData = [
@@ -85,15 +86,28 @@ class NotificationController extends Controller
         ];
 
         $userNotificationData = $notificationData[$invoiceStatus] ?? $notificationData['pending'];
+
+        // Send Database Notification first
         $user->notify(new GeneralNotification($userNotificationData));
 
+        // Send Email using MailHelper
+        MailHelper::sendInvoiceStatusMail($user->email, [
+            'username' => $user->name,
+            'title' => $userNotificationData['title'],
+            'message' => $userNotificationData['message'],
+            'invoice_id' => $request->invoice_id,
+            'status' => $invoiceStatus,
+        ]);
+
+        // Send notification to Admin
         $adminNotificationData = [
             'title' => "Invoice {$invoiceStatus} - User: {$user->name}",
             'message' => "Invoice #{$request->invoice_id} for User ID {$user->id} is {$invoiceStatus}.",
             'type' => "invoice_{$invoiceStatus}",
         ];
+
         $admin->notify(new GeneralNotification($adminNotificationData));
 
-        return response()->json(['success' => true, 'message' => 'Notification sent successfully.']);
+        return response()->json(['success' => true, 'message' => 'Notification and email sent successfully.']);
     }
 }

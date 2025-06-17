@@ -2,21 +2,24 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\BookingRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use App\Models\BookingRequest;
+use App\Models\User;
+use App\Notifications\GeneralNotification;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class BookingRequestController extends Controller
 {
     public function index()
     {
-        $bookingRequests = BookingRequest::with('user')->get();
-        return response()->json([
-            'success' => true,
-            'data' => $bookingRequests,
-        ], 200);
+        if (Auth::user()->type === 'admin') {
+            $bookingRequests = BookingRequest::with('user')->get();
+        } else {
+            $bookingRequests = BookingRequest::where('user_id', Auth::id())->with('user')->get();
+        }
+        return response()->json(['success' => true, 'data' => $bookingRequests], 200);
     }
 
     public function store(Request $request)
@@ -36,10 +39,19 @@ class BookingRequestController extends Controller
             'no_of_seats' => $request->no_of_seats,
         ]);
 
-        return response()->json([
-            'message' => 'Booking request created successfully',
-            'data' => $bookingRequest,
-        ], 201);
+        $user = Auth::user();
+        $admins = User::where('type', 'admin')->where('status', 'active')->get();
+
+        foreach ($admins as $admin) {
+            $admin->notify(new GeneralNotification([
+                'title' => "Booking Seat Request - User: {$user->name}",
+                'message' => "User ID {$user->id} has requested a booking seat Booking ID {$bookingRequest->id}.",
+                'type' => 'booking_seat_request',
+                'created_by' => $admin->name,
+            ]));
+        }
+
+        return response()->json(['message' => 'Booking request created successfully', 'data' => $bookingRequest], 201);
     }
 }
 ?>
