@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>{{ $title }}</title>
+    <title>{{ $data['title'] }}</title>
     <style>
         body {
             margin: 0;
