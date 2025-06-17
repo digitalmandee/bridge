@@ -166,7 +166,7 @@ class BranchController extends Controller
         $growth = fn($current, $previous) =>
             $previous != 0 ? (($current - $previous) / abs($previous)) * 100 : 0;
 
-        $currentYear = now()->year;
+        $currentYear = $year;
 
         $revenue = [];  // Invoice amounts
         $bookings = [];  // Booking amounts (you might need to adjust this if you track booking differently)

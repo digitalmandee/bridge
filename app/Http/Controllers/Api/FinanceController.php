@@ -33,7 +33,7 @@ class FinanceController extends Controller
 
     public function getMonthlyStats(Request $request)
     {
-        $currentYear = now()->year;
+        $currentYear = $request->input('year', now()->year());
 
         $revenue = [];  // Invoice amounts
         $bookings = [];  // Booking amounts (you might need to adjust this if you track booking differently)
