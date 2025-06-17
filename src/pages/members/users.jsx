@@ -84,7 +84,7 @@ const MemberUser = () => {
 												borderColor: "#dee2e6",
 											},
 											"&.Mui-focused fieldset": {
-												borderColor: "#002B5B",
+												borderColor: "#FFCC16",
 											},
 										},
 									}}
@@ -148,7 +148,7 @@ const MemberUser = () => {
 														size="small"
 														sx={{
 															backgroundColor: "#E8F1FF",
-															color: "#002B5B",
+															color: "#FFCC16",
 															borderRadius: "4px",
 															height: "24px",
 															fontSize: "0.75rem",
@@ -189,7 +189,7 @@ export default MemberUser;
 const theme = createTheme({
 	palette: {
 		primary: {
-			main: "#002B5B",
+			main: "#FFCC16",
 		},
 		secondary: {
 			main: "#E8F1FF",

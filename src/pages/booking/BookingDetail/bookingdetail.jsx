@@ -181,7 +181,7 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 							type="time"
 							name="start_time"
 							value={bookingdetails.start_time}
-							readOnly // Make the time field read-only so the user cannot change it
+							onChange={handleChange}
 							style={{
 								width: "100%",
 								padding: "10px",

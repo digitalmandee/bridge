@@ -71,7 +71,7 @@ const StaffLists = ({ companyId }) => {
 											label={user.status}
 											size="small"
 											sx={{
-												backgroundColor: "#002B5B",
+												backgroundColor: "#FFCC16",
 												color: "#fff",
 												borderRadius: "4px",
 												height: "24px",

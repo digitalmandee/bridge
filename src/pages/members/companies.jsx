@@ -160,7 +160,7 @@ const Company = () => {
 																	label={company.status}
 																	size="small"
 																	sx={{
-																		backgroundColor: "#002B5B",
+																		backgroundColor: "#FFCC16",
 																		color: "#fff",
 																		borderRadius: "4px",
 																		height: "24px",
@@ -172,7 +172,7 @@ const Company = () => {
 																	size="small"
 																	sx={{
 																		backgroundColor: "#E8F1FF",
-																		color: "#002B5B",
+																		color: "#FFCC16",
 																		borderRadius: "4px",
 																		height: "24px",
 																	}}
@@ -217,7 +217,7 @@ export default Company;
 const theme = createTheme({
 	palette: {
 		primary: {
-			main: "#002B5B",
+			main: "#FFCC16",
 		},
 		secondary: {
 			main: "#E8F1FF",
