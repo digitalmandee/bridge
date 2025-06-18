@@ -395,9 +395,6 @@ const SuperAdminDashboard = () => {
 											<div style={{ padding: "1rem" }}>
 												<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
 													<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Analytics</h2>
-													<select style={{ fontSize: "0.875rem", border: "1px solid #D1D5DB", borderRadius: "1rem", padding: "0.25rem 0.5rem", backgroundColor: "white" }}>
-														<option>Dec</option>
-													</select>
 												</div>
 												<div style={{ height: "400px" }}>
 													<Bar data={chartData} options={chartOptions} />
