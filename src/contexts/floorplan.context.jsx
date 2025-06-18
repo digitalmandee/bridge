@@ -76,7 +76,7 @@ const FloorPlanProvider = ({ children }) => {
 			if (!bookingdetails.company_name.trim()) errors.company_name = "Company name is required.";
 			if (!bookingdetails.company_website.trim()) errors.company_website = "Company website is required.";
 			if (!bookingdetails.industry.trim()) errors.industry = "Industry selection is required.";
-			if (!bookingdetails.employees.trim()) errors.employees = "Number of employees is required.";
+			if (!bookingdetails.employees) errors.employees = "Number of employees is required.";
 			if (!bookingdetails.company_address.trim()) errors.company_address = "Company address is required.";
 		}
 		if (!bookingdetails.kyp_file) errors.kyp_file = "KYP is required.";

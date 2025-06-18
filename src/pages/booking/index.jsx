@@ -39,14 +39,6 @@ const Booking = () => {
 		if (Object.entries(selectedChairs).length === 0) return navigate(`/${branch}/branch/floorplan`);
 	}, []);
 
-	// const handleConfirm = () => {
-	//     if (!paymentMethod || !receipt) {
-	//         alert("Please select a payment method and upload a receipt.");
-	//         return;
-	//     }
-	//     alert(`Payment confirmed with ${paymentMethod} and receipt uploaded.`);
-	// };
-
 	const steps = [
 		{ id: 1, label: "Step 1" },
 		{ id: 2, label: "Step 2" },
@@ -129,8 +121,7 @@ const Booking = () => {
 												cursor: "pointer",
 												// position:'relative',
 												zIndex: 2,
-											}}
-											onClick={() => setCurrentStep(step.id)}>
+											}}>
 											{currentStep > step.id ? <FaCheck size={14} /> : step.id}
 										</div>
 										<p style={{ marginTop: "5px", fontSize: "14px", fontWeight: "500", textAlign: "center", minWidth: "60px" }}>{step.label}</p>
@@ -154,7 +145,7 @@ const Booking = () => {
 						</div>
 					</div>
 					{currentStep === 1 && <MemberDetail handleNext={handleNext} />}
-					{currentStep === 2 && <CategoryDetail handleNext={handleNext} />}
+					{currentStep === 2 && <CategoryDetail handleNext={handleNext} handlePrevious={handlePrevious} />}
 					{/* {currentStep === 3 && <SeatDetail handleNext={handleNext} />} */}
 					{currentStep === 3 && <BookingDetail handleNext={handleNext} handlePrevious={handlePrevious} />}
 					{currentStep === 4 && <Payment />}

@@ -5,9 +5,12 @@ import colors from "@/assets/styles/color";
 import { FloorPlanContext } from "@/contexts/floorplan.context";
 import axiosInstance from "@/utils/axiosInstance";
 import "./style.css";
+import { Autocomplete, TextField } from "@mui/material";
 
-const CategoryDetail = ({ handleNext }) => {
+const CategoryDetail = ({ handleNext,handlePrevious }) => {
 	const { bookingdetails, setBookingDetails, formErrors, validateCategoryDetails } = useContext(FloorPlanContext);
+
+	const industryOptions = ["IT", "Finance", "Healthcare", "Education"];
 
 	const handleChange = (e) => {
 		const { name, files, value } = e.target;
@@ -191,23 +194,29 @@ const CategoryDetail = ({ handleNext }) => {
 							}}>
 							Industry
 						</label>
-						<select
-							name="industry"
-							style={{
-								width: "100%",
-								padding: "10px",
-								borderRadius: "5px",
-								border: "1px solid #ccc",
-								boxSizing: "border-box",
-							}}
+						<Autocomplete
+							freeSolo
+							options={industryOptions}
 							value={bookingdetails.industry || ""}
-							onChange={handleChange}>
-							<option value="">Select Industry</option>
-							<option value="IT">IT</option>
-							<option value="Finance">Finance</option>
-							<option value="Healthcare">Healthcare</option>
-							<option value="Education">Education</option>
-						</select>
+							onChange={(event, newValue) => {
+								handleChange({
+									target: {
+										name: "industry",
+										value: newValue || "",
+									},
+								});
+							}}
+							onInputChange={(event, newInputValue) => {
+								handleChange({
+									target: {
+										name: "industry",
+										value: newInputValue,
+									},
+								});
+							}}
+							renderInput={(params) => <TextField {...params} variant="outlined" fullWidth size="small" placeholder="Select Industry" />}
+						/>
+						{formErrors.industry && <span className="error-text">{formErrors.industry}</span>}
 					</div>
 
 					<div className="form-group">
@@ -234,6 +243,7 @@ const CategoryDetail = ({ handleNext }) => {
 							value={bookingdetails.employees || ""}
 							onChange={handleChange}
 						/>
+						{formErrors.employees && <span className="error-text">{formErrors.employees}</span>}
 					</div>
 
 					<div className="form-group">
@@ -263,12 +273,15 @@ const CategoryDetail = ({ handleNext }) => {
 			)}
 			<div className="form-group">
 				<label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>KYP (File upload - PDF or Image)</label>
-				<input style={{ width: "100%",marginLeft: 0, padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }} type="file" name="kyp_file" accept=".png,.jpg,.jpeg,.gif,.pdf" onChange={handleChange} />
+				<input style={{ width: "100%", marginLeft: 0, padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }} type="file" name="kyp_file" accept=".png,.jpg,.jpeg,.gif,.pdf" onChange={handleChange} />
 				{formErrors.kyp_file && <span className="error-text">{formErrors.kyp_file}</span>}
 			</div>
 
 			{/* Submit Button */}
-			<div style={{ textAlign: "right", marginTop: "20px" }}>
+			<div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+				<button type="button" style={{ padding: "10px 20px", borderRadius: "5px", backgroundColor: "#ccc", color: "#333", border: "none", fontSize: "16px", cursor: "pointer" }} onClick={handlePrevious}>
+					Back
+				</button>
 				<button type="button" style={{ padding: "10px 20px", borderRadius: "5px", backgroundColor: colors.primary, color: "#fff", border: "none", fontSize: "16px", cursor: "pointer" }} onClick={handleSubmit}>
 					Next
 				</button>

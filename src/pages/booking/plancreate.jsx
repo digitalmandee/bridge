@@ -34,11 +34,11 @@ const PlanCreate = () => {
 		if (!form.price || form.price <= 0) newErrors.price = "Price must be greater than 0";
 
 		if (form.type === "monthly") {
-			if (!form.bookingHours || isNaN(form.bookingHours) || Number(form.bookingHours) <= 0) {
-				newErrors.bookingHours = "Booking Hours must be a number greater than 0";
+			if (Number(form.bookingHours) < 0) {
+				newErrors.bookingHours = "Booking Hours must be a number zero or greater";
 			}
-			if (!form.printingPapers || isNaN(form.printingPapers) || Number(form.printingPapers) <= 0) {
-				newErrors.printingPapers = "Printing Papers must be a number greater than 0";
+			if (Number(form.printingPapers) < 0) {
+				newErrors.printingPapers = "Printing Papers must be a number zero or greater";
 			}
 		}
 
@@ -58,8 +58,8 @@ const PlanCreate = () => {
 				price: form.price,
 				discount: form.discount,
 				...(form.type === "monthly" && {
-					booking_hours: Number(form.bookingHours),
-					printing_papers: Number(form.printingPapers),
+					booking_hours: Number(form.bookingHours ? form.bookingHours : 0),
+					printing_papers: Number(form.printingPapers ? form.printingPapers : 0),
 				}),
 			};
 
@@ -80,7 +80,7 @@ const PlanCreate = () => {
 	const renderInput = (label, name, type = "text", placeholder = "", props = {}) => (
 		<div className="col-12 mb-3">
 			<label className="mb-1">{label}</label>
-			<input type={type} className="form-control" placeholder={placeholder} value={form[name]} onChange={(e) => handleChange(name, type === "number" ? e.target.valueAsNumber : e.target.value)} {...props} />
+			<input type={type} className="form-control mx-0" placeholder={placeholder} value={form[name]} onChange={(e) => handleChange(name, type === "number" ? e.target.valueAsNumber : e.target.value)} {...props} />
 			{errors[name] && <span className="text-danger">{errors[name]}</span>}
 		</div>
 	);
