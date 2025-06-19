@@ -12,6 +12,14 @@ import dayjs from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import colors from "@/assets/styles/color";
+
+const isToday = (dateStr) => {
+	if (!dateStr) return false;
+	const date = new Date(dateStr);
+	const today = new Date();
+	return date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate();
+};
+
 const InvoiceManagement = () => {
 	const { user } = useContext(AuthContext);
 	const { branch } = useParams();
@@ -26,6 +34,7 @@ const InvoiceManagement = () => {
 	const [statusFilter, setStatusFilter] = useState("");
 	const [snackbarOpen, setSnackbarOpen] = useState(false);
 	const [snackbarMessage, setSnackbarMessage] = useState("");
+	const [loadingInvoiceId, setLoadingInvoiceId] = useState(null);
 
 	const [openDialog, setOpenDialog] = useState(false);
 	const [selectedStatus, setSelectedStatus] = useState("");
@@ -78,6 +87,8 @@ const InvoiceManagement = () => {
 	};
 
 	const sendNotification = async (invoiceId, userId, status) => {
+		setLoadingInvoiceId(invoiceId); // start loading this one
+
 		try {
 			const res = await axiosInstance.post(`notifications/send`, {
 				user_id: userId,
@@ -88,15 +99,16 @@ const InvoiceManagement = () => {
 
 			if (res.data.success) {
 				setSnackbar({ open: true, message: "Notification sent successfully!", severity: "success" });
-
-				// Update this particular invoice's notified to true
-				setInvoices((prev) => prev.map((inv) => (inv.id === invoiceId ? { ...inv, notified: true } : inv)));
+				const updatedNotify = res.data.notify_date;
+				setInvoices((prev) => prev.map((inv) => (inv.id === invoiceId ? { ...inv, notify: updatedNotify } : inv)));
 			} else {
 				setSnackbar({ open: true, message: "Failed to send notification.", severity: "error" });
 			}
 		} catch (error) {
 			console.error("Error sending notification:", error?.response?.data);
 			setSnackbar({ open: true, message: "An error occurred while sending the notification.", severity: "error" });
+		} finally {
+			setLoadingInvoiceId(null); // stop loading
 		}
 	};
 
@@ -148,7 +160,7 @@ const InvoiceManagement = () => {
 			if (response.data.success) {
 				setSnackbar({ open: true, message: "Invoice updated successfully!", severity: "success" });
 				setOpenDialog(false);
-				getInvoices(); // Refresh invoices list
+				getInvoices();
 			} else {
 				setSnackbar({ open: true, message: "Failed to update invoice.", severity: "error" });
 			}
@@ -281,67 +293,73 @@ const InvoiceManagement = () => {
 											</TableCell>
 										</TableRow>
 									) : invoices.length > 0 ? (
-										invoices.map((invoice) => (
-											<TableRow key={invoice.id}>
-												<TableCell>#BRIDGE-{invoice.id}</TableCell>
-												<TableCell style={{ textTransform: "capitalize" }}>{invoice.invoice_type}</TableCell>
-												{user.type === "admin" && (
-													<TableCell>
-														<Box display="flex" alignItems="center" gap={1} onClick={() => navigate(`/${branch}/branch/invoice/customer-detail/${invoice.user.id}`)} sx={{ cursor: "pointer" }}>
-															<Avatar sx={{ width: 32, height: 32 }} src={import.meta.env.VITE_ASSET_API + invoice.user.profile_image}></Avatar>
-															<Box>
-																<Typography variant="body2">
-																	{invoice.user.name} <span style={{ color: "#6C757D", fontSize: "0.875rem" }}>({invoice.user.type})</span>
-																</Typography>
-																<Typography variant="caption" color="text.secondary">
-																	{invoice.user.email}
-																</Typography>
+										invoices.map((invoice) => {
+											const isNotifiedToday = isToday(invoice.notify);
+											const isDisabled = isNotifiedToday || loadingInvoiceId === invoice.id;
+											return (
+												<TableRow key={invoice.id}>
+													<TableCell>#BRIDGE-{invoice.id}</TableCell>
+													<TableCell style={{ textTransform: "capitalize" }}>{invoice.invoice_type}</TableCell>
+													{user.type === "admin" && (
+														<TableCell>
+															<Box display="flex" alignItems="center" gap={1} onClick={() => navigate(`/${branch}/branch/invoice/customer-detail/${invoice.user.id}`)} sx={{ cursor: "pointer" }}>
+																<Avatar sx={{ width: 32, height: 32 }} src={import.meta.env.VITE_ASSET_API + invoice.user.profile_image}></Avatar>
+																<Box>
+																	<Typography variant="body2">
+																		{invoice.user.name} <span style={{ color: "#6C757D", fontSize: "0.875rem" }}>({invoice.user.type})</span>
+																	</Typography>
+																	<Typography variant="caption" color="text.secondary">
+																		{invoice.user.email}
+																	</Typography>
+																</Box>
 															</Box>
-														</Box>
-													</TableCell>
-												)}
-												<TableCell>{new Date(invoice.created_at).toISOString().split("T")[0]}</TableCell>
-												<TableCell>{invoice.due_date}</TableCell>
-												<TableCell>
-													<Button
-														size="small"
-														variant="contained"
-														sx={{
-															bgcolor: invoice.status === "paid" ? "#0F172A" : invoice.status === "overdue" ? "#E53935" : colors.primary,
-															color: "white",
-															"&:hover": { opacity: 0.8 },
-														}}
-														onClick={() => user.type === "admin" && handleStatusClick(invoice)}
-														disabled={invoice.status === "paid" || invoice.status === "overdue"}>
-														{invoice.status}
-													</Button>
-												</TableCell>
-
-												<TableCell>Rs. {invoice.discount > 0 ? Math.round(invoice.amount - invoice.amount * (invoice.discount / 100)) : invoice.amount}</TableCell>
-												{user.type === "admin" && (
+														</TableCell>
+													)}
+													<TableCell>{new Date(invoice.created_at).toISOString().split("T")[0]}</TableCell>
+													<TableCell>{invoice.due_date}</TableCell>
 													<TableCell>
-														<Tooltip title={invoice.notified ? "Invoice has already been notified." : "Click to notify this customer"}>
-															<span>
-																<Button
-																	size="small"
-																	variant="outlined"
-																	startIcon={<NotificationsIcon />}
-																	sx={{
-																		borderColor: "#e0e0e0",
-																		color: invoice.notified ? "green" : "text.secondary",
-																		backgroundColor: invoice.notified ? "#ccffcc" : "white",
-																		"&:hover": { backgroundColor: invoice.notified ? "#ccffcc" : "#f5f5f5" },
-																	}}
-																	onClick={() => sendNotification(invoice.id, invoice.user.id, invoice.status)}
-																	disabled={invoice.notified}>
-																	{invoice.notified ? "Notified" : "Notify"}
-																</Button>
-															</span>
-														</Tooltip>
+														<Button
+															size="small"
+															variant="contained"
+															sx={{
+																bgcolor: invoice.status === "paid" ? "#0F172A" : invoice.status === "overdue" ? "#E53935" : colors.primary,
+																color: "white",
+																"&:hover": { opacity: 0.8 },
+															}}
+															onClick={() => user.type === "admin" && handleStatusClick(invoice)}
+															disabled={invoice.status === "paid" || invoice.status === "overdue"}>
+															{invoice.status}
+														</Button>
 													</TableCell>
-												)}
-											</TableRow>
-										))
+
+													<TableCell>Rs. {invoice.discount > 0 ? Math.round(invoice.amount - invoice.amount * (invoice.discount / 100)) : invoice.amount}</TableCell>
+													{user.type === "admin" && (
+														<TableCell>
+															<Tooltip title={isNotifiedToday ? `Already notified today` : "Click to notify this customer"}>
+																<span>
+																	<Button
+																		size="small"
+																		variant="outlined"
+																		startIcon={<NotificationsIcon />}
+																		sx={{
+																			borderColor: "#e0e0e0",
+																			color: isNotifiedToday ? "green" : "text.secondary",
+																			backgroundColor: isNotifiedToday ? "#ccffcc" : "white",
+																			"&:hover": {
+																				backgroundColor: isNotifiedToday ? "#ccffcc" : "#f5f5f5",
+																			},
+																		}}
+																		onClick={() => sendNotification(invoice.id, invoice.user.id, invoice.status)}
+																		disabled={isDisabled}>
+																		{loadingInvoiceId === invoice.id ? <CircularProgress size={18} sx={{ color: "#999" }} /> : isNotifiedToday ? "Notified" : "Notify"}
+																	</Button>
+																</span>
+															</Tooltip>
+														</TableCell>
+													)}
+												</TableRow>
+											);
+										})
 									) : (
 										<TableRow>
 											<TableCell colSpan={7} align="center">

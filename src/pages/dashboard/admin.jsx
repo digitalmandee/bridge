@@ -299,16 +299,6 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 								<div style={{ padding: "1rem" }}>
 									<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
 										<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Analytics</h2>
-										<FormControl>
-											<InputLabel>Year</InputLabel>
-											<Select value={analyticsYear} onChange={(event) => setAnalyticsYear(event.target.value)} label="Year" size="small">
-												{Array.from({ length: 5 }, (_, index) => (
-													<MenuItem key={index} value={new Date().getFullYear() - index}>
-														{new Date().getFullYear() - index}
-													</MenuItem>
-												))}
-											</Select>
-										</FormControl>
 									</div>
 									<div style={{ height: "400px" }}>
 										<Bar data={chartData} options={chartOptions} />

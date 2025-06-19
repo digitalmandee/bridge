@@ -18,6 +18,7 @@ import { GiPowerButton } from "react-icons/gi";
 ("react-icons/all");
 import "./style.css";
 import { AuthContext } from "@/contexts/AuthContext";
+import { Settings } from "@mui/icons-material";
 
 const menuItems = [
 	{ to: "/branch/dashboard", label: "Dashboard", icon: <RxDashboard />, hasDropdown: false, permission: "admin-dashboard" },
@@ -109,7 +110,7 @@ const menuItems = [
 			{ to: "/branch/users/management", label: "User", permission: "employee-users" },
 		],
 	},
-	{ to: "/branch/kitchen", label: "Kitchen", icon: <RxDashboard />, hasDropdown: false, permission: "admin-dashboard" },
+	{ to: "/branch/settings", label: "Settings", icon: <Settings />, hasDropdown: false, permission: "admin-dashboard" },
 
 	{ to: "", label: "Settings", icon: <RxDashboard />, hasDropdown: false },
 ];

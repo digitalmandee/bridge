@@ -288,85 +288,83 @@ const Payment = () => {
 
 							{/* Chair List */}
 							<ul style={{ padding: "0", marginTop: "10px", listStyle: "none" }}>
-								{Object.entries(selectedChairs).map(([tableId, chairs]) =>
-									chairs.map((chair) => (
-										<li
-											key={chair.id}
-											style={{
-												// borderBottom: "1px solid #ddd",
-												padding: "8px 0",
-												fontSize: "14px",
-												color: "#333",
-											}}>
-											<div
-												style={{
-													display: "flex",
-													padding: "0 1rem",
-													justifyContent: "space-between",
-													fontWeight: "bold",
-												}}>
-												<span>Plan Name</span>
-												<span>Plan Price</span>
-											</div>
-											<div
-												style={{
-													display: "flex",
-													padding: "0 1rem",
-													justifyContent: "space-between",
-													marginTop: "5px",
-													fontSize: "14px",
-												}}>
-												<span>{selectedPlan?.name}</span>
-												<span>Rs. {bookingdetails.total_price}</span>
-											</div>
+								<li
+									style={{
+										// borderBottom: "1px solid #ddd",
+										padding: "8px 0",
+										fontSize: "14px",
+										color: "#333",
+									}}>
+									<div
+										style={{
+											display: "flex",
+											padding: "0 1rem",
+											justifyContent: "space-between",
+											fontWeight: "bold",
+										}}>
+										<span>Plan Name</span>
+										<span>Plan Price</span>
+									</div>
+									<div
+										style={{
+											display: "flex",
+											padding: "0 1rem",
+											justifyContent: "space-between",
+											marginTop: "5px",
+											fontSize: "14px",
+										}}>
+										<span>{selectedPlan?.name}</span>
+										<span>Rs. {bookingdetails.total_price}</span>
+									</div>
 
-											{selectedPlan?.discount && (
-												<>
-													<div
-														style={{
-															display: "flex",
-															padding: "0 1rem",
-															justifyContent: "space-between",
-															fontSize: "14px",
-															color: "green",
-														}}>
-														<span style={{ fontWeight: "bold" }}>Discount</span>
-														<span>{selectedPlan.discount} %</span>
-													</div>
-												</>
-											)}
+									{selectedPlan?.discount && (
+										<>
 											<div
 												style={{
 													display: "flex",
 													padding: "0 1rem",
 													justifyContent: "space-between",
 													fontSize: "14px",
-													fontWeight: "bold",
-													color: "#444",
+													color: "green",
 												}}>
-												<span>Total Price</span>
-												<span>Rs. {selectedPlan && totalPrice(selectedPlan)}</span>
+												<span style={{ fontWeight: "bold" }}>Discount</span>
+												<span>{selectedPlan.discount} %</span>
 											</div>
+										</>
+									)}
+									<div
+										style={{
+											display: "flex",
+											padding: "0 1rem",
+											justifyContent: "space-between",
+											fontSize: "14px",
+											fontWeight: "bold",
+											color: "#444",
+										}}>
+										<span>Total Price</span>
+										<span>Rs. {selectedPlan && totalPrice(selectedPlan)}</span>
+									</div>
 
-											<div
-												style={{
-													borderBottom: "1px solid #ddd",
-													margin: "8px 0",
-												}}></div>
-											<div
-												style={{
-													marginTop: "8px",
-													padding: "0 1rem",
-													fontSize: "14px",
-													fontWeight: "bold",
-												}}>
-												<span style={{ fontWeight: "bold" }}>Plan Description</span>
-												<p style={{ margin: "2px 0 0" }}>{bookingdetails.package_detail}</p>
-											</div>
-										</li>
-									))
-								)}
-
+									<div
+										style={{
+											borderBottom: "1px solid #ddd",
+											margin: "8px 0",
+										}}></div>
+									<div
+										style={{
+											marginTop: "8px",
+											padding: "0 1rem",
+											fontSize: "14px",
+											fontWeight: "bold",
+										}}>
+										<span style={{ fontWeight: "bold" }}>Plan Description</span>
+										<p style={{ margin: "2px 0 0" }}>{bookingdetails.package_detail}</p>
+									</div>
+								</li>
+								{/* <pre>
+									{JSON.stringify(selectedChairs, null, 2)}
+								</pre> */}
+								{/* {Object.entries(selectedChairs).map(([tableId, chairs]) => chairs.map((chair) => "hello"))} */}
 							</ul>
 						</>
 					)}

@@ -97,6 +97,7 @@ import CreateTable from "./pages/booking/floorplan/table/create";
 import RoomManagement from "./pages/booking/floorplan/rooms";
 import CreateRoom from "./pages/booking/floorplan/rooms/create";
 import BookingRequest from "./pages/booking/SeatsBookingRequest/BookingRequest";
+import Settings from "./pages/settings";
 import Kitchen from "./pages/kitchen/Kitchen";
 
 function AuthRoutes() {
@@ -838,7 +839,15 @@ function AuthRoutes() {
 				}
 			/>
 			<Route
-				path="/branch/kitchen"
+				path="/branch/settings"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<Settings />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="/branch/products-and-services"
 				element={
 					<ProtectedRoute role="admin" permission="employee-dashboard">
 						<Kitchen />

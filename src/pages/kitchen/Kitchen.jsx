@@ -163,7 +163,7 @@ const Kitchen = () => {
                                     fontSize: '30px',
                                     color: '#202224',
                                 }}>
-                                    Kitchens
+                                    Products and Services
                                 </Typography>
                             </div>
                             <div className="col-auto ms-auto">
@@ -194,7 +194,7 @@ const Kitchen = () => {
                                         kitchens.map((kitchen) => (
                                             <TableRow key={kitchen.id}>
                                                 <TableCell>{kitchen.name}</TableCell>
-                                                <TableCell>${Number(kitchen.price).toFixed(2)}</TableCell>
+                                                <TableCell>Rs. {Number(kitchen.price).toFixed(2)}</TableCell>
                                                 <TableCell>
                                                     <Button onClick={() => handleOpen(kitchen)} color="primary">
                                                         Edit
