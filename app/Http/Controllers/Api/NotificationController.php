@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\MailHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Invoice;
 use App\Models\User;
 use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
@@ -108,6 +109,13 @@ class NotificationController extends Controller
 
         $admin->notify(new GeneralNotification($adminNotificationData));
 
-        return response()->json(['success' => true, 'message' => 'Notification and email sent successfully.']);
+        $invoice = Invoice::find($request->invoice_id);
+
+        if ($invoice) {
+            $invoice->notify = Carbon::now();
+            $invoice->save();
+        }
+
+        return response()->json(['success' => true, 'message' => 'Notification and email sent successfully.', 'notify_date' => $invoice->notify]);
     }
 }

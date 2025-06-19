@@ -27,6 +27,7 @@ class PermissionsSeeder extends Seeder
                 'Member' => ['Company', 'users', 'contracts'],
                 'Employee Management' => ['employee-dashboard', 'attendance', 'leave-category', 'leave-application', 'leave-management', 'leave-report', 'manage-attendance', 'monthly-report'],
                 'Users Role Management' => ['roles', 'employee-users'],
+                'Settings' => ['settings', 'products-and-services'],
             ],
             'company' => [
                 'Dashboard' => ['company-dashboard'],

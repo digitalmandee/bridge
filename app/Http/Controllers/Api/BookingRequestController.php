@@ -17,7 +17,7 @@ class BookingRequestController extends Controller
         if (Auth::user()->type === 'admin') {
             $bookingRequests = BookingRequest::with('user')->get();
         } else {
-            $bookingRequests = BookingRequest::where('user_id', Auth::id())->with('user')->get();
+            $bookingRequests = BookingRequest::where('user_id', Auth::id())->with('user', 'floor')->get();
         }
         return response()->json(['success' => true, 'data' => $bookingRequests], 200);
     }
@@ -26,6 +26,8 @@ class BookingRequestController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'no_of_seats' => 'required|integer|min:1',
+            'floor_id' => 'required|exists:floors,id',
+            'booking_date' => 'required|date|after_or_equal:today',
         ]);
 
         if ($validator->fails()) {
@@ -37,6 +39,8 @@ class BookingRequestController extends Controller
         $bookingRequest = BookingRequest::create([
             'user_id' => Auth::id(),
             'no_of_seats' => $request->no_of_seats,
+            'floor_id' => $request->floor_id,
+            'required_date' => $request->booking_date,
         ]);
 
         $user = Auth::user();
@@ -45,7 +49,7 @@ class BookingRequestController extends Controller
         foreach ($admins as $admin) {
             $admin->notify(new GeneralNotification([
                 'title' => "Booking Seat Request - User: {$user->name}",
-                'message' => "User ID {$user->id} has requested a booking seat Booking ID {$bookingRequest->id}.",
+                'message' => "User ID {$user->id} requested {$request->no_of_seats} seats for {$request->required_date} on floor ID {$request->floor_id}.",
                 'type' => 'booking_seat_request',
                 'created_by' => $admin->name,
             ]));
@@ -54,4 +58,3 @@ class BookingRequestController extends Controller
         return response()->json(['message' => 'Booking request created successfully', 'data' => $bookingRequest], 201);
     }
 }
-?>

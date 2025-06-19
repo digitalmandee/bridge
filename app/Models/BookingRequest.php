@@ -11,11 +11,16 @@ class BookingRequest extends Model
 
     protected $table = 'booking_request';
 
-    protected $fillable = ['user_id', 'no_of_seats'];
+    protected $fillable = ['user_id', 'no_of_seats', 'floor_id', 'required_date'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function floor()
+    {
+        return $this->belongsTo(Floor::class);
     }
 }
 ?>
