@@ -7,9 +7,11 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import axiosInstance from "@/utils/axiosInstance";
 import DashboardNotifications from "@/components/notifications";
 import { SidebarContext } from "../../contexts/sidebar.context";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 // added code finance
 import { Box, MenuItem, Select, InputLabel, FormControl, TextField } from "@mui/material";
 import dayjs from "dayjs";
+import { useNavigate, useParams } from "react-router-dom";
 // added code finance
 
 // Register ChartJS components
@@ -17,6 +19,9 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 
 const AdminDashboard = ({ isSidebarOpen }) => {
 	const context = useContext(SidebarContext);
+	const navigate = useNavigate();
+	const { branch } = useParams();
+
 	const [daySeats, setDaySeats] = useState(0);
 	const [nightSeats, setNightSeats] = useState(0);
 	const [fullSeats, setFullSeats] = useState(0);
@@ -39,20 +44,6 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 		const now = new Date();
 		return new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split("T")[0]; // End of this month
 	});
-
-	function getMonthLabels(from, to) {
-		const start = dayjs(from).startOf("month");
-		const end = dayjs(to).startOf("month");
-		const labels = [];
-
-		let current = start;
-		while (current.isBefore(end) || current.isSame(end)) {
-			labels.push(current.format("MMM YYYY")); // Example: Jan 2025
-			current = current.add(1, "month");
-		}
-
-		return labels;
-	}
 
 	const getStats = async () => {
 		try {
@@ -143,9 +134,9 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 	};
 
 	const stats = [
-		{ label: "Customer", new: { value: 0, change: 0 }, lost: { value: 0, change: 0.0 } },
-		{ label: "Invoice", paid: { value: 0, change: 0 }, overdue: { value: 0, change: 0 } },
-		{ label: "Booking", new: { value: 0, change: 0 }, lost: { value: 0, change: 0.0 } },
+		{ label: "Customer", new: { value: stats1?.customer?.new, change: 0 }, lost: { value: stats1?.customer?.lost, change: 0.0 } },
+		{ label: "Invoice", paid: { value: stats1?.invoice?.paid, change: 0 }, overdue: { value: stats1?.invoice?.overdue, change: 0 } },
+		{ label: "Booking", new: { value: stats1?.booking?.new, change: 0 }, lost: { value: stats1?.booking?.lost, change: 0.0 } },
 	];
 
 	const containerStyle = {
@@ -330,7 +321,11 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 						<div style={statsGridStyle}>
 							{stats.map((stat, i) => (
 								<div key={i} style={cardStyle}>
-									<h3 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827", marginBottom: "1rem" }}>{stat.label}</h3>
+									<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+										<h3 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>{stat.label}</h3>
+										{stat.label === "Customer" && <CalendarMonthIcon onClick={() => navigate("/" + branch + "/branch/customer/dashboard")} style={{ cursor: "pointer", color: "#2563EB" }} titleAccess="Go to Customer Dashboard" />}
+									</div>
+
 									<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
 										{"new" in stat && (
 											<>

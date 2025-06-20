@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 // Dashboards
 import AdminDashboard from "@/pages/dashboard/admin";
+import CustomerDashboard from "@/pages/dashboard/customer";
 import UserDashboard from "@/pages/dashboard/user";
 import CompanyDashboard from "@/pages/dashboard/company";
 
@@ -227,6 +228,15 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="admin" permission="admin-dashboard">
 						<AdminDashboard />
+					</ProtectedRoute>
+				}
+			/>
+
+			<Route
+				path="branch/customer/dashboard"
+				element={
+					<ProtectedRoute role="admin" permission="admin-dashboard">
+						<CustomerDashboard />
 					</ProtectedRoute>
 				}
 			/>
