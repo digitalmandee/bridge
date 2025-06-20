@@ -138,6 +138,46 @@ class FinanceController extends Controller
             }
         }
 
+        // -------------------------
+        // 🧑‍💼 Customer New & Lost
+        // -------------------------
+        $newUsers = User::whereIn('type', ['user', 'company'])
+            ->whereNull('company_id')
+            ->whereHas('contracts', function ($q) use ($from, $to) {
+                $q
+                    ->where('status', 'signed')
+                    ->whereBetween('created_at', [$from, $to]);
+            })
+            ->count();
+
+        $lostUsers = User::whereIn('type', ['user', 'company'])
+            ->whereNull('company_id')
+            ->whereDoesntHave('contracts', function ($q) {
+                $q->where('status', 'signed');
+            })
+            ->whereHas('contracts', function ($q) use ($from, $to) {
+                $q->whereBetween('created_at', [$from, $to]);
+            })
+            ->count();
+
+        // -------------------------
+        // 🧾 Invoice Paid & Overdue
+        // -------------------------
+        $invoicePaid = Invoice::where('status', 'paid')
+            ->whereBetween('paid_date', [$from, $to])
+            ->count();
+
+        $invoiceOverdue = Invoice::where('status', 'unpaid')
+            ->where('due_date', '<', now())
+            ->whereBetween('created_at', [$from, $to])
+            ->count();
+
+        $bookingNew = Booking::whereBetween('created_at', [$from, $to])->count();
+
+        $bookingLost = Booking::whereIn('status', ['rejected', 'vacated'])
+            ->whereBetween('updated_at', [$from, $to])
+            ->count();
+
         return response()->json([
             'success' => true,
             'total_revenue' => number_format($currentRevenue, 2),
@@ -159,6 +199,21 @@ class FinanceController extends Controller
             'revenue' => $revenueData,
             'bookings' => $bookingsData,
             'labels' => $labels,
+            'customer' => [
+                'new' => $newUsers,
+                'lost' => $lostUsers,
+                'growth' => number_format($growth($newUsers, $lostUsers), 2),
+            ],
+            'invoice' => [
+                'paid' => $invoicePaid,
+                'overdue' => $invoiceOverdue,
+                'growth' => number_format($growth($invoicePaid, $invoiceOverdue), 2),
+            ],
+            'booking' => [
+                'new' => $bookingNew,
+                'lost' => $bookingLost,
+                'growth' => number_format($growth($bookingNew, $bookingLost), 2),
+            ],
             'growth' => [
                 'total_revenue' => number_format($growth($currentRevenue, $previousRevenue), 2),
                 'total_expense' => number_format($growth($currentExpense, $previousExpense), 2),

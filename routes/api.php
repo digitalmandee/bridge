@@ -202,6 +202,7 @@ Route::group(['middleware' => ['set_tenant']], function () {
     // Admin Dasboard
     Route::group(['prefix' => 'admin'], function () {
         Route::get('dashboard', [AdminController::class, 'index']);
+        Route::get('customer/dashboard', [AdminController::class, 'customerStats']);
     });
 
     // User Dasboard

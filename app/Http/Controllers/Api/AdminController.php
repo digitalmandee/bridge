@@ -101,4 +101,59 @@ class AdminController extends Controller
             ]
         ]);
     }
+
+    public function customerStats(Request $request)
+    {
+        $from = Carbon::parse($request->query('from_date'))->startOfDay();
+        $to = $request->query('to_date') ? Carbon::parse($request->query('to_date'))->endOfDay() : $from->copy()->endOfDay();
+
+        $newUsers = User::whereBetween('created_at', [$from, $to])
+            ->whereIn('type', ['user', 'company'])
+            ->whereNull('company_id')
+            ->get();
+
+        $lostUsers = User::whereIn('type', ['user', 'company'])
+            ->whereNull('company_id')
+            ->whereDoesntHave('contracts', function ($q) {
+                $q->where('status', 'signed');
+            })
+            ->whereHas('contracts', function ($q) use ($from, $to) {
+                $q->whereBetween('created_at', [$from, $to]);
+            })
+            ->get();
+
+        $growth = fn($curr, $prev) => $prev != 0 ? round((($curr - $prev) / $prev) * 100, 2) : 0;
+        $totalUsers = User::whereIn('type', ['user', 'company'])
+            ->whereNull('company_id')
+            ->count();
+
+        return response()->json([
+            'stats' => [
+                'new' => $newUsers->count(),
+                'lost' => $lostUsers->count(),
+                'total' => $totalUsers,
+                'growth_new' => $growth($newUsers->count(), $lostUsers->count()),  // adjust logic if needed
+                'growth_lost' => $growth($lostUsers->count(), $newUsers->count()),  // adjust logic if needed
+            ],
+            'customers' => $newUsers->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'type' => $user->type,
+                    'status' => 'new',
+                    'profile_image' => $user->profile_image,
+                ];
+            })->merge($lostUsers->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'type' => $user->type,
+                    'status' => 'lost',
+                    'profile_image' => $user->profile_image,
+                ];
+            })),
+        ]);
+    }
 }
