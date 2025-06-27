@@ -3,12 +3,14 @@ import TopNavbar from "@/components/superadmin/topNavbar";
 import Sidebar from "@/components/superadmin/leftSideBar";
 import colors from "@/assets/styles/color";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
-import { Bar } from "react-chartjs-2";
+import { Bar, Pie } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
 import { Box, InputLabel, FormControl, TextField, Button, Select, MenuItem } from "@mui/material";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/utils/axiosInstance";
 
+// Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const SuperAdminDashboard = () => {
@@ -16,24 +18,79 @@ const SuperAdminDashboard = () => {
 	const [selectedBranch, setSelectedBranch] = useState("");
 	const [branches, setBranches] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
-	const [data, setData] = useState(null);
 
 	const [daySeats, setDaySeats] = useState(0);
 	const [nightSeats, setNightSeats] = useState(0);
 	const [fullSeats, setFullSeats] = useState(0);
 	const [totalSeats, setTotalSeats] = useState(0);
-
-	// const navigate = useNavigate();
-
-	const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
 	// Mocked 12 months of revenue
 	const [revenue, setRevenue] = useState([]);
 
 	const [membershipRevenue, setMembershipRevenue] = useState([]);
+	const [analyticsYear, setAnalyticsYear] = useState(new Date().getFullYear());
+	const [labels, setLabels] = useState([]);
+	// added code finance
+
+	const [stats1, setStats1] = useState(0);
+
+	const [fromDate, setFromDate] = useState(() => {
+		const now = new Date();
+		return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0]; // 1st of this month
+	});
+	const [toDate, setToDate] = useState(() => {
+		const now = new Date();
+		return new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split("T")[0]; // End of this month
+	});
+
+	const getBranches = async () => {
+		await axiosInstance.get("/dashboard/branches").then((res) => {
+			if (res.data.success) {
+				setBranches(res.data.branches);
+				if (res.data.branches.length > 0) {
+					setSelectedBranch(res.data.branches[0].id);
+				}
+			}
+		});
+	};
+
+	const getStats = async () => {
+		setIsLoading(true);
+		try {
+			const res = await axiosInstance.get(`/dashboard/branch/stats?branch=${selectedBranch}`, {
+				params: {
+					from_date: fromDate,
+					to_date: toDate,
+				},
+			});
+			if (res.data.success) {
+				setStats1(res.data);
+				setRevenue(res.data.revenue);
+				setMembershipRevenue(res.data.bookings);
+				setLabels(res.data.labels);
+				setDaySeats(res.data.day_seats);
+				setNightSeats(res.data.night_seats);
+				setFullSeats(res.data.fullday_seats);
+				setTotalSeats(res.data.total_seats);
+			}
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		getBranches();
+	}, []);
+
+	useEffect(() => {
+		if (selectedBranch) {
+			getStats();
+		}
+	}, [selectedBranch, fromDate, toDate]);
 
 	const chartData = {
-		labels: months,
+		labels: labels,
 		datasets: [
 			{
 				label: "Revenue",
@@ -76,6 +133,8 @@ const SuperAdminDashboard = () => {
 				label: "Seats Booked",
 				data: [daySeats, nightSeats, fullSeats, totalSeats],
 				backgroundColor: ["#60A5FA", "#34D399", "#FBB6CE", "#FACC15"],
+				borderColor: "#fff",
+				borderWidth: 2,
 			},
 		],
 	};
@@ -84,14 +143,17 @@ const SuperAdminDashboard = () => {
 		responsive: true,
 		plugins: {
 			legend: { position: "top" },
-			title: { display: true, text: "Seats Booking Distribution" },
+			title: {
+				display: true,
+				text: "Seats Booking Distribution",
+			},
 		},
 	};
 
 	const stats = [
-		{ label: "Customer", new: { value: 0, change: 90.5 }, lost: { value: 0, change: 0.0 } },
-		{ label: "Invoice", paid: { value: 0, change: 90.5 }, overdue: { value: 0, change: 16.75 } },
-		{ label: "Booking", new: { value: 0, change: 84.5 }, lost: { value: 0, change: 0.0 } },
+		{ label: "Customer", new: { value: stats1?.customer?.new, change: 0 }, lost: { value: stats1?.customer?.lost, change: 0.0 } },
+		{ label: "Invoice", paid: { value: stats1?.invoice?.paid, change: 0 }, overdue: { value: stats1?.invoice?.overdue, change: 0 } },
+		{ label: "Booking", new: { value: stats1?.booking?.new, change: 0 }, lost: { value: stats1?.booking?.lost, change: 0.0 } },
 	];
 
 	const containerStyle = {
@@ -133,74 +195,6 @@ const SuperAdminDashboard = () => {
 		gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
 		gap: "1rem",
 	};
-	// added code finance
-
-	const [stats1, setStats1] = useState(0);
-	const [selectedDate, setSelectedDate] = useState("");
-
-	const handleDateChange = (event) => {
-		setSelectedDate(event.target.value);
-	};
-
-	// State for Month and Year
-	const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
-	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
-
-	const getBranches = async () => {
-		await axiosInstance.get("/dashboard/branches").then((res) => {
-			if (res.data.success) {
-				setBranches(res.data.branches);
-				if (res.data.branches.length > 0) {
-					setSelectedBranch(res.data.branches[0].id);
-				}
-			}
-		});
-	};
-
-	const getStats = async (month = selectedMonth, year = selectedYear, date = selectedDate) => {
-		setIsLoading(true);
-		try {
-			const res = await axiosInstance.get(`/dashboard/branch/stats?branch=${selectedBranch}`, {
-				params: {
-					month,
-					year,
-					date, // pass this if it's not ''
-				},
-			});
-			setRevenue(res.data.revenue);
-			setMembershipRevenue(res.data.bookings);
-			setStats1(res.data);
-			setDaySeats(res.data.day_seats);
-			setNightSeats(res.data.night_seats);
-			setFullSeats(res.data.full_seats);
-			setTotalSeats(res.data.total_seats);
-			setData(res.data);
-		} catch (error) {
-			console.log(error);
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		getBranches();
-	}, []);
-
-	useEffect(() => {
-		if (selectedBranch) {
-			getStats();
-		}
-	}, [selectedBranch, selectedMonth, selectedYear, selectedDate]);
-
-	const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-	const handleMonthChange = (event) => {
-		setSelectedMonth(event.target.value);
-	};
-
-	const handleYearChange = (event) => {
-		setSelectedYear(event.target.value);
-	};
 
 	return (
 		<>
@@ -213,7 +207,7 @@ const SuperAdminDashboard = () => {
 					<Box sx={{ p: 1 }}>
 						{/* Back to Dashboard Header */}
 						<Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
-							<Button
+							<Box
 								// startIcon={<ArrowBackIcon />}
 								sx={{
 									font: "Nunito Sans",
@@ -224,7 +218,7 @@ const SuperAdminDashboard = () => {
 									pl: 0,
 								}}>
 								Dashboard
-							</Button>
+							</Box>
 							{/* Action Buttons */}
 							<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 								<Box></Box> {/* Empty box for spacing */}
@@ -279,31 +273,16 @@ const SuperAdminDashboard = () => {
 								<div style={containerStyle}>
 									<Box sx={{ display: "flex", justifyContent: "end", alignItems: "center", pt: 1 }}>
 										{/* Month and Year Selection */}
-										<Box sx={{ display: "flex", gap: 2 }}>
-											<FormControl>
-												<TextField label="Select Date" type="date" InputLabelProps={{ shrink: true }} size="small" value={selectedDate} onChange={handleDateChange} />
-											</FormControl>
-											<FormControl>
-												<InputLabel>Month</InputLabel>
-												<Select value={selectedMonth} onChange={handleMonthChange} label="Month" size="small">
-													<MenuItem value={0}>All Months</MenuItem> {/* Added option for All Months */}
-													{monthNames.map((month, index) => (
-														<MenuItem key={index} value={index + 1}>
-															{month}
-														</MenuItem>
-													))}
-												</Select>
-											</FormControl>
-											<FormControl>
-												<InputLabel>Year</InputLabel>
-												<Select value={selectedYear} onChange={handleYearChange} label="Year" size="small">
-													{Array.from({ length: 5 }, (_, index) => (
-														<MenuItem key={index} value={new Date().getFullYear() - index}>
-															{new Date().getFullYear() - index}
-														</MenuItem>
-													))}
-												</Select>
-											</FormControl>
+										<Box sx={{ display: "flex", justifyContent: "end", alignItems: "center", pt: 1 }}>
+											{/* Month and Year Selection */}
+											<Box sx={{ display: "flex", gap: 2 }}>
+												<FormControl>
+													<TextField label="From Date" type="date" size="small" value={fromDate} onChange={(e) => setFromDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+												</FormControl>
+												<FormControl>
+													<TextField label="To Date" type="date" size="small" value={toDate} onChange={(e) => setToDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+												</FormControl>
+											</Box>
 										</Box>
 									</Box>
 									{/* Metrics */}
@@ -386,7 +365,7 @@ const SuperAdminDashboard = () => {
 												height: "30rem",
 												// width: '45rem',
 												transition: "width 0.3s ease-in-out",
-												width: "45rem",
+												width: "100%",
 												backgroundColor: "#FFFFFF",
 												borderRadius: "0.2rem",
 												boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
@@ -417,7 +396,7 @@ const SuperAdminDashboard = () => {
 													<h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>Seats Booked</h2>
 												</div>
 												<div style={{ height: "400px" }}>
-													<Bar data={chartDataSeats} options={seatsChartOptions} />
+													<Pie data={chartDataSeats} options={seatsChartOptions} />
 												</div>
 											</div>
 										</div>
@@ -426,7 +405,11 @@ const SuperAdminDashboard = () => {
 									<div style={statsGridStyle}>
 										{stats.map((stat, i) => (
 											<div key={i} style={cardStyle}>
-												<h3 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827", marginBottom: "1rem" }}>{stat.label}</h3>
+												<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+													<h3 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827" }}>{stat.label}</h3>
+													{/* {stat.label === "Customer" && <CalendarMonthIcon onClick={() => navigate("/" + branch + "/branch/customer/dashboard")} style={{ cursor: "pointer", color: "#2563EB" }} titleAccess="Go to Customer Dashboard" />} */}
+												</div>
+
 												<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
 													{"new" in stat && (
 														<>

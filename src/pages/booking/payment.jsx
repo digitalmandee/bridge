@@ -361,10 +361,6 @@ const Payment = () => {
 										<p style={{ margin: "2px 0 0" }}>{bookingdetails.package_detail}</p>
 									</div>
 								</li>
-								{/* <pre>
-									{JSON.stringify(selectedChairs, null, 2)}
-								</pre> */}
-								{/* {Object.entries(selectedChairs).map(([tableId, chairs]) => chairs.map((chair) => "hello"))} */}
 							</ul>
 						</>
 					)}
