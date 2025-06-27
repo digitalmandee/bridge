@@ -138,6 +138,17 @@ class FinanceController extends Controller
             }
         }
 
+        // Occupancy
+        $currentOccupancy = $totalChairs > 0 ? ($bookedChairs / $totalChairs) * 100 : 0;
+
+        $previousBookedChairs = Chair::whereIn('time_slot', ['day', 'night', 'full_day'])
+            ->whereBetween('updated_at', [$previousFrom, $previousTo])
+            ->count('id');
+
+        $previousOccupancy = $totalChairs > 0 ? ($previousBookedChairs / $totalChairs) * 100 : 0;
+
+        $occupancyGrowth = $growth($currentOccupancy, $previousOccupancy);
+
         // -------------------------
         // 🧑‍💼 Customer New & Lost
         // -------------------------
@@ -199,6 +210,11 @@ class FinanceController extends Controller
             'revenue' => $revenueData,
             'bookings' => $bookingsData,
             'labels' => $labels,
+            'occupancy' => [
+                'current' => number_format($currentOccupancy, 2),
+                'previous' => number_format($previousOccupancy, 2),
+                'growth' => number_format($occupancyGrowth, 2),
+            ],
             'customer' => [
                 'new' => $newUsers,
                 'lost' => $lostUsers,
