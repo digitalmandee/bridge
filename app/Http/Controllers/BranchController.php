@@ -114,51 +114,31 @@ class BranchController extends Controller
         // Switch to tenant database
         tenancy()->initialize($tenant);
 
-        $month = $request->query('month');
-        $year = $request->query('year') ?? now()->year;
-        $date = $request->query('date');  // NEW
+        $from = $request->query('from_date');
+        $to = $request->query('to_date');
 
-        if ($date) {
-            // Daily
-            $currentRevenue = Invoice::whereDate('paid_date', $date)->sum('amount');
-            $currentExpense = Finance::whereDate('due_date', $date)->sum('amount');
-
-            $previousDate = Carbon::parse($date)->subDay();
-            $previousRevenue = Invoice::whereDate('paid_date', $previousDate)->sum('amount');
-            $previousExpense = Finance::whereDate('due_date', $previousDate)->sum('amount');
-
-            $totalChairs = Chair::count('id');
-            $bookedChairs = Chair::whereIn('time_slot', ['day', 'night', 'full_day'])->count('id');
-            $availableChairs = Chair::whereIn('time_slot', ['available', 'day', 'night'])->count('id');
-            $totalMembers = User::whereIn('type', ['user', 'company'])
-                ->whereNull('company_id')
-                ->count('id');
-
-            $booking = $this->getTotalCustomerBooings($date, $year);
-        } else if ($month == 0 || $month === 'all') {
-            // Yearly
-            $currentRevenue = $this->getTotal(Invoice::class, 'paid_date', $year);
-            $currentExpense = $this->getTotal(Finance::class, 'due_date', $year);
-            $previousRevenue = $this->getTotal(Invoice::class, 'paid_date', $year - 1);
-            $previousExpense = $this->getTotal(Finance::class, 'due_date', $year - 1);
-            $booking = $this->getTotalCustomerBooings(null, $year);
-        } else {
-            // Monthly
-            $previousDate = Carbon::create($year, $month)->subMonth();
-            $previousRevenue = $this->getTotal(Invoice::class, 'paid_date', $previousDate->year, $previousDate->month);
-            $previousExpense = $this->getTotal(Finance::class, 'due_date', $previousDate->year, $previousDate->month);
-            $currentRevenue = $this->getTotal(Invoice::class, 'paid_date', $year, $month);
-            $currentExpense = $this->getTotal(Finance::class, 'due_date', $year, $month);
-
-            $totalChairs = Chair::count('id');
-            $bookedChairs = Chair::whereIn('time_slot', ['day', 'night', 'full_day'])->count('id');
-            $availableChairs = Chair::whereIn('time_slot', ['available', 'day', 'night'])->count('id');
-            $totalMembers = User::whereIn('type', ['user', 'company'])
-                ->whereNull('company_id')
-                ->count('id');
-
-            $booking = $this->getTotalCustomerBooings(null, $year, $month);
+        if (!$from) {
+            return response()->json(['success' => false, 'message' => 'from_date is required.'], 422);
         }
+
+        $from = Carbon::parse($from)->startOfDay();
+        $to = $to ? Carbon::parse($to)->endOfDay() : $from->copy()->endOfDay();
+
+        $previousFrom = $from->copy()->subDays($from->diffInDays($to) + 1);
+        $previousTo = $from->copy()->subDay();
+
+        $currentRevenue = Invoice::whereBetween('paid_date', [$from, $to])->sum('amount');
+        $currentExpense = Finance::whereBetween('due_date', [$from, $to])->sum('amount');
+
+        $previousRevenue = Invoice::whereBetween('paid_date', [$previousFrom, $previousTo])->sum('amount');
+        $previousExpense = Finance::whereBetween('due_date', [$previousFrom, $previousTo])->sum('amount');
+
+        $totalChairs = Chair::count('id');
+        $bookedChairs = Chair::whereIn('time_slot', ['day', 'night', 'full_day'])->count('id');
+        $availableChairs = Chair::whereIn('time_slot', ['available', 'day', 'night'])->count('id');
+        $totalMembers = User::whereIn('type', ['user', 'company'])->whereNull('company_id')->count('id');
+
+        $booking = $this->getTotalCustomerBookings($from, $to);
 
         $currentPL = $currentRevenue - $currentExpense;
         $previousPL = $previousRevenue - $previousExpense;
@@ -166,43 +146,129 @@ class BranchController extends Controller
         $growth = fn($current, $previous) =>
             $previous != 0 ? (($current - $previous) / abs($previous)) * 100 : 0;
 
-        $currentYear = $year;
+        // -------------------------
+        // 🔄 Dynamic Labels Logic
+        // -------------------------
+        $diffInDays = $from->diffInDays($to);
+        $labels = [];
+        $revenueData = [];
+        $bookingsData = [];
 
-        $revenue = [];  // Invoice amounts
-        $bookings = [];  // Booking amounts (you might need to adjust this if you track booking differently)
+        if ($diffInDays <= 7) {
+            // Day-wise chart (1 to 7 days)
+            $current = $from->copy();
+            while ($current->lte($to)) {
+                $labels[] = $current->format('d M Y');
 
-        for ($i = 1; $i <= 12; $i++) {
-            $revenue[] = Finance::whereYear('issue_date', $currentYear)
-                ->whereMonth('issue_date', $i)
-                ->where('status', 'paid')
-                ->sum('amount');
+                $revenueData[] = Finance::whereDate('issue_date', $current)
+                    ->where('status', 'paid')
+                    ->sum('amount');
 
-            $bookings[] = Booking::whereYear('start_date', $currentYear)
-                ->whereMonth('start_date', $i)
-                ->whereIn('status', ['completed', 'confirmed'])
-                ->sum('total_price');  // or seats * price if you need total booking amount
+                $bookingsData[] = Booking::whereDate('start_date', $current)
+                    ->whereIn('status', ['completed', 'confirmed'])
+                    ->sum('total_price');
+
+                $current->addDay();
+            }
+        } else {
+            // Month-wise chart (default)
+            $startMonth = $from->copy()->startOfMonth();
+            $endMonth = $to->copy()->startOfMonth();
+
+            while ($startMonth <= $endMonth) {
+                $monthStart = $startMonth->copy()->startOfMonth();
+                $monthEnd = $startMonth->copy()->endOfMonth();
+
+                $labels[] = $startMonth->format('M Y');
+
+                $revenueData[] = Finance::whereBetween('issue_date', [$monthStart, $monthEnd])
+                    ->where('status', 'paid')
+                    ->sum('amount');
+
+                $bookingsData[] = Booking::whereBetween('start_date', [$monthStart, $monthEnd])
+                    ->whereIn('status', ['completed', 'confirmed'])
+                    ->sum('total_price');
+
+                $startMonth->addMonth();
+            }
         }
+
+        // -------------------------
+        // 🧑‍💼 Customer New & Lost
+        // -------------------------
+        $newUsers = User::whereIn('type', ['user', 'company'])
+            ->whereNull('company_id')
+            ->whereHas('contracts', function ($q) use ($from, $to) {
+                $q
+                    ->where('status', 'signed')
+                    ->whereBetween('created_at', [$from, $to]);
+            })
+            ->count();
+
+        $lostUsers = User::whereIn('type', ['user', 'company'])
+            ->whereNull('company_id')
+            ->whereDoesntHave('contracts', function ($q) {
+                $q->where('status', 'signed');
+            })
+            ->whereHas('contracts', function ($q) use ($from, $to) {
+                $q->whereBetween('created_at', [$from, $to]);
+            })
+            ->count();
+
+        // -------------------------
+        // 🧾 Invoice Paid & Overdue
+        // -------------------------
+        $invoicePaid = Invoice::where('status', 'paid')
+            ->whereBetween('paid_date', [$from, $to])
+            ->count();
+
+        $invoiceOverdue = Invoice::where('status', 'unpaid')
+            ->where('due_date', '<', now())
+            ->whereBetween('created_at', [$from, $to])
+            ->count();
+
+        $bookingNew = Booking::whereBetween('created_at', [$from, $to])->count();
+
+        $bookingLost = Booking::whereIn('status', ['rejected', 'vacated'])
+            ->whereBetween('updated_at', [$from, $to])
+            ->count();
 
         return response()->json([
             'success' => true,
-            'branch_id' => $branchId,
             'total_revenue' => number_format($currentRevenue, 2),
             'total_expense' => number_format($currentExpense, 2),
             'total_pl' => number_format($currentPL, 2),
-            'total_chairs' => $totalChairs ?? 0,
-            'booked_chairs' => $bookedChairs ?? 0,
-            'available_chairs' => $availableChairs ?? 0,
-            'total_members' => $totalMembers ?? 0,
-            'total_bookings' => $booking['totalBookings'] ?? 0,
-            'day_bookings' => $booking['dayBookings'] ?? 0,
-            'night_bookings' => $booking['nightBookings'] ?? 0,
-            'fullday_bookings' => $booking['fullDayBookings'] ?? 0,
-            'total_seats' => $booking['totalSeats'] ?? 0,
-            'day_seats' => $booking['daySeats'] ?? 0,
-            'night_seats' => $booking['nightSeats'] ?? 0,
-            'fullday_seats' => $booking['fullSeats'] ?? 0,
-            'revenue' => $revenue,
-            'bookings' => $bookings,
+            'total_chairs' => $totalChairs,
+            'booked_chairs' => $bookedChairs,
+            'available_chairs' => $availableChairs,
+            'total_members' => $totalMembers,
+            'total_bookings' => $booking['totalBookings'],
+            'day_bookings' => $booking['dayBookings'],
+            'night_bookings' => $booking['nightBookings'],
+            'fullday_bookings' => $booking['fullDayBookings'],
+            'total_seats' => $booking['totalSeats'],
+            'day_seats' => $booking['daySeats'],
+            'night_seats' => $booking['nightSeats'],
+            'fullday_seats' => $booking['fullSeats'],
+            // For chart
+            'revenue' => $revenueData,
+            'bookings' => $bookingsData,
+            'labels' => $labels,
+            'customer' => [
+                'new' => $newUsers,
+                'lost' => $lostUsers,
+                'growth' => number_format($growth($newUsers, $lostUsers), 2),
+            ],
+            'invoice' => [
+                'paid' => $invoicePaid,
+                'overdue' => $invoiceOverdue,
+                'growth' => number_format($growth($invoicePaid, $invoiceOverdue), 2),
+            ],
+            'booking' => [
+                'new' => $bookingNew,
+                'lost' => $bookingLost,
+                'growth' => number_format($growth($bookingNew, $bookingLost), 2),
+            ],
             'growth' => [
                 'total_revenue' => number_format($growth($currentRevenue, $previousRevenue), 2),
                 'total_expense' => number_format($growth($currentExpense, $previousExpense), 2),
@@ -211,132 +277,21 @@ class BranchController extends Controller
         ]);
     }
 
-    private function getTotalCustomerBooings($date = null, $year, $month = null)
+    private function getTotalCustomerBookings(Carbon $from, Carbon $to)
     {
-        if ($date) {
-            // Daily
-            $totalBookings = Booking::whereDate('start_date', $date)->count();
+        $baseQuery = Booking::whereBetween('start_date', [$from, $to]);
 
-            $dayBookings = Booking::whereDate('start_date', $date)->where('time_slot', 'day')->count();
+        $totalBookings = (clone $baseQuery)->count();
 
-            $nightBookings = Booking::whereDate('start_date', $date)->where('time_slot', 'night')->count();
+        $dayBookings = (clone $baseQuery)->where('time_slot', 'day')->count();
+        $nightBookings = (clone $baseQuery)->where('time_slot', 'night')->count();
+        $fullDayBookings = (clone $baseQuery)->where('time_slot', 'full_day')->count();
 
-            $fullDayBookings = Booking::whereDate('start_date', $date)->where('time_slot', 'full_day')->count();
+        $totalSeats = (clone $baseQuery)->get()->sum(fn($b) => is_array($b->chair_ids) ? count($b->chair_ids) : 0);
 
-            $totalSeats = Booking::whereDate('start_date', $date)
-                ->get()
-                ->sum(function ($booking) {
-                    return is_array($booking->chair_ids) ? count($booking->chair_ids) : 0;
-                });
-
-            $daySeats = Booking::whereDate('start_date', $date)
-                ->where('time_slot', 'day')
-                ->get()
-                ->sum(function ($booking) {
-                    return is_array($booking->chair_ids) ? count($booking->chair_ids) : 0;
-                });
-
-            $nightSeats = Booking::whereDate('start_date', $date)
-                ->where('time_slot', 'night')
-                ->get()
-                ->sum(function ($booking) {
-                    return is_array($booking->chair_ids) ? count($booking->chair_ids) : 0;
-                });
-
-            $fullSeats = Booking::whereDate('start_date', $date)
-                ->where('time_slot', 'full_day')
-                ->get()
-                ->sum(function ($booking) {
-                    return is_array($booking->chair_ids) ? count($booking->chair_ids) : 0;
-                });
-        } else if ($month && $month !== 'all') {
-            // Monthly
-            $totalBookings = Booking::whereYear('start_date', $year)
-                ->whereMonth('start_date', $month)
-                ->count();
-
-            $dayBookings = Booking::whereYear('start_date', $year)
-                ->whereMonth('start_date', $month)
-                ->where('time_slot', 'day')
-                ->count();
-
-            $nightBookings = Booking::whereYear('start_date', $year)
-                ->whereMonth('start_date', $month)
-                ->where('time_slot', 'night')
-                ->count();
-
-            $fullDayBookings = Booking::whereYear('start_date', $year)
-                ->whereMonth('start_date', $month)
-                ->where('time_slot', 'full_day')
-                ->count();
-
-            $totalSeats = Booking::whereYear('start_date', $year)
-                ->whereMonth('start_date', $month)
-                ->get()
-                ->sum(function ($booking) {
-                    return is_array($booking->chair_ids) ? count($booking->chair_ids) : 0;
-                });
-
-            $daySeats = Booking::whereYear('start_date', $year)
-                ->whereMonth('start_date', $month)
-                ->where('time_slot', 'day')
-                ->get()
-                ->sum(function ($booking) {
-                    return is_array($booking->chair_ids) ? count($booking->chair_ids) : 0;
-                });
-
-            $nightSeats = Booking::whereYear('start_date', $year)
-                ->whereMonth('start_date', $month)
-                ->where('time_slot', 'night')
-                ->get()
-                ->sum(function ($booking) {
-                    return is_array($booking->chair_ids) ? count($booking->chair_ids) : 0;
-                });
-
-            $fullSeats = Booking::whereYear('start_date', $year)
-                ->whereMonth('start_date', $month)
-                ->where('time_slot', 'full_day')
-                ->get()
-                ->sum(function ($booking) {
-                    return is_array($booking->chair_ids) ? count($booking->chair_ids) : 0;
-                });
-        } else {
-            // Yearly
-            $totalBookings = Booking::whereYear('start_date', $year)->count();
-
-            $dayBookings = Booking::whereYear('start_date', $year)->where('time_slot', 'day')->count();
-
-            $nightBookings = Booking::whereYear('start_date', $year)->where('time_slot', 'night')->count();
-
-            $fullDayBookings = Booking::whereYear('start_date', $year)->where('time_slot', 'full_day')->count();
-
-            $totalSeats = Booking::whereYear('start_date', $year)
-                ->get()
-                ->sum(function ($booking) {
-                    return is_array($booking->chair_ids) ? count($booking->chair_ids) : 0;
-                });
-
-            $daySeats = Booking::whereYear('start_date', $year)
-                ->where('time_slot', 'day')
-                ->get()
-                ->sum(function ($booking) {
-                    return is_array($booking->chair_ids) ? count($booking->chair_ids) : 0;
-                });
-
-            $nightSeats = Booking::whereYear('start_date', $year)
-                ->where('time_slot', 'night')
-                ->get()
-                ->sum(function ($booking) {
-                    return is_array($booking->chair_ids) ? count($booking->chair_ids) : 0;
-                });
-
-            $fullSeats = Booking::whereYear('start_date', $year)
-                ->where('time_slot', 'full_day')
-                ->get()
-                ->sum(function ($booking) {
-                    return is_array($booking->chair_ids) ? count($booking->chair_ids) : 0;
-                });
-        }
+        $daySeats = (clone $baseQuery)->where('time_slot', 'day')->get()->sum(fn($b) => is_array($b->chair_ids) ? count($b->chair_ids) : 0);
+        $nightSeats = (clone $baseQuery)->where('time_slot', 'night')->get()->sum(fn($b) => is_array($b->chair_ids) ? count($b->chair_ids) : 0);
+        $fullSeats = (clone $baseQuery)->where('time_slot', 'full_day')->get()->sum(fn($b) => is_array($b->chair_ids) ? count($b->chair_ids) : 0);
 
         return [
             'totalBookings' => $totalBookings,
@@ -348,20 +303,6 @@ class BranchController extends Controller
             'nightSeats' => $nightSeats,
             'fullSeats' => $fullSeats,
         ];
-    }
-
-    /**
-     * Get total amount based on model, date field, year, and optional month.
-     */
-    private function getTotal(string $modelClass, string $dateField, int $year, ?int $month = null): float
-    {
-        $query = $modelClass::where('status', 'paid')->whereYear($dateField, $year);
-
-        if ($month) {
-            $query->whereMonth($dateField, $month);
-        }
-
-        return $query->sum('amount');
     }
 
     /**

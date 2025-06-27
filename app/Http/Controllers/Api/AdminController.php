@@ -107,9 +107,13 @@ class AdminController extends Controller
         $from = Carbon::parse($request->query('from_date'))->startOfDay();
         $to = $request->query('to_date') ? Carbon::parse($request->query('to_date'))->endOfDay() : $from->copy()->endOfDay();
 
-        $newUsers = User::whereBetween('created_at', [$from, $to])
-            ->whereIn('type', ['user', 'company'])
+        $newUsers = User::whereIn('type', ['user', 'company'])
             ->whereNull('company_id')
+            ->whereHas('contracts', function ($q) use ($from, $to) {
+                $q
+                    ->where('status', 'signed')
+                    ->whereBetween('created_at', [$from, $to]);
+            })
             ->get();
 
         $lostUsers = User::whereIn('type', ['user', 'company'])
@@ -135,25 +139,28 @@ class AdminController extends Controller
                 'growth_new' => $growth($newUsers->count(), $lostUsers->count()),  // adjust logic if needed
                 'growth_lost' => $growth($lostUsers->count(), $newUsers->count()),  // adjust logic if needed
             ],
-            'customers' => $newUsers->map(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'type' => $user->type,
-                    'status' => 'new',
-                    'profile_image' => $user->profile_image,
-                ];
-            })->merge($lostUsers->map(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'type' => $user->type,
-                    'status' => 'lost',
-                    'profile_image' => $user->profile_image,
-                ];
-            })),
+            'customers' => collect()
+                ->merge($newUsers->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'type' => $user->type,
+                        'status' => 'new',
+                        'profile_image' => $user->profile_image,
+                    ];
+                }))
+                ->merge($lostUsers->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'type' => $user->type,
+                        'status' => 'lost',
+                        'profile_image' => $user->profile_image,
+                    ];
+                }))
+                ->values(),
         ]);
     }
 }
