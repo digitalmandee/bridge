@@ -202,7 +202,6 @@ const InvoiceDashboard = () => {
 											<TableCell>Payment Date</TableCell>
 											<TableCell>Status</TableCell>
 											<TableCell>Amount</TableCell>
-											<TableCell>Action</TableCell>
 										</TableRow>
 									</TableHead>
 									<TableBody>
@@ -237,11 +236,6 @@ const InvoiceDashboard = () => {
 														</Button>
 													</TableCell>
 													<TableCell>Rs. {invoice.amount}</TableCell>
-													<TableCell>
-														<Button size="small" variant="outlined" startIcon={<NotificationsIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }} onClick={() => sendNotification(invoice.user.id, invoice.user.id, invoice.status)}>
-															Notify
-														</Button>
-													</TableCell>
 												</TableRow>
 											))
 										) : (

@@ -212,11 +212,6 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 										{ label: "Total Revenue", value: stats1.total_revenue, unit: "Pkr", change: stats1?.growth?.total_revenue, increase: true },
 										{ label: "Total Expense", value: stats1.total_expense, unit: "Pkr", change: stats1?.growth?.total_expense, increase: false },
 										{ label: "Total PNL", value: stats1.total_pl, unit: "Pkr", change: stats1?.growth?.total_pl, increase: true },
-										{ label: "Total Seats", value: stats1.total_chairs },
-										{ label: "Occupied Seats", value: stats1.booked_chairs },
-										{ label: "Occupancy %", value: ((stats1.booked_chairs / stats1.total_chairs) * 100).toFixed(2) },
-										{ label: "Available Seats", value: stats1.available_chairs },
-										{ label: "Total Members", value: stats1.total_members },
 									]
 										.slice(0, 3)
 										.map((metric, i) => (
@@ -242,26 +237,30 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 								<h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "0.5rem" }}>Occupancy</h3>
 								<div style={{ display: "flex", gap: "0.5rem" }}>
 									{[
-										{ label: "Total Revenue", value: stats1.total_revenue, unit: "Pkr", change: stats1?.growth?.total_revenue, increase: true },
-										{ label: "Total Expense", value: stats1.total_expense, unit: "Pkr", change: stats1?.growth?.total_expense, increase: false },
-										{ label: "Total PNL", value: stats1.total_pl, unit: "Pkr", change: stats1?.growth?.total_pl, increase: true },
 										{ label: "Total Seats", value: stats1.total_chairs },
 										// { label: "Occupied Seats", value: stats1.booked_chairs },
-										{ label: "Occupancy Seats %", value: ((stats1.booked_chairs / stats1.total_chairs) * 100).toFixed(2) },
+										{ label: "Occupancy Seats %", value: stats1.occupancy?.current, change: stats1.occupancy?.growth },
 										{ label: "Available Seats", value: stats1.available_chairs },
 										{ label: "Total Members", value: stats1.total_members },
-									]
-										.slice(3, 7)
-										.map((metric, i) => (
-											<div key={i} style={cardStyle}>
-												<div style={{ display: "flex", flexDirection: "column" }}>
-													<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
-													<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
-														<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
-													</div>
+									].map((metric, i) => (
+										<div key={i} style={cardStyle}>
+											<div style={{ display: "flex", flexDirection: "column" }}>
+												<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
+												<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
+													<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
 												</div>
+												{metric.change ? (
+													<div style={{ display: "flex", alignItems: "center", marginTop: "1rem", fontSize: "0.875rem", color: parseFloat(metric.change) >= 0 ? "#16A34A" : "#DC2626" }}>
+														{/* {stats1?.growth?.total_pl >= 0 ? "↑" : "↓"} */}
+														{parseFloat(metric.change) >= 0 ? "↑" : "↓"}
+														<span>{metric.change}%</span>
+													</div>
+												) : (
+													""
+												)}
 											</div>
-										))}
+										</div>
+									))}
 								</div>
 							</div>
 						</div>
