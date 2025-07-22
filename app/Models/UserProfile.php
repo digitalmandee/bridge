@@ -9,5 +9,5 @@ class UserProfile extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'linkedin', 'facebook', 'freelance_site'];
+    protected $fillable = ['user_id', 'linkedin', 'facebook', 'freelance_site', 'kyb_file'];
 }

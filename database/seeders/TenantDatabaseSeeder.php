@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use Database\Seeders\Tenants\BookingPlanSeeder;
 use Database\Seeders\Tenants\FloorsTableSeeder;
+use Database\Seeders\Tenants\InvoiceTypesSeeder;
 use Database\Seeders\Tenants\LeaveCategorySeeder;
 use Database\Seeders\Tenants\PermissionsSeeder;
 use Database\Seeders\Tenants\RoomsTableSeeder;
@@ -30,6 +31,7 @@ class TenantDatabaseSeeder extends Seeder
             BookingPlanSeeder::class,
             ScheduleRoomsTableSeeder::class,
             LeaveCategorySeeder::class,
+            InvoiceTypesSeeder::class
         ]);
     }
 }

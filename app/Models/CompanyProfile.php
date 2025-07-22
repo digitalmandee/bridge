@@ -9,5 +9,5 @@ class CompanyProfile extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'name', 'website', 'industry', 'employees', 'address'];
+    protected $fillable = ['user_id', 'name', 'website', 'industry', 'employees', 'address', 'kyb_file'];
 }

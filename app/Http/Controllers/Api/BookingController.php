@@ -38,6 +38,7 @@ class BookingController extends Controller
             $selectedChairs = json_decode($validated['selectedChairs'], true);
 
             DB::beginTransaction();
+            $kybFilePath = null;
 
             // Check if user exists or create a new user
             $user = User::where('email', $bookingDetails['email'])->first();
@@ -55,6 +56,10 @@ class BookingController extends Controller
                 ]);
                 $user->assignRole('user');
 
+                if ($request->hasFile('kyb_file')) {
+                    $kybFilePath = FileHelper::saveImage($request->file('kyb_file'), 'kyb_files');
+                }
+
                 if ($type === 'company') {
                     CompanyProfile::create([
                         'user_id' => $user->id,
@@ -63,6 +68,7 @@ class BookingController extends Controller
                         'industry' => $bookingDetails['industry'],
                         'employees' => $bookingDetails['employees'],
                         'address' => $bookingDetails['company_address'],
+                        'kyb_file' => $kybFilePath
                     ]);
                 } else {
                     UserProfile::create([
@@ -70,6 +76,7 @@ class BookingController extends Controller
                         'linkedin' => $bookingDetails['linkedin'],
                         'facebook' => $bookingDetails['facebook'],
                         'freelance_site' => $bookingDetails['freelance_site'],
+                        'kyb_file' => $kybFilePath
                     ]);
                 }
 
