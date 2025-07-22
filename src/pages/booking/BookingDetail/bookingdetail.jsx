@@ -5,6 +5,12 @@ import axios from "axios";
 import { FloorPlanContext } from "../../../contexts/floorplan.context";
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const BookingDetail = ({ handlePrevious, handleNext }) => {
 	const { bookingdetails, setBookingDetails, formErrors, bookingPlans, setBookingPlans, validateBookingDetails, checkAvailability, selectedChairs } = useContext(FloorPlanContext);
@@ -56,13 +62,13 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 		let packageDetail = "";
 
 		if (bookingdetails.duration === "monthly") {
-			const today = new Date();
+			// const today = dayjs(bookingdetails.start_date).tz("Asia/Karachi").toDate();
+			const today = new Date(bookingdetails.start_date);
 			const currentYear = today.getFullYear();
 			const currentMonth = today.getMonth();
 			const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-			const remainingDays = lastDayOfMonth - today.getDate();
+			const remainingDays = lastDayOfMonth - today.getDate() + 1;
 
-			// Count total selected chairs
 			const totalChairs = Object.values(selectedChairs).flat().length;
 
 			if (remainingDays > 0) {
@@ -70,25 +76,20 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 				let extraPricePerChair = 0;
 
 				if (remainingDays <= 5) {
-					// If remaining days are ≤ 5, add full month + extra days price
 					extraPricePerChair = planPrice + dailyRate * remainingDays;
 					packageDetail = `1 month, ${remainingDays} days`;
 				} else {
-					// If remaining days > 5, charge only for those days
 					extraPricePerChair = dailyRate * remainingDays;
 					packageDetail = `${remainingDays} days`;
 				}
 
 				totalPrice = (totalChairs * extraPricePerChair).toFixed(2);
 			} else {
-				// If there are no extra days, charge for only 1 full month
 				totalPrice = (totalChairs * planPrice).toFixed(2);
 				packageDetail = "1 month";
 			}
 		} else {
-			// Count total selected chairs
 			const totalChairs = Object.values(selectedChairs).flat().length;
-
 			totalPrice = (totalChairs * planPrice).toFixed(2);
 			packageDetail = `Full Day`;
 		}
@@ -98,7 +99,7 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 			total_price: Math.round(totalPrice),
 			package_detail: packageDetail,
 		}));
-	}, [bookingdetails.selectedPlan]);
+	}, [bookingdetails.selectedPlan, bookingdetails.start_date]);
 
 	const selectedPlan = bookingPlans.find((plan) => plan.id == bookingdetails.selectedPlan);
 
@@ -222,7 +223,7 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 							<option value="monthly">Monthly</option>
 						</select>
 					</div>
-
+					{bookingdetails.total_price}
 					{/* Duration Field */}
 					{bookingdetails.duration === "monthly" && (
 						<div style={{ marginBottom: "10px" }}>
@@ -252,13 +253,13 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 										{duration === "day"
 											? "Day (9AM to 5PM)"
 											: duration === "night"
-												? "Night (6PM to 8AM)"
-												: duration === "full_day"
-													? "Full Day"
-													: duration
-														.split("_")
-														.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-														.join(" ")}
+											? "Night (6PM to 8AM)"
+											: duration === "full_day"
+											? "Full Day"
+											: duration
+													.split("_")
+													.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+													.join(" ")}
 									</option>
 								))}
 							</select>
@@ -333,7 +334,7 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 							// borderBottom: "1px solid #ddd",
 							fontSize: "14px",
 							color: "#333",
-							marginBottom: "15px"
+							marginBottom: "15px",
 						}}>
 						<label
 							style={{

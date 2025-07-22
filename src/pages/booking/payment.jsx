@@ -32,6 +32,7 @@ const Payment = () => {
 		const formData = new FormData();
 		formData.append("floor_id", selectedFloor);
 		formData.append("cnic_image", bookingdetails.cnic_image); // Add the receipt file
+		formData.append("kyb_file", bookingdetails.kyb_file); // Add the receipt file
 		// formData.append("profile_image", bookingdetails.profile_image); // Add the receipt file
 		formData.append("receipt", receiptFile); // Add the receipt file
 		formData.append("bookingdetails", JSON.stringify(bookingdetails));

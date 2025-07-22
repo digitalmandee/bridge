@@ -273,8 +273,8 @@ const CategoryDetail = ({ handleNext,handlePrevious }) => {
 			)}
 			<div className="form-group">
 				<label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>KYB (File upload - PDF or Image)</label>
-				<input style={{ width: "100%", marginLeft: 0, padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }} type="file" name="kyp_file" accept=".png,.jpg,.jpeg,.gif,.pdf" onChange={handleChange} />
-				{formErrors.kyp_file && <span className="error-text">{formErrors.kyp_file}</span>}
+				<input style={{ width: "100%", marginLeft: 0, padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }} type="file" name="kyb_file" accept=".png,.jpg,.jpeg,.gif,.pdf" onChange={handleChange} />
+				{formErrors.kyb_file && <span className="error-text">{formErrors.kyb_file}</span>}
 			</div>
 
 			{/* Submit Button */}
