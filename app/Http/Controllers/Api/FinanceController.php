@@ -15,45 +15,32 @@ use Illuminate\Http\Request;
 
 class FinanceController extends Controller
 {
-    // Fetch all finance entries
     public function index(Request $request)
     {
         $limit = (int) $request->query('limit', 10);
-        $month = $request->query('month');
-        $year = $request->query('year');
+        $from = $request->query('from_date');
+        $to = $request->query('to_date');
+
+        if (!$from) {
+            return response()->json([
+                'success' => false,
+                'message' => 'from_date is required.'
+            ], 422);
+        }
+
+        $from = Carbon::parse($from)->startOfDay();
+        $to = $to ? Carbon::parse($to)->endOfDay() : $from->copy()->endOfDay();
 
         $finances = Finance::with('category:id,name')
-            ->when($month, fn($q) => $q->whereMonth('due_date', $month))
-            ->when($year, fn($q) => $q->whereYear('due_date', $year))
+            ->whereBetween('due_date', [$from, $to])
             ->orderByDesc('created_at')
             ->paginate($limit);
 
-        return response()->json(['success' => true, 'finances' => $finances]);
-    }
-
-    public function getMonthlyStats(Request $request)
-    {
-        $currentYear = $request->input('year', now()->year());
-
-        $revenue = [];  // Invoice amounts
-        $bookings = [];  // Booking amounts (you might need to adjust this if you track booking differently)
-
-        for ($i = 1; $i <= 12; $i++) {
-            $revenue[] = Finance::whereYear('issue_date', $currentYear)
-                ->whereMonth('issue_date', $i)
-                ->where('status', 'paid')
-                ->sum('amount');
-
-            $bookings[] = Booking::whereYear('start_date', $currentYear)
-                ->whereMonth('start_date', $i)
-                ->whereIn('status', ['completed', 'confirmed'])
-                ->sum('total_price');  // or seats * price if you need total booking amount
-        }
+        \Log::info($finances);
 
         return response()->json([
             'success' => true,
-            'revenue' => $revenue,
-            'bookings' => $bookings,
+            'finances' => $finances
         ]);
     }
 
