@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate, useParams } from "react-router-dom";
-import { Box, Typography, Button, Card, CardContent, Grid, Table, TableBody, TableCell, IconButton, TableContainer, TableHead, TableRow, Paper, CircularProgress, MenuItem, Select, InputLabel, FormControl, Modal } from "@mui/material";
+import { Box, Typography, Button, Card, CardContent, Grid, Table, TableBody, TableCell, IconButton, TableContainer, TableHead, TableRow, Paper, CircularProgress, MenuItem, Select, InputLabel, FormControl, Modal, TextField } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ReceiptIcon from "@mui/icons-material/Receipt";
@@ -29,10 +29,6 @@ const FinanceDashboard = () => {
 	const [totalPages, setTotalPages] = useState(1);
 	const [limit, setLimit] = useState(10);
 
-	// State for Month and Year
-	const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
-	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
-
 	const [fromDate, setFromDate] = useState(() => {
 		const now = new Date();
 		return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0]; // 1st of this month
@@ -42,10 +38,13 @@ const FinanceDashboard = () => {
 		return new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split("T")[0]; // End of this month
 	});
 
-	const getStats = async (month = selectedMonth, year = selectedYear) => {
+	const getStats = async () => {
 		try {
 			const res = await axiosInstance.get("finance/stats", {
-				params: { month, year },
+				params: {
+					from_date: fromDate,
+					to_date: toDate,
+				},
 			});
 			if (res.data.success) {
 				setStats(res.data);
@@ -59,7 +58,7 @@ const FinanceDashboard = () => {
 		setIsLoading(true);
 		try {
 			const res = await axiosInstance.get("finances", {
-				params: { page, limit, month: selectedMonth, year: selectedYear },
+				params: { page, limit, from_date: fromDate, to_date: toDate },
 			});
 
 			if (res.data.success) {
@@ -77,17 +76,7 @@ const FinanceDashboard = () => {
 	useEffect(() => {
 		getStats();
 		getFinances(currentPage);
-	}, [selectedMonth, selectedYear, currentPage]);
-
-	const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-	const handleMonthChange = (event) => {
-		setSelectedMonth(event.target.value);
-	};
-
-	const handleYearChange = (event) => {
-		setSelectedYear(event.target.value);
-	};
+	}, [fromDate, toDate, currentPage]);
 
 	const handleDownload = async () => {
 		const fileName = selectedItem.receipt;
@@ -121,7 +110,10 @@ const FinanceDashboard = () => {
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement("a");
 		a.href = url;
-		a.download = `financial-report-${selectedMonth}-${selectedYear}.csv`;
+		// Format file name using fromDate and toDate
+		const formattedFrom = fromDate.replace(/-/g, "");
+		const formattedTo = toDate.replace(/-/g, "");
+		a.download = `financial-report-${formattedFrom}-to-${formattedTo}.csv`;
 		document.body.appendChild(a);
 		a.click();
 		a.remove();
@@ -144,28 +136,16 @@ const FinanceDashboard = () => {
 							</Typography>
 							<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 								{/* Month and Year Selection */}
-								<Box sx={{ display: "flex", gap: 2 }}>
-									<FormControl>
-										<InputLabel>Month</InputLabel>
-										<Select value={selectedMonth} onChange={handleMonthChange} label="Month" size="small">
-											<MenuItem value={0}>All Months</MenuItem> {/* Added option for All Months */}
-											{monthNames.map((month, index) => (
-												<MenuItem key={index} value={index + 1}>
-													{month}
-												</MenuItem>
-											))}
-										</Select>
-									</FormControl>
-									<FormControl>
-										<InputLabel>Year</InputLabel>
-										<Select value={selectedYear} onChange={handleYearChange} label="Year" size="small">
-											{Array.from({ length: 5 }, (_, index) => (
-												<MenuItem key={index} value={new Date().getFullYear() - index}>
-													{new Date().getFullYear() - index}
-												</MenuItem>
-											))}
-										</Select>
-									</FormControl>
+								<Box sx={{ display: "flex", justifyContent: "end", alignItems: "center", pt: 1 }}>
+									{/* Month and Year Selection */}
+									<Box sx={{ display: "flex", gap: 2 }}>
+										<FormControl>
+											<TextField label="From Date" type="date" size="small" value={fromDate} onChange={(e) => setFromDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+										</FormControl>
+										<FormControl>
+											<TextField label="To Date" type="date" size="small" value={toDate} onChange={(e) => setToDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+										</FormControl>
+									</Box>
 								</Box>
 								<Button variant="outlined" color="primary" onClick={downloadFinancialReport}>
 									Financial Report
