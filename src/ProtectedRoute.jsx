@@ -45,7 +45,7 @@ const ProtectedRoute = ({ children, role, permission }) => {
 
 	// If user lacks permission, redirect to a no-permission page
 	if (permission && !permissions.includes(permission)) {
-		return <Navigate to="/no-permission" replace />;
+		return <Navigate to={"/" + branch + "/no-permission"} replace />;
 	}
 
 	// If everything is okay, render the protected content

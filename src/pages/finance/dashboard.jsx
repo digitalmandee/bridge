@@ -33,6 +33,15 @@ const FinanceDashboard = () => {
 	const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
 	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Default to current year
 
+	const [fromDate, setFromDate] = useState(() => {
+		const now = new Date();
+		return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0]; // 1st of this month
+	});
+	const [toDate, setToDate] = useState(() => {
+		const now = new Date();
+		return new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split("T")[0]; // End of this month
+	});
+
 	const getStats = async (month = selectedMonth, year = selectedYear) => {
 		try {
 			const res = await axiosInstance.get("finance/stats", {

@@ -223,7 +223,6 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 							<option value="monthly">Monthly</option>
 						</select>
 					</div>
-					{bookingdetails.total_price}
 					{/* Duration Field */}
 					{bookingdetails.duration === "monthly" && (
 						<div style={{ marginBottom: "10px" }}>
