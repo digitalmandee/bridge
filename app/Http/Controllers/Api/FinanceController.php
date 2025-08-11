@@ -36,8 +36,6 @@ class FinanceController extends Controller
             ->orderByDesc('created_at')
             ->paginate($limit);
 
-        \Log::info($finances);
-
         return response()->json([
             'success' => true,
             'finances' => $finances
