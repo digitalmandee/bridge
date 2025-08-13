@@ -23,6 +23,13 @@ const Requests = () => {
 	const [snackbarOpen, setSnackbarOpen] = useState(false);
 	const [snackbarMessage, setSnackbarMessage] = useState("");
 	const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+	const [searchQuery, setSearchQuery] = useState("");
+	const [filterOpen, setFilterOpen] = useState(false);
+
+	const [filterStartDate, setFilterStartDate] = useState("");
+	const [filterEndDate, setFilterEndDate] = useState("");
+	const [filterStatus, setFilterStatus] = useState("");
+	const [filterFloor, setFilterFloor] = useState("");
 
 	const [startDate, setStartDate] = useState("");
 	const [startTime, setStartTime] = useState("");
@@ -102,8 +109,17 @@ const Requests = () => {
 	const fetchBookings = async (page = 1) => {
 		setIsLoading(true);
 		try {
-			const res = await axiosInstance.get(`bookings`, { params: { page, limit } });
-			console.log(res.data);
+			const res = await axiosInstance.get(`bookings`, {
+				params: {
+					page,
+					limit,
+					search: searchQuery, // booking id or name
+					start_date: filterStartDate,
+					end_date: filterEndDate,
+					status: filterStatus,
+					floor: filterFloor,
+				},
+			});
 
 			if (res.data.success) {
 				setBookings(res.data.bookings.data);
@@ -116,6 +132,7 @@ const Requests = () => {
 			setIsLoading(false);
 		}
 	};
+
 	useEffect(() => {
 		fetchBookings(currentPage);
 	}, [currentPage]);
@@ -144,34 +161,24 @@ const Requests = () => {
 								gap: "16px",
 							}}>
 							{/* Filter and Search Box */}
-							<Box
-								className="filter-search-container"
-								sx={{
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "flex-end",
-									gap: "16px",
-									flex: 1,
-								}}>
+							<Box sx={{ display: "flex", justifyContent: "end", gap: "16px", flex: 1 }}>
 								{/* Filter Button */}
 								<Button
 									variant="outlined"
 									startIcon={<FilterAltOutlinedIcon />}
+									onClick={() => setFilterOpen(true)}
 									sx={{
 										borderRadius: "20px",
 										color: "#000",
 										borderColor: "#dcdcdc",
 										backgroundColor: "#fff",
-										"&:hover": {
-											backgroundColor: "#f1f1f1",
-										},
+										"&:hover": { backgroundColor: "#f1f1f1" },
 									}}>
 									Filter
 								</Button>
 
 								{/* Search Box */}
 								<Box
-									className="search-form"
 									sx={{
 										display: "flex",
 										alignItems: "center",
@@ -184,20 +191,67 @@ const Requests = () => {
 									}}>
 									<SearchOutlinedIcon style={{ marginRight: "8px", color: "#000" }} />
 									<TextField
-										placeholder="Search by room number"
+										placeholder="Search by booking ID or name"
 										size="small"
 										variant="standard"
-										InputProps={{ disableUnderline: true }}
-										sx={{
-											flex: 1,
-											"& input::placeholder": {
-												color: "#6c757d",
-											},
+										value={searchQuery}
+										onChange={(e) => setSearchQuery(e.target.value)}
+										onKeyDown={(e) => {
+											if (e.key === "Enter") fetchBookings(1);
 										}}
+										InputProps={{ disableUnderline: true }}
+										sx={{ flex: 1, "& input::placeholder": { color: "#6c757d" } }}
 									/>
 								</Box>
 							</Box>
 						</Box>
+						<Modal open={filterOpen} onClose={() => setFilterOpen(false)}>
+							<Box
+								sx={{
+									position: "absolute",
+									top: "20px",
+									right: "20px",
+									backgroundColor: "white",
+									padding: 4,
+									borderRadius: 2,
+									width: 400,
+								}}>
+								<Typography variant="h6" mb={2}>
+									Filter Bookings
+								</Typography>
+
+								{/* Date Range */}
+								<TextField label="Start Date" type="date" fullWidth value={filterStartDate} onChange={(e) => setFilterStartDate(e.target.value)} InputLabelProps={{ shrink: true }} sx={{ mb: 2 }} />
+								<TextField label="End Date" type="date" fullWidth value={filterEndDate} onChange={(e) => setFilterEndDate(e.target.value)} InputLabelProps={{ shrink: true }} sx={{ mb: 2 }} />
+
+								{/* Status */}
+								<Select fullWidth value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} displayEmpty sx={{ mb: 2 }}>
+									<MenuItem value="">Select Status</MenuItem>
+									<MenuItem value="pending">Pending</MenuItem>
+									<MenuItem value="confirmed">Confirmed</MenuItem>
+									<MenuItem value="vacated">Vacated</MenuItem>
+									<MenuItem value="rejected">Rejected</MenuItem>
+								</Select>
+
+								{/* Floor */}
+								<Select fullWidth value={filterFloor} onChange={(e) => setFilterFloor(e.target.value)} displayEmpty sx={{ mb: 2 }}>
+									<MenuItem value="">Select Floor</MenuItem>
+									<MenuItem value="1">G Floor</MenuItem>
+								</Select>
+
+								<Button
+									variant="contained"
+									sx={{ backgroundColor: colors.primary }}
+									fullWidth
+									onClick={() => {
+										setFilterOpen(false);
+										fetchBookings(1);
+									}}>
+									Apply Filter
+								</Button>
+							</Box>
+						</Modal>
+
 						<div className="row card col-md-12">
 							<table className="table table-responsive">
 								<thead>

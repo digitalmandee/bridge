@@ -28,12 +28,10 @@ const CreateFinanceEntry = () => {
 
 	// Fetch categories based on search input
 	useEffect(() => {
-		if (searchTerm) {
-			axiosInstance
-				.get(`finance/categories?type=search&query=${searchTerm}`)
-				.then((res) => setCategories(res.data.results))
-				.catch((err) => console.error("Error fetching categories", err));
-		}
+		axiosInstance
+			.get(`finance/categories?type=search&query=${searchTerm}`)
+			.then((res) => setCategories(res.data.results))
+			.catch((err) => console.error("Error fetching categories", err));
 	}, [searchTerm]);
 
 	// Form Validation

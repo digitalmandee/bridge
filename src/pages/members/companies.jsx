@@ -18,6 +18,7 @@ const Company = () => {
 	const [companies, setCompanies] = useState([]);
 	const [simpleCompanies, setSimpleCompanies] = useState([]);
 	const [selectedCompany, setSelectedCompany] = useState(null);
+	const [search, setSearch] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
@@ -27,7 +28,7 @@ const Company = () => {
 		setIsLoading(true);
 		try {
 			const res = await axiosInstance.get("member/companies", {
-				params: { page, limit, company_id: selectedCompany },
+				params: { page, limit, company_id: selectedCompany, search }, // added search
 			});
 
 			if (res.data.success) {
@@ -43,8 +44,12 @@ const Company = () => {
 	};
 
 	useEffect(() => {
-		getCompanies(currentPage);
-	}, [currentPage, limit, selectedCompany]);
+		const delayDebounce = setTimeout(() => {
+			getCompanies(currentPage);
+		}, 500); // debounce for 500ms
+
+		return () => clearTimeout(delayDebounce);
+	}, [currentPage, limit, selectedCompany, search]);
 
 	const getSimpleCompanies = async () => {
 		try {
@@ -86,6 +91,11 @@ const Company = () => {
 								<TextField
 									placeholder="Search"
 									size="small"
+									value={search}
+									onChange={(e) => {
+										setSearch(e.target.value);
+										setCurrentPage(1); // reset to first page when searching
+									}}
 									InputProps={{
 										startAdornment: (
 											<InputAdornment position="start">
@@ -101,6 +111,7 @@ const Company = () => {
 										},
 									}}
 								/>
+
 								<Select
 									value={selectedCompany ? selectedCompany.id : ""}
 									displayEmpty
@@ -181,7 +192,8 @@ const Company = () => {
 														</TableCell>
 														<TableCell>
 															<Typography variant="body2" color="text.secondary">
-																{company.price} • {company.total_members} member
+																{company.price} • {company.total_chairs} member
+																{company.total_members > 0 && ` • ${company.total_members} staff`}
 																<br />
 																Created: {dayjs(company.created_at).format("MMMM D, YYYY")}
 															</Typography>
@@ -261,62 +273,3 @@ const theme = createTheme({
 		},
 	},
 });
-
-// Sample company data
-const companies = [
-	{
-		id: 1,
-		name: "Digital",
-		location: "Lahore",
-		avatar: "/placeholder.svg?height=40&width=40",
-		status: "Active",
-		isAdmin: true,
-		price: "$100.00",
-		members: 1,
-		created: "10/10/2023",
-	},
-	{
-		id: 2,
-		name: "Digital",
-		location: "Lahore",
-		avatar: "/placeholder.svg?height=40&width=40",
-		status: "Active",
-		isAdmin: false,
-		price: "$100.00",
-		members: 1,
-		created: "10/10/2023",
-	},
-	{
-		id: 3,
-		name: "Digital",
-		location: "Lahore",
-		avatar: "/placeholder.svg?height=40&width=40",
-		status: "Active",
-		isAdmin: true,
-		price: "$100.00",
-		members: 1,
-		created: "10/10/2023",
-	},
-	{
-		id: 4,
-		name: "Digital",
-		location: "Lahore",
-		avatar: "/placeholder.svg?height=40&width=40",
-		status: "Active",
-		isAdmin: false,
-		price: "$100.00",
-		members: 1,
-		created: "10/10/2023",
-	},
-	{
-		id: 5,
-		name: "Digital",
-		location: "Lahore",
-		avatar: "/placeholder.svg?height=40&width=40",
-		status: "Active",
-		isAdmin: true,
-		price: "$100.00",
-		members: 1,
-		created: "10/10/2023",
-	},
-];

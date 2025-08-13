@@ -88,7 +88,7 @@ const InvoiceCreate = () => {
 	}, [formData.member, formData.company, formData.invoiceType]);
 
 	const fetchSearchResults = useCallback(async (query, type) => {
-		if (!query) return []; // Don't make a request if the query is empty.
+		// if (!query) return []; // Don't make a request if the query is empty.
 		setSearchLoading(true);
 		try {
 			const response = await axiosInstance.get("search", {
@@ -113,23 +113,27 @@ const InvoiceCreate = () => {
 
 	const handleMemberSearch = async (event, newValue) => {
 		const query = event.target.value;
-		if (query) {
-			const results = await fetchSearchResults(query, "user");
-			setMembers(results);
-		} else {
-			setMembers([]);
-		}
+		const results = await fetchSearchResults(query, "user");
+		setMembers(results);
 	};
 
 	const handleCompanySearch = async (event, newValue) => {
 		const query = event.target.value;
-		if (query) {
-			const results = await fetchSearchResults(query, "company");
-			setCompanies(results);
-		} else {
-			setCompanies([]);
-		}
+		const results = await fetchSearchResults(query, "company");
+		setCompanies(results);
 	};
+
+	useEffect(() => {
+		const loadResults = async () => {
+			const results = await fetchSearchResults("", selectedTab === "individual" ? "user" : "company");
+			if (selectedTab === "individual") {
+				setMembers(results);
+			} else {
+				setCompanies(results);
+			}
+		};
+		loadResults();
+	}, [selectedTab, fetchSearchResults]);
 
 	// Handle Autocomplete change
 	const handleAutocompleteChange = (event, value, field) => {

@@ -11,6 +11,7 @@ const MemberUser = () => {
 	const { user: userData } = useContext(AuthContext);
 
 	const [users, setUsers] = useState([]);
+	const [search, setSearch] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
@@ -20,7 +21,7 @@ const MemberUser = () => {
 		setIsLoading(true);
 		try {
 			const res = await axiosInstance.get("member/users", {
-				params: { page, limit },
+				params: { page, limit, search }, // Pass search
 			});
 
 			if (res.data.success) {
@@ -36,8 +37,12 @@ const MemberUser = () => {
 	};
 
 	useEffect(() => {
-		getUsers(currentPage);
-	}, [currentPage, limit]);
+		const delayDebounce = setTimeout(() => {
+			getUsers(1);
+		}, 500);
+
+		return () => clearTimeout(delayDebounce);
+	}, [search, limit]);
 
 	return (
 		<>
@@ -65,6 +70,8 @@ const MemberUser = () => {
 									placeholder="Search"
 									size="small"
 									fullWidth
+									value={search}
+									onChange={(e) => setSearch(e.target.value)}
 									InputProps={{
 										startAdornment: (
 											<InputAdornment position="start">
@@ -105,7 +112,7 @@ const MemberUser = () => {
 												<TableCell>Last login</TableCell>
 												<TableCell>Status</TableCell>
 												{/* <TableCell>Profile</TableCell> */}
-												<TableCell>Terms & Condition</TableCell>
+												{/* <TableCell>Terms & Condition</TableCell> */}
 											</TableRow>
 										</TableHead>
 										<TableBody>
@@ -234,62 +241,3 @@ const theme = createTheme({
 		},
 	},
 });
-
-// Sample user data
-// const users = [
-// 	{
-// 		id: 1,
-// 		username: "Username",
-// 		suffix: "at digit",
-// 		location: "Lahore",
-// 		avatar: "/placeholder.svg?height=40&width=40",
-// 		lastLogin: "Today",
-// 		status: "Active",
-// 		profile: "Public",
-// 		terms: "Agree",
-// 	},
-// 	{
-// 		id: 2,
-// 		username: "Username",
-// 		suffix: "at digit",
-// 		location: "Lahore",
-// 		avatar: "/placeholder.svg?height=40&width=40",
-// 		lastLogin: "Today",
-// 		status: "Active",
-// 		profile: "Public",
-// 		terms: "Agree",
-// 	},
-// 	{
-// 		id: 3,
-// 		username: "Username",
-// 		suffix: "at digit",
-// 		location: "Lahore",
-// 		avatar: "/placeholder.svg?height=40&width=40",
-// 		lastLogin: "Today",
-// 		status: "Active",
-// 		profile: "Public",
-// 		terms: "Agree",
-// 	},
-// 	{
-// 		id: 4,
-// 		username: "Username",
-// 		suffix: "at digit",
-// 		location: "Lahore",
-// 		avatar: "/placeholder.svg?height=40&width=40",
-// 		lastLogin: "Today",
-// 		status: "Active",
-// 		profile: "Public",
-// 		terms: "Agree",
-// 	},
-// 	{
-// 		id: 5,
-// 		username: "Username",
-// 		suffix: "at digit",
-// 		location: "Lahore",
-// 		avatar: "/placeholder.svg?height=40&width=40",
-// 		lastLogin: "Today",
-// 		status: "Active",
-// 		profile: "Public",
-// 		terms: "Agree",
-// 	},
-// ];

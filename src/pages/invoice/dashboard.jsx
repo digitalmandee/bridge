@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Select, MenuItem, Card, CardContent, CircularProgress } from "@mui/material";
+import { Box, Typography, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Select, MenuItem, Card, CardContent, CircularProgress, Menu } from "@mui/material";
 import { Search as SearchIcon, FilterAlt as FilterIcon, Download as DownloadIcon, Notifications as NotificationsIcon, Wallet as WalletIcon, Assignment as AssignmentIcon, Timeline as TimelineIcon, Group as GroupIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TopNavbar from "@/components/topNavbar";
@@ -14,6 +14,8 @@ const InvoiceDashboard = () => {
 
 	const [month, setMonth] = useState("January");
 	const [invoices, setInvoices] = useState([]);
+	const [searchQuery, setSearchQuery] = useState("");
+	const [statusFilter, setStatusFilter] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
@@ -25,32 +27,22 @@ const InvoiceDashboard = () => {
 		totalPayment: 0,
 	});
 
+	const [anchorEl, setAnchorEl] = useState(null);
+
+	const handleOpenFilter = (event) => {
+		setAnchorEl(event.currentTarget); // anchor to the clicked button
+	};
+
+	const handleCloseFilter = () => {
+		setAnchorEl(null); // close the menu
+	};
+
 	const stats = [
 		{ title: "Invoices", value: dashboardStats.totalInvoices, icon: <AssignmentIcon /> },
 		{ title: "Paid", value: dashboardStats.totalPaid, icon: <WalletIcon /> },
 		{ title: "Overdue", value: dashboardStats.totalOverdue, icon: <TimelineIcon /> },
 		{ title: "Payment", value: Number(dashboardStats.totalPayment).toFixed(2), icon: <GroupIcon /> },
 	];
-
-	const sendNotification = async (invoiceId, userId, status) => {
-		try {
-			const res = await axiosInstance.post(`notifications/send`, {
-				user_id: userId,
-				invoice_id: invoiceId,
-				type: "invoice_conformation",
-				invoice_status: status,
-			});
-
-			if (res.data.success) {
-				alert("Notification sent successfully!");
-			} else {
-				alert("Failed to send notification.");
-			}
-		} catch (error) {
-			console.error("Error sending notification:", error.response.data);
-			alert("An error occurred while sending the notification.");
-		}
-	};
 
 	const getDashboardStats = async () => {
 		try {
@@ -97,7 +89,14 @@ const InvoiceDashboard = () => {
 	const getInvoices = async (page = 1) => {
 		setIsLoading(true);
 		try {
-			const res = await axiosInstance.get(`invoices?page=${page}&limit=${limit}`);
+			const res = await axiosInstance.get(`invoices`, {
+				params: {
+					page,
+					limit,
+					search: searchQuery,
+					status: statusFilter,
+				},
+			});
 			if (res.data.success) {
 				setInvoices(res.data.invoices.data);
 				setTotalPages(res.data.invoices.last_page);
@@ -111,8 +110,11 @@ const InvoiceDashboard = () => {
 	};
 
 	useEffect(() => {
-		getInvoices(currentPage);
-	}, [currentPage, limit]);
+		const delayDebounce = setTimeout(() => {
+			getInvoices(1); // reset to first page when searching
+		}, 500);
+		return () => clearTimeout(delayDebounce);
+	}, [searchQuery, statusFilter, limit]);
 
 	return (
 		<>
@@ -173,14 +175,29 @@ const InvoiceDashboard = () => {
 									<TextField
 										placeholder="Search"
 										size="small"
+										value={searchQuery}
+										onChange={(e) => setSearchQuery(e.target.value)}
 										InputProps={{
 											startAdornment: <SearchIcon sx={{ color: "text.secondary", mr: 1 }} />,
 										}}
 										sx={{ minWidth: 300 }}
 									/>
-									<Button variant="outlined" startIcon={<FilterIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }}>
+									<Button variant="outlined" startIcon={<FilterIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }} onClick={handleOpenFilter}>
 										Filter
 									</Button>
+
+									<Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseFilter}>
+										{["", "Pending", "Paid", "Overdue"].map((status) => (
+											<MenuItem
+												key={status}
+												onClick={() => {
+													setStatusFilter(status);
+													handleCloseFilter();
+												}}>
+												{status === "" ? "All" : status}
+											</MenuItem>
+										))}
+									</Menu>
 								</Box>
 							</div>
 						</div>

@@ -35,6 +35,7 @@ const InvoiceManagement = () => {
 	const [snackbarOpen, setSnackbarOpen] = useState(false);
 	const [snackbarMessage, setSnackbarMessage] = useState("");
 	const [loadingInvoiceId, setLoadingInvoiceId] = useState(null);
+	const [search, setSearch] = useState("");
 
 	const [openDialog, setOpenDialog] = useState(false);
 	const [selectedStatus, setSelectedStatus] = useState("");
@@ -71,7 +72,7 @@ const InvoiceManagement = () => {
 		setIsLoading(true);
 		try {
 			const res = await axiosInstance.get(`invoices`, {
-				params: { page, limit, status: statusFilter },
+				params: { page, limit, status: statusFilter, search },
 			});
 
 			if (res.data.success) {
@@ -183,12 +184,11 @@ const InvoiceManagement = () => {
 
 	// Run getInvoices when filter changes
 	useEffect(() => {
-		getInvoices(currentPage);
-	}, [currentPage, limit, statusFilter]);
-
-	useEffect(() => {
-		getInvoices(currentPage);
-	}, [currentPage, limit]);
+		const timeout = setTimeout(() => {
+			getInvoices(1); // Reset to page 1 on search
+		}, 500); // debounce
+		return () => clearTimeout(timeout);
+	}, [search, currentPage, limit, statusFilter]);
 
 	const handleSnackbarClose = () => {
 		setSnackbarOpen(false);
@@ -263,6 +263,8 @@ const InvoiceManagement = () => {
 									fullWidth
 									size="small"
 									placeholder="Search"
+									value={search}
+									onChange={(e) => setSearch(e.target.value)}
 									InputProps={{
 										startAdornment: <SearchIcon sx={{ color: "#64748B", mr: 1 }} />,
 									}}
