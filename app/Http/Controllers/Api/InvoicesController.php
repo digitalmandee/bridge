@@ -19,8 +19,9 @@ class InvoicesController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $limit = $request->input('limit', 10);  // Default limit
-        $status = $request->input('status');  // Get status filter
+        $limit = $request->input('limit', 10);
+        $status = $request->input('status');
+        $search = $request->input('search');
 
         $query = Invoice::with('user');
 
@@ -30,6 +31,16 @@ class InvoicesController extends Controller
 
         if ($status) {
             $query->where('status', strtolower($status));
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q
+                    ->where('id', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%");
+                    });
+            });
         }
 
         $invoices = $query->orderBy('created_at', 'desc')->paginate($limit);

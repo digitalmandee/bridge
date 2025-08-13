@@ -39,11 +39,19 @@ class GlobalController extends Controller
             $queryBuilder->with('companyProfile:id,user_id,name,website,industry,employees,address');
         }
 
-        $results = $queryBuilder
-            ->where($conditions)
-            ->where('name', 'like', "%$query%")
-            ->select('id', 'name', 'email', 'phone_no', 'secondary_phone_no', 'designation', 'cnic_number', 'cnic_image')
-            ->get();
+        if (empty($query)) {
+            $results = $queryBuilder
+                ->latest()
+                ->select('id', 'name', 'email', 'phone_no', 'secondary_phone_no', 'designation', 'cnic_number', 'cnic_image')
+                ->take(5)
+                ->get();
+        } else {
+            $results = $queryBuilder
+                ->where($conditions)
+                ->where('name', 'like', "%$query%")
+                ->select('id', 'name', 'email', 'phone_no', 'secondary_phone_no', 'designation', 'cnic_number', 'cnic_image')
+                ->get();
+        }
 
         return response()->json(['success' => true, 'results' => $results], 200);
     }

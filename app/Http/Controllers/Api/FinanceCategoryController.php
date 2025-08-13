@@ -20,7 +20,11 @@ class FinanceCategoryController extends Controller
             $query = $request->query('query');
 
             if ($type == 'search') {
-                $financeCategories = FinanceCategory::where('name', 'like', "%$query%")->select('id', 'name')->get();
+                if (empty($query)) {
+                    $financeCategories = FinanceCategory::latest()->select('id', 'name')->take(5)->get();
+                } else {
+                    $financeCategories = FinanceCategory::where('name', 'like', "%$query%")->select('id', 'name')->get();
+                }
 
                 return response()->json(['success' => true, 'results' => $financeCategories], 200);
             } else {

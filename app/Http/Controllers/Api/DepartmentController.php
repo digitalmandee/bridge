@@ -20,7 +20,11 @@ class DepartmentController extends Controller
             $query = $request->query('query');
 
             if ($type == 'search') {
-                $departments = Department::where('name', 'like', "%$query%")->select('id', 'name')->get();
+                if (empty($query)) {
+                    $departments = Department::latest()->select('id', 'name')->take(5)->get();
+                } else {
+                    $departments = Department::where('name', 'like', "%$query%")->select('id', 'name')->get();
+                }
 
                 return response()->json(['success' => true, 'results' => $departments], 200);
             } else {

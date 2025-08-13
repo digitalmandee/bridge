@@ -226,19 +226,44 @@ class BookingController extends Controller
     public function getBookings(Request $request)
     {
         try {
-            // Get per-page limit from request, default to 10
             $perPage = $request->query('limit', 10);
 
-            // Fetch paginated bookings with user and floor relationships
-            $bookings = Booking::with(['user:id,name,email', 'floor:id,name'])
-                ->orderBy('created_at', 'desc')
-                ->paginate($perPage);
+            $query = Booking::with(['user:id,name,email', 'floor:id,name']);
 
-            // Fetch all chairs associated with any booking on the current page
+            // ✅ Search by booking ID or name
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    if (is_numeric($search)) {
+                        $q->where('id', $search);  // search by booking ID
+                    }
+                    $q->orWhere('name', 'like', '%' . $search . '%');  // search by name
+                });
+            }
+
+            // ✅ Filter by start date and end date
+            if ($request->filled('start_date') && $request->filled('end_date')) {
+                $query->whereBetween('start_date', [$request->start_date, $request->end_date]);
+            }
+
+            // ✅ Filter by status
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            // ✅ Filter by floor
+            if ($request->filled('floor')) {
+                $query->where('floor_id', $request->floor);
+            }
+
+            // ✅ Order by latest
+            $bookings = $query->orderBy('created_at', 'desc')->paginate($perPage);
+
+            // Fetch chairs for current page bookings
             $allChairIds = collect($bookings->items())->pluck('chair_ids')->flatten()->unique()->toArray();
             $chairs = Chair::whereIn('id', $allChairIds)->with(['table:id,table_id,name', 'room:id,name'])->get()->keyBy('id');
 
-            // Format bookings with related chair, table, and room details
+            // Format bookings
             $formattedBookings = $bookings->map(function ($booking) use ($chairs) {
                 return [
                     'id' => $booking->id,
@@ -256,7 +281,7 @@ class BookingController extends Controller
                             'room_id' => $chair->room->id ?? null,
                             'room_name' => $chair->room->name ?? 'N/A',
                         ] : null;
-                    })->filter()->values(),  // Remove null values
+                    })->filter()->values(),
                     'start_date' => $booking->start_date,
                     'start_time' => $booking->start_time,
                     'end_date' => $booking->end_date,

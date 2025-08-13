@@ -11,7 +11,21 @@ class MemberController extends Controller
     public function getUsers(Request $request)
     {
         $limit = $request->query('limit') ?? 10;
-        $users = User::where('type', 'user')->select('id', 'name', 'company_id', 'status', 'last_login_at')->with(['company:id,name'])->paginate($limit);
+        $search = $request->query('search');  // Get search input
+
+        $query = User::where('type', 'user')->select('id', 'name', 'company_id', 'status', 'last_login_at')->with(['company:id,name']);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhereHas('company', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $users = $query->paginate($limit);
 
         return response()->json(['success' => true, 'users' => $users]);
     }
@@ -26,15 +40,41 @@ class MemberController extends Controller
 
     public function getCompanies(Request $request)
     {
-        $limit = $request->query('limit') ?? 10;
+        $limit = $request->query('limit', 10);
         $companyId = $request->query('company_id');
+        $search = $request->query('search');  // NEW: search parameter
+
         $query = User::where('type', 'company');
 
         if ($companyId) {
             $query->where('id', $companyId);
         }
 
-        $companies = $query->select('id', 'name', 'company_id', 'status', 'created_at')->paginate($limit)->through(fn($user) => array_merge($user->toArray(), ['total_members' => $user->total_members]));;
+        // NEW: Apply search filter
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        $companies = $query
+            ->select('id', 'name', 'company_id', 'status', 'created_at')
+            ->paginate($limit)
+            ->through(function ($user) {
+                // Calculate total chairs for this company
+                $chairIds = $user
+                    ->booking()
+                    ->where('status', 'confirmed')
+                    ->get()
+                    ->pluck('chair_ids')
+                    ->flatten(1)
+                    ->unique();
+
+                $totalChairs = $chairIds->count();
+
+                return array_merge($user->toArray(), [
+                    'total_members' => $user->total_members,
+                    'total_chairs' => $totalChairs
+                ]);
+            });
 
         return response()->json(['success' => true, 'companies' => $companies]);
     }
