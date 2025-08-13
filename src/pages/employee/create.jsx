@@ -31,12 +31,10 @@ const EmployeeCreate = () => {
 
 	// Fetch departments based on search input
 	useEffect(() => {
-		if (searchTerm) {
-			axiosInstance
-				.get(`departments?type=search&query=${searchTerm}`)
-				.then((res) => setDepartments(res.data.results))
-				.catch((err) => console.error("Error fetching departments", err));
-		}
+		axiosInstance
+			.get(`departments?type=search&query=${searchTerm}`)
+			.then((res) => setDepartments(res.data.results))
+			.catch((err) => console.error("Error fetching departments", err));
 	}, [searchTerm]);
 
 	const validate = () => {
