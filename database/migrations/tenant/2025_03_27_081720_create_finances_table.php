@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->foreignId('category_id')->constrained('finance_categories');
             $table->string('name');
             $table->string('description');
-            $table->decimal('amount', 10, 2);
+            $table->decimal('amount', 20, 2);
             $table->integer('quantity');
             $table->date('issue_date');
             $table->date('due_date');

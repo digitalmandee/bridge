@@ -22,6 +22,7 @@ class InvoicesController extends Controller
         $limit = $request->input('limit', 10);
         $status = $request->input('status');
         $search = $request->input('search');
+        $fromDate = $request->input('from_date');  // New date filter
 
         $query = Invoice::with('user');
 
@@ -41,6 +42,10 @@ class InvoicesController extends Controller
                         $userQuery->where('name', 'like', "%{$search}%");
                     });
             });
+        }
+
+        if ($fromDate) {
+            $query->whereDate('paid_date', $fromDate);
         }
 
         $invoices = $query->orderBy('created_at', 'desc')->paginate($limit);
@@ -208,7 +213,7 @@ class InvoicesController extends Controller
                 'paid_date' => in_array($request->status, ['paid', 'overdue']) ? $request->paidDate : null,
                 'paid_month' => $request->paidMonth,
                 'paid_year' => $request->paidYear,
-                'discount' => $request->discount,
+                'discount' => $request->discount ?? 0,
                 'amount' => $request->amount,
                 'payment_type' => $request->paymentType,
                 'receipt' => $InvoiceReciept,
