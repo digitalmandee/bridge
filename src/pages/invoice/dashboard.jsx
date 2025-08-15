@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Select, MenuItem, Card, CardContent, CircularProgress, Menu } from "@mui/material";
+import { Box, Typography, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Select, MenuItem, Card, CardContent, CircularProgress, Menu, FormControl } from "@mui/material";
 import { Search as SearchIcon, FilterAlt as FilterIcon, Download as DownloadIcon, Notifications as NotificationsIcon, Wallet as WalletIcon, Assignment as AssignmentIcon, Timeline as TimelineIcon, Group as GroupIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TopNavbar from "@/components/topNavbar";
@@ -12,7 +12,7 @@ const InvoiceDashboard = () => {
 	const navigate = useNavigate();
 	const { branch } = useParams();
 
-	const [month, setMonth] = useState("January");
+	const [fromDate, setFromDate] = useState("");
 	const [invoices, setInvoices] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [statusFilter, setStatusFilter] = useState("");
@@ -89,14 +89,18 @@ const InvoiceDashboard = () => {
 	const getInvoices = async (page = 1) => {
 		setIsLoading(true);
 		try {
-			const res = await axiosInstance.get(`invoices`, {
-				params: {
-					page,
-					limit,
-					search: searchQuery,
-					status: statusFilter,
-				},
-			});
+			const params = {
+				page,
+				limit,
+				search: searchQuery,
+				status: statusFilter,
+			};
+
+			if (fromDate) {
+				params.from_date = fromDate;
+			}
+
+			const res = await axiosInstance.get(`invoices`, { params });
 			if (res.data.success) {
 				setInvoices(res.data.invoices.data);
 				setTotalPages(res.data.invoices.last_page);
@@ -111,10 +115,10 @@ const InvoiceDashboard = () => {
 
 	useEffect(() => {
 		const delayDebounce = setTimeout(() => {
-			getInvoices(1); // reset to first page when searching
+			getInvoices(1);
 		}, 500);
 		return () => clearTimeout(delayDebounce);
-	}, [searchQuery, statusFilter, limit]);
+	}, [searchQuery, statusFilter, limit, fromDate]);
 
 	return (
 		<>
@@ -137,11 +141,18 @@ const InvoiceDashboard = () => {
 									<Button variant="outlined" startIcon={<DownloadIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }} onClick={downloadCSV}>
 										CSV
 									</Button>
+									<FormControl>
+										<TextField label="Date" type="date" size="small" value={fromDate} onChange={(e) => setFromDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+									</FormControl>
 
-									<Select value={month} onChange={(e) => setMonth(e.target.value)} size="small" sx={{ minWidth: 120 }}>
-										<MenuItem value="January">January</MenuItem>
-										{/* Add more months */}
-									</Select>
+									<Button
+										variant="outlined"
+										color="secondary"
+										onClick={() => setFromDate("")} // Clear date
+									>
+										Clear
+									</Button>
+
 									<Button variant="contained" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: colors.primary } }} onClick={() => navigate(`/${branch}/branch/invoice/create`)}>
 										Create Invoice
 									</Button>

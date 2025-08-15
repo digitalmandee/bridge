@@ -191,7 +191,6 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 				<div className={`content ${context.isToggleSidebar === true ? "toggle" : ""}`}>
 					<div style={containerStyle}>
 						<Box sx={{ display: "flex", justifyContent: "end", alignItems: "center", pt: 1 }}>
-							{/* Month and Year Selection */}
 							<Box sx={{ display: "flex", gap: 2 }}>
 								<FormControl>
 									<TextField label="From Date" type="date" size="small" value={fromDate} onChange={(e) => setFromDate(e.target.value)} InputLabelProps={{ shrink: true }} />
