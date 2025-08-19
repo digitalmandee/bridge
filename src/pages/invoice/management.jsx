@@ -122,9 +122,6 @@ const InvoiceManagement = () => {
 		if (!selectedStatus === "pending") tempErrors.status = "Status is required.";
 		if (selectedStatus === "paid" || selectedStatus === "overdue") {
 			if (!dialogData.paid_date) tempErrors.paid_date = "Paid date is required.";
-			if (dialogData.paid_date && dayjs(dialogData.paid_date).isBefore(dialogData.due_date)) {
-				tempErrors.paid_date = "Paid date cannot be before the due date.";
-			}
 			if (!dialogData.payment_type) tempErrors.payment_type = "Payment type is required.";
 
 			if (dialogData.receipt) {
