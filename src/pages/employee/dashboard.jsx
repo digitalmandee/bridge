@@ -128,7 +128,7 @@ const EmployeeDashboard = () => {
 										{isLoading ? (
 											<TableRow>
 												<TableCell colSpan={7} align="center">
-													<CircularProgress sx={{ color: "#0F172A" }} />
+													<CircularProgress sx={{ color: "#FFCC16" }} />
 												</TableCell>
 											</TableRow>
 										) : employees.length > 0 ? (

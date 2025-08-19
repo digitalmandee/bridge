@@ -106,7 +106,7 @@ const CustomerDashboard = ({ isSidebarOpen }) => {
 								<div style={cardStyle}>
 									<div style={{ fontSize: "0.875rem", color: "#6B7280" }}>Total Customers</div>
 									<div style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827", marginTop: "0.25rem" }}>{stats.total}</div>
-									{/* <div style={{ fontSize: "0.875rem", color: "#0F172A", marginTop: "0.25rem" }}>As of selected date range</div> */}
+									{/* <div style={{ fontSize: "0.875rem", color: "#FFCC16", marginTop: "0.25rem" }}>As of selected date range</div> */}
 								</div>
 							</Box>
 						)}
@@ -116,7 +116,7 @@ const CustomerDashboard = ({ isSidebarOpen }) => {
 							<TableContainer component={Paper} sx={{ boxShadow: "none" }}>
 								{isLoading ? (
 									<Box display="flex" justifyContent="center" alignItems="center" p={3}>
-										<CircularProgress sx={{ color: "#0F172A" }} />
+										<CircularProgress sx={{ color: "#FFCC16" }} />
 									</Box>
 								) : (
 									<Table>

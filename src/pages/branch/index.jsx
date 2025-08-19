@@ -120,7 +120,7 @@ const BranchManagement = () => {
 						<TableContainer component={Paper} sx={{ boxShadow: "none" }}>
 							{isLoading ? (
 								<Box display="flex" justifyContent="center" alignItems="center" p={3}>
-									<CircularProgress sx={{ color: "#0F172A" }} />
+									<CircularProgress sx={{ color: "#FFCC16" }} />
 								</Box>
 							) : (
 								<Table>

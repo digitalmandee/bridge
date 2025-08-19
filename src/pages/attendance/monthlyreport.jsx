@@ -138,7 +138,7 @@ const MonthlyReport = () => {
 							}}>
 							{isLoading ? (
 								<div style={{ gridColumn: "span 4", marginTop: "2rem" }} className="d-flex justify-content-center">
-									<CircularProgress sx={{ color: "#0F172A" }} />
+									<CircularProgress sx={{ color: "#FFCC16" }} />
 								</div>
 							) : employees.length > 0 ? (
 								employees.map((employee, index) => (

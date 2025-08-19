@@ -123,7 +123,7 @@ const LeaveManage = () => {
 									{isLoading ? (
 										<TableRow>
 											<TableCell colSpan={9} align="center">
-												<CircularProgress sx={{ color: "#0F172A" }} />
+												<CircularProgress sx={{ color: "#FFCC16" }} />
 											</TableCell>
 										</TableRow>
 									) : applications.length > 0 ? (

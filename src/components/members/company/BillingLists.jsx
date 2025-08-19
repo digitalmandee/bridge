@@ -65,7 +65,7 @@ const BillingLists = ({ companyId }) => {
 						{isLoading ? (
 							<TableRow>
 								<TableCell colSpan={7} align="center">
-									<CircularProgress sx={{ color: "#0F172A" }} />
+									<CircularProgress sx={{ color: "#FFCC16" }} />
 								</TableCell>
 							</TableRow>
 						) : customer && customer.invoices.length > 0 ? (
@@ -79,9 +79,9 @@ const BillingLists = ({ companyId }) => {
 											size="small"
 											variant="contained"
 											sx={{
-												bgcolor: invoice.status === "paid" ? "#0F172A" : "#E5E7EB",
+												bgcolor: invoice.status === "paid" ? "#FFCC16" : "#E5E7EB",
 												color: invoice.status === "paid" ? "white" : "#6B7280",
-												"&:hover": { bgcolor: invoice.status === "paid" ? "#1E293B" : "#D1D5DB" },
+												"&:hover": { bgcolor: invoice.status === "paid" ? "#FFCC16" : "#D1D5DB" },
 											}}>
 											{invoice.status}
 										</Button>

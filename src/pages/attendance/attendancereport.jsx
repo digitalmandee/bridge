@@ -256,7 +256,7 @@ const AttendanceReport = () => {
 									{isLoading ? (
 										<tr>
 											<td className="py-2 text-center" colSpan={getDaysInMonth(month, year) + 3}>
-												<CircularProgress sx={{ color: "#0F172A" }} />
+												<CircularProgress sx={{ color: "#FFCC16" }} />
 											</td>
 										</tr>
 									) : employees.length > 0 ? (

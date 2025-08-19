@@ -136,7 +136,7 @@ const InvoiceDetail = () => {
 						<TableContainer component={Paper} sx={{ boxShadow: "none" }}>
 							{isLoading ? (
 								<Box display="flex" justifyContent="center" alignItems="center" p={3}>
-									<CircularProgress sx={{ color: "#0F172A" }} />
+									<CircularProgress sx={{ color: "#FFCC16" }} />
 								</Box>
 							) : (
 								<Table>
@@ -162,9 +162,9 @@ const InvoiceDetail = () => {
 															size="small"
 															variant="contained"
 															sx={{
-																bgcolor: invoice.status === "paid" ? "#0F172A" : "#E5E7EB",
+																bgcolor: invoice.status === "paid" ? "#FFCC16" : "#E5E7EB",
 																color: invoice.status === "paid" ? "white" : "#6B7280",
-																"&:hover": { bgcolor: invoice.status === "paid" ? "#1E293B" : "#D1D5DB" },
+																"&:hover": { bgcolor: invoice.status === "paid" ? "#FFCC16" : "#D1D5DB" },
 															}}>
 															{invoice.status}
 														</Button>
@@ -195,7 +195,7 @@ const InvoiceDetail = () => {
 								Previous
 							</Button>
 							{[...Array(totalPages)].map((_, index) => (
-								<Button key={index} variant={currentPage === index + 1 ? "contained" : "outlined"} sx={currentPage === index + 1 ? { bgcolor: "#0F172A" } : {}} onClick={() => setCurrentPage(index + 1)}>
+								<Button key={index} variant={currentPage === index + 1 ? "contained" : "outlined"} sx={currentPage === index + 1 ? { bgcolor: "#FFCC16" } : {}} onClick={() => setCurrentPage(index + 1)}>
 									{index + 1}
 								</Button>
 							))}

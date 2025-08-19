@@ -131,7 +131,7 @@ const ScheduleFloorManagement = () => {
 								</Typography>
 							</div>
 							<div className="col-auto ms-auto">
-								<Button variant="contained" sx={{ bgcolor: colors.primary, borderRadius: "10px", "&:hover": { bgcolor: "#1E293B" } }} onClick={() => handleOpen()}>
+								<Button variant="contained" sx={{ bgcolor: colors.primary, borderRadius: "10px", "&:hover": { bgcolor: "#FFCC16" } }} onClick={() => handleOpen()}>
 									New Meeting Location
 								</Button>
 							</div>
@@ -150,7 +150,7 @@ const ScheduleFloorManagement = () => {
 									{isLoading ? (
 										<TableRow>
 											<TableCell colSpan={2} align="center">
-												<CircularProgress sx={{ color: "#0F172A" }} />
+												<CircularProgress sx={{ color: "#FFCC16" }} />
 											</TableCell>
 										</TableRow>
 									) : scheduleFloors.length > 0 ? (

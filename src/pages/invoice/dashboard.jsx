@@ -217,7 +217,7 @@ const InvoiceDashboard = () => {
 						<TableContainer component={Paper} sx={{ boxShadow: "none" }}>
 							{isLoading ? (
 								<Box display="flex" justifyContent="center" alignItems="center" p={3}>
-									<CircularProgress sx={{ color: "#0F172A" }} />
+									<CircularProgress sx={{ color: "#FFCC16" }} />
 								</Box>
 							) : (
 								<Table>
@@ -256,7 +256,7 @@ const InvoiceDashboard = () => {
 															size="small"
 															variant="contained"
 															sx={{
-																bgcolor: invoice.status === "paid" ? "#0F172A" : invoice.status === "overdue" ? "#E53935" : colors.primary,
+																bgcolor: invoice.status === "paid" ? "#FFCC16" : invoice.status === "overdue" ? "#E53935" : colors.primary,
 																color: "white",
 															}}
 															disabled={invoice.status === "paid" || invoice.status === "overdue"}>

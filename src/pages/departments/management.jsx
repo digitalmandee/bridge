@@ -153,7 +153,7 @@ const Management = () => {
 									{isLoading ? (
 										<TableRow>
 											<TableCell colSpan={2} align="center">
-												<CircularProgress sx={{ color: "#0F172A" }} />
+												<CircularProgress sx={{ color: "#FFCC16" }} />
 											</TableCell>
 										</TableRow>
 									) : departments.length > 0 ? (

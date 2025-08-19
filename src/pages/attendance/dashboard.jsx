@@ -222,7 +222,7 @@ const AttendanceDashboard = () => {
 										{isLoading ? (
 											<tr>
 												<td colSpan={6} align="center" style={{ padding: "12px 16px", color: "#333" }}>
-													<CircularProgress sx={{ color: "#0F172A" }} />
+													<CircularProgress sx={{ color: "#FFCC16" }} />
 												</td>
 											</tr>
 										) : employees.length > 0 ? (

@@ -218,23 +218,23 @@ const FinanceReport = () => {
 							<Table sx={{ minWidth: 650 }}>
 								<TableHead>
 									<TableRow sx={{ bgcolor: "#dbeafe" }}>
-										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>SL No</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>Name</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>Description</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>Qty</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>Amount</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>Issue Date</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>Due Date</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>Status</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>Actions</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#1e293b", py: 2 }}>Receipt</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>SL No</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Name</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Description</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Qty</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Amount</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Issue Date</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Due Date</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Status</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Actions</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Receipt</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
 									{isLoading ? (
 										<TableRow>
 											<TableCell colSpan={10} align="center">
-												<CircularProgress sx={{ color: "#0F172A" }} />
+												<CircularProgress sx={{ color: "#FFCC16" }} />
 											</TableCell>
 										</TableRow>
 									) : financeData.length > 0 ? (

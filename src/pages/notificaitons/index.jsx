@@ -107,7 +107,7 @@ const NotificationManagement = () => {
 											key={label}
 											variant={statusFilter === label ? "contained" : "outlined"}
 											sx={{
-												bgcolor: statusFilter === label ? "#0F172A" : "",
+												bgcolor: statusFilter === label ? "#FFCC16" : "",
 												color: statusFilter === label ? "white" : colors.primary,
 												borderRadius: "20px",
 												border: `1px solid ${colors.primary}`,
@@ -138,7 +138,7 @@ const NotificationManagement = () => {
 						<TableContainer component={Paper} sx={{ boxShadow: "none" }}>
 							{isLoading ? (
 								<Box display="flex" justifyContent="center" alignItems="center" p={3}>
-									<CircularProgress sx={{ color: "#0F172A" }} />
+									<CircularProgress sx={{ color: "#FFCC16" }} />
 								</Box>
 							) : (
 								<Table>
@@ -185,7 +185,7 @@ const NotificationManagement = () => {
 								Previous
 							</Button>
 							{[...Array(totalPages)].map((_, index) => (
-								<Button key={index} variant={currentPage === index + 1 ? "contained" : "outlined"} sx={currentPage === index + 1 ? { bgcolor: "#0F172A" } : {}} onClick={() => setCurrentPage(index + 1)}>
+								<Button key={index} variant={currentPage === index + 1 ? "contained" : "outlined"} sx={currentPage === index + 1 ? { bgcolor: "#FFCC16" } : {}} onClick={() => setCurrentPage(index + 1)}>
 									{index + 1}
 								</Button>
 							))}
