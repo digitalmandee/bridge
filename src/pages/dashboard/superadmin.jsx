@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import TopNavbar from "@/components/superadmin/topNavbar";
 import Sidebar from "@/components/superadmin/leftSideBar";
 import colors from "@/assets/styles/color";
+import { SidebarContext } from "../../contexts/sidebar.context";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import { Bar, Pie } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
@@ -13,7 +14,8 @@ import axiosInstance from "@/utils/axiosInstance";
 // Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
-const SuperAdminDashboard = () => {
+const SuperAdminDashboard = ({ isSidebarOpen }) => {
+	const context = useContext(SidebarContext);
 	const navigate = useNavigate();
 	const [selectedBranch, setSelectedBranch] = useState("");
 	const [branches, setBranches] = useState([]);
@@ -169,7 +171,7 @@ const SuperAdminDashboard = () => {
 		backgroundColor: "#FFFFFF",
 		width: "100%",
 		borderRadius: "0.2rem",
-		padding: "1rem",
+		padding: "0.3rem",
 		boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
 		border: "1px solid #E5E7EB",
 	};
@@ -177,16 +179,18 @@ const SuperAdminDashboard = () => {
 	const metricsGridStyle = {
 		width: "100%",
 		display: "flex",
-		justifyContent: "space-between",
+		// justifyContent: "space-between",
 		alignItems: "flex-start",
 		// gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-		gap: "2rem",
+		gap: "1rem",
 	};
 
 	const columnStyle = {
 		display: "flex",
 		flexDirection: "column",
-		width: "50%", // Each section takes half the width
+		// width: "50%", // Each section takes half the width
+		flex: 1,              // take available space
+		minWidth: 0,
 	};
 
 	const statsGridStyle = {
@@ -200,11 +204,11 @@ const SuperAdminDashboard = () => {
 		<>
 			<TopNavbar />
 			<div className="main d-flex">
-				<div className="sideBarWrapper">
+				<div className={`sideBarWrapper ${context.isToggleSidebar === true ? "toggle" : ""}`}>
 					<Sidebar />
 				</div>
-				<div className="content">
-					<Box sx={{ p: 1 }}>
+				<div className={`content ${context.isToggleSidebar === true ? "toggle" : ""}`}>
+					<Box sx={{ p: 0 }}>
 						{/* Back to Dashboard Header */}
 						<Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
 							<Box

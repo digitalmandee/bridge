@@ -160,16 +160,18 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 	const metricsGridStyle = {
 		width: "100%",
 		display: "flex",
-		justifyContent: "space-between",
+		// justifyContent: "space-between",
 		alignItems: "flex-start",
 		// gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-		gap: "2rem",
+		gap: "1rem",
 	};
 
 	const columnStyle = {
 		display: "flex",
 		flexDirection: "column",
-		width: "50%", // Each section takes half the width
+		// width: "50%", // Each section takes half the width
+		flex: 1,              // take available space
+		minWidth: 0,
 	};
 
 	const statsGridStyle = {
@@ -206,7 +208,7 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 							{/* Revenue Section */}
 							<div style={columnStyle}>
 								<h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "0.5rem" }}>Revenue</h3>
-								<div style={{ display: "flex", gap: "0.5rem" }}>
+								<div style={{ display: "flex", flexWrap:'wrap', gap: "0.5rem" }}>
 									{[
 										{ label: "Total Revenue", value: stats1.total_revenue, unit: "Pkr", change: stats1?.growth?.total_revenue, increase: true },
 										{ label: "Total Expense", value: stats1.total_expense, unit: "Pkr", change: stats1?.growth?.total_expense, increase: false },
@@ -214,18 +216,29 @@ const AdminDashboard = ({ isSidebarOpen }) => {
 									]
 										.slice(0, 3)
 										.map((metric, i) => (
-											<div key={i} style={cardStyle}>
-												<div style={{ display: "flex", flexDirection: "column" }}>
-													<div style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "0.25rem" }}>{metric.label}</div>
-													<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem" }}>
+											<div key={i} style={{ ...cardStyle, position: "relative", padding: "1rem", flex: 1 }}>
+												{/* Top-right change percentage */}
+												{"change" in metric && (
+													<div style={{
+														position: "absolute",
+														top: "0.5rem",
+														right: "0.5rem",
+														fontSize: "0.875rem",
+														color: parseFloat(metric.change) >= 0 ? "#16A34A" : "#DC2626",
+													}}>
+														{parseFloat(metric.change) >= 0 ? "↑" : "↓"} {metric.change}%
+													</div>
+												)}
+
+												{/* Center content */}
+												<div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", width: "100%" }}>
+													<div style={{ display: "flex", alignItems: "baseline", gap: "0.25rem", paddingTop: '1rem' }}>
 														<span style={{ fontSize: "1.5rem", fontWeight: "600", color: "#111827" }}>{metric.value}</span>
-														<span style={{ fontSize: "0.875rem", color: "#6B7280" }}>{metric.unit}</span>
+														{metric.unit && (
+															<span style={{ fontSize: "0.875rem", color: "#6B7280" }}>{metric.unit}</span>
+														)}
 													</div>
-													<div style={{ display: "flex", alignItems: "center", marginTop: "1rem", fontSize: "0.875rem", color: parseFloat(metric.change) >= 0 ? "#16A34A" : "#DC2626" }}>
-														{/* {stats1?.growth?.total_pl >= 0 ? "↑" : "↓"} */}
-														{parseFloat(metric.change) >= 0 ? "↑" : "↓"}
-														<span>{metric.change}%</span>
-													</div>
+													<div style={{ fontSize: "0.875rem", color: "#6B7280", marginTop: "0.5rem" }}>{metric.label}</div>
 												</div>
 											</div>
 										))}

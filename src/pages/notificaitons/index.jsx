@@ -154,7 +154,7 @@ const NotificationManagement = () => {
 													<TableCell>
 														<div style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
 															<div style={{ marginTop: "0.05rem" }}>
-																<FileText style={{ width: "1.25rem", height: "1.25rem", color: "#0A2156" }} />
+																<FileText style={{ width: "1.25rem", height: "1.25rem", color: "#FFCC16" }} />
 															</div>
 															<div style={{ flex: 1, minWidth: 0 }}>
 																<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>

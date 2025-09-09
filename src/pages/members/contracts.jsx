@@ -145,7 +145,7 @@ const MemberContract = () => {
 																size="small"
 																sx={{
 																	textTransform: "capitalize",
-																	bgcolor: contract.status === "Signed" ? "#14c981" : "#e83348",
+																	bgcolor: contract.status === "Signed" ? "#E8E8E8" : "#FFCC16",
 																	color: contract.status === "Signed" ? "#666" : "white",
 																}}
 															/>

@@ -9,7 +9,6 @@ import ReceiptIcon from "@mui/icons-material/Receipt";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
 import axiosInstance from "@/utils/axiosInstance";
-
 import CloseIcon from "@mui/icons-material/Close";
 import colors from "@/assets/styles/color";
 
@@ -150,8 +149,7 @@ const FinanceDashboard = () => {
 								<Button variant="outlined" color="primary" onClick={downloadFinancialReport}>
 									Financial Report
 								</Button>
-
-								<Button variant="contained" sx={{ bgcolor: colors.primary }} onClick={() => navigate(`/${branch}/branch/finance/create`)}>
+								<Button variant="contained" sx={{ bgcolor: "#FFCC16" }} onClick={() => navigate(`/${branch}/branch/finance/create`)}>
 									Add New Entry
 								</Button>
 							</Box>
