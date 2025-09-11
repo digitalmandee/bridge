@@ -305,6 +305,7 @@ body {
   font-size: 14px;
   font-weight: 600;
   text-transform: capitalize;
+  text-align: center;
 }
 
 .status.accepted,
@@ -321,7 +322,8 @@ body {
   color: #448DF2;
 }
 
-.status.rejected {
+.status.rejected,
+.status.vacated {
   background-color: #fcdcd9;
   color: #f44336;
 }

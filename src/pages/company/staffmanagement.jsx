@@ -33,8 +33,6 @@ const StaffManagement = () => {
 	const fetchStaffData = async () => {
 		try {
 			const res = await axiosInstance.get("company/staffs?filter=" + status);
-			setAvaiablePrintingQuota(res.data.printingQuota);
-			setAvaiableBookingQuota(Number(res.data.bookingQuota));
 			setTotalAll(res.data.totalAll);
 			setTotalActive(res.data.totalActive);
 			setTotalInactive(res.data.totalInactive);
@@ -48,8 +46,6 @@ const StaffManagement = () => {
 		const fetchStaffData = async () => {
 			try {
 				const res = await axiosInstance.get("company/dashboard/staff");
-				setAvaiablePrintingQuota(res.data.printingQuota);
-				setAvaiableBookingQuota(Number(res.data.bookingQuota));
 				setBookingSeats(res.data.chairs);
 			} catch (error) {
 				console.log(error.response.data);
@@ -72,16 +68,6 @@ const StaffManagement = () => {
 		const newErrors = {};
 
 		if (!selectedStaff.name) newErrors.name = "Name is required";
-
-		// Check if printingPaper exceeds available quota
-		if (selectedStaff.printingPaper > avaiablePrintingQuota) {
-			newErrors.printingPaper = `Printing paper exceeds available quota of ${avaiablePrintingQuota}`;
-		}
-
-		// Check if bookingQuota exceeds available quota
-		if (selectedStaff.bookingQuota > avaiableBookingQuota) {
-			newErrors.bookingQuota = `Booking quota exceeds available quota of ${avaiableBookingQuota}`;
-		}
 
 		// If there are errors, set the errors state and return
 		if (Object.keys(newErrors).length > 0) {
@@ -257,26 +243,19 @@ const StaffManagement = () => {
 								<TextField label="Phone Number" fullWidth margin="dense" value={selectedStaff?.phone_no || ""} onChange={(e) => setSelectedStaff({ ...selectedStaff, phone_no: e.target.value })} />
 								<TextField label="Designation" fullWidth margin="dense" value={selectedStaff?.designation || ""} onChange={(e) => setSelectedStaff({ ...selectedStaff, designation: e.target.value })} />
 								<TextField label="Address" fullWidth margin="dense" value={selectedStaff?.address || ""} onChange={(e) => setSelectedStaff({ ...selectedStaff, address: e.target.value })} />
-								<div>
-									<TextField label="Booking Quota" type="number" fullWidth margin="dense" value={selectedStaff?.booking_quota || ""} onChange={(e) => setSelectedStaff({ ...selectedStaff, booking_quota: e.target.value })} />
-									{errors.printingPaper && <span style={{ color: "red", fontSize: "12px" }}>{errors.printingPaper}</span>}
-								</div>
-								<div>
-									<TextField label="Printing Paper" type="number" fullWidth margin="dense" value={selectedStaff?.printing_quota || ""} onChange={(e) => setSelectedStaff({ ...selectedStaff, printing_quota: e.target.value })} />
-									{errors.bookingQuota && <span style={{ color: "red", fontSize: "12px" }}>{errors.bookingQuota}</span>}
-								</div>
 
 								<Select fullWidth label="Select Seat No" id="select-status" value={selectedStaff?.allocated_seat_id} onChange={(e) => setSelectedStaff({ ...selectedStaff, allocated_seat_id: e.target.value })}>
 									<MenuItem value="">Select Seat</MenuItem>
 									{selectedStaff.chair && (
 										<MenuItem value={selectedStaff.chair.id}>
-											{selectedStaff.chair.table.table_id} {selectedStaff.chair.chair_id}
+											{selectedStaff.chair.chair.table.table_id} {selectedStaff.chair.chair.chair_id}
 										</MenuItem>
 									)}
 									{bookingSeats.length > 0 &&
 										bookingSeats.map((seat, index) => (
-											<MenuItem key={index} value={seat.chair_id}>
-												{seat.table} {seat.id}
+											<MenuItem key={index} value={seat.id}>
+												{seat.table_id}
+												{seat.chair_id}
 											</MenuItem>
 										))}
 								</Select>

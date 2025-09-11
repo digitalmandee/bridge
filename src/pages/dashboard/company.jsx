@@ -49,10 +49,10 @@ const CompanyDashboard = () => {
 						{/* Metric Cards */}
 						<div style={{ display: "flex", justifyContent: "space-between", marginBottom: "24px" }}>
 							{[
-								{ title: "Available Seats", value: data.totalSeats ?? 0, icon: EventSeatIcon, color: colors.primary },
+								{ title: "Available Seats", value: data.availableSeats ?? 0, icon: EventSeatIcon, color: colors.primary },
 								{ title: "Occupied Seats", value: data.occupiedSeats ?? 0, icon: PeopleIcon, color: colors.primary },
-								{ title: "Booking", value: data.remainingBookings ?? 0, icon: AssignmentIcon, color: colors.primary },
-								{ title: "Printing Papers", value: data.remainingPrinting ?? 0, icon: PrintIcon, color: colors.primary },
+								{ title: "Booking", value: data.meetingQuota?.remaining ?? 0, icon: AssignmentIcon, color: colors.primary },
+								{ title: "Printing Papers", value: data.printingQuota?.remaining ?? 0, icon: PrintIcon, color: colors.primary },
 							].map((item, index) => (
 								<div key={index} style={{ flex: 1, margin: "0 10px" }}>
 									<Card style={{ boxShadow: "none", border: "1px solid #ccc", borderRadius: "8px", height: "100%", backgroundColor: "white" }}>

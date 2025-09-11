@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import booking from "../../../assets/Booking.png";
 import colors from "../../../assets/styles/color";
 import axios from "axios";
@@ -8,12 +8,14 @@ import axiosInstance from "@/utils/axiosInstance";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import Loader from "@/components/Loader";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const BookingDetail = ({ handlePrevious, handleNext }) => {
-	const { bookingdetails, setBookingDetails, formErrors, bookingPlans, setBookingPlans, validateBookingDetails, checkAvailability, selectedChairs } = useContext(FloorPlanContext);
+	const { bookingdetails, setBookingDetails, formErrors, bookingPlans, setBookingPlans, validateBookingDetails, checkAvailability, selectedChairs, setCheckAvailability } = useContext(FloorPlanContext);
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		const fetchBookingPlanData = async () => {
@@ -33,9 +35,38 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 		fetchBookingPlanData();
 	}, [setBookingPlans]);
 
-	const handleChange = (e) => {
+	const handleChange = async (e) => {
 		const { name, value } = e.target;
-		if (name === "duration") {
+
+		if (name === "start_date") {
+			setBookingDetails((prevDetails) => ({
+				...prevDetails,
+				[name]: value,
+			}));
+
+			// Call backend API to check availability for this date and selected chairs
+			try {
+				setIsLoading(true);
+				const allChairs = Object.values(selectedChairs).flat();
+				const response = await axiosInstance.post("booking/check-availability", {
+					member: { name: bookingdetails.name, email: bookingdetails.email, type: bookingdetails.type === "individual" ? "user" : "company" },
+					start_date: value,
+					chairs: allChairs,
+				});
+
+				if (response.data.success) {
+					console.log("Availability Response:", response.data);
+
+					// Store available durations in context (or local state)
+					setCheckAvailability(response.data.data);
+					checkAvailability.available_durations = response.data.available_durations;
+				}
+			} catch (error) {
+				console.error("Error checking availability:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		} else if (name === "duration") {
 			setBookingDetails((prevDetails) => ({
 				...prevDetails,
 				[name]: value,
@@ -117,10 +148,13 @@ const BookingDetail = ({ handlePrevious, handleNext }) => {
 					borderRadius: "10px",
 					boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
 					width: "50%",
+					position: "relative",
 					// maxWidth: "400px",
 					margin: "0 auto",
 					marginBottom: "1rem",
 				}}>
+				{isLoading && <Loader variant="B" />}
+
 				<h3
 					style={{
 						textAlign: "center",

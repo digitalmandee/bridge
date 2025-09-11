@@ -7,7 +7,6 @@ import "./style.css";
 import { SlCalender } from "react-icons/sl";
 import { TbContract, TbFileInvoice } from "react-icons/tb";
 import SeatBooking from "../SeatBooking";
-import axiosInstance from "@/utils/axiosInstance";
 
 const menuItems = [
 	{ to: "/user/dashboard", label: "Dashboard", icon: <RxDashboard /> },
@@ -33,31 +32,9 @@ const User = () => {
 	const toggleDropdown = (label) => {
 		setOpenDropdown(openDropdown === label ? null : label);
 	};
-	const [bookings, setBookings] = useState([]);
-	const [isLoading, setIsLoading] = useState(false);
-
-	const fetchBookings = async () => {
-		setIsLoading(true);
-		try {
-			const res = await axiosInstance.get('/api/booking-request');
-			if (res.data && Array.isArray(res.data.data)) {
-				setBookings(res.data.data);
-			}
-		} catch (error) {
-			console.error("Error fetching bookings:", error);
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		fetchBookings();
-	}, []);
-
-
 	return (
 		<>
-			<div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: '16px' }}>
+			<div style={{ display: "flex", justifyContent: "center", width: "100%", marginBottom: "16px" }}>
 				<SeatBooking />
 			</div>
 
@@ -98,7 +75,6 @@ const User = () => {
 				))}
 			</ul>
 		</>
-
 	);
 };
 

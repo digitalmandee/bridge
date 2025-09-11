@@ -13,18 +13,15 @@ const AddStaff = () => {
 	const { branch } = useParams();
 
 	const fileInputRef = useRef(null);
-	const [avaiablePrintingQuota, setAvaiablePrintingQuota] = useState(0);
-	const [avaiableBookingQuota, setAvaiableBookingQuota] = useState(0);
 	const [bookingSeats, setBookingSeats] = useState([]);
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [phoneNo, setPhoneNO] = useState("");
 	const [password, setPassword] = useState("");
-	const [printingPaper, setPrintingPaper] = useState(0);
-	const [bookingQuota, setBookingQuota] = useState(0);
+	const [bloodGroup, setBloodGroup] = useState(""); // NEW field
 	const [seatNo, setSeatNo] = useState("");
 	const [designation, setDesignation] = useState("");
-	const [date, setDate] = useState(new Date());
+	const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
 	const [address, setAddress] = useState("");
 	const [profileImage, setProfileImage] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
@@ -34,8 +31,8 @@ const AddStaff = () => {
 		const fetchStaffData = async () => {
 			try {
 				const res = await axiosInstance.get("company/dashboard/staff");
-				setAvaiablePrintingQuota(res.data.printingQuota);
-				setAvaiableBookingQuota(Number(res.data.bookingQuota));
+				console.log(res.data);
+
 				setBookingSeats(res.data.chairs);
 			} catch (error) {
 				console.log(error.response.data);
@@ -68,19 +65,7 @@ const AddStaff = () => {
 		if (!name) newErrors.name = "Name is required";
 		if (!email) newErrors.email = "Email is required";
 		if (!password) newErrors.password = "Password is required";
-		if (!bookingQuota) newErrors.bookingQuota = "Booking quota is required";
-		if (!printingPaper) newErrors.printingPaper = "Printing paper is required";
-		if (!seatNo) newErrors.seatNo = "Seat selection is required";
-
-		// Check if printingPaper exceeds available quota
-		if (printingPaper > avaiablePrintingQuota) {
-			newErrors.printingPaper = `Printing paper exceeds available quota of ${avaiablePrintingQuota}`;
-		}
-
-		// Check if bookingQuota exceeds available quota
-		if (bookingQuota > avaiableBookingQuota) {
-			newErrors.bookingQuota = `Booking quota exceeds available quota of ${avaiableBookingQuota}`;
-		}
+		// if (!seatNo) newErrors.seatNo = "Seat selection is required";
 
 		// If there are errors, set the errors state and return
 		if (Object.keys(newErrors).length > 0) {
@@ -95,8 +80,7 @@ const AddStaff = () => {
 			formData.append("email", email);
 			formData.append("phone_no", phoneNo);
 			formData.append("password", password);
-			formData.append("printing_quota", printingPaper);
-			formData.append("booking_quota", bookingQuota);
+			formData.append("blood_group", bloodGroup || "");
 			formData.append("seatNo", seatNo);
 			formData.append("designation", designation);
 			formData.append("date", formatDate(date));
@@ -111,12 +95,6 @@ const AddStaff = () => {
 
 			// If the response indicates success
 			if (res.data.success) {
-				console.log("Staff created successfully");
-
-				// Subtract the used quotas
-				setAvaiableBookingQuota(avaiableBookingQuota - bookingQuota);
-				setAvaiablePrintingQuota(avaiablePrintingQuota - printingPaper);
-
 				// Remove the seat from the bookingSeats array based on seatNo
 				setBookingSeats((prevSeats) => prevSeats.filter((seat) => seat.id != seatNo));
 
@@ -280,54 +258,6 @@ const AddStaff = () => {
 												fontWeight: "bold",
 												marginBottom: "5px",
 											}}>
-											Printing Papers
-										</span>
-										<input
-											type="number"
-											value={printingPaper}
-											onChange={(e) => setPrintingPaper(e.target.value)}
-											placeholder="Enter Printing Papers"
-											style={{
-												width: "100%",
-												margin: "0",
-												padding: "10px",
-												border: "1px solid #D1D5DB",
-												borderRadius: "5px",
-											}}
-										/>
-										{errors.printingPaper && <span style={{ color: "red", fontSize: "12px" }}>{errors.printingPaper}</span>}
-									</div>
-									<div style={{ marginBottom: "10px" }}>
-										<span
-											style={{
-												display: "block",
-												fontWeight: "bold",
-												marginBottom: "5px",
-											}}>
-											Booking Hours
-										</span>
-										<input
-											type="number"
-											value={bookingQuota}
-											onChange={(e) => setBookingQuota(e.target.value)}
-											placeholder="Enter Booking Hours"
-											style={{
-												width: "100%",
-												margin: "0",
-												padding: "10px",
-												border: "1px solid #D1D5DB",
-												borderRadius: "5px",
-											}}
-										/>
-										{errors.bookingQuota && <span style={{ color: "red", fontSize: "12px" }}>{errors.bookingQuota}</span>}
-									</div>
-									<div style={{ marginBottom: "10px" }}>
-										<span
-											style={{
-												display: "block",
-												fontWeight: "bold",
-												marginBottom: "5px",
-											}}>
 											Seat No
 										</span>
 										<select
@@ -350,12 +280,38 @@ const AddStaff = () => {
 										</select>
 										{errors.seatNo && <span style={{ color: "red", fontSize: "12px" }}>{errors.seatNo}</span>}
 									</div>
+									<div style={{ marginBottom: "10px" }}>
+										<span
+											style={{
+												display: "block",
+												fontWeight: "bold",
+												marginBottom: "5px",
+											}}>
+											Blood Group (Optional)
+										</span>
+										<select
+											value={bloodGroup}
+											onChange={(e) => setBloodGroup(e.target.value)}
+											style={{
+												width: "100%",
+												padding: "10px",
+												border: "1px solid #D1D5DB",
+												borderRadius: "5px",
+											}}>
+											<option value="">Select Blood Group</option>
+											{["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((group, index) => (
+												<option key={index} value={group}>
+													{group}
+												</option>
+											))}
+										</select>
+										{errors.seatNo && <span style={{ color: "red", fontSize: "12px" }}>{errors.seatNo}</span>}
+									</div>
 
 									{/* Other Inputs */}
 									{[
 										{ label: "Designation", placeholder: "Enter your designation", value: designation, setter: setDesignation },
-										{ label: "Date Joined", placeholder: "Jan/10/2025", value: formatDate(date), setter: setDate },
-										{ label: "Address", placeholder: "", value: address, setter: setAddress },
+										{ label: "Address", placeholder: "Enter your address", value: address, setter: setAddress },
 									].map((field, index) => (
 										<div key={index} style={{ marginBottom: "10px" }}>
 											<span
@@ -381,6 +337,29 @@ const AddStaff = () => {
 											/>
 										</div>
 									))}
+									<div style={{ marginBottom: "10px" }}>
+										<span
+											style={{
+												display: "block",
+												fontWeight: "bold",
+												marginBottom: "5px",
+											}}>
+											Date Joined
+										</span>
+										<input
+											type="date"
+											placeholder={"Jan/10/2025"}
+											value={date}
+											onChange={(e) => setDate(e.target.value)}
+											style={{
+												width: "100%",
+												margin: "0",
+												padding: "10px",
+												border: "1px solid #D1D5DB",
+												borderRadius: "5px",
+											}}
+										/>
+									</div>
 								</div>
 							</div>
 						</div>

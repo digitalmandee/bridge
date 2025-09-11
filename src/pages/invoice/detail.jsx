@@ -16,10 +16,15 @@ const InvoiceDetail = () => {
 
 	const { customerId } = useParams(); // Get invoice ID from URL
 	const [customer, setCustomer] = useState({});
+	const [invoices, setInvoices] = useState({});
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
 	const [limit, setLimit] = useState(10);
 	const [isLoading, setIsLoading] = useState(true);
+
+	const [fromDate, setFromDate] = useState("");
+	const [toDate, setToDate] = useState("");
+	const [statusFilter, setStatusFilter] = useState("all");
 
 	const sendNotification = async (invoiceId, userId, status) => {
 		try {
@@ -45,9 +50,20 @@ const InvoiceDetail = () => {
 		setIsLoading(true);
 		const fetchInvoiceDetail = async () => {
 			try {
-				const res = await axiosInstance.get(`invoices/customer-detail/${customerId}`);
+				const res = await axiosInstance.get(`invoices/customer-detail/${customerId}`, {
+					params: {
+						page: currentPage,
+						limit,
+						from_date: fromDate,
+						to_date: toDate,
+						status: statusFilter === "all" ? "" : statusFilter,
+					},
+				});
+
 				if (res.data.success) {
 					setCustomer(res.data.customer);
+					setInvoices(res.data.invoices);
+					setTotalPages(res.data.totalPages); // will come from backend
 				}
 			} catch (error) {
 				console.error("Error fetching invoice details:", error);
@@ -56,7 +72,30 @@ const InvoiceDetail = () => {
 			}
 		};
 		fetchInvoiceDetail();
-	}, [customerId, currentPage, limit]);
+	}, [customerId, currentPage, limit, fromDate, toDate, statusFilter]);
+
+	const downloadCSV = () => {
+		if (!invoices.length) return;
+
+		const headers = ["Invoice #", "Type", "Client Name", "Client Email", "Issue Date", "Payment Date", "Status", "Amount"];
+
+		const rows = invoices.map((invoice) => [`#BRIDGE-${invoice.id}`, customer.type, customer.name, customer.email, new Date(invoice.created_at).toISOString().split("T")[0], invoice.due_date, invoice.status, `Rs. ${invoice.amount}`]);
+
+		// Build CSV string
+		const csvString = [headers, ...rows].map((row) => row.map((field) => `"${String(field).replace(/"/g, '""')}"`).join(",")).join("\n");
+
+		// Create Blob and trigger download
+		const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+		const url = URL.createObjectURL(blob);
+		const link = document.createElement("a");
+		link.href = url;
+		link.setAttribute("download", "invoices.csv");
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(url);
+	};
+
 
 	return (
 		<>
@@ -79,17 +118,34 @@ const InvoiceDetail = () => {
 							</div>
 							<div className="col-auto">
 								<Box display="flex" gap={2}>
-									<Button variant="outlined" startIcon={<DownloadIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }}>
-										CSV
-									</Button>
-									<Button variant="outlined" startIcon={<FilterIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }}>
-										Filter
-									</Button>
-									<Select value={month} onChange={(e) => setMonth(e.target.value)} size="small" sx={{ minWidth: 120 }}>
-										<MenuItem value="Month">Month</MenuItem>
-										<MenuItem value="January">January</MenuItem>
-										<MenuItem value="February">February</MenuItem>
-									</Select>
+									<Box display="flex" gap={2}>
+										<Button variant="outlined" startIcon={<DownloadIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }} onClick={downloadCSV}>
+											CSV
+										</Button>
+
+										{/* From / To Date */}
+										<input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} style={{ padding: "6px", border: "1px solid #ccc", margin: 0, borderRadius: "6px" }} />
+										<input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} style={{ padding: "6px", border: "1px solid #ccc", margin: 0, borderRadius: "6px" }} />
+
+										{/* Status filter */}
+										<Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} size="small" sx={{ minWidth: 120 }}>
+											<MenuItem value="all">All</MenuItem>
+											<MenuItem value="pending">Pending</MenuItem>
+											<MenuItem value="paid">Paid</MenuItem>
+											<MenuItem value="overdue">Overdue</MenuItem>
+										</Select>
+
+										<Button
+											variant="outlined"
+											color="secondary"
+											onClick={() => {
+												setFromDate("");
+												setToDate("");
+												setStatusFilter("all");
+											}}>
+											Clear
+										</Button>
+									</Box>
 								</Box>
 							</div>
 						</div>
@@ -100,14 +156,14 @@ const InvoiceDetail = () => {
 								<Avatar src={import.meta.env.VITE_ASSET_API + customer.profile_image} sx={{ width: 80, height: 80 }} />
 								<Box display="flex" flexDirection="column" gap={2}>
 									<Box display="flex" gap={2}>
-										<Typography color="text.secondary" variant="body2">
+										<Typography color="text.secondary" variant="body2" sx={{ width: "40px" }}>
 											Name:
 										</Typography>
 										<Typography variant="body1">{customer.name}</Typography>
 									</Box>
 
 									<Box display="flex" gap={2}>
-										<Typography color="text.secondary" variant="body2">
+										<Typography color="text.secondary" variant="body2" sx={{ width: "40px" }}>
 											Type:
 										</Typography>
 										<Typography variant="body1" sx={{ textTransform: "capitalize" }}>
@@ -116,14 +172,14 @@ const InvoiceDetail = () => {
 									</Box>
 
 									<Box display="flex" gap={2}>
-										<Typography color="text.secondary" variant="body2">
+										<Typography color="text.secondary" variant="body2" sx={{ width: "40px" }}>
 											Phone:
 										</Typography>
 										<Typography variant="body1">{customer.phone_no ?? "N/A"}</Typography>
 									</Box>
 
 									<Box display="flex" gap={2}>
-										<Typography color="text.secondary" variant="body2">
+										<Typography color="text.secondary" variant="body2" sx={{ width: "40px" }}>
 											Email:
 										</Typography>
 										<Typography variant="body1">{customer.email}</Typography>
@@ -151,8 +207,8 @@ const InvoiceDetail = () => {
 										</TableRow>
 									</TableHead>
 									<TableBody>
-										{customer && customer.invoices.length > 0 ? (
-											customer.invoices.map((invoice) => (
+										{invoices && invoices.length > 0 ? (
+											invoices.map((invoice) => (
 												<TableRow key={invoice.id}>
 													<TableCell>#BRIDGE-{invoice.id}</TableCell>
 													<TableCell>{new Date(invoice.created_at).toISOString().split("T")[0]}</TableCell>

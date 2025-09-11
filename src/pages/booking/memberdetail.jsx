@@ -113,9 +113,9 @@ const MemberDetail = ({ handleNext }) => {
 					handleNext();
 				}
 			} catch (error) {
+				console.log("Availability check error:", error);
 				if (error.response.data.company_exists) newErrors.company_exists = error.response.data.company_exists;
 				else if (error.response.data.type_exists) newErrors.type_exists = error.response.data.type_exists;
-
 				setErrors(newErrors);
 			} finally {
 				setIsLoading(false);

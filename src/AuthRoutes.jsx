@@ -206,6 +206,14 @@ function AuthRoutes() {
 				}
 			/>
 			<Route
+				path="/company/booking-request"
+				element={
+					<ProtectedRoute role="company">
+						<BookingRequest />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
 				path="company/notifications"
 				element={
 					<ProtectedRoute role="company">

@@ -20,7 +20,7 @@ const UserDashboard = () => {
 	useEffect(() => {
 		const getData = async () => {
 			await axiosInstance.get("user/dashboard").then((res) => {
-				// console.log(res.data);
+				console.log(res.data);
 				setData(res.data);
 			});
 			setIsLoading(false);
@@ -65,10 +65,10 @@ const UserDashboard = () => {
 							{/* Metric Cards */}
 							<Grid container spacing={3} sx={{ mb: 3 }}>
 								{[
-									{ title: "Available Booking", value: data.totalBookings ?? 0, icon: DirectionsCarIcon, color: colors.primary },
-									{ title: "Remaing Booking", value: data.remainingbookings ?? 0, icon: GroupsIcon, color: colors.primary },
-									{ title: "Available Printing Papers", value: data.totalPrintingPapers ?? 0, icon: AccountBalanceWalletIcon, color: colors.primary },
-									{ title: "Available Printing Papers", value: data.remainingPrintingPapers ?? 0, icon: GroupsIcon, color: colors.primary },
+									{ title: "Available Booking", value: data.meetingQuota?.total ?? 0, icon: DirectionsCarIcon, color: colors.primary },
+									{ title: "Remaing Booking", value: data.meetingQuota?.remaining ?? 0, icon: GroupsIcon, color: colors.primary },
+									{ title: "Available Printing Papers", value: data.printingQuota?.total ?? 0, icon: AccountBalanceWalletIcon, color: colors.primary },
+									{ title: "Available Printing Papers", value: data.printingQuota?.remaining ?? 0, icon: GroupsIcon, color: colors.primary },
 									{ title: "Over Due Amount", value: data.overDueAmount ?? 0, icon: PaymentsIcon, color: colors.primary },
 								].map((item, index) => (
 									<Grid item xs={12} sm={6} md={3} key={index}>

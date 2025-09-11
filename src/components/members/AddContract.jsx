@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Typography, Button, IconButton, Modal, Box, TextField, Select, MenuItem, FormControl, InputLabel, Checkbox, FormControlLabel, Stepper, Step, StepLabel, ToggleButton, ToggleButtonGroup, CircularProgress, Snackbar, Alert, Autocomplete } from "@mui/material";
 import { Add as AddIcon, Remove as RemoveIcon, Close as CloseIcon } from "@mui/icons-material";
 import axiosInstance from "@/utils/axiosInstance";
@@ -59,7 +59,6 @@ const AddContract = ({ getContracts }) => {
 	};
 
 	const fetchSearchResults = useCallback(async (query, type) => {
-		if (!query) return []; // Don't make a request if the query is empty.
 		setLoading(true);
 		try {
 			const response = await axiosInstance.get("search", {
@@ -103,24 +102,31 @@ const AddContract = ({ getContracts }) => {
 		// Ensure event exists before accessing event.target
 		const query = event?.target?.value || "";
 
-		if (query) {
-			const results = await fetchSearchResults(query, "user");
-			setMembers(results);
-		} else {
-			setMembers([]);
-		}
+		const results = await fetchSearchResults(query, "user");
+		setMembers(results);
 	};
 
 	const handleCompanySearch = async (event, newValue) => {
 		const query = event?.target?.value || "";
 
-		if (query) {
-			const results = await fetchSearchResults(query, "company");
-			setCompanies(results);
-		} else {
-			setCompanies([]);
-		}
+		const results = await fetchSearchResults(query, "company");
+		setCompanies(results);
 	};
+
+	useEffect(() => {
+		const fetchMembers = async () => {
+			try {
+				const members = await fetchSearchResults("", "user");
+				setMembers(members);
+				const companies = await fetchSearchResults("", "company");
+				setCompanies(companies);
+			} catch (error) {
+				console.log(error.response.data);
+			}
+		};
+		fetchMembers();
+	}, []);
+
 	const handlePlanSearch = async (event, newValue) => {
 		const query = event?.target?.value || "";
 

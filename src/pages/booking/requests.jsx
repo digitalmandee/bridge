@@ -4,12 +4,11 @@ import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Menu, MenuItem, IconButton, Modal, Box, TextField, Button, Select, Snackbar, Alert, Typography, Pagination } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import TopNavbar from "../../components/topNavbar";
-import Sidebar from "../../components/leftSideBar";
-import Loader from "../../components/Loader";
-import axios from "axios";
-import colors from "../../assets/styles/color";
-import axiosInstance from "../../utils/axiosInstance";
+import TopNavbar from "@/components/topNavbar";
+import Sidebar from "@/components/leftSideBar";
+import Loader from "@/components/Loader";
+import colors from "@/assets/styles/color";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Requests = () => {
 	const [bookings, setBookings] = useState([]);
@@ -62,14 +61,23 @@ const Requests = () => {
 
 	const handleUpdateBooking = async () => {
 		try {
+			let finalEndDate = endDate;
+			let finalEndTime = endTime;
+
+			if (newStatus === "vacated" && (!endDate || !endTime)) {
+				const now = new Date();
+				finalEndDate = now.toISOString().split("T")[0];
+				finalEndTime = now.toTimeString().slice(0, 5);
+			}
+
 			const response = await axiosInstance.post(`booking/update`, {
 				booking_id: selectedBooking.id,
 				price: newPrice,
 				status: newStatus,
 				start_date: startDate,
 				start_time: startTime,
-				end_date: endDate,
-				end_time: endTime,
+				end_date: finalEndDate,
+				end_time: finalEndTime,
 			});
 
 			if (response.data.success) {
@@ -82,8 +90,8 @@ const Requests = () => {
 									status: newStatus,
 									start_date: startDate,
 									start_time: startTime,
-									end_date: endDate,
-									end_time: endTime,
+									end_date: finalEndDate,
+									end_time: finalEndTime,
 							  }
 							: booking
 					)
@@ -96,7 +104,7 @@ const Requests = () => {
 				setSnackbarSeverity("error");
 			}
 		} catch (error) {
-			console.error("Error updating booking:", error.response.data);
+			console.error("Error updating booking:", error.response?.data || error);
 			setSnackbarMessage("An error occurred. Please try again.");
 			setSnackbarSeverity("error");
 		} finally {
@@ -285,7 +293,9 @@ const Requests = () => {
 												<td>Rs. {totalPrice(booking)}</td>
 												<td>
 													<div className="d-flex align-items-center">
-														<span className={`status ${booking.status}`}>{booking.status}</span>
+														<span className={`status ${booking.status}`} style={{ minWidth: 90 }}>
+															{booking.status}
+														</span>
 														<IconButton onClick={(e) => handleMenuOpen(e, booking)}>
 															<MoreVertIcon />
 														</IconButton>
@@ -328,20 +338,33 @@ const Requests = () => {
 						width: 700,
 					}}>
 					<h3 style={{ marginBottom: 20 }}>Edit Booking</h3>
-					<Select fullWidth value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
+					<Select
+						fullWidth
+						value={newStatus}
+						onChange={(e) => {
+							const value = e.target.value;
+							setNewStatus(value);
+
+							if (value === "vacated") {
+								// Clear UI fields so they look empty
+								setEndDate("");
+								setEndTime("");
+							}
+						}}>
 						{selectedBooking?.status === "pending" && <MenuItem value="pending">Pending</MenuItem>}
 						{selectedBooking?.status !== "vacated" && <MenuItem value="confirmed">Confirmed</MenuItem>}
 						<MenuItem value="vacated">Vacated</MenuItem>
 						<MenuItem value="rejected">Rejected</MenuItem>
 					</Select>
+
 					<div style={{ display: "flex", justifyContent: "space-between", marginTop: 20 }}>
 						<TextField label="Start Date" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 20, width: "48%" }} />
 						<TextField label="Start Time" type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 20, width: "48%" }} />
 					</div>
 					{newStatus === "vacated" && (
 						<div style={{ display: "flex", justifyContent: "space-between" }}>
-							<TextField label="End Date" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
-							<TextField label="End Time" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
+							<TextField label="End Date (Optional)" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
+							<TextField label="End Time (Optional)" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} InputLabelProps={{ shrink: true }} style={{ marginBottom: 10, width: "48%" }} />
 						</div>
 					)}
 					<div style={{ textTransform: "capitalize", marginBottom: 10 }}>

@@ -32,8 +32,6 @@ const InvoiceManagement = () => {
 	const [totalPages, setTotalPages] = useState(1);
 	const [limit, setLimit] = useState(10);
 	const [statusFilter, setStatusFilter] = useState("");
-	const [snackbarOpen, setSnackbarOpen] = useState(false);
-	const [snackbarMessage, setSnackbarMessage] = useState("");
 	const [loadingInvoiceId, setLoadingInvoiceId] = useState(null);
 	const [search, setSearch] = useState("");
 
@@ -182,14 +180,10 @@ const InvoiceManagement = () => {
 	// Run getInvoices when filter changes
 	useEffect(() => {
 		const timeout = setTimeout(() => {
-			getInvoices(1); // Reset to page 1 on search
+			getInvoices(currentPage); // Reset to page 1 on search
 		}, 500); // debounce
 		return () => clearTimeout(timeout);
 	}, [search, currentPage, limit, statusFilter]);
-
-	const handleSnackbarClose = () => {
-		setSnackbarOpen(false);
-	};
 
 	return (
 		<>

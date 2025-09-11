@@ -13,6 +13,8 @@ const InvoiceDashboard = () => {
 	const { branch } = useParams();
 
 	const [fromDate, setFromDate] = useState("");
+	const [toDate, setToDate] = useState("");
+
 	const [invoices, setInvoices] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [statusFilter, setStatusFilter] = useState("");
@@ -46,7 +48,9 @@ const InvoiceDashboard = () => {
 
 	const getDashboardStats = async () => {
 		try {
-			const res = await axiosInstance.get(`invoices/dashboard`);
+			const res = await axiosInstance.get(`invoices/dashboard`, {
+				params: { from_date: fromDate, to_date: toDate },
+			});
 			if (res.data.success) {
 				setDashboardStats({
 					totalInvoices: res.data.totalInvoices,
@@ -82,13 +86,11 @@ const InvoiceDashboard = () => {
 		URL.revokeObjectURL(url);
 	};
 
-	useEffect(() => {
-		getDashboardStats();
-	}, [""]);
-
 	const getInvoices = async (page = 1) => {
 		setIsLoading(true);
 		try {
+			console.log("Fetching invoices with:", { page, limit, search: searchQuery, status: statusFilter, from_date: fromDate, to_date: toDate });
+			
 			const params = {
 				page,
 				limit,
@@ -96,9 +98,8 @@ const InvoiceDashboard = () => {
 				status: statusFilter,
 			};
 
-			if (fromDate) {
-				params.from_date = fromDate;
-			}
+			if (fromDate) params.from_date = fromDate;
+			if (toDate) params.to_date = toDate;
 
 			const res = await axiosInstance.get(`invoices`, { params });
 			if (res.data.success) {
@@ -115,10 +116,11 @@ const InvoiceDashboard = () => {
 
 	useEffect(() => {
 		const delayDebounce = setTimeout(() => {
-			getInvoices(1);
+			getInvoices(currentPage);
+			getDashboardStats();
 		}, 500);
 		return () => clearTimeout(delayDebounce);
-	}, [searchQuery, statusFilter, limit, fromDate]);
+	}, [searchQuery, statusFilter,currentPage, limit, fromDate, toDate]);
 
 	return (
 		<>
@@ -142,14 +144,20 @@ const InvoiceDashboard = () => {
 										CSV
 									</Button>
 									<FormControl>
-										<TextField label="Date" type="date" size="small" value={fromDate} onChange={(e) => setFromDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+										<TextField label="From Date" type="date" size="small" value={fromDate} onChange={(e) => setFromDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+									</FormControl>
+
+									<FormControl>
+										<TextField label="To Date" type="date" size="small" value={toDate} onChange={(e) => setToDate(e.target.value)} InputLabelProps={{ shrink: true }} />
 									</FormControl>
 
 									<Button
 										variant="outlined"
 										color="secondary"
-										onClick={() => setFromDate("")} // Clear date
-									>
+										onClick={() => {
+											setFromDate("");
+											setToDate("");
+										}}>
 										Clear
 									</Button>
 
