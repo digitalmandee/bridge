@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { Button } from "@mui/material";
 import { RxDashboard } from "react-icons/rx";
 import { FaAngleRight } from "react-icons/fa6";
+import { MdOutlineEventSeat } from "react-icons/md";
 import "./style.css";
 import { SlCalender } from "react-icons/sl";
 import { TbContract, TbFileInvoice } from "react-icons/tb";
@@ -10,7 +12,9 @@ import SeatBooking from "../SeatBooking";
 
 const menuItems = [
 	{ to: "/user/dashboard", label: "Dashboard", icon: <RxDashboard /> },
-	{ to: "/user/booking-request", label: "Seats Booking Request", icon: <RxDashboard /> },
+	{
+		to: "/user/booking-request", label: "Seats Booking Request", icon: <MdOutlineEventSeat />
+	},
 	{
 		label: "Booking Management",
 		icon: <SlCalender />,
@@ -40,7 +44,7 @@ const User = () => {
 
 			<ul>
 				{menuItems.map((item, index) => (
-					<li key={index}>
+					<li key={index} style={{ marginBottom: "0.1rem" }}>
 						{item.dropdown ? (
 							<>
 								<Button className={`w-100 ${openDropdown === item.label ? "active-button" : ""}`} onClick={() => toggleDropdown(item.label)}>
@@ -54,22 +58,41 @@ const User = () => {
 									<ul className="submenu">
 										{item.dropdown.map((subItem, subIndex) => (
 											<li key={subIndex}>
-												<Link to={"/" + branch + subItem.to}>{subItem.label}</Link>
+												<NavLink
+													to={"/" + branch + subItem.to}
+													className={({ isActive }) =>
+														isActive ? "active-link" : ""
+													}
+												>
+													{subItem.label}
+												</NavLink>
 											</li>
 										))}
 									</ul>
 								)}
 							</>
 						) : (
-							<Link to={"/" + branch + item.to}>
-								<Button className={`w-100 ${location.pathname === item.to ? "active-button" : ""}`}>
+							<NavLink
+								to={"/" + branch + item.to}
+								style={({ isActive }) => ({
+									width: "100%",
+									backgroundColor: isActive ? "#FFCC16" : "transparent",
+									color: isActive ? "white" : "black",
+									textDecoration: "none",
+								})}
+							>
+								<Button
+									className="w-100"
+									style={{
+										justifyContent: "flex-start",
+										backgroundColor: "inherit",
+										color: "inherit",
+									}}
+								>
 									<span className="icon">{item.icon}</span>
 									{item.label}
-									<span className="arrow">
-										<FaAngleRight />
-									</span>
 								</Button>
-							</Link>
+							</NavLink>
 						)}
 					</li>
 				))}

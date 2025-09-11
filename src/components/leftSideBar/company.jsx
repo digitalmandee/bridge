@@ -42,47 +42,39 @@ const Company = () => {
 	};
 
 	return (
-		<>
-			<div style={{ display: "flex", justifyContent: "center", width: "100%", marginBottom: "16px" }}>
-				<SeatBooking />
-			</div>
-			<ul>
-				{menuItems.map((item, index) => (
-					<li key={index}>
-						{item.dropdown ? (
-							<>
-								<Button className={`w-100 ${openDropdown === item.label ? "active-button" : ""}`} onClick={() => toggleDropdown(item.label)}>
-									<span className="icon">{item.icon}</span>
-									{item.label}
-									<span className={`arrow ${openDropdown === item.label ? "rotate" : ""}`}>
-										<FaAngleRight />
-									</span>
-								</Button>
-								{openDropdown === item.label && (
-									<ul className="submenu">
-										{item.dropdown.map((subItem, subIndex) => (
-											<li key={subIndex}>
-												<Link to={"/" + branch + subItem.to}>{subItem.label}</Link>
-											</li>
-										))}
-									</ul>
-								)}
-							</>
-						) : (
-							<Link to={"/" + branch + item.to}>
-								<Button className={`w-100 ${location.pathname === item.to ? "active-button" : ""}`}>
-									<span className="icon">{item.icon}</span>
-									{item.label}
-									<span className="arrow">
-										<FaAngleRight />
-									</span>
-								</Button>
-							</Link>
-						)}
-					</li>
-				))}
-			</ul>
-		</>
+		<ul>
+			{menuItems.map((item, index) => (
+				<li key={index} style={{ marginBottom: "0.1rem" }}>
+					{item.dropdown ? (
+						<>
+							<Button className={`w-100 ${openDropdown === item.label ? "active-button" : ""}`} onClick={() => toggleDropdown(item.label)}>
+								<span className="icon">{item.icon}</span>
+								{item.label}
+								<span className={`arrow ${openDropdown === item.label ? "rotate" : ""}`}>
+									<FaAngleRight />
+								</span>
+							</Button>
+							{openDropdown === item.label && (
+								<ul className="submenu">
+									{item.dropdown.map((subItem, subIndex) => (
+										<li key={subIndex}>
+											<Link to={"/" + branch + subItem.to}>{subItem.label}</Link>
+										</li>
+									))}
+								</ul>
+							)}
+						</>
+					) : (
+						<Link to={"/" + branch + item.to}>
+							<Button className={`w-100 ${location.pathname === item.to ? "active-button" : ""}`}>
+								<span className="icon">{item.icon}</span>
+								{item.label}
+							</Button>
+						</Link>
+					)}
+				</li>
+			))}
+		</ul>
 	);
 };
 
