@@ -22,7 +22,8 @@ const menuItems = [
 		],
 	},
 	{
-		to: "/company/invoices/management", label: "Biling Management", icon: <RiBillLine />},
+		to: "/company/invoices/management", label: "Biling Management", icon: <RiBillLine />
+	},
 	{ to: "/company/booking-schedule/requests", label: "Booking Requests", icon: <MdOutlineDateRange /> },
 	{ to: "/company/contracts", label: "Contracts", icon: <TbContract /> },
 ];
@@ -40,7 +41,7 @@ const Company = () => {
 	return (
 		<ul>
 			{menuItems.map((item, index) => (
-				<li key={index}>
+				<li key={index} style={{marginBottom:"0.1rem"}}>
 					{item.dropdown ? (
 						<>
 							<Button className={`w-100 ${openDropdown === item.label ? "active-button" : ""}`} onClick={() => toggleDropdown(item.label)}>
@@ -65,9 +66,6 @@ const Company = () => {
 							<Button className={`w-100 ${location.pathname === item.to ? "active-button" : ""}`}>
 								<span className="icon">{item.icon}</span>
 								{item.label}
-								<span className="arrow">
-									<FaAngleRight />
-								</span>
 							</Button>
 						</Link>
 					)}

@@ -67,15 +67,15 @@ const DashboardNotifications = ({ mainStyle = true }) => {
 export default DashboardNotifications;
 
 const notificationsStyle = {
-	marginTop: "1rem",
+	// marginTop: "1rem",
 	backgroundColor: "#FFFFFF",
-	borderRadius: "0.2rem",
+	borderRadius: "1rem",
 	boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
 	border: "1px solid #E5E7EB",
 	overflowY: "auto",
-	height: "30rem",
-	width: "21rem",
-	padding: "1.5rem",
+	// height: "20rem",
+	width: "30%",
+	padding: "1rem",
 	transition: "width 0.3s ease-in-out",
 	scrollbarWidth: "none",
 };
