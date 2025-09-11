@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\BookingChair;
 use App\Models\Chair;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class CompanyController extends Controller
 {
@@ -16,24 +18,37 @@ class CompanyController extends Controller
         try {
             $company = auth()->user();
 
-            $bookingSchedules = $company->bookingSchedulesByCompany()->with(['floor:id,name', 'room:id,name', 'user:id,name'])->latest()->take(10)->get();
+            $bookingSchedules = $company
+                ->bookingSchedulesByCompany()
+                ->with(['floor:id,name', 'room:id,name', 'user:id,name'])
+                ->latest()
+                ->take(10)
+                ->get();
 
-            $totalSeats = count($company->booking()->get()->pluck('chair_ids')->flatten(1));
+            // 🔹 Count total seats from booking chairs
+            $totalSeats = BookingChair::whereHas('booking', function ($q) use ($company) {
+                $q->where('user_id', $company->id)->where('status', 'confirmed');
+            })->count();
 
-            // Get all chair_ids from User table's allocated_seat_id column
-            $existingSeats = User::where('company_id', $company->id)->whereNotNull('allocated_seat_id')->pluck('allocated_seat_id')->flatten();
+            // 🔹 Count occupied seats (allocated to company members)
+            $occupiedSeats = User::where('company_id', $company->id)
+                ->whereNotNull('allocated_seat_id')
+                ->count();
 
-            // $availableSeats = $user->booking->chairs;
-            // $occupiedSeats = $user->available_seats;
+            $availableSeats = max($totalSeats - $occupiedSeats, 0);
+
+            // 🔹 Quotas (using same User model methods)
+            $meetingQuota = $company->meetingQuota();
+            $printingQuota = $company->printingQuota();
 
             return response()->json([
                 'success' => true,
                 'bookingSchedules' => $bookingSchedules,
                 'totalSeats' => $totalSeats,
-                'occupiedSeats' => $existingSeats->count(),
-                'totalBookings' => $company->total_booking_quota,
-                'remainingBookings' => $company->booking_quota,
-                'remainingPrinting' => $company->printing_quota,
+                'occupiedSeats' => $occupiedSeats,
+                'availableSeats' => $availableSeats,
+                'meetingQuota' => $meetingQuota,
+                'printingQuota' => $printingQuota,
             ]);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
@@ -45,27 +60,37 @@ class CompanyController extends Controller
         try {
             $company = auth()->user();
 
-            // Get all approved bookings and extract chairs from JSON
-            $chairIds = $company->booking()->where('status', 'confirmed')->get()->pluck('chair_ids')->flatten(1)->unique();
+            // Get all confirmed booking chairs for this company
+            $chairs = BookingChair::whereHas('booking', function ($q) use ($company) {
+                $q
+                    ->where('user_id', $company->id)
+                    ->where('status', 'confirmed');
+            })->with(['table:id,table_id,name', 'room:id,name', 'booking:id,time_slot'])->get();
 
-            // Fetch chairs with related table and room data
-            $chairs = Chair::whereIn('id', $chairIds)->with(['table:id,table_id,name', 'room:id,name'])->get()->keyBy('id');
+            // Get all seats already assigned to staff under this company
+            $assignedSeatIds = User::where('company_id', $company->id)
+                ->whereNotNull('allocated_seat_id')
+                ->pluck('allocated_seat_id')
+                ->toArray();
 
-            // Format the chairs data as requested
-            $formattedChairs = collect($chairIds)->map(function ($chairId) use ($chairs) {
-                $chair = $chairs[$chairId] ?? null;
-                return $chair ? [
+            // Exclude already allocated chairs
+            $availableChairs = $chairs->filter(function ($chair) use ($assignedSeatIds) {
+                return !in_array($chair->id, $assignedSeatIds);
+            });
+
+            $formattedChairs = $availableChairs->map(function ($chair) {
+                return [
                     'id' => $chair->id,
                     'chair_id' => $chair->chair_id,
-                    'table_id' => $chair->table->table_id ?? null,
-                    'table_name' => $chair->table->name ?? 'N/A',
-                    'room_id' => $chair->room->id ?? null,
-                    'room_name' => $chair->room->name ?? 'N/A',
-                ] : null;
-            })->filter()->values();  // Remove null values and reset indexes
+                    'time_slot' => $chair->booking->time_slot ?? null,
+                    'table_id' => $chair->chair->table->table_id ?? null,
+                    'table_name' => $chair->chair->table->name ?? 'N/A',
+                    'room_id' => $chair->chair->room->id ?? null,
+                    'room_name' => $chair->chair->room->name ?? 'N/A',
+                ];
+            })->values();
 
-            // Return the response
-            return response()->json(['success' => true, 'bookingQuota' => $company->booking_quota, 'printingQuota' => $company->printing_quota, 'chairs' => $formattedChairs]);
+            return response()->json(['success' => true, 'chairs' => $formattedChairs]);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
@@ -77,9 +102,8 @@ class CompanyController extends Controller
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string',
-            'seatNo' => 'required',
-            'booking_quota' => 'required',
-            'printing_quota' => 'required|integer',
+            'seatNo' => 'nullable|integer|exists:booking_chairs,id',
+            'blood_group' => 'nullable|string|max:5',  // NEW
         ]);
 
         DB::beginTransaction();
@@ -88,31 +112,12 @@ class CompanyController extends Controller
             $company = auth()->user();
             $companyId = $company->id;
 
-            // Fetch the current company's quotas
-            $avaiableBookingQuota = $company->booking_quota;
-            $avaiablePrintingQuota = $company->printing_quota;
-
-            // Validate that the submitted quotas do not exceed the available quotas
-            if ($request->booking_quota > $avaiableBookingQuota) {
-                return response()->json(['success' => false, 'booking_quota' => "Booking quota exceeds available quota of $avaiableBookingQuota"], 400);
-            }
-
-            if ($request->printing_quota > $avaiablePrintingQuota) {
-                return response()->json(['success' => false, 'printing_quota' => "Printing quota exceeds available quota of $avaiablePrintingQuota"], 400);
-            }
-
-            // Deduct the used quotas from the company's available quotas
-            $company->booking_quota -= $request->booking_quota;
-            $company->printing_quota -= $request->printing_quota;
-            $company->save();  // Save updated quotas
-
+            // Deduct from company
             $profileImagePath = '';
-            // Handle profile_image upload
             if ($request->hasFile('profile_image')) {
                 $profileImagePath = $request->file('profile_image')->store('profile_images', 'public');
             }
 
-            // Create the new user (staff)
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -124,21 +129,18 @@ class CompanyController extends Controller
                 'phone_no' => $request->phone_no,
                 'company_id' => $companyId,
                 'allocated_seat_id' => $request->seatNo,
-                'printing_quota' => $request->printing_quota,
-                'booking_quota' => $request->booking_quota,
-                'total_booking_quota' => $request->booking_quota,
-                'total_printing_quota' => $request->printing_quota,
+                'blood_group' => $request->blood_group,  // NEW
             ]);
 
             $user->assignRole('user');
 
-            // Commit the transaction if everything is successful
             DB::commit();
 
             return response()->json(['success' => true, 'user' => $user]);
         } catch (\Throwable $th) {
             // Rollback the transaction if something goes wrong
             DB::rollBack();
+            Log::info('Error creating staff: ' . $th->getMessage());
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
     }
@@ -157,11 +159,18 @@ class CompanyController extends Controller
             $users = User::where('company_id', $companyId)
                 ->with([
                     'chair' => function ($query) {
-                        $query->select('id', 'chair_id', 'table_id')->with([
-                            'table' => function ($query) {
-                                $query->select('id', 'table_id', 'name');
-                            }
-                        ]);
+                        $query
+                            ->select('id', 'chair_id', 'booking_id')
+                            ->with([
+                                'chair' => function ($q) {
+                                    $q
+                                        ->select('id', 'chair_id', 'table_id', 'room_id')
+                                        ->with([
+                                            'table:id,table_id,name',
+                                            'room:id,name',
+                                        ]);
+                                }
+                            ]);
                     }
                 ]);
 
@@ -173,10 +182,18 @@ class CompanyController extends Controller
 
             $users = $users->orderBy('created_at', 'desc')->get();
 
-            return response()->json(['success' => true, 'staffs' => $users, 'totalAll' => $totalAll, 'totalActive' => $totalActive, 'totalInactive' => $totalInactive]);
+            return response()->json([
+                'success' => true,
+                'staffs' => $users,
+                'totalAll' => $totalAll,
+                'totalActive' => $totalActive,
+                'totalInactive' => $totalInactive
+            ]);
         } catch (\Throwable $th) {
-            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
-            // throw $th;
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage()
+            ], 500);
         }
     }
 
@@ -187,53 +204,10 @@ class CompanyController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
         try {
-            $company = auth()->user();
-
             $user = User::find($id);
             if (!$user) {
                 return response()->json(['success' => false, 'message' => 'User not found'], 404);
             }
-
-            // Store old quotas
-            $oldBookingQuota = $user->booking_quota;
-            $oldPrintingQuota = $user->printing_quota;
-
-            // If booking_quota changed
-            if ($request->has('booking_quota') && $request->booking_quota != $oldBookingQuota) {
-                $bookingDifference = $request->booking_quota - $oldBookingQuota;
-
-                if ($bookingDifference > 0) {
-                    // Need to deduct from company quota
-                    if ($company->booking_quota >= $bookingDifference) {
-                        $company->booking_quota -= $bookingDifference;
-                    } else {
-                        return response()->json(['success' => false, 'booking_quota' => 'Not enough booking quota in company'], 400);
-                    }
-                } else {
-                    // Return quota back to company
-                    $company->booking_quota += abs($bookingDifference);
-                }
-            }
-
-            // If printing_quota changed
-            if ($request->has('printing_quota') && $request->printing_quota != $oldPrintingQuota) {
-                $printingDifference = $request->printing_quota - $oldPrintingQuota;
-
-                if ($printingDifference > 0) {
-                    // Need to deduct from company quota
-                    if ($company->printing_quota >= $printingDifference) {
-                        $company->printing_quota -= $printingDifference;
-                    } else {
-                        return response()->json(['success' => false, 'printing_quota' => 'Not enough printing quota in company'], 400);
-                    }
-                } else {
-                    // Return quota back to company
-                    $company->printing_quota += abs($printingDifference);
-                }
-            }
-
-            // Save updated company quotas
-            $company->save();
 
             // Update user data
             $user->name = $request->name;
@@ -242,14 +216,6 @@ class CompanyController extends Controller
             $user->phone_no = $request->phone_no;
             $user->status = $request->status;
             $user->allocated_seat_id = $request->allocated_seat_id;
-
-            if ($request->has('booking_quota') && $request->booking_quota != $oldBookingQuota) {
-                $user->booking_quota = $request->booking_quota;
-                $user->total_booking_quota = $request->booking_quota;
-            }
-            if ($request->has('printing_quota') && $request->printing_quota != $oldPrintingQuota) {
-                $user->printing_quota = $request->printing_quota;
-            }
 
             $user->save();
 

@@ -22,7 +22,8 @@ class InvoicesController extends Controller
         $limit = $request->input('limit', 10);
         $status = $request->input('status');
         $search = $request->input('search');
-        $fromDate = $request->input('from_date');  // New date filter
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
 
         $query = Invoice::with('user');
 
@@ -44,8 +45,12 @@ class InvoicesController extends Controller
             });
         }
 
-        if ($fromDate) {
-            $query->whereDate('paid_date', $fromDate);
+        if ($fromDate && $toDate) {
+            $query->whereBetween('paid_date', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $query->whereDate('paid_date', '>=', $fromDate);
+        } elseif ($toDate) {
+            $query->whereDate('paid_date', '<=', $toDate);
         }
 
         $invoices = $query->orderBy('created_at', 'desc')->paginate($limit);
@@ -53,36 +58,72 @@ class InvoicesController extends Controller
         return response()->json(['success' => true, 'invoices' => $invoices]);
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $user = auth()->user();
-        $userId = $user->id;
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
 
-        // Base query
-        $query = Invoice::all();
+        $query = Invoice::query();
 
         if ($user->type !== 'admin') {
-            $query = Invoice::where('user_id', $user->id);
+            $query->where('user_id', $user->id);
         }
 
-        // Clone the query before modifying it for each count
-        $totalInvoices = (clone $query)->count();  // Count all invoices
-        $totalPaid = (clone $query)->where('status', 'paid')->count();  // Count paid invoices
-        $totalOverdue = (clone $query)->where('status', 'overdue')->count();  // Count overdue invoices
-        $totalPayment = (clone $query)->sum('amount');  // Sum of all payments
+        if ($fromDate && $toDate) {
+            $query->whereBetween('paid_date', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $query->whereDate('paid_date', '>=', $fromDate);
+        } elseif ($toDate) {
+            $query->whereDate('paid_date', '<=', $toDate);
+        }
 
-        return response()->json(['success' => true, 'totalInvoices' => $totalInvoices, 'totalPaid' => $totalPaid, 'totalOverdue' => $totalOverdue, 'totalPayment' => $totalPayment]);
+        $totalInvoices = (clone $query)->count();
+        $totalPaid = (clone $query)->where('status', 'paid')->count();
+        $totalOverdue = (clone $query)->where('status', 'overdue')->count();
+        $totalPayment = (clone $query)->sum('amount');
+
+        return response()->json([
+            'success' => true,
+            'totalInvoices' => $totalInvoices,
+            'totalPaid' => $totalPaid,
+            'totalOverdue' => $totalOverdue,
+            'totalPayment' => $totalPayment
+        ]);
     }
 
     public function customerDetail(Request $request, $id)
     {
-        $limit = $request->input('limit', 10);  // Default limit
+        $limit = $request->input('limit', 10);
+        $status = $request->input('status');
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
 
-        $customer = User::where('id', $id)->with(['invoices' => function ($query) use ($limit) {
-            $query->orderBy('created_at', 'desc')->paginate($limit);
-        }])->select('id', 'name', 'email', 'type', 'profile_image', 'phone_no')->firstOrFail();
+        $customer = User::select('id', 'name', 'email', 'type', 'profile_image', 'phone_no')
+            ->findOrFail($id);
 
-        return response()->json(['success' => true, 'customer' => $customer]);
+        $invoicesQuery = Invoice::where('user_id', $id);
+
+        if ($status) {
+            $invoicesQuery->where('status', $status);
+        }
+
+        if ($fromDate && $toDate) {
+            $invoicesQuery->whereBetween('paid_date', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $invoicesQuery->whereDate('paid_date', '>=', $fromDate);
+        } elseif ($toDate) {
+            $invoicesQuery->whereDate('paid_date', '<=', $toDate);
+        }
+
+        $invoices = $invoicesQuery->orderBy('created_at', 'desc')->paginate($limit);
+
+        return response()->json([
+            'success' => true,
+            'customer' => $customer,
+            'invoices' => $invoices->items(),
+            'totalPages' => $invoices->lastPage(),
+        ]);
     }
 
     public function store(Request $request)

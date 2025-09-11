@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -16,10 +17,14 @@ class UserController extends Controller
         try {
             $user = auth()->user();
 
-            $bookingSchedules = $user->bookingSchedules()->with(['floor:id,name', 'room:id,name'])->latest()->take(10)->get();
+            $bookingSchedules = $user
+                ->bookingSchedules()
+                ->with(['floor:id,name', 'room:id,name'])
+                ->latest()
+                ->take(10)
+                ->get();
 
             $totalAmount = $user->invoices()->sum('amount');
-
             $overDueAmount = $user->invoices()->where('status', 'overdue')->sum('amount');
 
             return response()->json([
@@ -28,10 +33,8 @@ class UserController extends Controller
                 'bookingSchedules' => $bookingSchedules,
                 'totalAmount' => $totalAmount,
                 'overDueAmount' => $overDueAmount,
-                'totalBookings' => $user->total_booking_quota,
-                'remainingbookings' => $user->booking_quota,
-                'totalPrintingPapers' => $user->total_printing_quota,
-                'remainingPrintingPapers' => $user->printing_quota,
+                'meetingQuota' => $user->meetingQuota(),
+                'printingQuota' => $user->printingQuota(),
             ]);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()]);

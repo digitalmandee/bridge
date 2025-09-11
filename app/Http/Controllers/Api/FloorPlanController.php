@@ -18,29 +18,29 @@ class FloorPlanController extends Controller
     public function getSeatAllocations(Request $request)
     {
         try {
-            // Fetch bookings with related data
-            $bookings = Booking::where('status', 'confirmed')->with(['floor:id,name', 'user:id,name,profile_image'])->get();
+            // ✅ Fetch all confirmed bookings with relationships
+            $bookings = Booking::where('status', 'confirmed')
+                ->with([
+                    'floor:id,name',
+                    'user:id,name,profile_image',
+                    'bookingChairs.chair.table',
+                    'bookingChairs.chair.room'
+                ])
+                ->get();
 
-            // Extract all chair IDs from bookings
-            // Fetch all chairs that are associated with any booking
-            $allChairIds = $bookings->pluck('chair_ids')->flatten()->unique()->toArray();
-            $chairs = Chair::whereIn('id', $allChairIds)->with(['table', 'room'])->get()->keyBy('id');
-
-            // Format response
-            $response = $bookings->map(function ($booking) use ($chairs) {
-                $chairIds = $booking->chair_ids ?? [];
-
-                $flattenedChairs = collect($chairIds)->map(function ($chairId) use ($chairs) {
-                    $chair = $chairs[$chairId] ?? null;
-                    return $chair ? [
+            // ✅ Format response
+            $response = $bookings->map(function ($booking) {
+                $flattenedChairs = $booking->bookingChairs->map(function ($bc) {
+                    $chair = $bc->chair;
+                    return [
                         'id' => $chair->id,
                         'chair_id' => $chair->chair_id,
-                        'table_id' => $chair->table->table_id ?? null,
+                        'table_id' => $chair->table->id ?? null,
                         'table_name' => $chair->table->name ?? 'N/A',
                         'room_id' => $chair->room->id ?? null,
                         'room_name' => $chair->room->name ?? 'N/A',
-                    ] : null;
-                })->filter()->values();  // Remove null values
+                    ];
+                });
 
                 return [
                     'booking_id' => $booking->id,
@@ -53,10 +53,16 @@ class FloorPlanController extends Controller
                 ];
             });
 
-            return response()->json(['success' => true, 'seats' => $response]);
+            return response()->json([
+                'success' => true,
+                'seats' => $response
+            ]);
         } catch (\Throwable $th) {
             Log::error('Seat allocation error: ' . $th->getMessage());
-            return response()->json(['success' => false, 'error' => 'An error occurred while retrieving the seat allocations'], 500);
+            return response()->json([
+                'success' => false,
+                'error' => 'An error occurred while retrieving the seat allocations'
+            ], 500);
         }
     }
 
@@ -64,35 +70,72 @@ class FloorPlanController extends Controller
     {
         try {
             $floorId = $request->floor_id;
+            $fromDate = $request->from_date ? Carbon::parse($request->from_date)->startOfDay() : Carbon::today()->startOfDay();
+            $toDate = $request->to_date ? Carbon::parse($request->to_date)->endOfDay() : Carbon::today()->endOfDay();
 
             if (!$floorId) {
                 return response()->json(['message' => 'Floor ID parameter is required'], 400);
             }
 
-            // Fetch the floor with its related rooms, tables, and chairs
-            $floor = Floor::with(['rooms.tables.chairs'])
-                ->where('id', $floorId)
-                ->first();
+            // Fetch floor with relations
+            $floor = Floor::with(['rooms.tables.chairs'])->where('id', $floorId)->first();
 
             if (!$floor) {
                 return response()->json(['message' => 'Floor not found'], 404);
             }
 
-            // Process tables and chairs
+            // ✅ Get confirmed bookings within date range
+            $bookings = Booking::where('floor_id', $floorId)
+                ->where('status', 'confirmed')
+                ->where(function ($q) use ($fromDate, $toDate) {
+                    $q
+                        ->whereBetween('start_date', [$fromDate, $toDate])
+                        ->orWhereBetween('end_date', [$fromDate, $toDate])
+                        ->orWhere(function ($q2) use ($fromDate, $toDate) {
+                            $q2
+                                ->where('start_date', '<=', $fromDate)
+                                ->where('end_date', '>=', $toDate);
+                        });
+                })
+                ->with('bookingChairs')
+                ->get();
+
+            $chairBookings = [];
+
+            foreach ($bookings as $booking) {
+                foreach ($booking->bookingChairs as $bookingChair) {
+                    $chairId = $bookingChair->chair_id;
+                    if (!isset($chairBookings[$chairId])) {
+                        $chairBookings[$chairId] = [];
+                    }
+                    $chairBookings[$chairId][] = $booking->time_slot;
+                }
+            }
+
             $totalAvailableChairs = 0;
             $totalOccupiedChairs = 0;
 
-            $tables = $floor->rooms->flatMap(function ($room) use (&$totalAvailableChairs, &$totalOccupiedChairs) {
-                return $room->tables->map(function ($table) use (&$totalAvailableChairs, &$totalOccupiedChairs) {
-                    $chairs = $table->chairs->map(function ($chair) use (&$totalAvailableChairs, &$totalOccupiedChairs) {
-                        $isOccupied = $chair->time_slot !== 'available';
-                        $isFullDay = $chair->time_slot === 'full_day';
+            $tables = $floor->rooms->flatMap(function ($room) use (&$totalAvailableChairs, &$totalOccupiedChairs, $chairBookings) {
+                return $room->tables->map(function ($table) use (&$totalAvailableChairs, &$totalOccupiedChairs, $chairBookings) {
+                    $chairs = $table->chairs->map(function ($chair) use (&$totalAvailableChairs, &$totalOccupiedChairs, $chairBookings) {
+                        $color = 'gray';
+                        $timeSlot = 'available';
 
-                        if ($isOccupied) {
-                            $totalOccupiedChairs++;
-                            if (!$isFullDay) {
-                                $totalAvailableChairs++;
+                        if (isset($chairBookings[$chair->id])) {
+                            $slots = $chairBookings[$chair->id];
+
+                            if (in_array('full_day', $slots) || (in_array('day', $slots) && in_array('night', $slots))) {
+                                $timeSlot = 'full_day';
+                                $color = 'green';
+                            } elseif (in_array('day', $slots)) {
+                                $timeSlot = 'day';
+                                $color = '#F59E0B';  // Orange
+                            } elseif (in_array('night', $slots)) {
+                                $timeSlot = 'night';
+                                $color = '#6366F1';  // Blue
                             }
+
+                            $totalOccupiedChairs++;
                         } else {
                             $totalAvailableChairs++;
                         }
@@ -108,8 +151,8 @@ class FloorPlanController extends Controller
                                 'y' => $chair->positiony,
                             ],
                             'rotation' => $chair->rotation,
-                            'color' => $chair->color,
-                            'time_slot' => $chair->time_slot,
+                            'color' => $color,
+                            'time_slot' => $timeSlot,
                         ];
                     });
 
@@ -129,6 +172,7 @@ class FloorPlanController extends Controller
                 'totalOccupiedChairs' => $totalOccupiedChairs,
             ]);
         } catch (\Throwable $th) {
+            Log::error($th->getMessage());
             return response()->json(['error' => 'An error occurred while retrieving the floor plan'], 500);
         }
     }
@@ -136,93 +180,168 @@ class FloorPlanController extends Controller
     public function checkAvailability(Request $request)
     {
         try {
-            // Validate the incoming request
             $request->validate([
                 'chairs' => 'required|array',
                 'member' => 'required|array',
+                'time_slot' => 'nullable|in:day,night,full_day',
             ]);
 
-            $memberEmail = $request->member['email'];
+            $chairIds = collect($request->chairs)->pluck('chair_id')->toArray();
+            $startDate = Carbon::parse($request->start_date ?? Carbon::today())->startOfDay();
+            $requestedSlot = $request->time_slot ?? null;
 
-            $member = User::where('email', $memberEmail)->first();
+            // helper to get bookings that affect these chairs on a particular date
+            $getBookingsForDate = function (Carbon $date) use ($chairIds) {
+                return Booking::whereIn('status', ['confirmed'])
+                    ->whereHas('bookingChairs', function ($q) use ($chairIds) {
+                        $q->whereIn('chair_id', $chairIds);
+                    })
+                    ->where(function ($q) use ($date) {
+                        $q->where(function ($qq) use ($date) {
+                            // ongoing booking with no end_date (not vacated)
+                            $qq->whereNull('end_date')->whereDate('start_date', '<=', $date);
+                        })->orWhere(function ($qq) use ($date) {
+                            // booking covering the date range
+                            $qq->whereDate('start_date', '<=', $date)->whereDate('end_date', '>=', $date);
+                        });
+                    })
+                    ->get();
+            };
 
-            if (!$member) {
-                if ($request->member['type'] === 'company') {
-                    $company = User::where(['name' => $request->member['name'], 'type' => 'company'])->first();
-                    if ($company) {
-                        return response()->json(['success' => false, 'company_exists' => 'This company name is already registered'], 400);
+            // helper: from bookings on a date compute unavailable slots
+            $computeUnavailableSlots = function ($bookings) {
+                $unavailable = [];
+                foreach ($bookings as $b) {
+                    if ($b->time_slot === 'full_day') {
+                        // if any booking is full_day, everything unavailable
+                        return ['day', 'night', 'full_day'];
                     }
+                    $unavailable[] = $b->time_slot;
                 }
-            } elseif ($member->type !== $request->member['type']) {
-                return response()->json(['success' => false, 'type_exists' => 'This user type is not ' . $request->member['type']], 400);
-            }
 
-            $chairIds = collect($request->chairs)->pluck('chair_id');  // Extract chair IDs
-
-            // Fetch chairs with their booking details
-            $chairs = Chair::whereIn('id', $chairIds)->get();
-
-            // Initialize variables to track availability and the earliest available time
-            $hasDay = false;
-            $hasNight = false;
-            $hasNull = false;
-            $earliestAvailableTime = now();  // Default to now (if all chairs are available immediately)
-
-            // Loop through the chairs and determine availability
-            foreach ($chairs as $chair) {
-                if ($chair->time_slot === 'available') {
-                    $hasNull = true;  // Unbooked chairs (null time_slot)
-                    continue;  // Unbooked chair is available immediately
-                } elseif ($chair->time_slot === 'day') {
-                    $hasDay = true;
-                    $bookingStart = Carbon::parse($chair->booking_startdate);
-                    // If the chair is booked, check the booking start time for availability
-                    if ($bookingStart->isFuture() && $bookingStart->lt($earliestAvailableTime)) {
-                        $earliestAvailableTime = $bookingStart;
-                    }
-                } elseif ($chair->time_slot === 'night') {
-                    $hasNight = true;
-                    $bookingStart = Carbon::parse($chair->booking_startdate);
-                    // If the chair is booked, check the booking start time for availability
-                    if ($bookingStart->isFuture() && $bookingStart->lt($earliestAvailableTime)) {
-                        $earliestAvailableTime = $bookingStart;
-                    }
+                // If both day and night exist, treat as full_day too
+                if (in_array('day', $unavailable) && in_array('night', $unavailable)) {
+                    return ['day', 'night', 'full_day'];
                 }
-            }
 
-            // Determine available durations based on the flags
-            $availableDurations = [];
+                // normalize unique
+                return array_values(array_unique($unavailable));
+            };
 
-            if ($hasNull) {
-                if ($hasDay && !$hasNight) {
-                    $availableDurations = ['night'];
-                } elseif ($hasNight && !$hasDay) {
-                    $availableDurations = ['day'];
-                } elseif ($hasDay && $hasNight) {
-                    $availableDurations = [];  // No availability since both day and night are booked
+            $allSlots = ['day', 'night', 'full_day'];
+
+            // We'll iterate day-by-day until a block is found or we reach max lookahead
+            $maxLookaheadDays = 365;  // tweak as needed
+            $availableDays = 0;
+            $firstDayAvailableSlots = null;
+            $current = $startDate->copy();
+
+            for ($i = 0; $i < $maxLookaheadDays; $i++, $current->addDay()) {
+                $bookings = $getBookingsForDate($current);
+                $unavailable = $computeUnavailableSlots($bookings);
+
+                // derive available slots for this day
+                $availableSlots = array_diff($allSlots, $unavailable);
+
+                // If any of day/night is taken → full_day must be removed
+                if (in_array('day', $unavailable) || in_array('night', $unavailable)) {
+                    $availableSlots = array_diff($availableSlots, ['full_day']);
+                }
+
+                // if requestedSlot is provided:
+                if ($requestedSlot) {
+                    // For full_day request we need both day & night free (i.e. 'full_day' present)
+                    if ($requestedSlot === 'full_day') {
+                        $isAvailable = in_array('full_day', $availableSlots);
+                    } else {
+                        $isAvailable = in_array($requestedSlot, $availableSlots);
+                    }
+
+                    if (!$isAvailable) {
+                        // blocked at this date → stop scanning
+                        break;
+                    }
                 } else {
-                    $availableDurations = ['day', 'night', 'full_day'];  // All durations available if only null chairs
+                    // no requested slot: if no available slots at all, stop
+                    if (empty($availableSlots)) {
+                        break;
+                    }
                 }
-            } else {
-                if ($hasDay && !$hasNight) {
-                    $availableDurations = ['night'];
-                } elseif ($hasNight && !$hasDay) {
-                    $availableDurations = ['day'];
-                } elseif ($hasDay && $hasNight) {
-                    $availableDurations = [];  // No durations available since both are booked
+
+                // day is available for requested slot (or has some available slot if no requested)
+                $availableDays++;
+
+                // store available slots for the first day only (client can decide to use it)
+                if ($availableDays === 1) {
+                    $firstDayAvailableSlots = array_values($availableSlots);
                 }
+
+                // continue to next day
             }
 
-            // If there is an available duration, return it along with the earliest available time
+            // Build available_from / available_until
+            $availableFrom = $startDate;
+            $availableUntil = $availableDays > 0
+                ? $startDate->copy()->addDays($availableDays - 1)->endOfDay()
+                : null;
+
+            // If start day already blocked, return detail about next available window (if any)
+            if ($availableDays === 0) {
+                // find next date where seats become available (scan forward up to lookahead)
+                $nextAvailableDate = null;
+                $scan = $startDate->copy()->addDay();
+                for ($j = 0; $j < $maxLookaheadDays; $j++, $scan->addDay()) {
+                    $bookings = $getBookingsForDate($scan);
+                    $unavailable = $computeUnavailableSlots($bookings);
+                    $availableSlots = array_diff($allSlots, $unavailable);
+                    if (in_array('day', $unavailable) || in_array('night', $unavailable)) {
+                        $availableSlots = array_diff($availableSlots, ['full_day']);
+                    }
+
+                    if ($requestedSlot) {
+                        $isAvailable = $requestedSlot === 'full_day'
+                            ? in_array('full_day', $availableSlots)
+                            : in_array($requestedSlot, $availableSlots);
+                    } else {
+                        $isAvailable = !empty($availableSlots);
+                    }
+
+                    if ($isAvailable) {
+                        $nextAvailableDate = $scan->copy()->startOfDay();
+                        break;
+                    }
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'available' => false,
+                        'available_time' => null,
+                        'available_from' => null,
+                        'next_available_from' => $nextAvailableDate ? $nextAvailableDate->format('Y-m-d') : null,
+                        'message' => 'Selected chairs are not available on requested start date.',
+                    ]
+                ]);
+            }
+
+            // Build response
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'available_durations' => $availableDurations,
-                    'available_time' => $earliestAvailableTime->format('Y-m-d H:i:s')  // Return the earliest available time
+                    'available' => true,
+                    'available_time' => $availableFrom->format('Y-m-d H:i:s'),
+                    'available_from' => $availableFrom->format('Y-m-d'),
+                    'available_until' => $availableUntil ? $availableUntil->format('Y-m-d') : null,
+                    'available_days' => $availableDays,
+                    'available_durations' => $firstDayAvailableSlots,
                 ]
             ]);
         } catch (\Throwable $th) {
-            return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
+            Log::error($th->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => $th->getMessage()
+            ], 500);
         }
     }
 

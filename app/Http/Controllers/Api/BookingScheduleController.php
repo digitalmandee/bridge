@@ -7,6 +7,7 @@ use App\Models\BookingSchedule;
 use App\Models\ScheduleFloor;
 use App\Models\ScheduleRoom;
 use App\Models\User;
+use App\Models\UserAddon;
 use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -45,82 +46,93 @@ class BookingScheduleController extends Controller
         }
 
         try {
-            // Directly parse timestamps as they are
             $startTime = Carbon::parse($request->startTime)->setTimezone('Asia/Karachi');
             $endTime = Carbon::parse($request->endTime)->setTimezone('Asia/Karachi');
             $date = Carbon::parse($request->date)->setTimezone('Asia/Karachi');
 
-            // Check if the room's schedule overlaps with the requested time
+            // Check room overlap
             $overlap = $this->checkBookingAvailability($request->room_id, $startTime, $endTime);
-            Log::info($startTime);
-            Log::info($endTime);
             if ($overlap) {
-                return response()->json(['success' => false, 'already_exist' => 'The room is already booked during the selected time range.'], 409);
+                return response()->json([
+                    'success' => false,
+                    'already_exist' => 'The room is already booked during the selected time range.'
+                ], 409);
             }
 
-            // No overlap found, proceed to create the booking
             DB::beginTransaction();
 
             $user = User::findOrFail($request->user_id);
-            if ($user->booking_quota == 0) {
-                DB::rollBack();
-                return response()->json(['success' => false, 'user_limit_error' => 'User has reached the booking limit.'], 403);
-            }
 
+            // ---- 🔑 NEW LOGIC: check user_addons instead of booking_quota ----
             $quotaDecrement = $this->checkBookingHours($startTime, $endTime);
 
-            if ($user->booking_quota < $quotaDecrement) {
+            // You can filter addon type if needed (e.g., 'meeting_room_hours')
+            $addon = UserAddon::where('user_id', $user->id)
+                ->where('addon_type', 'booking_hours')
+                ->where('remaining', '>', 0)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$addon) {
                 DB::rollBack();
-                return response()->json(['success' => false, 'user_limit_error' => 'User has insufficient booking quota.'], 403);
+                return response()->json([
+                    'success' => false,
+                    'user_limit_error' => 'User has no booking hours remaining.'
+                ], 403);
             }
 
-            // Create the booking
+            if ($addon->remaining < $quotaDecrement) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'user_limit_error' => 'User has insufficient booking hours remaining.'
+                ], 403);
+            }
+
+            // Deduct from addon
+            $addon->decrement('remaining', $quotaDecrement);
+
+            // ---- Create the booking ----
             $booking = BookingSchedule::create([
-                'user_id' => $request->user_id,
+                'user_id' => $user->id,
                 'company_id' => $user->company_id ?? null,
                 'schedule_floor_id' => $request->location_id,
                 'schedule_room_id' => $request->room_id,
                 'title' => $request->title,
-                'startTime' => $startTime,  // Store as timestamp
-                'endTime' => $endTime,  // Store as timestamp
-                'date' => $date,  // Store as timestamp
+                'startTime' => $startTime,
+                'endTime' => $endTime,
+                'date' => $date,
                 'persons' => $request->persons,
             ]);
 
-            $room = ScheduleRoom::find($request->room_id);  // Adjust according to your model
+            $room = ScheduleRoom::find($request->room_id);
             $roomName = $room ? $room->name : 'Unknown Room';
 
-            $admin = User::find(1);  // Get the admin user
+            $admin = User::find(1);
 
-            // Admin notification if the logged-in user is an admin
             if ($LoggedInUser->type === 'admin') {
-                $userBookingNotificationData = [
+                $user->notify(new GeneralNotification([
                     'title' => 'Booking Created - ' . tenant('name'),
                     'message' => "Booking #{$booking->event_id} for Meeting Room {$roomName} has been created.",
                     'type' => 'booking_schedule',
                     'booking_id' => $booking->event_id,
-                ];
-                $user->notify(new GeneralNotification($userBookingNotificationData));
+                ]));
 
-                $adminBookingNotificationData = [
+                $admin->notify(new GeneralNotification([
                     'title' => "New Booking - User: {$user->name}",
                     'message' => "Booking #{$booking->event_id} for Meeting Room {$roomName} created by {$LoggedInUser->name}.",
                     'type' => 'booking_schedule',
                     'booking_id' => $booking->event_id,
                     'created_by' => $LoggedInUser->name,
-                ];
-                $admin->notify(new GeneralNotification($adminBookingNotificationData));
-            }
-            // If the logged-in user is a regular user, notify the admin
-            else {
-                $adminBookingNotificationData = [
+                ]));
+            } else {
+                $admin->notify(new GeneralNotification([
                     'title' => "New Booking - User: {$LoggedInUser->name}",
                     'message' => "Booking #{$booking->event_id} for Meeting Room {$roomName} created by {$LoggedInUser->name}.",
                     'type' => 'booking_schedule',
                     'booking_id' => $booking->event_id,
                     'created_by' => $LoggedInUser->name,
-                ];
-                $admin->notify(new GeneralNotification($adminBookingNotificationData));
+                ]));
             }
 
             DB::commit();
@@ -272,64 +284,89 @@ class BookingScheduleController extends Controller
             DB::beginTransaction();
 
             $bookingSchedule = BookingSchedule::findOrFail($validated['booking_id']);
-            $oldStatus = $bookingSchedule->status;  // Store the old status before updating
+            $oldStatus = $bookingSchedule->status;
 
-            // Check if the status is being updated to 'approved' and handle accordingly
-            if ($validated['status'] === 'approved' && $bookingSchedule->status != 'approved') {
-                // Check if the booking is available
-                $overlap = $this->checkBookingAvailability($bookingSchedule->schedule_room_id, $bookingSchedule->startTime, $bookingSchedule->endTime);
+            // If updating to approved and wasn't approved before
+            if ($validated['status'] === 'approved' && $bookingSchedule->status !== 'approved') {
+                // Check overlap again for safety
+                $overlap = $this->checkBookingAvailability(
+                    $bookingSchedule->schedule_room_id,
+                    $bookingSchedule->startTime,
+                    $bookingSchedule->endTime
+                );
 
                 if ($overlap) {
-                    return response()->json(['success' => false, 'already_exist' => 'The room is already booked during the selected time range.'], 409);
+                    return response()->json([
+                        'success' => false,
+                        'already_exist' => 'The room is already booked during the selected time range.'
+                    ], 409);
                 }
 
-                // Proceed with quota and availability checks as before
                 $user = User::findOrFail($bookingSchedule->user_id);
 
-                // Calculate booking duration in hours
-                $quotaDecrement = $this->checkBookingHours($bookingSchedule->startTime, $bookingSchedule->endTime);
+                // Calculate booking hours
+                $quotaDecrement = $this->checkBookingHours(
+                    $bookingSchedule->startTime,
+                    $bookingSchedule->endTime
+                );
 
-                // Check if the user has enough booking quota
-                if ($user->booking_quota >= $quotaDecrement) {
-                    $user->decrement('booking_quota', $quotaDecrement);
-                } else {
+                // ---- 🔑 NEW: Deduct from user_addons.remaining ----
+                $addon = UserAddon::where('user_id', $user->id)
+                    ->where('addon_type', 'booking_hours')  // adjust type as needed
+                    ->where('remaining', '>', 0)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$addon) {
                     DB::rollBack();
-                    return response()->json(['success' => false, 'user_limit_error' => 'User has insufficient booking quota.'], 403);
+                    return response()->json([
+                        'success' => false,
+                        'user_limit_error' => 'User has no booking hours remaining.'
+                    ], 403);
                 }
+
+                if ($addon->remaining < $quotaDecrement) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'user_limit_error' => 'User has insufficient booking hours remaining.'
+                    ], 403);
+                }
+
+                // Deduct hours
+                $addon->decrement('remaining', $quotaDecrement);
             }
 
-            // Update the booking schedule status
+            // Update status
             $bookingSchedule->update(['status' => $validated['status']]);
 
-            // Get the meeting room name (assuming it's stored in a Room model)
-            $room = ScheduleRoom::find($bookingSchedule->schedule_room_id);  // Adjust according to your model
+            // Room name for notifications
+            $room = ScheduleRoom::find($bookingSchedule->schedule_room_id);
             $roomName = $room ? $room->name : 'Unknown Room';
 
-            // Notify user if status has changed (to approved or any other status)
             if ($validated['status'] !== $oldStatus) {
                 $user = User::findOrFail($bookingSchedule->user_id);
 
-                $userNotificationData = [
+                // Notify user
+                $user->notify(new GeneralNotification([
                     'title' => "Booking Status Updated - {$roomName}",
                     'message' => "Your booking #{$bookingSchedule->event_id} for Meeting Room {$roomName} is now {$validated['status']}.",
                     'type' => 'booking_status_updated',
                     'booking_id' => $bookingSchedule->event_id,
                     'status' => $validated['status'],
-                ];
-                $user->notify(new GeneralNotification($userNotificationData));
+                ]));
 
-                // Notify admin (assuming the admin is the one who updated the status)
-                $admin = auth()->user();  // Admin who updated the booking status
+                // Notify admin
+                $admin = auth()->user();
 
-                $adminNotificationData = [
+                $admin->notify(new GeneralNotification([
                     'title' => "Booking Status Updated - User: {$user->name}",
                     'message' => "Booking #{$bookingSchedule->event_id} for Meeting Room {$roomName} has been updated to {$validated['status']} by {$admin->name}.",
                     'type' => 'booking_status_updated',
                     'booking_id' => $bookingSchedule->event_id,
                     'status' => $validated['status'],
                     'updated_by' => $admin->name,
-                ];
-                $admin->notify(new GeneralNotification($adminNotificationData));
+                ]));
             }
 
             DB::commit();

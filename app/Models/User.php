@@ -22,7 +22,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $fillable = ['name', 'email', 'type', 'role_id', 'password', 'profile_image', 'phone_no', 'secondary_phone_no', 'designation', 'address', 'cnic_number', 'cnic_image', 'total_booking_quota', 'booking_quota', 'printing_quota', 'total_printing_quota', 'company_id', 'allocated_seat_id', 'booking_quota_updated_at', 'status', 'deleted_at', 'last_login_at'];
+    protected $fillable = ['name', 'email', 'type', 'role_id', 'password', 'profile_image', 'phone_no', 'secondary_phone_no', 'designation', 'address', 'cnic_number', 'cnic_image', 'total_booking_quota', 'booking_quota', 'printing_quota', 'total_printing_quota', 'company_id', 'allocated_seat_id', 'booking_quota_updated_at', 'status', 'deleted_at', 'last_login_at', 'blood_group'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -93,7 +93,7 @@ class User extends Authenticatable
 
     public function chair()
     {
-        return $this->belongsTo(Chair::class, 'allocated_seat_id', 'id');
+        return $this->belongsTo(BookingChair::class, 'allocated_seat_id', 'id');
     }
 
     public function companyUsers()
@@ -119,6 +119,103 @@ class User extends Authenticatable
     public function contracts()
     {
         return $this->hasMany(Contract::class);
+    }
+
+    public function userAddons()
+    {
+        return $this->hasMany(UserAddon::class);
+    }
+
+    /**
+     * Get total + remaining for a specific addon type
+     */
+    public function getAddonQuota(string $type): array
+    {
+        $addon = $this
+            ->userAddons()
+            ->where('addon_type', $type)
+            ->selectRaw('COALESCE(SUM(total),0) as total, COALESCE(SUM(remaining),0) as remaining')
+            ->first();
+
+        return [
+            'total' => $addon?->total ?? 0,
+            'remaining' => $addon?->remaining ?? 0,
+        ];
+    }
+
+    /**
+     * Shortcut: Meeting Room Hours quota
+     */
+    public function meetingRoomQuota(): array
+    {
+        return $this->getAddonQuota('booking_hours');
+    }
+
+    public function packages()
+    {
+        return $this->hasMany(UserPackage::class);
+    }
+
+    public function addons()
+    {
+        return $this->hasMany(UserAddon::class);
+    }
+
+    // In User.php
+
+    public function meetingQuota()
+    {
+        return $this->calculateQuota('booking_hours');
+    }
+
+    public function printingQuota()
+    {
+        return $this->calculateQuota('printing_papers');
+    }
+
+    protected function calculateQuota(string $type)
+    {
+        $quotas = [
+            'total' => 0,
+            'remaining' => 0,
+            'unlimited' => false,
+        ];
+
+        // 1️⃣ Active packages + their addons
+        $activePackages = $this
+            ->packages()
+            ->where('status', 'active')
+            ->with('addons')
+            ->get();
+
+        foreach ($activePackages as $package) {
+            foreach ($package->addons->where('addon_type', $type) as $addon) {
+                if ($addon->total == -1) {  // use -1 convention for unlimited
+                    $quotas['unlimited'] = true;
+                } else {
+                    $quotas['total'] += $addon->total;
+                    $quotas['remaining'] += $addon->remaining;
+                }
+            }
+        }
+
+        // 2️⃣ Standalone addons (user_package_id = null)
+        $standaloneAddons = $this
+            ->addons()
+            ->whereNull('user_package_id')
+            ->where('addon_type', $type)
+            ->get();
+
+        foreach ($standaloneAddons as $addon) {
+            if ($addon->total == -1) {
+                $quotas['unlimited'] = true;
+            } else {
+                $quotas['total'] += $addon->total;
+                $quotas['remaining'] += $addon->remaining;
+            }
+        }
+
+        return $quotas;
     }
 
     // public function employee()
