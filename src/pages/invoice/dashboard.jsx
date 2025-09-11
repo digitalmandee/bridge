@@ -90,7 +90,7 @@ const InvoiceDashboard = () => {
 		setIsLoading(true);
 		try {
 			console.log("Fetching invoices with:", { page, limit, search: searchQuery, status: statusFilter, from_date: fromDate, to_date: toDate });
-			
+
 			const params = {
 				page,
 				limit,
@@ -120,7 +120,7 @@ const InvoiceDashboard = () => {
 			getDashboardStats();
 		}, 500);
 		return () => clearTimeout(delayDebounce);
-	}, [searchQuery, statusFilter,currentPage, limit, fromDate, toDate]);
+	}, [searchQuery, statusFilter, currentPage, limit, fromDate, toDate]);
 
 	return (
 		<>
@@ -244,7 +244,9 @@ const InvoiceDashboard = () => {
 										{invoices.length > 0 ? (
 											invoices.map((invoice) => (
 												<TableRow key={invoice.id}>
-													<TableCell>#BRIDGE-{invoice.id}</TableCell>
+													<TableCell style={{ cursor: "pointer" }} onClick={() => navigate(`/${branch}/branch/invoice/view/${invoice.id}`)}>
+														#BRIDGE-{invoice.id}
+													</TableCell>
 													<TableCell style={{ textTransform: "capitalize" }}>{invoice.user.type}</TableCell>
 													<TableCell>
 														<Box display="flex" alignItems="center" gap={1}>

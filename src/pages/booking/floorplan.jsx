@@ -14,6 +14,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { FloorPlanContext } from "../../contexts/floorplan.context";
 import axios from "axios";
 import axiosInstance from "@/utils/axiosInstance";
+import { Box, Button, TextField } from "@mui/material";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
@@ -92,6 +93,14 @@ const Floorplan = () => {
 
 	const navigate = useNavigate();
 
+	const [fromDate, setFromDate] = useState("");
+	const [toDate, setToDate] = useState("");
+
+	const handleClear = () => {
+		setFromDate("");
+		setToDate("");
+	};
+
 	const { branch } = useParams();
 
 	const totalSelectedChairs = Object.values(selectedChairs).flat().length;
@@ -118,26 +127,24 @@ const Floorplan = () => {
 		const fetchFloorPlanData = async () => {
 			setIsLoading(true);
 			try {
-				const response = await axiosInstance.get(`floor-plan?floor_id=${selectedFloor}`);
+				const response = await axiosInstance.get(`floor-plan?floor_id=${selectedFloor}&from_date=${fromDate}&to_date=${toDate}`);
 
 				if (response.data && Array.isArray(response.data.tables)) {
 					setTotalAvailableChairs(response.data.totalAvailableChairs);
 					setTotalOccupiedChairs(response.data.totalOccupiedChairs);
-					console.log(response.data.tables);
-
 					setTables(response.data.tables);
 				}
 			} catch (error) {
 				console.error("Error fetching floor plan data", error);
 			} finally {
-				setTimeout(() => {
-					setIsLoading(false);
-				}, 500);
+				setTimeout(() => setIsLoading(false), 500);
 			}
 		};
 
-		fetchFloorPlanData();
-	}, [selectedFloor]);
+		if (selectedFloor) {
+			fetchFloorPlanData();
+		}
+	}, [selectedFloor, fromDate, toDate]);
 
 	const data = [
 		{ name: "Available", value: 40, color: "#B0B0B0" }, // Grey
@@ -165,6 +172,14 @@ const Floorplan = () => {
 							backgroundColor: "transparent",
 						}}>
 						<h3 className="title">Floor Plan</h3>
+						<Box display="flex" gap={2} alignItems="center">
+							<TextField label="From Date" type="date" size="small" InputLabelProps={{ shrink: true }} value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+							<TextField label="To Date" type="date" size="small" InputLabelProps={{ shrink: true }} value={toDate} onChange={(e) => setToDate(e.target.value)} />
+
+							<Button variant="outlined" color="secondary" onClick={handleClear}>
+								Clear
+							</Button>
+						</Box>
 						<button className="btn create-booking-btn" onClick={handleNextClick} disabled={Object.entries(selectedChairs).length === 0}>
 							Next
 							<span className="icon">
@@ -413,63 +428,6 @@ const Floorplan = () => {
 							</div>
 						</div>
 					</div>
-					{/* Pie Chart */}
-					{/* <div
-							style={{
-								width: "350px",
-								height: "333px",
-								display: "flex",
-								flexDirection: "column",
-								alignItems: "center",
-								justifyContent: "center",
-								backgroundColor: "#ffffff",
-								borderRadius: "10px",
-								boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-								padding: "1rem",
-							}}
-						>
-							<PieChart width={200} height={200}>
-								<Pie
-									data={data}
-									dataKey="value"
-									cx="50%"
-									cy="50%"
-									outerRadius={80}
-									innerRadius={50}
-									fill="#8884d8"
-									label={false}
-								>
-									{data.map((entry, index) => (
-										<Cell key={`cell-${index}`} fill={entry.color} />
-									))}
-								</Pie>
-								<Tooltip />
-							</PieChart>
-							<p style={{ fontSize: "18px", fontWeight: "bold", marginTop: "-15px" }}>
-								Total Seats
-							</p>
-							<p style={{ fontSize: "22px", fontWeight: "bold", marginBottom: "10px" }}>
-								100
-							</p>
-							<div style={{ display: "flex", gap: "15px", marginTop: "5px" }}>
-								{data.map((item) => (
-									<div key={item.name} style={{ display: "flex", alignItems: "center" }}>
-										<span
-											style={{
-												width: "12px",
-												height: "12px",
-												backgroundColor: item.color,
-												borderRadius: "50%",
-												display: "inline-block",
-												marginRight: "5px",
-											}}
-										></span>
-										<span style={{ fontSize: "12px" }}>{item.name}</span>
-									</div>
-								))}
-							</div>
-						</div> */}
-					{/* </div> */}
 					{selectedFloor === 1 ? <GFloorPlan /> : <FFloorPlan />}
 				</div>
 			</div>

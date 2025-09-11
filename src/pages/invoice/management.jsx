@@ -291,7 +291,9 @@ const InvoiceManagement = () => {
 											const isDisabled = isNotifiedToday || loadingInvoiceId === invoice.id;
 											return (
 												<TableRow key={invoice.id}>
-													<TableCell>#BRIDGE-{invoice.id}</TableCell>
+													<TableCell style={{ cursor: "pointer" }} onClick={() => navigate(`/${branch}/branch/invoice/view/${invoice.id}`)}>
+														#BRIDGE-{invoice.id}
+													</TableCell>
 													<TableCell style={{ textTransform: "capitalize" }}>{invoice.invoice_type}</TableCell>
 													{user.type === "admin" && (
 														<TableCell>

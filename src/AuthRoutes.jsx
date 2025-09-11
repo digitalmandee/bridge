@@ -23,6 +23,7 @@ import InvoiceTypes from "@/pages/invoice/types";
 import InvoiceCreate from "@/pages/invoice/create";
 import InvoiceManagement from "@/pages/invoice/management";
 import InvoiceDetail from "@/pages/invoice/detail";
+import ViewInvoice from "@/pages/invoice/view";
 
 // Company Staff Management
 import CompanyAddStaff from "@/pages/company/addstaff";
@@ -441,6 +442,14 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="admin" permission="invoice-management">
 						<InvoiceDetail />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="branch/invoice/view/:invoiceId"
+				element={
+					<ProtectedRoute role="admin" permission="invoice-management">
+						<ViewInvoice />
 					</ProtectedRoute>
 				}
 			/>
