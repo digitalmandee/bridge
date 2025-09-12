@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Autocomplete, MenuItem, InputAdornment, Button as MuiButton } from "@mui/material";
+import { TextField, Autocomplete, MenuItem, InputAdornment, Button as MuiButton, Snackbar, Alert } from "@mui/material";
 import { Modal, Button, Form } from "react-bootstrap";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -58,7 +58,12 @@ const NewInvestorEntry = () => {
 
 	const handleConfirmInvestor = () => {
 		if (!newInvestor.name || !newInvestor.email) {
-			alert("Please enter name and email");
+			setSnackbar({ open: true, message: "Please enter name and email", severity: "error" });
+			return;
+		}
+
+		if (newInvestor.email && !/\S+@\S+\.\S+/.test(newInvestor.email)) {
+			setSnackbar({ open: true, message: "Please enter a valid email", severity: "error" });
 			return;
 		}
 
@@ -71,7 +76,6 @@ const NewInvestorEntry = () => {
 
 	// 🔍 Search API
 	const handleSearch = async (query) => {
-		if (query.length < 2) return;
 		try {
 			const res = await axiosInstance.get(`investor/users/search?q=${query}`);
 			setSearchResults(Array.isArray(res.data) ? res.data : []);
@@ -80,6 +84,10 @@ const NewInvestorEntry = () => {
 			setSearchResults([]);
 		}
 	};
+
+	useEffect(() => {
+		handleSearch("");
+	}, []);
 
 	// 📌 Handle form submit
 	const handleSubmit = async (e) => {
@@ -165,6 +173,12 @@ const NewInvestorEntry = () => {
 								freeSolo
 							/>
 
+							{selectedInvestor && (
+								<div style={{ marginTop: "10px", marginBottom: "10px", padding: "10px", border: "1px solid #ccc", borderRadius: "5px", backgroundColor: "#f9f9f9" }}>
+									<strong>Selected Investor:</strong> {selectedInvestor.name} ({selectedInvestor.email})
+								</div>
+							)}
+
 							{/* Investment Type */}
 							<TextField select label="Investment Type" value={investmentType} onChange={(e) => setInvestmentType(e.target.value)} fullWidth margin="normal" required>
 								{investmentTypes.map((type) => (
@@ -249,14 +263,21 @@ const NewInvestorEntry = () => {
 								<Button variant="secondary" onClick={() => setShowAddInvestorModal(false)}>
 									Cancel
 								</Button>
-								<Button variant="contained" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: colors.primary } }} onClick={handleConfirmInvestor}>
+								<MuiButton variant="contained" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: colors.primary } }} onClick={handleConfirmInvestor}>
 									Select Investor
-								</Button>
+								</MuiButton>
 							</Modal.Footer>
 						</Modal>
 					</div>
 				</div>
 			</div>
+
+			{/* Snackbar for success/failure message */}
+			<Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+				<Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+					{snackbar.message}
+				</Alert>
+			</Snackbar>
 		</>
 	);
 };

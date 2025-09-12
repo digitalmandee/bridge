@@ -79,6 +79,22 @@ const Management = () => {
 		}
 	};
 
+	const handleDeleteChair = async (chairId) => {
+		if (!window.confirm("Are you sure you want to delete this chair?")) return;
+
+		try {
+			const res = await axiosInstance.delete(`floor-plan/chairs/${chairId}`);
+			if (res.data.success) {
+				setSnackbar({ open: true, message: res.data.message, severity: "success" });
+				fetchChairs(); // refresh list
+			}
+		} catch (err) {
+			let msg = "Failed to delete chair.";
+			if (err.response && err.response.data?.message) msg = err.response.data.message;
+			setSnackbar({ open: true, message: msg, severity: "error" });
+		}
+	};
+
 	useEffect(() => {
 		fetchChairs();
 	}, [selectedOption]);
@@ -145,6 +161,7 @@ const Management = () => {
 									<TableCell sx={{ fontWeight: "bold" }}>Floor</TableCell>
 									<TableCell sx={{ fontWeight: "bold" }}>Chair</TableCell>
 									<TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+									<TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
 								</TableRow>
 							</TableHead>
 							<TableBody>
@@ -180,6 +197,11 @@ const Management = () => {
 													}}>
 													{application.time_slot?.replaceAll("_", " ")}
 												</span>
+											</TableCell>
+											<TableCell>
+												<Button variant="outlined" color="error" size="small" onClick={() => handleDeleteChair(application.id)}>
+													Delete
+												</Button>
 											</TableCell>
 										</TableRow>
 									))

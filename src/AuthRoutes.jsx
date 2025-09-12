@@ -28,6 +28,7 @@ import ViewInvoice from "@/pages/invoice/view";
 // Investor Management
 import InvestorDashboard from "@/pages/investor/dashboard";
 import NewInvestment from "@/pages/investor/NewEntry";
+import InvestorManagement from "@/pages/investor/management";
 
 // Company Staff Management
 import CompanyAddStaff from "@/pages/company/addstaff";
@@ -483,6 +484,14 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="admin" permission="invoice-management">
 						<NewInvestment />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="branch/investor/management"
+				element={
+					<ProtectedRoute role="admin" permission="invoice-management">
+						<InvestorManagement />
 					</ProtectedRoute>
 				}
 			/>
