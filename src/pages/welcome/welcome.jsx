@@ -49,7 +49,7 @@ const Welcome = () => {
 			<div className="accountTypeContainer">
 				{[
 					{ name: "Branch Login", img: branchLogo, path: `/${branch}/branch/dashboard` },
-					{ name: "Investor Login", img: investerLogo, path: "/investor/dashboard" },
+					{ name: "Investor Login", img: investerLogo, path: `/${branch}/user/investor/dashboard` },
 					{ name: "User", img: userLogo, path: `/${branch}/user/dashboard` },
 				].map((account, index) => (
 					<div key={index} className="account-wrapper">

@@ -25,6 +25,10 @@ import InvoiceManagement from "@/pages/invoice/management";
 import InvoiceDetail from "@/pages/invoice/detail";
 import ViewInvoice from "@/pages/invoice/view";
 
+// Investor Management
+import InvestorDashboard from "@/pages/investor/dashboard";
+import NewInvestment from "@/pages/investor/NewEntry";
+
 // Company Staff Management
 import CompanyAddStaff from "@/pages/company/addstaff";
 import CompanyStaffManagement from "@/pages/company/staffmanagement";
@@ -116,6 +120,16 @@ function AuthRoutes() {
 					</ProtectedRoute>
 				}
 			/>
+
+			<Route
+				path="user/investor/dashboard"
+				element={
+					<ProtectedRoute role="user">
+						<InvestorDashboard />
+					</ProtectedRoute>
+				}
+			/>
+
 			<Route
 				path="/user/booking-request"
 				element={
@@ -450,6 +464,25 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="admin" permission="invoice-management">
 						<ViewInvoice />
+					</ProtectedRoute>
+				}
+			/>
+
+			{/* Investor Dashboard */}
+
+			<Route
+				path="branch/investor/dashboard"
+				element={
+					<ProtectedRoute role="admin" permission="invoice-management">
+						<InvestorDashboard />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="branch/investor/new-entry"
+				element={
+					<ProtectedRoute role="admin" permission="invoice-management">
+						<NewInvestment />
 					</ProtectedRoute>
 				}
 			/>

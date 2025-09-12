@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate, useParams } from "react-router-dom";
-import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Card, CardContent, CardHeader } from "@mui/material";
+import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Card, CardContent, CardHeader, CircularProgress } from "@mui/material";
 import { Download } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./invoiceView.css";
@@ -10,15 +10,66 @@ import axiosInstance from "@/utils/axiosInstance";
 
 const ViewInvoice = () => {
 	const navigate = useNavigate();
+	const { invoiceId } = useParams(); // invoiceId from route param
 
-	const { invoiceId } = useParams(); // Get invoice ID from URL
-	const items = [{ description: "Dedicated desks", qty: 3, price: 15000, total: 45000 }];
-
-	const totalAmount = items.reduce((sum, item) => sum + item.total, 0);
-	const paidAmount = 70000;
-	const payableAmount = totalAmount - paidAmount;
-
+	const [invoice, setInvoice] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		const fetchInvoice = async () => {
+			try {
+				const { data } = await axiosInstance.get(`invoices/view/${invoiceId}`);
+				setInvoice(data);
+			} catch (error) {
+				console.error("Failed to fetch invoice:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		if (invoiceId) fetchInvoice();
+	}, [invoiceId]);
+
+	if (isLoading) {
+		return (
+			<div className="d-flex justify-content-center align-items-center vh-100">
+				<CircularProgress />
+			</div>
+		);
+	}
+
+	if (!invoice) {
+		return (
+			<div className="d-flex justify-content-center align-items-center vh-100">
+				<Typography color="error">Invoice not found</Typography>
+			</div>
+		);
+	}
+
+	// Related fields from backend
+	const {
+		id,
+		booking_id,
+		user_id,
+		invoice_type,
+		quantity,
+		hours,
+		discount,
+		amount,
+		status,
+		due_date,
+		paid_date,
+		paid_month,
+		paid_year,
+		plan,
+		payment_type,
+		receipt,
+		items = [], // optional items array if you store line items
+	} = invoice;
+
+	const totalAmount = amount;
+	const paidAmount = status === "paid" ? amount : 0;
+	const payableAmount = totalAmount - paidAmount;
 
 	return (
 		<>
@@ -34,27 +85,26 @@ const ViewInvoice = () => {
 							title={
 								<div className="d-flex justify-content-between align-items-center">
 									<Typography variant="h5" className="fw-bold custom-primary">
-										Invoice
+										Invoice #{id}
 									</Typography>
-									<Button variant="contained" size="small" startIcon={<Download size={18} />} className="custom-btn">
+									{/* <Button variant="contained" size="small" startIcon={<Download size={18} />} className="custom-btn">
 										PDF
-									</Button>
+									</Button> */}
 								</div>
 							}
 						/>
 
+						{/* Client Info + Paid Amount */}
 						<Card className="shadow-lg w-100" style={{ borderRadius: "20px" }}>
 							<CardContent className="p-4">
-								{/* Client Info + Paid Amount */}
 								<div className="row g-3">
 									<div className="col-md-8">
 										<div className="p-3 rounded-4 bg-light border">
 											<Typography variant="h6" className="fw-bold">
-												Mauro Sicard
+												User ID: {user_id}
 											</Typography>
-											<Typography className="text-muted small">+92 3209469594</Typography>
-											<Typography className="text-muted small">contact@maurosicard.com</Typography>
-											<Typography className="text-muted small">Pablo Alto, San Francisco, CA 92102, United States of America</Typography>
+											{plan && <Typography className="text-muted small">Plan: {plan?.name}</Typography>}
+											<Typography className="text-muted small">Invoice Type: {invoice_type}</Typography>
 										</div>
 									</div>
 									<div className="col-md-4">
@@ -63,57 +113,61 @@ const ViewInvoice = () => {
 											<Typography variant="h5" className="fw-bold">
 												{paidAmount.toLocaleString()} Pkr
 											</Typography>
-											<Typography className="small">03 August 2024</Typography>
+											<Typography className="small">{paid_date ? new Date(paid_date).toLocaleDateString() : "-"}</Typography>
 										</div>
 									</div>
 								</div>
 							</CardContent>
 						</Card>
 
-						<Card className="shadow-lg w-100" style={{ borderRadius: "20px" }}>
+						{/* Invoice Info */}
+						<Card className="shadow-lg w-100 my-3" style={{ borderRadius: "20px" }}>
 							<CardContent className="p-4">
-								{/* Invoice Info */}
-								<div className="row g-3 mb-4">
+								<div className="row g-3">
 									<div className="col-md-4">
 										<div className="p-3 rounded-3 bg-light border">
-											<Typography className="text-muted small">Invoice No :</Typography>
-											<Typography className="fw-bold">N°: 000027</Typography>
+											<Typography className="text-muted small">Booking ID :</Typography>
+											<Typography className="fw-bold">{booking_id}</Typography>
 										</div>
 									</div>
 									<div className="col-md-4">
 										<div className="p-3 rounded-3 bg-light border">
 											<Typography className="text-muted small">Issued :</Typography>
-											<Typography className="fw-bold">03/07/2024</Typography>
+											<Typography className="fw-bold">{invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : "-"}</Typography>
 										</div>
 									</div>
 									<div className="col-md-4">
 										<div className="p-3 rounded-3 bg-light border">
 											<Typography className="text-muted small">Due Date :</Typography>
-											<Typography className="fw-bold">07/07/2024</Typography>
+											<Typography className="fw-bold">{due_date ? new Date(due_date).toLocaleDateString() : "-"}</Typography>
 										</div>
 									</div>
 								</div>
+							</CardContent>
+						</Card>
 
-								{/* Table */}
+						{/* Table */}
+						<Card className="shadow-lg w-100" style={{ borderRadius: "20px" }}>
+							<CardContent className="p-4">
 								<TableContainer className="border rounded-4 mb-4">
 									<Table>
 										<TableHead>
 											<TableRow className="bg-light">
 												<TableCell className="fw-bold">Description</TableCell>
 												<TableCell className="fw-bold">Qty</TableCell>
-												<TableCell className="fw-bold">Price</TableCell>
-												<TableCell className="fw-bold">Total Price</TableCell>
+												<TableCell className="fw-bold">Hours</TableCell>
+												<TableCell className="fw-bold">Discount</TableCell>
+												<TableCell className="fw-bold">Amount</TableCell>
 											</TableRow>
 										</TableHead>
 										<TableBody>
-											{items.map((item, idx) => (
-												<TableRow key={idx}>
-													<TableCell>{item.description}</TableCell>
-													<TableCell>{item.qty}</TableCell>
-													<TableCell>{item.price.toLocaleString()} Pkr</TableCell>
-													<TableCell>{item.total.toLocaleString()} Pkr</TableCell>
-												</TableRow>
-											))}
+											<TableRow>
+												<TableCell>{invoice_type}</TableCell>
+												<TableCell>{quantity}</TableCell>
+												<TableCell>{hours || "-"}</TableCell>
+												<TableCell>{discount || 0} %</TableCell>
+												<TableCell>{amount?.toLocaleString()} Pkr</TableCell>
+											</TableRow>
 										</TableBody>
 									</Table>
 								</TableContainer>

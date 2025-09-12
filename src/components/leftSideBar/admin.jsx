@@ -60,6 +60,15 @@ const menuItems = [
 		],
 	},
 	{
+		label: "Inventory Management",
+		icon: <TbFileInvoice />,
+		hasDropdown: true,
+		dropdown: [
+			{ to: "/branch/investor/dashboard", label: "Dashboard", permission: "invoice-dashboard" },
+			{ to: "/branch/investor/new-entry", label: "New Entry", permission: "invoice-dashboard" },
+		],
+	},
+	{
 		label: "Member",
 		icon: <MdPeopleOutline />,
 		hasDropdown: true,
