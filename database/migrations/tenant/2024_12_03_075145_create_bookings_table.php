@@ -17,7 +17,6 @@ class CreateBookingsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('floor_id')->nullable();
-            $table->json('chair_ids');
             $table->string('name')->nullable();
             $table->string('phone_no')->nullable();
             $table->string('type')->nullable();

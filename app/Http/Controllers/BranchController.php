@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SeedDatabase;
 use App\Models\Booking;
+use App\Models\BookingChair;
 use App\Models\Chair;
 use App\Models\Finance;
 use App\Models\Floor;
@@ -127,6 +128,7 @@ class BranchController extends Controller
         $previousFrom = $from->copy()->subDays($from->diffInDays($to) + 1);
         $previousTo = $from->copy()->subDay();
 
+        // 💰 Finance
         $currentRevenue = Invoice::whereBetween('paid_date', [$from, $to])->sum('amount');
         $currentExpense = Finance::whereBetween('due_date', [$from, $to])->sum('amount');
 
@@ -134,17 +136,38 @@ class BranchController extends Controller
         $previousExpense = Finance::whereBetween('due_date', [$previousFrom, $previousTo])->sum('amount');
 
         $totalChairs = Chair::count('id');
-        $bookedChairs = Chair::whereIn('time_slot', ['day', 'night', 'full_day'])->count('id');
-        $availableChairs = Chair::whereIn('time_slot', ['available', 'day', 'night'])->count('id');
-        $totalMembers = User::whereIn('type', ['user', 'company'])->whereNull('company_id')->count('id');
 
-        $booking = $this->getTotalCustomerBookings($from, $to);
+        // 🪑 Seats now come from booking_chairs
+        $bookedChairs = BookingChair::whereHas('booking', function ($q) use ($from, $to) {
+            $q
+                ->whereIn('status', ['confirmed'])
+                ->whereBetween('start_date', [$from, $to]);
+        })->count();
 
+        $availableChairs = $totalChairs - $bookedChairs;
+
+        $totalMembers = User::whereIn('type', ['user', 'company'])
+            ->whereNull('company_id')
+            ->count('id');
+
+        // 📊 Totals using booking_chairs
+        $bookingChairs = BookingChair::whereHas('booking', function ($q) use ($from, $to) {
+            $q
+                ->whereIn('status', ['confirmed'])
+                ->whereBetween('start_date', [$from, $to]);
+        })->with('chair')->get();
+
+        $daySeats = $bookingChairs->where('booking.time_slot', 'day')->count();
+        $nightSeats = $bookingChairs->where('booking.time_slot', 'night')->count();
+        $fullSeats = $bookingChairs->where('booking.time_slot', 'full_day')->count();
+
+        $totalSeats = $daySeats + $nightSeats + $fullSeats;
+
+        // 📈 Current vs Previous PL
         $currentPL = $currentRevenue - $currentExpense;
         $previousPL = $previousRevenue - $previousExpense;
 
-        $growth = fn($current, $previous) =>
-            $previous != 0 ? (($current - $previous) / abs($previous)) * 100 : 0;
+        $growth = fn($current, $previous) => $previous != 0 ? (($current - $previous) / abs($previous)) * 100 : 0;
 
         // -------------------------
         // 🔄 Dynamic Labels Logic
@@ -155,23 +178,21 @@ class BranchController extends Controller
         $bookingsData = [];
 
         if ($diffInDays <= 7) {
-            // Day-wise chart (1 to 7 days)
+            // Day-wise chart
             $current = $from->copy();
             while ($current->lte($to)) {
                 $labels[] = $current->format('d M Y');
 
-                $revenueData[] = Finance::whereDate('issue_date', $current)
-                    ->where('status', 'paid')
-                    ->sum('amount');
+                $revenueData[] = Invoice::whereDate('paid_date', $current)->sum('amount');
 
                 $bookingsData[] = Booking::whereDate('start_date', $current)
-                    ->whereIn('status', ['completed', 'confirmed'])
+                    ->whereIn('status', ['confirmed'])
                     ->sum('total_price');
 
                 $current->addDay();
             }
         } else {
-            // Month-wise chart (default)
+            // Month-wise chart
             $startMonth = $from->copy()->startOfMonth();
             $endMonth = $to->copy()->startOfMonth();
 
@@ -181,9 +202,7 @@ class BranchController extends Controller
 
                 $labels[] = $startMonth->format('M Y');
 
-                $revenueData[] = Finance::whereBetween('issue_date', [$monthStart, $monthEnd])
-                    ->where('status', 'paid')
-                    ->sum('amount');
+                $revenueData[] = Invoice::whereBetween('paid_date', [$monthStart, $monthEnd])->sum('amount');
 
                 $bookingsData[] = Booking::whereBetween('start_date', [$monthStart, $monthEnd])
                     ->whereIn('status', ['completed', 'confirmed'])
@@ -193,56 +212,39 @@ class BranchController extends Controller
             }
         }
 
-        // Occupancy
+        // 🪑 Occupancy
         $currentOccupancy = $totalChairs > 0 ? ($bookedChairs / $totalChairs) * 100 : 0;
 
-        $previousBookedChairs = Chair::whereIn('time_slot', ['day', 'night', 'full_day'])
-            ->whereBetween('updated_at', [$previousFrom, $previousTo])
-            ->count('id');
+        $previousBookedChairs = BookingChair::whereHas('booking', function ($q) use ($previousFrom, $previousTo) {
+            $q
+                ->whereIn('status', ['confirmed'])
+                ->whereBetween('start_date', [$previousFrom, $previousTo]);
+        })->count();
 
         $previousOccupancy = $totalChairs > 0 ? ($previousBookedChairs / $totalChairs) * 100 : 0;
 
         $occupancyGrowth = $growth($currentOccupancy, $previousOccupancy);
 
-        // -------------------------
-        // 🧑‍💼 Customer New & Lost
-        // -------------------------
+        // 🧑‍💼 Customers
         $newUsers = User::whereIn('type', ['user', 'company'])
             ->whereNull('company_id')
             ->whereHas('contracts', function ($q) use ($from, $to) {
-                $q
-                    ->where('status', 'signed')
-                    ->whereBetween('created_at', [$from, $to]);
+                $q->where('status', 'signed')->whereBetween('created_at', [$from, $to]);
             })
             ->count();
 
         $lostUsers = User::whereIn('type', ['user', 'company'])
             ->whereNull('company_id')
-            ->whereDoesntHave('contracts', function ($q) {
-                $q->where('status', 'signed');
-            })
-            ->whereHas('contracts', function ($q) use ($from, $to) {
-                $q->whereBetween('created_at', [$from, $to]);
-            })
+            ->whereDoesntHave('contracts', fn($q) => $q->where('status', 'signed'))
+            ->whereHas('contracts', fn($q) => $q->whereBetween('created_at', [$from, $to]))
             ->count();
 
-        // -------------------------
-        // 🧾 Invoice Paid & Overdue
-        // -------------------------
-        $invoicePaid = Invoice::where('status', 'paid')
-            ->whereBetween('paid_date', [$from, $to])
-            ->count();
-
-        $invoiceOverdue = Invoice::where('status', 'unpaid')
-            ->where('due_date', '<', now())
-            ->whereBetween('created_at', [$from, $to])
-            ->count();
+        // 🧾 Invoices
+        $invoicePaid = Invoice::where('status', 'paid')->whereBetween('paid_date', [$from, $to])->count();
+        $invoiceOverdue = Invoice::where('status', 'unpaid')->where('due_date', '<', now())->whereBetween('created_at', [$from, $to])->count();
 
         $bookingNew = Booking::whereBetween('created_at', [$from, $to])->count();
-
-        $bookingLost = Booking::whereIn('status', ['rejected', 'vacated'])
-            ->whereBetween('updated_at', [$from, $to])
-            ->count();
+        $bookingLost = Booking::whereIn('status', ['rejected', 'vacated'])->whereBetween('updated_at', [$from, $to])->count();
 
         return response()->json([
             'success' => true,
@@ -253,15 +255,15 @@ class BranchController extends Controller
             'booked_chairs' => $bookedChairs,
             'available_chairs' => $availableChairs,
             'total_members' => $totalMembers,
-            'total_bookings' => $booking['totalBookings'],
-            'day_bookings' => $booking['dayBookings'],
-            'night_bookings' => $booking['nightBookings'],
-            'fullday_bookings' => $booking['fullDayBookings'],
-            'total_seats' => $booking['totalSeats'],
-            'day_seats' => $booking['daySeats'],
-            'night_seats' => $booking['nightSeats'],
-            'fullday_seats' => $booking['fullSeats'],
-            // For chart
+            'total_bookings' => $bookingNew,  // now counting new bookings in range
+            'day_bookings' => $daySeats,
+            'night_bookings' => $nightSeats,
+            'fullday_bookings' => $fullSeats,
+            'total_seats' => $totalSeats,
+            'day_seats' => $daySeats,
+            'night_seats' => $nightSeats,
+            'fullday_seats' => $fullSeats,
+            // Chart data
             'revenue' => $revenueData,
             'bookings' => $bookingsData,
             'labels' => $labels,

@@ -91,6 +91,7 @@ Route::group(['middleware' => ['set_tenant']], function () {
     Route::get('floor-plan/floor-plan-list', [FloorPlanController::class, 'getFloorPlanList']);
     Route::get('floor-plan/floors', [FloorPlanController::class, 'getFloors']);
     Route::get('floor-plan/chairs', [FloorPlanController::class, 'getChairs']);
+    Route::delete('floor-plan/chairs/{id}', [FloorPlanController::class, 'deleteChair']);
     Route::post('floor-plan/chairs', [FloorPlanController::class, 'createChair']);
     Route::get('floor-plan/{floor_id}/rooms', [FloorPlanController::class, 'getRooms']);
     Route::get('seat-allocations', [FloorPlanController::class, 'getSeatAllocations']);
@@ -139,6 +140,7 @@ Route::group(['middleware' => ['set_tenant']], function () {
 
     // Investment
     Route::group(['prefix' => 'investor'], function () {
+        Route::get('/investments', [InvestorController::class, 'investments']);
         Route::get('/users/search', [InvestorController::class, 'search']);
         Route::get('/investment-types', [InvestorController::class, 'getTypes']);
         Route::get('/locations', [InvestorController::class, 'getLocations']);

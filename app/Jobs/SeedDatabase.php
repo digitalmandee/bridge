@@ -33,9 +33,9 @@ class SeedDatabase implements ShouldQueue
         tenancy()->initialize($this->tenant);  // Set the tenant context
 
         // Run the seeder without confirmation
-        Artisan::call('tenants:seed', [
+        Artisan::call('db:seed', [
             '--class' => 'TenantDatabaseSeeder',
-            '--force' => true,  // Bypass confirmation prompt
+            '--force' => true,
         ]);
 
         tenancy()->end();  // End the tenant context

@@ -12,21 +12,29 @@ use Illuminate\Http\Request;
 
 class InvestorController extends Controller
 {
-    // 🔍 Search existing investors
+    public function investments()
+    {
+        $investments = Investment::with(['investor', 'user'])->get();
+        return response()->json($investments);
+    }
+
     public function search(Request $request)
     {
         $q = $request->get('q');
 
-        $users = User::query()
+        $query = User::query()
             ->where('is_investor', true)
-            ->where(function ($query) use ($q) {
-                $query
+            ->select('id', 'name', 'email');
+
+        if (!empty($q)) {
+            $query->where(function ($sub) use ($q) {
+                $sub
                     ->where('name', 'like', "%{$q}%")
                     ->orWhere('email', 'like', "%{$q}%");
-            })
-            ->select('id', 'name', 'email')
-            ->limit(10)
-            ->get();
+            });
+        }
+
+        $users = $query->limit(10)->get();
 
         return response()->json($users);
     }

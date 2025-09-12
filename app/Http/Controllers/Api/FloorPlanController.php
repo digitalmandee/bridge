@@ -88,14 +88,21 @@ class FloorPlanController extends Controller
             $bookings = Booking::where('floor_id', $floorId)
                 ->where('status', 'confirmed')
                 ->where(function ($q) use ($fromDate, $toDate) {
-                    $q
-                        ->whereBetween('start_date', [$fromDate, $toDate])
-                        ->orWhereBetween('end_date', [$fromDate, $toDate])
-                        ->orWhere(function ($q2) use ($fromDate, $toDate) {
-                            $q2
-                                ->where('start_date', '<=', $fromDate)
-                                ->where('end_date', '>=', $toDate);
-                        });
+                    $q->where(function ($q2) use ($fromDate, $toDate) {
+                        $q2
+                            ->whereBetween('start_date', [$fromDate, $toDate])
+                            ->orWhereBetween('end_date', [$fromDate, $toDate])
+                            ->orWhere(function ($q3) use ($fromDate, $toDate) {
+                                $q3
+                                    ->where('start_date', '<=', $fromDate)
+                                    ->where(function ($q4) use ($toDate) {
+                                        // If end_date is null, treat it as today
+                                        $q4
+                                            ->where('end_date', '>=', $toDate)
+                                            ->orWhereNull('end_date');
+                                    });
+                            });
+                    });
                 })
                 ->with('bookingChairs')
                 ->get();
@@ -397,14 +404,107 @@ class FloorPlanController extends Controller
     }
 
     //  fetch chairs
+
     public function getChairs(Request $request)
     {
         $floorId = $request->query('floor_id');
         try {
-            $chairs = Chair::where('floor_id', $floorId)->with('floor:id,name', 'table:id,table_id')->get();
+            $today = Carbon::today();
+
+            // Get all chairs for this floor
+            $chairs = Chair::where('floor_id', $floorId)
+                ->with('floor:id,name', 'table:id,table_id')
+                ->get();
+
+            // Get today's confirmed bookings with chairs
+            $bookings = Booking::where('floor_id', $floorId)
+                ->where('status', 'confirmed')
+                ->whereDate('start_date', '<=', $today)
+                ->whereDate('end_date', '>=', $today)  // If booking spans multiple days
+                ->with('bookingChairs')
+                ->get();
+
+            // Map chair bookings by chair_id
+            $chairBookings = [];
+            foreach ($bookings as $booking) {
+                foreach ($booking->bookingChairs as $bookingChair) {
+                    $chairId = $bookingChair->chair_id;
+                    if (!isset($chairBookings[$chairId]))
+                        $chairBookings[$chairId] = [];
+                    $chairBookings[$chairId][] = $booking->time_slot;
+                }
+            }
+
+            // Merge chair status
+            $chairs = $chairs->map(function ($chair) use ($chairBookings) {
+                $status = 'available';
+                $color = 'green';
+
+                if (isset($chairBookings[$chair->id])) {
+                    $slots = $chairBookings[$chair->id];
+
+                    if (in_array('full_day', $slots) || (in_array('day', $slots) && in_array('night', $slots))) {
+                        $status = 'full_day';
+                        $color = '#34A853';
+                    } elseif (in_array('day', $slots)) {
+                        $status = 'day';
+                        $color = '#F59E0B';
+                    } elseif (in_array('night', $slots)) {
+                        $status = 'night';
+                        $color = '#6366F1';
+                    }
+                }
+
+                return [
+                    'id' => $chair->id,
+                    'chair_id' => $chair->chair_id,
+                    'floor' => $chair->floor,
+                    'table' => $chair->table,
+                    'time_slot' => $status,
+                    'color' => $color,
+                ];
+            });
+
             return response()->json(['success' => true, 'chairs' => $chairs]);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
+        }
+    }
+
+    public function deleteChair(Request $request, $chairId)
+    {
+        try {
+            $chair = Chair::findOrFail($chairId);
+
+            $today = Carbon::today();
+
+            // Check confirmed bookings that are running or future
+            $bookings = Booking::whereHas('bookingChairs', function ($q) use ($chairId) {
+                $q->where('chair_id', $chairId);
+            })
+                ->whereIn('status', ['confirmed'])
+                ->where(function ($q) use ($today) {
+                    $q
+                        ->whereNull('end_date')  // running without end date
+                        ->orWhereDate('end_date', '>=', $today);  // future bookings
+                })
+                ->pluck('id');
+
+            if ($bookings->count() > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This chair is already booked in booking IDs: ' . $bookings->implode(', ')
+                ], 400);
+            }
+
+            $chair->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Chair deleted successfully'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
     }
 

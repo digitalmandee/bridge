@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('chair_id');
 
             $table->foreign('booking_id')->references('id')->on('bookings')->onDelete('cascade');
-            $table->foreign('chair_id')->references('id')->on('chairs')->onDelete('cascade');
+            $table->foreign('chair_id')->references('id')->on('chairs')->onDelete('set null');
 
             $table->string('name')->nullable();
 

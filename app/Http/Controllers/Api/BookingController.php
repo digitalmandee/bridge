@@ -407,8 +407,18 @@ class BookingController extends Controller
                 ]));
             }
 
+            // === Update booking main fields ===
+            $booking->update([
+                'status' => $newStatus,
+                'total_price' => $request->price,
+                'start_date' => $request->start_date,
+                'start_time' => $request->start_time,
+                'end_date' => $request->end_date,
+                'end_time' => $request->end_time,
+            ]);
+
             // === Expire Package if Booking Cancelled/Vacated ===
-            if (in_array($newStatus, ['vacated', 'rejected', 'cancelled']) && $oldStatus === 'confirmed') {
+            if (in_array($newStatus, ['vacated', 'rejected', 'cancelled', 'confirmed'])) {
                 if ($booking->user_package_id) {
                     $userPackage = UserPackage::find($booking->user_package_id);
                     if ($userPackage) {
@@ -430,16 +440,6 @@ class BookingController extends Controller
                     $user->save();
                 }
             }
-
-            // === Update booking main fields ===
-            $booking->update([
-                'status' => $newStatus,
-                'total_price' => $request->price,
-                'start_date' => $request->start_date,
-                'start_time' => $request->start_time,
-                'end_date' => $request->end_date,
-                'end_time' => $request->end_time,
-            ]);
 
             DB::commit();
 
