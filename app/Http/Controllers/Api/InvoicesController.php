@@ -126,6 +126,20 @@ class InvoicesController extends Controller
         ]);
     }
 
+    public function viewInvoice($id)
+    {
+        $invoice = Invoice::with([
+            'user:id,name,email,phone_no,address',  // adjust according to your user table
+            'booking:id,package_detail,start_date,end_date',  // adjust if booking relation exists
+        ])->find($id);
+
+        if (!$invoice) {
+            return response()->json(['message' => 'Invoice not found'], 404);
+        }
+
+        return response()->json($invoice);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

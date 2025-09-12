@@ -183,7 +183,7 @@ class AuthController extends Controller
         tenancy()->initialize($tenant);
 
         // Find the user in the tenant database
-        $user = User::where('email', $validatedData['email'])->select(['id', 'name', 'email', 'phone_no', 'profile_image', 'type', 'password', 'last_login_at'])->first();
+        $user = User::where('email', $validatedData['email'])->select(['id', 'name', 'email', 'phone_no', 'profile_image', 'type', 'password', 'last_login_at', 'is_investor'])->first();
 
         // Verify user existence and password
         if (!$user || !Hash::check($validatedData['password'], $user->password)) {
@@ -210,6 +210,7 @@ class AuthController extends Controller
             'phone_no' => $user->phone_no,
             'profile_image' => $user->profile_image,
             'last_login_human' => $user->last_login_human,
+            'is_investor' => $user->is_investor,
             'type' => $user->type,
             'role' => $role ? $user->type : null,
             'permissions' => $permissions,
@@ -234,7 +235,7 @@ class AuthController extends Controller
         $permissions = $role ? $role->permissions->pluck('name')->toArray() : [];
 
         // Basic user data without password
-        $data = $user->only(['id', 'name', 'email', 'phone_no', 'profile_image', 'type', 'last_login_human']);
+        $data = $user->only(['id', 'name', 'email', 'phone_no', 'profile_image', 'type', 'last_login_human', 'is_investor']);
 
         // Role and permissions
         $data['role'] = $role ? $user->type : null;

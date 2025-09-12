@@ -37,6 +37,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\BranchAuthController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\InvestorController;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -136,11 +137,22 @@ Route::group(['middleware' => ['set_tenant']], function () {
         Route::delete('{id}', [BookingScheduleController::class, 'destroy']);
     });
 
+    // Investment
+    Route::group(['prefix' => 'investor'], function () {
+        Route::get('/users/search', [InvestorController::class, 'search']);
+        Route::get('/investment-types', [InvestorController::class, 'getTypes']);
+        Route::get('/locations', [InvestorController::class, 'getLocations']);
+        Route::post('/users/create-investment', [InvestorController::class, 'createInvestment']);
+        Route::get('/investor-dashboard', [InvestorController::class, 'dashboard']);
+        Route::post('/become-investor', [InvestorController::class, 'becomeInvestor']);
+    });
+
     // Invoices
     Route::resource('invoice-types', InvoiceTypeController::class)->except(['create', 'edit']);
     Route::group(['prefix' => 'invoices'], function () {
         Route::get('', [InvoicesController::class, 'index']);
         Route::get('customer-detail/{id}', [InvoicesController::class, 'customerDetail']);
+        Route::get('view/{id}', [InvoicesController::class, 'viewInvoice']);
         Route::post('create', [InvoicesController::class, 'store']);
         Route::post('update', [InvoicesController::class, 'update']);
         Route::get('dashboard', [InvoicesController::class, 'dashboard']);
