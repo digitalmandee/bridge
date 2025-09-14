@@ -144,7 +144,7 @@ const NewInvestorEntry = () => {
 						<div onClick={() => navigate(-1)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
 							<MdArrowBackIos style={{ fontSize: "20px", marginRight: "10px" }} />
 						</div>
-						<h4 style={{ margin: 0 }}>New Invoice</h4>
+						<h4 style={{ margin: 0 }}>New Investor</h4>
 					</div>
 					<div className="container-fluid p-3 border rounded shadow-sm" style={{ maxWidth: 600 }}>
 						<h4>New Investor Entry</h4>
