@@ -15,6 +15,7 @@ import { MdPeopleOutline } from "react-icons/md";
 import { MdOutlinePeople } from "react-icons/md";
 import { FaUserCheck } from "react-icons/fa";
 import { GiPowerButton } from "react-icons/gi";
+import InvestorIcon from "../../assets/investor.svg"
 ("react-icons/all");
 import "./style.css";
 import { AuthContext } from "@/contexts/AuthContext";
@@ -61,7 +62,7 @@ const menuItems = [
 	},
 	{
 		label: "Investor Management",
-		icon: <TbFileInvoice />,
+		icon: <img src={InvestorIcon} alt="Investor" style={{ width: 20, height: 20 }} />,
 		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/investor/dashboard", label: "Dashboard", permission: "invoice-dashboard" },
