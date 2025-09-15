@@ -46,7 +46,6 @@ class InvestorController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email',
             'type' => 'required|exists:investment_types,id',
-            'location' => 'nullable',
             'amount' => 'required|numeric|min:1',
             'profit_percent' => 'nullable|numeric|min:0|max:100',
             'share_percent' => 'nullable|numeric|min:0|max:100',
@@ -84,7 +83,6 @@ class InvestorController extends Controller
             'user_id' => $user->id,
             'investor_id' => $investor->id,
             'investment_type_id' => $validated['type'],
-            'location' => $validated['location'],
             'amount' => $validated['amount'],
             'profit_percent' => $validated['profit_percent'] ?? null,
             'share_percent' => $validated['share_percent'] ?? null,
@@ -188,14 +186,6 @@ class InvestorController extends Controller
     {
         return response()->json(
             InvestmentType::select('id', 'name')->orderBy('name')->get()
-        );
-    }
-
-    // ✅ Get all locations
-    public function getLocations()
-    {
-        return response()->json(
-            ScheduleFloor::select('id', 'name')->orderBy('name')->get()
         );
     }
 }

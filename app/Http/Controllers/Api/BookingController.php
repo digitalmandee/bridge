@@ -36,6 +36,7 @@ class BookingController extends Controller
             ]);
 
             // Parse JSON fields
+            // Parse JSON fields
             $bookingDetails = json_decode($validated['bookingdetails'], true);
             $selectedPlan = json_decode($validated['selectedPlan'], true);
             $selectedChairs = json_decode($validated['selectedChairs'], true);
@@ -43,10 +44,13 @@ class BookingController extends Controller
             DB::beginTransaction();
             $kybFilePath = null;
 
-            // Check if user exists or create a new user
+            $type = $bookingDetails['type'] === 'individual' ? 'user' : 'company';
+
+            // Check if user exists
             $user = User::where('email', $bookingDetails['email'])->first();
+
             if (!$user) {
-                $type = $bookingDetails['type'] == 'individual' ? 'user' : 'company';
+                // New user
                 $user = User::create([
                     'name' => $bookingDetails['name'],
                     'email' => $bookingDetails['email'],
@@ -58,42 +62,70 @@ class BookingController extends Controller
                     'cnic_number' => $bookingDetails['cnic'],
                 ]);
                 $user->assignRole('user');
+            }
 
-                if ($request->hasFile('kyb_file')) {
-                    $kybFilePath = FileHelper::saveImage($request->file('kyb_file'), 'kyb_files');
-                }
+            if ($request->hasFile('kyb_file')) {
+                $kybFilePath = FileHelper::saveImage($request->file('kyb_file'), 'kyb_files');
+            }
 
-                if ($type === 'company') {
+            // 🔹 Check profile depending on type
+            if ($type === 'company') {
+                $companyProfileExists = CompanyProfile::where('user_id', $user->id)->exists();
+
+                if (!$companyProfileExists) {
+                    // Update user details in case they were incomplete
+                    $user->update([
+                        'name' => $bookingDetails['name'],
+                        'type' => $type,
+                        'designation' => $bookingDetails['designation'],
+                        'phone_no' => $bookingDetails['phone_no'],
+                        'secondary_phone_no' => $bookingDetails['secondary_phone_no'],
+                        'cnic_number' => $bookingDetails['cnic'],
+                    ]);
+
                     CompanyProfile::create([
                         'user_id' => $user->id,
-                        'name' => $bookingDetails['company_name'],
-                        'website' => $bookingDetails['company_website'],
-                        'industry' => $bookingDetails['industry'],
-                        'employees' => $bookingDetails['employees'],
-                        'address' => $bookingDetails['company_address'],
-                        'kyb_file' => $kybFilePath
+                        'name' => $bookingDetails['company_name'] ?? null,
+                        'website' => $bookingDetails['company_website'] ?? null,
+                        'industry' => $bookingDetails['industry'] ?? null,
+                        'employees' => $bookingDetails['employees'] ?? null,
+                        'address' => $bookingDetails['company_address'] ?? null,
+                        'kyb_file' => $kybFilePath,
                     ]);
-                } else {
+                }
+            } else {
+                $userProfileExists = UserProfile::where('user_id', $user->id)->exists();
+
+                if (!$userProfileExists) {
+                    // Update user details in case they were incomplete
+                    $user->update([
+                        'name' => $bookingDetails['name'],
+                        'type' => $type,
+                        'designation' => $bookingDetails['designation'],
+                        'phone_no' => $bookingDetails['phone_no'],
+                        'secondary_phone_no' => $bookingDetails['secondary_phone_no'],
+                        'cnic_number' => $bookingDetails['cnic'],
+                    ]);
+
                     UserProfile::create([
                         'user_id' => $user->id,
-                        'linkedin' => $bookingDetails['linkedin'],
-                        'facebook' => $bookingDetails['facebook'],
-                        'freelance_site' => $bookingDetails['freelance_site'],
-                        'kyb_file' => $kybFilePath
+                        'linkedin' => $bookingDetails['linkedin'] ?? null,
+                        'facebook' => $bookingDetails['facebook'] ?? null,
+                        'freelance_site' => $bookingDetails['freelance_site'] ?? null,
+                        'kyb_file' => $kybFilePath,
                     ]);
                 }
+            }
 
-                // Handle profile_image upload
-                if ($request->hasFile('profile_image')) {
-                    $profileImagePath = FileHelper::saveImage($request->file('profile_image'), 'profile_images');
-                    $user->update(['profile_image' => $profileImagePath]);
-                }
+            // Handle profile_image upload
+            if ($request->hasFile('profile_image')) {
+                $profileImagePath = FileHelper::saveImage($request->file('profile_image'), 'profile_images');
+                $user->update(['profile_image' => $profileImagePath]);
+            }
 
-                if ($request->hasFile('cnic_image')) {
-                    Log::info($request->file('cnic_image'));
-                    $profileImagePath = FileHelper::saveImage($request->file('cnic_image'), 'cnics');
-                    $user->update(['cnic_image' => $profileImagePath]);
-                }
+            if ($request->hasFile('cnic_image')) {
+                $profileImagePath = FileHelper::saveImage($request->file('cnic_image'), 'cnics');
+                $user->update(['cnic_image' => $profileImagePath]);
             }
 
             $userId = $user->id;
@@ -103,6 +135,10 @@ class BookingController extends Controller
             if ($request->hasFile('receipt')) {
                 $receiptPath = FileHelper::saveImage($request->file('receipt'), 'invoices');
             }
+
+            // =========================
+            // Booking + Invoice Creation
+            // =========================
 
             $startDate = Carbon::parse($bookingDetails['start_date']);  // Start Date
             $startTime = Carbon::parse($bookingDetails['start_time']);  // Start Time

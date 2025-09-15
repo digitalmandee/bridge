@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\FinanceCategoryController;
 use App\Http\Controllers\Api\FinanceController;
 use App\Http\Controllers\Api\FloorPlanController;
 use App\Http\Controllers\Api\GlobalController;
+use App\Http\Controllers\Api\InvestmentTypeController;
 use App\Http\Controllers\Api\InvoicesController;
 use App\Http\Controllers\Api\InvoiceTypeController;
 use App\Http\Controllers\Api\KitchenController;
@@ -142,11 +143,12 @@ Route::group(['middleware' => ['set_tenant']], function () {
     Route::group(['prefix' => 'investor'], function () {
         Route::get('/investments', [InvestorController::class, 'investments']);
         Route::get('/users/search', [InvestorController::class, 'search']);
-        Route::get('/investment-types', [InvestorController::class, 'getTypes']);
-        Route::get('/locations', [InvestorController::class, 'getLocations']);
+        Route::get('/investment/types', [InvestorController::class, 'getTypes']);
         Route::post('/users/create-investment', [InvestorController::class, 'createInvestment']);
         Route::get('/investor-dashboard', [InvestorController::class, 'dashboard']);
         Route::post('/become-investor', [InvestorController::class, 'becomeInvestor']);
+        // Investment Types
+        Route::resource('investment-types', InvestmentTypeController::class)->except(['create', 'show', 'edit']);
     });
 
     // Invoices

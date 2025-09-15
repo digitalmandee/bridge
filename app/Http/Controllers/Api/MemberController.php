@@ -13,7 +13,7 @@ class MemberController extends Controller
         $limit = $request->query('limit') ?? 10;
         $search = $request->query('search');  // Get search input
 
-        $query = User::where('type', 'user')->select('id', 'name', 'company_id', 'status', 'last_login_at')->with(['company:id,name']);
+        $query = User::where('type', 'user')->select('id', 'email', 'name', 'company_id', 'status', 'last_login_at')->with(['company:id,name']);
 
         if ($search) {
             $query->where(function ($q) use ($search) {

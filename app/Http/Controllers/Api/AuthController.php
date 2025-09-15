@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\CompanyProfile;
+use App\Models\Investor;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -159,33 +162,31 @@ class AuthController extends Controller
 
     public function userLogin(Request $request)
     {
-        // Validate the incoming request
+        // Validate request
         $validatedData = $request->validate([
             'email' => 'required|email',
             'password' => 'required|string|min:6',
         ]);
 
-        // Check if Branch ID is in headers
         if (!$request->hasHeader('Branch')) {
             return response()->json(['error' => 'Branch ID is required'], 400);
         }
 
-        // Get Branch ID from headers
         $branchId = $request->header('Branch');
 
-        // Find the tenant (branch)
         $tenant = Tenant::find($branchId);
         if (!$tenant) {
             return response()->json(['error' => 'Invalid Branch ID'], 404);
         }
 
-        // Switch to tenant database
+        // Switch to tenant DB
         tenancy()->initialize($tenant);
 
-        // Find the user in the tenant database
-        $user = User::where('email', $validatedData['email'])->select(['id', 'name', 'email', 'phone_no', 'profile_image', 'type', 'password', 'last_login_at', 'is_investor'])->first();
+        // Find user
+        $user = User::where('email', $validatedData['email'])
+            ->select(['id', 'name', 'email', 'phone_no', 'profile_image', 'type', 'password', 'last_login_at'])
+            ->first();
 
-        // Verify user existence and password
         if (!$user || !Hash::check($validatedData['password'], $user->password)) {
             return response()->json([
                 'success' => false,
@@ -193,16 +194,29 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Generate authentication token **without setting abilities**
+        // Generate token
         $token = $user->createToken('my-app-token')->plainTextToken;
-        // Fetch user role & permissions (if applicable)
-        $role = $user->roles()->first();  // Assuming the user has a single role
+
+        // Fetch role & permissions
+        $role = $user->roles()->first();
         $permissions = $role ? $role->permissions->pluck('name')->toArray() : [];
 
-        // Update last login time
+        // Update last login
         $user->update(['last_login_at' => Carbon::now()]);
 
-        // Prepare response data
+        // --- Check investor ---
+        $isInvestor = Investor::where('user_id', $user->id)->exists();
+
+        // --- Check profile completion ---
+        $isProfileCompleted = false;
+
+        if ($user->type === 'user') {
+            $isProfileCompleted = UserProfile::where('user_id', $user->id)->exists();
+        } elseif ($user->type === 'company') {
+            $isProfileCompleted = CompanyProfile::where('user_id', $user->id)->exists();
+        }
+
+        // Prepare response
         $responseData = [
             'id' => $user->id,
             'name' => $user->name,
@@ -210,16 +224,20 @@ class AuthController extends Controller
             'phone_no' => $user->phone_no,
             'profile_image' => $user->profile_image,
             'last_login_human' => $user->last_login_human,
-            'is_investor' => $user->is_investor,
+            'is_profile_completed' => $isProfileCompleted,
+            'is_investor' => $isInvestor,
             'type' => $user->type,
-            'role' => $role ? $user->type : null,
+            'role' => $role ? $role->name : null,
             'permissions' => $permissions,
             'branch' => tenant('name'),
             'token' => $token,
         ];
 
-        // Return successful response
-        return response()->json(['success' => true, 'message' => 'User logged in successfully.', 'data' => $responseData], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'User logged in successfully.',
+            'data' => $responseData,
+        ], 200);
     }
 
     public function getUser()
@@ -235,7 +253,22 @@ class AuthController extends Controller
         $permissions = $role ? $role->permissions->pluck('name')->toArray() : [];
 
         // Basic user data without password
-        $data = $user->only(['id', 'name', 'email', 'phone_no', 'profile_image', 'type', 'last_login_human', 'is_investor']);
+        $data = $user->only(['id', 'name', 'email', 'phone_no', 'profile_image', 'type', 'last_login_human']);
+
+        // --- Check investor ---
+        $isInvestor = Investor::where('user_id', $user->id)->exists();
+
+        // --- Check profile completion ---
+        $isProfileCompleted = false;
+
+        if ($user->type === 'user') {
+            $isProfileCompleted = UserProfile::where('user_id', $user->id)->exists();
+        } elseif ($user->type === 'company') {
+            $isProfileCompleted = CompanyProfile::where('user_id', $user->id)->exists();
+        }
+
+        $data['is_profile_completed'] = $isProfileCompleted;
+        $data['is_investor'] = $isInvestor;
 
         // Role and permissions
         $data['role'] = $role ? $user->type : null;
