@@ -1,14 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Navigate, useParams } from "react-router-dom";
-import axiosInstance from "./utils/axiosInstance"; // Import your Axios instance
+import { Navigate, useParams, useLocation } from "react-router-dom";
+import axiosInstance from "./utils/axiosInstance";
 import { AuthContext } from "./contexts/AuthContext";
 import SplashScreen from "./components/splashscreen";
 
 const ProtectedRoute = ({ children, role, permission }) => {
 	const { user, userRole, permissions, loading } = useContext(AuthContext);
-	const { branch } = useParams(); // Get branch from URL
+	const { branch } = useParams();
+	const location = useLocation();
 
-	const [branchExists, setBranchExists] = useState(null); // null = loading state
+	const [branchExists, setBranchExists] = useState(null);
 
 	// Store branch in localStorage
 	localStorage.setItem("branch", branch);
@@ -21,34 +22,46 @@ const ProtectedRoute = ({ children, role, permission }) => {
 				setBranchExists(res.data.exist);
 			} catch (error) {
 				console.error("Error checking branch:", error);
-				setBranchExists(false); // Assume branch does not exist on error
+				setBranchExists(false);
 			}
 		};
 
 		checkBranch();
 	}, [branch]);
 
-	// If still checking branch existence, show a loading state
+	// Loading states
 	if (branchExists === null || loading) {
 		return <SplashScreen />;
 	}
 
-	// If branch does not exist, redirect to a "Not Found" page
+	// Invalid branch
 	if (!branchExists) {
-		return <p>Branch does not exist</p>; // Show error if branch is invalid
+		return <p>Branch does not exist</p>;
 	}
 
-	// If user is not authenticated or lacks the required role, redirect to login
+	// User not logged in
 	if (!user || (role && userRole !== role)) {
 		return <Navigate to={`/${branch}/login`} replace />;
 	}
 
-	// If user lacks permission, redirect to a no-permission page
+	// Permission check
 	if (permission && !permissions.includes(permission)) {
-		return <Navigate to={"/" + branch + "/no-permission"} replace />;
+		return <Navigate to={`/${branch}/no-permission`} replace />;
 	}
 
-	// If everything is okay, render the protected content
+	// --- Investor dashboard check ---
+	if (location.pathname.includes("/investor/dashboard")) {
+		if (!user.is_investor) {
+			return <Navigate to={`/${branch}/no-permission`} replace />;
+		}
+	}
+
+	// --- Normal feature pages check (profile must be completed) ---
+	if (!location.pathname.includes("/investor/dashboard") && !user.is_profile_completed && location.pathname !== `/${branch}/no-permission`) {
+		return <Navigate to={`/${branch}/no-permission`} replace />;
+	}
+
+	// ✅ All good → render children
 	return children;
 };
 

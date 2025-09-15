@@ -44,39 +44,6 @@ const TopNavbar = () => {
 		setisOpennotificationDrop(false);
 	};
 
-	const notifications = [
-		{
-			icon: FileText,
-			title: "Booking Confirmation",
-			message: "Your booking for Desk #12 at Downtown Branch is confirmed for Jan 10, 2025, 9:00 AM",
-			time: "2 min ago",
-		},
-		{
-			icon: FileText,
-			title: "Upcoming Booking Reminder",
-			message: "Reminder: You have an upcoming booking for Meeting Room",
-			time: "10 min ago",
-		},
-		{
-			icon: Building2,
-			title: "New Amenities Added",
-			message: "*New* High-speed internet and ergonomic chairs are now available at Branch 1",
-			time: "2 days ago",
-		},
-		{
-			icon: Building,
-			title: "Payment Reminder",
-			message: "Payment overdue! Please complete payment for your monthly booking",
-			time: "3 days ago",
-		},
-		{
-			icon: Building,
-			title: "Payment Reminder",
-			message: "Payment overdue! Please complete payment for your monthly booking",
-			time: "3 days ago",
-		},
-	];
-
 	return (
 		<>
 			<header className="d-flex align-items-center">

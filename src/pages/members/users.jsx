@@ -127,6 +127,7 @@ const MemberUser = () => {
 																		{user.name} <span style={{ color: "#6C757D", fontSize: "0.875rem" }}>{user.company ? "at " + user.company.name : ""}</span>
 																	</Typography>
 																	<Typography variant="body2" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+																		{user.email}
 																		<span style={{ fontSize: "10px" }}>●</span> {userData.branch}
 																	</Typography>
 																</Box>

@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Typography } from "@mui/material";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate } from "react-router-dom";
-import colors from '../assets/styles/color'
+import colors from "../assets/styles/color";
+import { AuthContext } from "@/contexts/AuthContext";
 const NoPermission = () => {
 	const navigate = useNavigate();
 

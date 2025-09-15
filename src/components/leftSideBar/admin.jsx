@@ -67,6 +67,7 @@ const menuItems = [
 			{ to: "/branch/investor/dashboard", label: "Dashboard", permission: "invoice-dashboard" },
 			{ to: "/branch/investor/management", label: "Management", permission: "invoice-dashboard" },
 			{ to: "/branch/investor/new-entry", label: "New Entry", permission: "invoice-dashboard" },
+			{ to: "/branch/investor/investment-types", label: "Investment Types", permission: "invoice-dashboard" },
 		],
 	},
 	{

@@ -46,9 +46,8 @@ const NewInvestorEntry = () => {
 	useEffect(() => {
 		const fetchOptions = async () => {
 			try {
-				const [typesRes, locationsRes] = await Promise.all([axiosInstance.get("investor/investment-types"), axiosInstance.get("investor/locations")]);
+				const [typesRes] = await Promise.all([axiosInstance.get("investor/investment/types")]);
 				setInvestmentTypes(typesRes.data || []);
-				setLocations(locationsRes.data || []);
 			} catch (err) {
 				console.error("Error fetching options:", err);
 			}
@@ -184,16 +183,6 @@ const NewInvestorEntry = () => {
 								{investmentTypes.map((type) => (
 									<MenuItem key={type.id || type} value={type.id || type}>
 										{type.name || type}
-									</MenuItem>
-								))}
-							</TextField>
-
-							{/* Location */}
-							<TextField select label="Location" value={location} onChange={(e) => setLocation(e.target.value)} fullWidth margin="normal">
-								<MenuItem value="">None</MenuItem>
-								{locations.map((loc) => (
-									<MenuItem key={loc.id || loc} value={loc.id || loc}>
-										{loc.name || loc}
 									</MenuItem>
 								))}
 							</TextField>
