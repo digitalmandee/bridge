@@ -285,6 +285,36 @@ class AuthController extends Controller
         return response()->json($data, 200);
     }
 
+    public function getAdmin()
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found.'], 404);
+        }
+
+        // Fetch user role and permissions
+        $role = $user->roles()->first();
+        $permissions = $role ? $role->permissions->pluck('name')->toArray() : [];
+
+        // Basic user data without password
+        $data = $user->only(['id', 'name', 'email', 'phone_no', 'profile_image', 'type', 'last_login_human']);
+
+        // Role and permissions
+        $data['role'] = $role ? $user->type : null;
+        $data['permissions'] = $permissions;
+        $data['branch'] = tenant('name');
+
+        // Add branch-related data based on user type
+        // if ($user->type === 'user') {
+        //     $data['branch'] = $user->userBranch->only(['id', 'name', 'location']);
+        // } elseif ($user->type === 'admin') {
+        //     $data['branch_id'] = $user->branch->id ?? null;
+        // }
+
+        return response()->json($data, 200);
+    }
+
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();

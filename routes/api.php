@@ -62,7 +62,7 @@ Route::post('/branch/login', [AuthController::class, 'userlogin'])->middleware('
 Route::get('/branch/check', [BranchController::class, 'checkBranch'])->middleware('guest');
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::get('super/user', [AuthController::class, 'getUser']);
+    Route::get('super/user', [AuthController::class, 'getAdmin']);
     Route::post('super/logout', [AuthController::class, 'logout']);
     // Branches
     Route::resource('branches', BranchController::class)->except(['create', 'edit']);
