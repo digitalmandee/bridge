@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\CompanyProfile;
-use App\Models\Investor;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\UserProfile;
@@ -204,9 +203,6 @@ class AuthController extends Controller
         // Update last login
         $user->update(['last_login_at' => Carbon::now()]);
 
-        // --- Check investor ---
-        $isInvestor = Investor::where('user_id', $user->id)->exists();
-
         // --- Check profile completion ---
         $isProfileCompleted = false;
 
@@ -225,7 +221,6 @@ class AuthController extends Controller
             'profile_image' => $user->profile_image,
             'last_login_human' => $user->last_login_human,
             'is_profile_completed' => $isProfileCompleted,
-            'is_investor' => $isInvestor,
             'type' => $user->type,
             'role' => $role ? $role->name : null,
             'permissions' => $permissions,
@@ -255,9 +250,6 @@ class AuthController extends Controller
         // Basic user data without password
         $data = $user->only(['id', 'name', 'email', 'phone_no', 'profile_image', 'type', 'last_login_human']);
 
-        // --- Check investor ---
-        $isInvestor = Investor::where('user_id', $user->id)->exists();
-
         // --- Check profile completion ---
         $isProfileCompleted = false;
 
@@ -268,7 +260,6 @@ class AuthController extends Controller
         }
 
         $data['is_profile_completed'] = $isProfileCompleted;
-        $data['is_investor'] = $isInvestor;
 
         // Role and permissions
         $data['role'] = $role ? $user->type : null;

@@ -6,15 +6,28 @@ use App\Helpers\FileHelper;
 use App\Models\Investment;
 use App\Models\InvestmentType;
 use App\Models\Investor;
-use App\Models\ScheduleFloor;
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InvestorController extends Controller
 {
-    public function investments()
+    public function investments(Request $request)
     {
-        $investments = Investment::with(['investor', 'user'])->get();
+        $user = $request->user();
+
+        $query = Investment::query()
+            ->with(['location:id,name', 'investor', 'user']);
+
+        if ($user->hasRole('superadmin')) {
+            $investments = $query->get();
+        } elseif ($user->hasRole('investor')) {
+            $investments = $query->where('user_id', $user->id)->get();
+        } else {
+            return response()->json(['message' => 'Not an investor'], 400);
+        }
+
         return response()->json($investments);
     }
 
@@ -23,7 +36,7 @@ class InvestorController extends Controller
         $q = $request->get('q');
 
         $query = User::query()
-            ->where('is_investor', true)
+            ->role('investor')  // ✅ Correct for query scope
             ->select('id', 'name', 'email');
 
         if (!empty($q)) {
@@ -40,6 +53,7 @@ class InvestorController extends Controller
     }
 
     // ➕ Create new investment (and user/investor if needed)
+
     public function createInvestment(Request $request)
     {
         $validated = $request->validate([
@@ -53,63 +67,61 @@ class InvestorController extends Controller
             'date' => 'required|date',
             'notes' => 'nullable|string',
             'invoice' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'location' => 'nullable|exists:tenants,id',
         ]);
 
-        // 1️⃣ Find or create user
-        $user = User::firstOrCreate(
-            ['email' => $validated['email']],
-            ['name' => $validated['name'], 'type' => 'user', 'is_investor' => true]
-        );
-        $user->assignRole('user');
+        return DB::transaction(function () use ($validated, $request) {
+            // 1️⃣ Check if user exists
+            $user = User::where('email', $validated['email'])->first();
 
-        if (!$user->is_investor) {
-            $user->update(['is_investor' => true]);
-        }
+            if ($user) {
+                // If user exists but is NOT investor → ❌ stop
+                if (!$user->hasRole('investor')) {
+                    return response()->json(['message' => 'User is not an investor'], 400);
+                }
+            } else {
+                // Create a new user and assign investor role
+                $user = User::create([
+                    'name' => $validated['name'],
+                    'type' => 'investor',
+                    'email' => $validated['email'],
+                ]);
+                $user->assignRole('investor');
+            }
 
-        // 2️⃣ Ensure investor profile exists
-        $investor = Investor::firstOrCreate(
-            ['user_id' => $user->id],
-            ['name' => $user->name]
-        );
+            // 2️⃣ Ensure investor profile exists
+            $investor = Investor::firstOrCreate(
+                ['user_id' => $user->id],
+                ['name' => $user->name]
+            );
 
-        // 3️⃣ Handle invoice upload
-        $invoicePath = null;
-        if ($request->hasFile('invoice')) {
-            $invoicePath = FileHelper::saveImage($request->file('invoice'), 'investment_invoices');
-        }
+            // 3️⃣ Handle invoice upload
+            $invoicePath = null;
+            if ($request->hasFile('invoice')) {
+                $invoicePath = $request->file('invoice')->store('investment_invoices', 'public');
+            }
 
-        // 4️⃣ Create investment
-        $investment = Investment::create([
-            'user_id' => $user->id,
-            'investor_id' => $investor->id,
-            'investment_type_id' => $validated['type'],
-            'amount' => $validated['amount'],
-            'profit_percent' => $validated['profit_percent'] ?? null,
-            'share_percent' => $validated['share_percent'] ?? null,
-            'share_type' => $validated['share_type'] ?? null,
-            'date' => $validated['date'],
-            'notes' => $validated['notes'] ?? null,
-            'invoice_path' => $invoicePath,
-        ]);
+            // 4️⃣ Create investment
+            $investment = Investment::create([
+                'user_id' => $user->id,
+                'investor_id' => $investor->id,
+                'investment_type_id' => $validated['type'],
+                'tenant_id' => $validated['location'] ?? null,
+                'amount' => $validated['amount'],
+                'profit_percent' => $validated['profit_percent'] ?? null,
+                'share_percent' => $validated['share_percent'] ?? null,
+                'share_type' => $validated['share_type'] ?? null,
+                'date' => $validated['date'],
+                'notes' => $validated['notes'] ?? null,
+                'invoice_path' => $invoicePath,
+            ]);
 
-        return response()->json([
-            'message' => 'Investment created successfully',
-            'investment' => $investment,
-            'user' => $user,
-        ]);
-    }
-
-    public function becomeInvestor(Request $request)
-    {
-        $user = $request->user();
-        $user->update(['is_investor' => true]);
-
-        Investor::firstOrCreate(
-            ['user_id' => $user->id],
-            ['name' => $user->name]
-        );
-
-        return response()->json(['message' => 'You are now an investor']);
+            return response()->json([
+                'message' => 'Investment created successfully',
+                'investment' => $investment,
+                'user' => $user,
+            ]);
+        });
     }
 
     public function dashboard(Request $request)
@@ -117,9 +129,9 @@ class InvestorController extends Controller
         $user = $request->user();
 
         // 🔎 If Admin → all investments, If Investor → only their investments
-        if ($user->hasRole('admin')) {
+        if ($user->hasRole('superadmin')) {
             $investments = Investment::latest()->get();
-        } elseif ($user->hasRole('user') && $user->is_investor) {
+        } elseif ($user->hasRole('investor')) {
             $investments = $user->investments()->latest()->get();
         } else {
             return response()->json(['message' => 'Not an investor']);
@@ -186,6 +198,14 @@ class InvestorController extends Controller
     {
         return response()->json(
             InvestmentType::select('id', 'name')->orderBy('name')->get()
+        );
+    }
+
+    // ✅ Get all locations
+    public function getLocations()
+    {
+        return response()->json(
+            Tenant::select('id', 'name')->orderBy('name')->get()
         );
     }
 }

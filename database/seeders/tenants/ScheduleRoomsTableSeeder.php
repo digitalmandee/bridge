@@ -25,7 +25,7 @@ class ScheduleRoomsTableSeeder extends Seeder
                 ];
             }
             foreach ($rooms as $room) {
-                ScheduleRoom::create($room);
+                ScheduleRoom::firstOrCreate($room);
             }
         }
     }

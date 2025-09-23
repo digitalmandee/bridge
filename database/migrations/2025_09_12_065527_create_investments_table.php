@@ -13,16 +13,17 @@ return new class extends Migration {
         Schema::create('investments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('investor_id');
             $table->foreign('investor_id')->references('id')->on('investors')->onDelete('restrict');
             $table->unsignedBigInteger('investment_type_id');
             $table->foreign('investment_type_id')->references('id')->on('investment_types')->onDelete('restrict');
-            $table->unsignedBigInteger('investor_id');
-            $table->string('location')->nullable();
+            $table->string('tenant_id')->nullable();
             $table->decimal('amount', 12, 2);
             $table->date('date');
             $table->string('invoice_path')->nullable();
             $table->text('notes')->nullable();
 
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('set null');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
             $table->unsignedBigInteger('updated_by')->nullable();

@@ -62,18 +62,38 @@ class BookingScheduleController extends Controller
             DB::beginTransaction();
 
             $user = User::findOrFail($request->user_id);
-
-            // ---- 🔑 NEW LOGIC: check user_addons instead of booking_quota ----
             $quotaDecrement = $this->checkBookingHours($startTime, $endTime);
 
-            // You can filter addon type if needed (e.g., 'meeting_room_hours')
-            $addon = UserAddon::where('user_id', $user->id)
+            $today = now()->startOfDay();
+
+            // 1️⃣ Collect active + valid package addons
+            $packageAddons = UserAddon::whereIn(
+                'user_package_id',
+                $user
+                    ->packages()
+                    ->where('status', 'active')
+                    ->where('valid_from', '<=', $today)
+                    ->where('valid_to', '>=', $today)
+                    ->pluck('id')
+            )
                 ->where('addon_type', 'booking_hours')
                 ->where('remaining', '>', 0)
                 ->lockForUpdate()
-                ->first();
+                ->get();
 
-            if (!$addon) {
+            // 2️⃣ Collect standalone addons
+            $standaloneAddons = $user
+                ->addons()
+                ->whereNull('user_package_id')
+                ->where('addon_type', 'booking_hours')
+                ->where('remaining', '>', 0)
+                ->lockForUpdate()
+                ->get();
+
+            // 3️⃣ Merge
+            $addons = $packageAddons->concat($standaloneAddons);
+
+            if ($addons->isEmpty()) {
                 DB::rollBack();
                 return response()->json([
                     'success' => false,
@@ -81,16 +101,30 @@ class BookingScheduleController extends Controller
                 ], 403);
             }
 
-            if ($addon->remaining < $quotaDecrement) {
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'user_limit_error' => 'User has insufficient booking hours remaining.'
-                ], 403);
-            }
+            // 4️⃣ Check unlimited
+            if (!$addons->contains(fn($addon) => $addon->total == -1)) {
+                $totalRemaining = $addons->sum('remaining');
+                if ($totalRemaining < $quotaDecrement) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'user_limit_error' => 'User has insufficient booking hours remaining.'
+                    ], 403);
+                }
 
-            // Deduct from addon
-            $addon->decrement('remaining', $quotaDecrement);
+                // 5️⃣ Deduct
+                $hoursToDeduct = $quotaDecrement;
+                foreach ($addons as $addon) {
+                    if ($hoursToDeduct <= 0)
+                        break;
+
+                    $deduct = min($addon->remaining, $hoursToDeduct);
+                    if ($deduct > 0) {
+                        $addon->decrement('remaining', $deduct);
+                        $hoursToDeduct -= $deduct;
+                    }
+                }
+            }
 
             // ---- Create the booking ----
             $booking = BookingSchedule::create([
@@ -283,41 +317,43 @@ class BookingScheduleController extends Controller
         try {
             DB::beginTransaction();
 
-            $bookingSchedule = BookingSchedule::findOrFail($validated['booking_id']);
-            $oldStatus = $bookingSchedule->status;
+            $booking = BookingSchedule::findOrFail($validated['booking_id']);
+            $oldStatus = $booking->status;
+            $user = User::findOrFail($booking->user_id);
+            $today = now()->startOfDay();
 
-            // If updating to approved and wasn't approved before
-            if ($validated['status'] === 'approved' && $bookingSchedule->status !== 'approved') {
-                // Check overlap again for safety
-                $overlap = $this->checkBookingAvailability(
-                    $bookingSchedule->schedule_room_id,
-                    $bookingSchedule->startTime,
-                    $bookingSchedule->endTime
-                );
+            // --- Deduct hours if booking moves from rejected → pending or rejected → approved ---
+            if ($oldStatus === 'rejected' && in_array($validated['status'], ['pending', 'approved'])) {
+                $quotaDecrement = $this->checkBookingHours($booking->startTime, $booking->endTime);
 
-                if ($overlap) {
-                    return response()->json([
-                        'success' => false,
-                        'already_exist' => 'The room is already booked during the selected time range.'
-                    ], 409);
-                }
-
-                $user = User::findOrFail($bookingSchedule->user_id);
-
-                // Calculate booking hours
-                $quotaDecrement = $this->checkBookingHours(
-                    $bookingSchedule->startTime,
-                    $bookingSchedule->endTime
-                );
-
-                // ---- 🔑 NEW: Deduct from user_addons.remaining ----
-                $addon = UserAddon::where('user_id', $user->id)
-                    ->where('addon_type', 'booking_hours')  // adjust type as needed
+                // 1️⃣ Collect active + valid package addons
+                $packageAddons = UserAddon::whereIn(
+                    'user_package_id',
+                    $user
+                        ->packages()
+                        ->where('status', 'active')
+                        ->where('valid_from', '<=', $today)
+                        ->where('valid_to', '>=', $today)
+                        ->pluck('id')
+                )
+                    ->where('addon_type', 'booking_hours')
                     ->where('remaining', '>', 0)
                     ->lockForUpdate()
-                    ->first();
+                    ->get();
 
-                if (!$addon) {
+                // 2️⃣ Collect standalone addons
+                $standaloneAddons = $user
+                    ->addons()
+                    ->whereNull('user_package_id')
+                    ->where('addon_type', 'booking_hours')
+                    ->where('remaining', '>', 0)
+                    ->lockForUpdate()
+                    ->get();
+
+                // 3️⃣ Merge
+                $addons = $packageAddons->concat($standaloneAddons);
+
+                if ($addons->isEmpty()) {
                     DB::rollBack();
                     return response()->json([
                         'success' => false,
@@ -325,52 +361,118 @@ class BookingScheduleController extends Controller
                     ], 403);
                 }
 
-                if ($addon->remaining < $quotaDecrement) {
+                // 4️⃣ Check unlimited
+                if (!$addons->contains(fn($addon) => $addon->total == -1)) {
+                    $totalRemaining = $addons->sum('remaining');
+                    if ($totalRemaining < $quotaDecrement) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'user_limit_error' => 'User has insufficient booking hours remaining.'
+                        ], 403);
+                    }
+
+                    // 5️⃣ Deduct
+                    $hoursToDeduct = $quotaDecrement;
+                    foreach ($addons as $addon) {
+                        if ($hoursToDeduct <= 0)
+                            break;
+
+                        $deduct = min($addon->remaining, $hoursToDeduct);
+                        if ($deduct > 0) {
+                            $addon->decrement('remaining', $deduct);
+                            $hoursToDeduct -= $deduct;
+                        }
+                    }
+                }
+            }
+
+            // Check room overlap before approving/pending
+            if ($validated['status'] === 'approved') {
+                $overlap = $this->checkBookingAvailability(
+                    $booking->schedule_room_id,
+                    $booking->startTime,
+                    $booking->endTime,
+                );
+
+                if ($overlap) {
                     DB::rollBack();
                     return response()->json([
                         'success' => false,
-                        'user_limit_error' => 'User has insufficient booking hours remaining.'
-                    ], 403);
+                        'already_exist' => 'The room is already booked during the selected time range.'
+                    ], 409);
                 }
-
-                // Deduct hours
-                $addon->decrement('remaining', $quotaDecrement);
             }
 
-            // Update status
-            $bookingSchedule->update(['status' => $validated['status']]);
+            // --- Refund hours if booking was pending/approved → rejected/canceled ---
+            if (in_array($oldStatus, ['pending', 'approved']) && in_array($validated['status'], ['rejected', 'canceled'])) {
+                $quotaRefund = $this->checkBookingHours($booking->startTime, $booking->endTime);
 
-            // Room name for notifications
-            $room = ScheduleRoom::find($bookingSchedule->schedule_room_id);
-            $roomName = $room ? $room->name : 'Unknown Room';
+                $packageAddons = UserAddon::whereIn(
+                    'user_package_id',
+                    $user
+                        ->packages()
+                        ->where('status', 'active')
+                        ->where('valid_from', '<=', $today)
+                        ->where('valid_to', '>=', $today)
+                        ->pluck('id')
+                )
+                    ->where('addon_type', 'booking_hours')
+                    ->lockForUpdate()
+                    ->get();
 
+                $standaloneAddons = $user
+                    ->addons()
+                    ->whereNull('user_package_id')
+                    ->where('addon_type', 'booking_hours')
+                    ->lockForUpdate()
+                    ->get();
+
+                $addons = $packageAddons->concat($standaloneAddons);
+
+                $hoursToRefund = $quotaRefund;
+                foreach ($addons as $addon) {
+                    if ($hoursToRefund <= 0)
+                        break;
+
+                    $maxRefundable = $addon->total == -1 ? 0 : $addon->total - $addon->remaining;
+                    if ($maxRefundable <= 0)
+                        continue;
+
+                    $refund = min($hoursToRefund, $maxRefundable);
+                    $addon->increment('remaining', $refund);
+                    $hoursToRefund -= $refund;
+                }
+            }
+
+            // --- Update booking status ---
+            $booking->update(['status' => $validated['status']]);
+
+            // --- Notifications ---
             if ($validated['status'] !== $oldStatus) {
-                $user = User::findOrFail($bookingSchedule->user_id);
+                $room = ScheduleRoom::find($booking->schedule_room_id);
+                $roomName = $room ? $room->name : 'Unknown Room';
+                $admin = auth()->user();
 
-                // Notify user
                 $user->notify(new GeneralNotification([
                     'title' => "Booking Status Updated - {$roomName}",
-                    'message' => "Your booking #{$bookingSchedule->event_id} for Meeting Room {$roomName} is now {$validated['status']}.",
+                    'message' => "Your booking #{$booking->event_id} for Meeting Room {$roomName} is now {$validated['status']}.",
                     'type' => 'booking_status_updated',
-                    'booking_id' => $bookingSchedule->event_id,
+                    'booking_id' => $booking->event_id,
                     'status' => $validated['status'],
                 ]));
 
-                // Notify admin
-                $admin = auth()->user();
-
                 $admin->notify(new GeneralNotification([
                     'title' => "Booking Status Updated - User: {$user->name}",
-                    'message' => "Booking #{$bookingSchedule->event_id} for Meeting Room {$roomName} has been updated to {$validated['status']} by {$admin->name}.",
+                    'message' => "Booking #{$booking->event_id} for Meeting Room {$roomName} updated to {$validated['status']} by {$admin->name}.",
                     'type' => 'booking_status_updated',
-                    'booking_id' => $bookingSchedule->event_id,
+                    'booking_id' => $booking->event_id,
                     'status' => $validated['status'],
                     'updated_by' => $admin->name,
                 ]));
             }
 
             DB::commit();
-
             return response()->json(['success' => true, 'message' => 'Booking Schedule updated successfully'], 200);
         } catch (\Throwable $th) {
             DB::rollBack();

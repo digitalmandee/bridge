@@ -60,7 +60,7 @@ class LeaveCategorySeeder extends Seeder
         ];
 
         foreach ($leaveCategory as $data) {
-            LeaveCategory::create($data);
+            LeaveCategory::firstOrCreate($data);
         }
     }
 }

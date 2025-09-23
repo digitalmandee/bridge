@@ -1,7 +1,8 @@
 <?php
 
-namespace Database\Seeders\Tenants;
+namespace Database\Seeders;
 
+use App\Models\InvestmentType;
 use App\Models\InvoiceType;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -16,8 +17,8 @@ class InvestmentTypeSeeder extends Seeder
      */
     public function run()
     {
-        InvoiceType::create(['name' => 'Equipment']);
-        InvoiceType::create(['name' => 'Furniture']);
-        InvoiceType::create(['name' => 'Office supplies']);
+        InvestmentType::firstOrCreate(['name' => 'Equipment']);
+        InvestmentType::firstOrCreate(['name' => 'Furniture']);
+        InvestmentType::firstOrCreate(['name' => 'Office supplies']);
     }
 }

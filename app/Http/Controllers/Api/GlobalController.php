@@ -60,7 +60,9 @@ class GlobalController extends Controller
     {
         $query = $request->input('query');
 
-        $plans = BookingPlan::where('name', 'like', "%$query%")->select('id', 'name', 'price', 'type')->get();
+        $plans = empty($query)
+            ? BookingPlan::latest()->select('id', 'name', 'price', 'type')->take(5)->get()
+            : BookingPlan::where('name', 'like', "%$query%")->select('id', 'name', 'price', 'type')->get();
 
         return response()->json(['success' => true, 'results' => $plans], 200);
     }

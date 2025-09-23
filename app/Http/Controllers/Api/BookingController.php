@@ -454,7 +454,7 @@ class BookingController extends Controller
             ]);
 
             // === Expire Package if Booking Cancelled/Vacated ===
-            if (in_array($newStatus, ['vacated', 'rejected', 'cancelled', 'confirmed'])) {
+            if (in_array($newStatus, ['vacated', 'rejected', 'cancelled'])) {
                 if ($booking->user_package_id) {
                     $userPackage = UserPackage::find($booking->user_package_id);
                     if ($userPackage) {

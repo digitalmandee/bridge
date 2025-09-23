@@ -16,8 +16,8 @@ class InvoiceTypesSeeder extends Seeder
      */
     public function run()
     {
-        InvoiceType::create(['name' => 'Monthly']);
-        InvoiceType::create(['name' => 'Printing Papers']);
-        InvoiceType::create(['name' => 'Meeting Rooms']);
+        InvoiceType::firstOrCreate(['name' => 'Monthly']);
+        InvoiceType::firstOrCreate(['name' => 'Printing Papers']);
+        InvoiceType::firstOrCreate(['name' => 'Meeting Rooms']);
     }
 }

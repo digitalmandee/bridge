@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->enum('type', ['superadmin', 'admin'])->default('admin');
+            $table->enum('type', ['superadmin', 'admin', 'investor'])->default('admin');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->default(Hash::make('password'));
             $table->string('profile_image')->nullable();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Contract;
 use Illuminate\Http\Request;
@@ -31,12 +32,11 @@ class ContractController extends Controller
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'notice_period' => 'required|numeric',
             'duration' => 'required|in:week,month',
-            'plan' => 'required|array',
-            // 'plan_start_date' => 'required|date',
-            // 'plan_end_date' => 'nullable|date|after_or_equal:plan_start_date',
+            'plan' => 'required',
             'amount' => 'required|numeric',
             'contract' => 'required|string',
             'agreement' => 'required|boolean',
+            'documents.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',  // each file optional
         ]);
 
         if (Contract::where('user_id', $request->user_id)->where('status', 'not signed')->exists()) {
@@ -76,6 +76,17 @@ class ContractController extends Controller
             'agreement' => $request->agreement
         ]);
 
+        if ($request->hasFile('documents')) {
+            $paths = [];
+            foreach ($request->file('documents') as $file) {
+                $paths[] = FileHelper::saveImage($file, 'contracts');
+            }
+
+            $contract->update([
+                'documents' => $paths,
+            ]);
+        }
+
         return response()->json(['success' => true, 'contract' => $contract]);
     }
 
@@ -88,7 +99,7 @@ class ContractController extends Controller
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'notice_period' => 'required|numeric',
             'duration' => 'required|in:week,month',
-            'plan' => 'required|array',
+            'plan' => 'required',
             'amount' => 'required|numeric',
             'contract' => 'required|string',
             'agreement' => 'required|boolean',
@@ -97,6 +108,29 @@ class ContractController extends Controller
         $contract = Contract::find($request->contractId);
 
         if ($contract) {
+            $oldDocs = $contract->documents ?? [];
+            $documentPaths = [];
+
+            // ✅ Always cast request documents to array
+            $requestDocs = (array) ($request->documents ?? []);
+
+            foreach ($requestDocs as $doc) {
+                if ($doc instanceof \Illuminate\Http\UploadedFile) {
+                    $documentPaths[] = FileHelper::saveImage($doc, 'contracts');
+                } elseif (!empty($doc)) {
+                    $documentPaths[] = $doc;  // keep old path
+                }
+            }
+
+            // Find & delete removed docs
+            $deleted = array_diff($oldDocs, $documentPaths);
+            foreach ($deleted as $docPath) {
+                $absolutePath = public_path(ltrim($docPath, '/'));
+                if (file_exists($absolutePath)) {
+                    @unlink($absolutePath);
+                }
+            }
+
             $updateData = [
                 'plan_id' => $request->plan['id'],
                 'type' => $request->type,
@@ -109,6 +143,7 @@ class ContractController extends Controller
                 'amount' => $request->amount,
                 'contract' => $request->contract,
                 'agreement' => $request->agreement,
+                'documents' => $documentPaths
             ];
 
             if ($request->has('status') && !empty($request->status)) {

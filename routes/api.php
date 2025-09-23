@@ -31,18 +31,9 @@ use App\Http\Controllers\Api\ScheduleRoomController;
 use App\Http\Controllers\Api\TableController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\EmailVerificationNotificationController;
-use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Auth\VerifyEmailController;
-use App\Http\Controllers\BranchAuthController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\InvestorController;
-use App\Models\Invoice;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use PharIo\Manifest\AuthorCollection;
 
 /*
  * |--------------------------------------------------------------------------
@@ -70,6 +61,19 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/dashboard/branches', [BranchController::class, 'getBranches']);
     Route::get('/dashboard/branch/stats', [BranchController::class, 'getBranchStats']);
     // Booking Seats
+
+    // Investment
+    Route::group(['prefix' => 'investor'], function () {
+        Route::get('/investor-dashboard', [InvestorController::class, 'dashboard']);
+        Route::get('/users/search', [InvestorController::class, 'search']);
+        Route::get('/investments', [InvestorController::class, 'investments']);
+        Route::get('/locations', [InvestorController::class, 'getLocations']);
+        Route::get('/investment/types', [InvestorController::class, 'getTypes']);
+        Route::post('/users/create-investment', [InvestorController::class, 'createInvestment']);
+
+        // Investment Types
+        Route::resource('investment-types', InvestmentTypeController::class)->except(['create', 'show', 'edit']);
+    });
 });
 
 Route::group(['middleware' => ['set_tenant']], function () {
@@ -137,18 +141,6 @@ Route::group(['middleware' => ['set_tenant']], function () {
         Route::get('requests', [BookingScheduleController::class, 'getRequests']);
         Route::post('update', [BookingScheduleController::class, 'update']);
         Route::delete('{id}', [BookingScheduleController::class, 'destroy']);
-    });
-
-    // Investment
-    Route::group(['prefix' => 'investor'], function () {
-        Route::get('/investments', [InvestorController::class, 'investments']);
-        Route::get('/users/search', [InvestorController::class, 'search']);
-        Route::get('/investment/types', [InvestorController::class, 'getTypes']);
-        Route::post('/users/create-investment', [InvestorController::class, 'createInvestment']);
-        Route::get('/investor-dashboard', [InvestorController::class, 'dashboard']);
-        Route::post('/become-investor', [InvestorController::class, 'becomeInvestor']);
-        // Investment Types
-        Route::resource('investment-types', InvestmentTypeController::class)->except(['create', 'show', 'edit']);
     });
 
     // Invoices

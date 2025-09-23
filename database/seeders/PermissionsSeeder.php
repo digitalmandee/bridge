@@ -22,6 +22,10 @@ class PermissionsSeeder extends Seeder
             'superadmin' => [
                 'Dashboard' => ['dashboard'],
                 'Branch' => ['branch-management', 'branch-create'],
+                'Investor' => ['investors-dashboard', 'investors-management', 'investors-create', 'investors-types'],
+            ],
+            'investor' => [
+                'Dashboard' => ['investor-dashboard', 'investor-management'],
             ],
         ];
 
@@ -40,26 +44,21 @@ class PermissionsSeeder extends Seeder
 
         // Create Roles
         $superAdminRole = Role::firstOrCreate(['name' => 'superadmin']);
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $investerRole = Role::firstOrCreate(['name' => 'investor']);
         // $investerRole = Role::firstOrCreate(['name' => 'invester']);
         // $userRole = Role::firstOrCreate(['name' => 'user']);
 
         // Assign Permissions to Roles
         $superAdminRole->syncPermissions(Permission::where('category', 'superadmin')->pluck('name'));
-        $adminRole->syncPermissions(Permission::where('category', 'admin')->pluck('name'));
+        $investerRole->syncPermissions(Permission::where('category', 'investor')->pluck('name'));
         // $investerRole->syncPermissions(Permission::where('category', 'invester')->pluck('name'));
         // $userRole->syncPermissions(Permission::where('category', 'user')->pluck('name'));
 
         // Assign Roles to Users
         $superAdmin = User::find(1);
-        $branchManager = User::find(2);
-        // $user = User::find(3);
 
         if ($superAdmin) {
             $superAdmin->assignRole('superadmin');
-        }
-        if ($branchManager) {
-            $branchManager->assignRole('admin');
         }
     }
 }

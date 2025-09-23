@@ -183,19 +183,19 @@ class RoomsTableSeeder extends Seeder
             ];
 
             foreach ($rooms as $room) {
-                $newroom = Room::create([
+                $newroom = Room::firstOrCreate([
                     'floor_id' => $room['floor_id'],
                     'name' => $room['name'],
                 ]);
                 foreach ($room['data'] as $table) {
-                    $newtable = Table::create([
+                    $newtable = Table::firstOrCreate([
                         'floor_id' => $room['floor_id'],
                         'room_id' => $newroom->id,
                         'table_id' => $table['id'],
                         'name' => $table['name'],
                     ]);
                     foreach ($table['chairs'] as $chair) {
-                        Chair::create([
+                        Chair::firstOrCreate([
                             'floor_id' => $room['floor_id'],
                             'room_id' => $newroom->id,
                             'table_id' => $newtable->id,

@@ -13,7 +13,7 @@ class Investment extends BaseModel
         'user_id',
         'investment_type_id',
         'investor_id',
-        'location',
+        'tenant_id',
         'amount',
         'date',
         'invoice_path',
@@ -34,5 +34,10 @@ class Investment extends BaseModel
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id', 'id');
     }
 }
