@@ -129,18 +129,17 @@ const SuperAdminDashboard = ({ isSidebarOpen }) => {
 	};
 
 	const chartDataSeats = {
-		labels: ["Day seats", "Night seats", "Full day seats", "Total seats"],
+		labels: ["Day seats", "Night seats", "Full day seats", `Total seats = ${stats1.total_chairs || 0}`],
 		datasets: [
 			{
 				label: "Seats Booked",
 				data: [daySeats, nightSeats, fullSeats, totalSeats],
-				backgroundColor: ["#60A5FA", "#34D399", "#FBB6CE", "#FACC15"],
+				backgroundColor: ["#60A5FA", "#34D399", "#FBB6CE", "#FB923C"],
 				borderColor: "#fff",
 				borderWidth: 2,
 			},
 		],
 	};
-
 	const seatsChartOptions = {
 		responsive: true,
 		plugins: {
@@ -189,7 +188,7 @@ const SuperAdminDashboard = ({ isSidebarOpen }) => {
 		display: "flex",
 		flexDirection: "column",
 		// width: "50%", // Each section takes half the width
-		flex: 1,              // take available space
+		flex: 1, // take available space
 		minWidth: 0,
 	};
 
