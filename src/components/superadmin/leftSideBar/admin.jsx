@@ -5,11 +5,25 @@ import { RxDashboard } from "react-icons/rx";
 import { FaAngleRight } from "react-icons/fa6";
 import { IoGitBranchOutline } from "react-icons/io5";
 ("react-icons/all");
+import InvestorIcon from "../../../assets/investor.svg";
 import "./style.css";
 import { AuthContext } from "@/contexts/SuperContext";
 
 const menuItems = [
 	{ to: "/super-admin/dashboard", label: "Dashboard", icon: <RxDashboard />, hasDropdown: false, permission: "dashboard" },
+	{ to: "/investor/dashboard", label: "Dashboard", icon: <RxDashboard />, hasDropdown: false, permission: "investor-dashboard" },
+	{ to: "/investor/management", label: "Management", icon: <RxDashboard />, hasDropdown: false, permission: "investor-management" },
+	{
+		label: "Investor Management",
+		icon: <img src={InvestorIcon} alt="Investor" style={{ width: 20, height: 20 }} />,
+		hasDropdown: true,
+		dropdown: [
+			// { to: "/super-admin/investor/dashboard", label: "Dashboard", permission: "dashboard" },
+			{ to: "/super-admin/investor/management", label: "Management", permission: "dashboard" },
+			{ to: "/super-admin/investor/new-entry", label: "New Entry", permission: "dashboard" },
+			{ to: "/super-admin/investor/investment-types", label: "Investment Types", permission: "dashboard" },
+		],
+	},
 	{ to: "/super-admin/branch/management", label: "Branch Management", icon: <IoGitBranchOutline />, hasDropdown: false, permission: "dashboard" },
 ];
 

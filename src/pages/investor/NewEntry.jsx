@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Autocomplete, MenuItem, InputAdornment, Button as MuiButton, Snackbar, Alert } from "@mui/material";
+import { TextField, Autocomplete, MenuItem, InputAdornment, Button as MuiButton, Snackbar, Alert, Box, Grid } from "@mui/material";
 import { Modal, Button, Form } from "react-bootstrap";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -7,8 +7,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import axiosInstance from "@/utils/axiosInstance";
 import { width } from "@mui/system";
-import TopNavbar from "@/components/topNavbar";
-import Sidebar from "@/components/leftSideBar";
+import TopNavbar from "@/components/superadmin/topNavbar";
+import Sidebar from "@/components/superadmin/leftSideBar";
 import { MdArrowBackIos } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import colors from "@/assets/styles/color";
@@ -46,8 +46,11 @@ const NewInvestorEntry = () => {
 	useEffect(() => {
 		const fetchOptions = async () => {
 			try {
-				const [typesRes] = await Promise.all([axiosInstance.get("investor/investment/types")]);
+				const [typesRes, locationsRes] = await Promise.all([axiosInstance.get("investor/investment/types"), axiosInstance.get("investor/locations")]);
+				console.log(typesRes, locationsRes);
+
 				setInvestmentTypes(typesRes.data || []);
+				setLocations(locationsRes.data || []);
 			} catch (err) {
 				console.error("Error fetching options:", err);
 			}
@@ -127,7 +130,7 @@ const NewInvestorEntry = () => {
 			setNotes("");
 		} catch (err) {
 			console.error(err);
-			alert("Error saving investment");
+			setSnackbar({ open: true, message: err.response?.data?.message || "Something went wrong.", severity: "error" });
 		}
 	};
 
@@ -143,124 +146,147 @@ const NewInvestorEntry = () => {
 						<div onClick={() => navigate(-1)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
 							<MdArrowBackIos style={{ fontSize: "20px", marginRight: "10px" }} />
 						</div>
-						<h4 style={{ margin: 0 }}>New Investor</h4>
+						<h4 style={{ margin: 0 }}>New Invoice</h4>
 					</div>
-					<div className="container-fluid p-3 border rounded shadow-sm" style={{ maxWidth: 600 }}>
+					<div className="container-fluid p-3 border rounded shadow-sm" style={{ maxWidth: 1000, backgroundColor: "white" }}>
 						<h4>New Investor Entry</h4>
 						<form onSubmit={handleSubmit}>
-							{/* Investor Autocomplete */}
-							<Autocomplete
-								value={selectedInvestor}
-								onChange={(event, newValue) => {
-									if (newValue?.inputValue === "ADD_NEW") {
-										setShowAddInvestorModal(true);
-									} else {
-										setSelectedInvestor(newValue);
-									}
-								}}
-								onInputChange={(event, newInputValue) => handleSearch(newInputValue)}
-								filterOptions={(options, params) => {
-									const filtered = options.filter((o) => o.name.toLowerCase().includes(params.inputValue.toLowerCase()));
-									if (params.inputValue !== "" && !filtered.length) {
-										filtered.push({ name: "Add New Investor", inputValue: "ADD_NEW" });
-									}
-									return filtered;
-								}}
-								getOptionLabel={(option) => option?.name || ""}
-								options={searchResults}
-								renderInput={(params) => <TextField {...params} label="Investor" required />}
-								freeSolo
-							/>
+							<Box>
+								<Grid spacing={2} container>
+									<Grid md={12} item>
+										{/* Investor Autocomplete */}
+										<Autocomplete
+											value={selectedInvestor}
+											onChange={(event, newValue) => {
+												if (newValue?.inputValue === "ADD_NEW") {
+													setShowAddInvestorModal(true);
+												} else {
+													setSelectedInvestor(newValue);
+												}
+											}}
+											onInputChange={(event, newInputValue) => handleSearch(newInputValue)}
+											filterOptions={(options, params) => {
+												const filtered = options.filter((o) => o.name.toLowerCase().includes(params.inputValue.toLowerCase()));
+												if (params.inputValue !== "" && !filtered.length) {
+													filtered.push({ name: "Add New Investor", inputValue: "ADD_NEW" });
+												}
+												return filtered;
+											}}
+											getOptionLabel={(option) => option?.name || ""}
+											options={searchResults}
+											renderInput={(params) => <TextField sx={{ m: 0 }} {...params} label="Investor" required />}
+											freeSolo
+										/>
 
-							{selectedInvestor && (
-								<div style={{ marginTop: "10px", marginBottom: "10px", padding: "10px", border: "1px solid #ccc", borderRadius: "5px", backgroundColor: "#f9f9f9" }}>
-									<strong>Selected Investor:</strong> {selectedInvestor.name} ({selectedInvestor.email})
-								</div>
-							)}
+										{selectedInvestor && (
+											<div style={{ marginTop: "10px", marginBottom: "10px", padding: "10px", border: "1px solid #ccc", borderRadius: "5px", backgroundColor: "#f9f9f9" }}>
+												<strong>Selected Investor:</strong> {selectedInvestor.name} ({selectedInvestor.email})
+											</div>
+										)}
+									</Grid>
 
-							{/* Investment Type */}
-							<TextField select label="Investment Type" value={investmentType} onChange={(e) => setInvestmentType(e.target.value)} fullWidth margin="normal" required>
-								{investmentTypes.map((type) => (
-									<MenuItem key={type.id || type} value={type.id || type}>
-										{type.name || type}
-									</MenuItem>
-								))}
-							</TextField>
+									<Grid md={6} item>
+										{/* Investment Type */}
+										<TextField sx={{ m: 0 }} select label="Investment Type" value={investmentType} onChange={(e) => setInvestmentType(e.target.value)} fullWidth margin="normal" required>
+											{investmentTypes.map((type) => (
+												<MenuItem key={type.id || type} value={type.id || type}>
+													{type.name || type}
+												</MenuItem>
+											))}
+										</TextField>
+									</Grid>
 
-							{/* Amount */}
-							<TextField
-								label="Amount"
-								type="number"
-								value={amount}
-								onChange={(e) => setAmount(e.target.value)}
-								fullWidth
-								margin="normal"
-								required
-								InputProps={{
-									startAdornment: <InputAdornment position="start">PKR</InputAdornment>,
-								}}
-							/>
+									<Grid md={6} item>
+										{/* Location */}
+										<TextField sx={{ m: 0 }} select label="Location" value={location} onChange={(e) => setLocation(e.target.value)} fullWidth margin="normal">
+											<MenuItem value="">None</MenuItem>
+											{locations.map((loc) => (
+												<MenuItem key={loc.id || loc} value={loc.id || loc}>
+													{loc.name || loc}
+												</MenuItem>
+											))}
+										</TextField>
+									</Grid>
 
-							{/* Profit % */}
-							<TextField label="Profit %" type="number" value={profitPercent} onChange={(e) => setProfitPercent(e.target.value)} fullWidth margin="normal" />
+									<Grid md={6} item>
+										{/* Amount */}
+										<TextField sx={{ m: 0 }} label="Amount" type="number" value={amount} onChange={(e) => setAmount(e.target.value)} fullWidth margin="normal" required InputProps={{ startAdornment: <InputAdornment position="start">PKR</InputAdornment> }} />
+									</Grid>
 
-							{/* Share % */}
-							<TextField label="Share %" type="number" value={sharePercent} onChange={(e) => setSharePercent(e.target.value)} fullWidth margin="normal" />
+									<Grid md={6} item>
+										{/* Profit % */}
+										<TextField sx={{ m: 0 }} label="Profit %" type="number" value={profitPercent} onChange={(e) => setProfitPercent(e.target.value)} fullWidth margin="normal" />
+									</Grid>
 
-							{/* Share Type */}
-							<TextField select label="Share Type" value={shareType} onChange={(e) => setShareType(e.target.value)} fullWidth margin="normal">
-								<MenuItem value="equity">Equity</MenuItem>
-								<MenuItem value="fixed">Fixed</MenuItem>
-								<MenuItem value="other">Other</MenuItem>
-							</TextField>
+									<Grid md={6} item>
+										{/* Share % */}
+										<TextField sx={{ m: 0 }} label="Share %" type="number" value={sharePercent} onChange={(e) => setSharePercent(e.target.value)} fullWidth margin="normal" />
+									</Grid>
 
-							{/* Date */}
-							<LocalizationProvider dateAdapter={AdapterDayjs}>
-								<DatePicker label="Date of Investment" sx={{ width: "100%" }} value={date} onChange={(newValue) => setDate(newValue)} renderInput={(params) => <TextField {...params} fullWidth margin="normal" />} />
-							</LocalizationProvider>
+									<Grid md={6} item>
+										{/* Share Type */}
+										<TextField sx={{ m: 0 }} select label="Share Type" value={shareType} onChange={(e) => setShareType(e.target.value)} fullWidth margin="normal">
+											<MenuItem value="equity">Equity</MenuItem>
+											<MenuItem value="fixed">Fixed</MenuItem>
+											<MenuItem value="other">Other</MenuItem>
+										</TextField>
+									</Grid>
 
-							{/* Notes */}
-							<TextField label="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} fullWidth multiline rows={2} margin="normal" />
+									<Grid md={6} item>
+										{/* Notes */}
+										<TextField sx={{ m: 0 }} label="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} fullWidth multiline rows={2} margin="normal" />
+									</Grid>
 
-							{/* Invoice Upload */}
-							<Form.Group className="mb-3">
-								<Form.Label>Upload Invoice</Form.Label>
-								<Form.Control type="file" accept="application/pdf,image/*" onChange={(e) => setInvoice(e.target.files[0])} />
-							</Form.Group>
+									<Grid md={6} item>
+										{/* Date */}
+										<LocalizationProvider dateAdapter={AdapterDayjs}>
+											<DatePicker label="Date of Investment" sx={{ width: "100%" }} value={date} onChange={(newValue) => setDate(newValue)} renderInput={(params) => <TextField sx={{ m: 0 }} {...params} fullWidth margin="normal" />} />
+										</LocalizationProvider>
+									</Grid>
 
+									<Grid md={6} item>
+										{/* Invoice Upload */}
+										<Form.Group className="mb-3">
+											<Form.Label>Upload Invoice</Form.Label>
+											<Form.Control type="file" accept="application/pdf,image/*" onChange={(e) => setInvoice(e.target.files[0])} />
+										</Form.Group>
+									</Grid>
+								</Grid>
+							</Box>
 							<MuiButton type="submit" variant="contained" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: colors.primary } }} fullWidth>
 								Add Investment
 							</MuiButton>
 						</form>
-
-						{/* Add Investor Modal (only used if you want manual create) */}
-						<Modal show={showAddInvestorModal} onHide={() => setShowAddInvestorModal(false)}>
-							<Modal.Header closeButton>
-								<Modal.Title>Add New Investor</Modal.Title>
-							</Modal.Header>
-							<Modal.Body>
-								<Form.Group className="mb-2">
-									<Form.Label>Name</Form.Label>
-									<Form.Control type="text" value={newInvestor.name} onChange={(e) => setNewInvestor({ ...newInvestor, name: e.target.value })} />
-								</Form.Group>
-								<Form.Group className="mb-2">
-									<Form.Label>Email</Form.Label>
-									<Form.Control type="email" value={newInvestor.email} onChange={(e) => setNewInvestor({ ...newInvestor, email: e.target.value })} />
-								</Form.Group>
-							</Modal.Body>
-							<Modal.Footer>
-								<Button variant="secondary" onClick={() => setShowAddInvestorModal(false)}>
-									Cancel
-								</Button>
-								<MuiButton variant="contained" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: colors.primary } }} onClick={handleConfirmInvestor}>
-									Select Investor
-								</MuiButton>
-							</Modal.Footer>
-						</Modal>
 					</div>
 				</div>
 			</div>
 
+			{/* Add Investor Modal (only used if you want manual create) */}
+			<Modal show={showAddInvestorModal} onHide={() => setShowAddInvestorModal(false)}>
+				<Modal.Header closeButton>
+					<Modal.Title>Add New Investor</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<Box>
+						<Form.Group className="mb-2">
+							<Form.Label>Name</Form.Label>
+							<Form.Control type="text" value={newInvestor.name} onChange={(e) => setNewInvestor({ ...newInvestor, name: e.target.value })} />
+						</Form.Group>
+						<Form.Group className="mb-2">
+							<Form.Label>Email</Form.Label>
+							<Form.Control type="email" value={newInvestor.email} onChange={(e) => setNewInvestor({ ...newInvestor, email: e.target.value })} />
+						</Form.Group>
+					</Box>
+				</Modal.Body>
+				<Modal.Footer>
+					<Button variant="secondary" onClick={() => setShowAddInvestorModal(false)}>
+						Cancel
+					</Button>
+					<MuiButton variant="contained" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: colors.primary } }} onClick={handleConfirmInvestor}>
+						Select Investor
+					</MuiButton>
+				</Modal.Footer>
+			</Modal>
 			{/* Snackbar for success/failure message */}
 			<Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
 				<Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">

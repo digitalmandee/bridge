@@ -12,7 +12,6 @@ import "./style.css";
 
 const menuItems = [
 	// Example Investor-only page
-	{ to: "/user/investor/dashboard", label: "Investor Dashboard", icon: <RxDashboard />, requiresInvestor: true },
 	{ to: "/user/dashboard", label: "Dashboard", icon: <RxDashboard /> },
 	{ to: "/user/booking-request", label: "Seats Booking Request", icon: <MdOutlineEventSeat /> },
 	{

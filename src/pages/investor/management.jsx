@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, Pagination } from "@mui/material";
-import TopNavbar from "@/components/topNavbar";
-import Sidebar from "@/components/leftSideBar";
+import TopNavbar from "@/components/superadmin/topNavbar";
+import Sidebar from "@/components/superadmin/leftSideBar";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/utils/axiosInstance";
 import colors from "@/assets/styles/color";
@@ -111,7 +111,7 @@ const InvestorManagement = () => {
 													<TableCell>{investment.investor?.name || "N/A"}</TableCell>
 													<TableCell>{investment.user?.email || "N/A"}</TableCell>
 													<TableCell>{investment.investment_type_id}</TableCell>
-													<TableCell>{investment.location}</TableCell>
+													<TableCell>{investment.location?.name}</TableCell>
 													<TableCell>{investment.amount}</TableCell>
 													<TableCell>{investment.date ? new Date(investment.date).toLocaleDateString() : "N/A"}</TableCell>
 													<TableCell>{investment.profit_percent || "-"}</TableCell>

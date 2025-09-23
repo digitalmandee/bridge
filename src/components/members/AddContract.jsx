@@ -3,6 +3,7 @@ import { Typography, Button, IconButton, Modal, Box, TextField, Select, MenuItem
 import { Add as AddIcon, Remove as RemoveIcon, Close as CloseIcon } from "@mui/icons-material";
 import axiosInstance from "@/utils/axiosInstance";
 import colors from "@/assets/styles/color";
+import { objectToFormData } from "@/helpers/objectToFormData";
 
 const AddContract = ({ getContracts }) => {
 	const [open, setOpen] = useState(false);
@@ -30,6 +31,7 @@ const AddContract = ({ getContracts }) => {
 		amount: "",
 		contract: "",
 		agreement: false,
+		documents: [],
 	};
 
 	const [formData, setFormData] = useState(initialFormData);
@@ -78,7 +80,6 @@ const AddContract = ({ getContracts }) => {
 		}
 	}, []);
 	const fetchPlanSearchResults = useCallback(async (query) => {
-		if (!query) return []; // Don't make a request if the query is empty.
 		setLoading(true);
 		try {
 			const response = await axiosInstance.get("search-plan", {
@@ -120,6 +121,8 @@ const AddContract = ({ getContracts }) => {
 				setMembers(members);
 				const companies = await fetchSearchResults("", "company");
 				setCompanies(companies);
+				const searchPlan = await fetchPlanSearchResults("");
+				setBookingPlans(searchPlan);
 			} catch (error) {
 				console.log(error.response.data);
 			}
@@ -130,12 +133,8 @@ const AddContract = ({ getContracts }) => {
 	const handlePlanSearch = async (event, newValue) => {
 		const query = event?.target?.value || "";
 
-		if (query) {
-			const results = await fetchPlanSearchResults(query);
-			setBookingPlans(results);
-		} else {
-			setCompanies([]);
-		}
+		const results = await fetchPlanSearchResults(query);
+		setBookingPlans(results);
 	};
 
 	// Handle Autocomplete change
@@ -152,7 +151,8 @@ const AddContract = ({ getContracts }) => {
 		const updatedFormData = { ...formData, user_id: UserId };
 
 		try {
-			const res = await axiosInstance.post("member/contract/create", updatedFormData);
+			const payload = objectToFormData(updatedFormData);
+			const res = await axiosInstance.post("member/contract/create", payload);
 			if (res.data.success) {
 				setAlertOpen(true);
 				handleClose();
@@ -326,6 +326,35 @@ const AddContract = ({ getContracts }) => {
 				return (
 					<Box sx={{ mt: 2 }}>
 						<TextField fullWidth label="Contract" value={formData.contract} onChange={handleInputChange("contract")} sx={{ mb: 2 }} required />
+
+						{/* Multiple File Upload (PDF + Images) */}
+						<Button variant="outlined" component="label" sx={{ mb: 2 }}>
+							Upload Documents (Optional)
+							<input
+								type="file"
+								hidden
+								multiple
+								accept="application/pdf,image/*"
+								onChange={(e) => {
+									const files = Array.from(e.target.files);
+									setFormData({ ...formData, documents: files });
+								}}
+							/>
+						</Button>
+
+						{formData.documents.length > 0 && (
+							<Box sx={{ mb: 2 }}>
+								<Typography variant="body2" sx={{ fontWeight: "bold" }}>
+									Selected Documents:
+								</Typography>
+								<ul>
+									{formData.documents.map((file, idx) => (
+										<li key={idx}>{file.name}</li>
+									))}
+								</ul>
+							</Box>
+						)}
+
 						<FormControlLabel control={<Checkbox checked={formData.agreement} onChange={handleInputChange("agreement")} />} label="Agree to Terms & Conditions" />
 					</Box>
 				);

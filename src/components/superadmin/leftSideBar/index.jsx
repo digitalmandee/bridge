@@ -13,7 +13,7 @@ const Sidebar = () => {
 	return (
 		<>
 			<div className={`sidebar ${context.isToggleSidebar === true ? "toggle" : ""}`}>
-				{user.type === "superadmin" && <Admin />}
+				{(user.type === "superadmin" || user.type === "investor") && <Admin />}
 				<ul>
 					<li>
 						<Button className="w-100" onClick={logout}>

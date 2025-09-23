@@ -59,21 +59,6 @@ const MemberCompanyDetail = () => {
 									<Typography variant="h5">Detail</Typography>
 								</Box>
 							</div>
-							<div className="col-auto">
-								<Box display="flex" gap={2}>
-									<Button variant="outlined" startIcon={<DownloadIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }}>
-										CSV
-									</Button>
-									<Button variant="outlined" startIcon={<FilterIcon />} sx={{ borderColor: "#e0e0e0", color: "text.secondary" }}>
-										Filter
-									</Button>
-									<Select value={month} onChange={(e) => setMonth(e.target.value)} size="small" sx={{ minWidth: 120 }}>
-										<MenuItem value="Month">Month</MenuItem>
-										<MenuItem value="January">January</MenuItem>
-										<MenuItem value="February">February</MenuItem>
-									</Select>
-								</Box>
-							</div>
 						</div>
 
 						{/* company Profile */}

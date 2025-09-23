@@ -3,12 +3,12 @@ import { Button, Card, CardContent, Grid, Typography } from "@mui/material";
 import { Bar, Pie } from "react-chartjs-2";
 import axios from "axios";
 import NewInvestorEntry from "./NewEntry";
-import TopNavbar from "@/components/topNavbar";
-import Sidebar from "@/components/leftSideBar";
+import TopNavbar from "@/components/superadmin/topNavbar";
+import Sidebar from "@/components/superadmin/leftSideBar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "@/utils/axiosInstance";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
-import { AuthContext } from "@/contexts/AuthContext";
+import { AuthContext } from "@/contexts/SuperContext";
 import colors from "@/assets/styles/color";
 
 const InvestorDashboard = () => {
@@ -73,7 +73,7 @@ const InvestorDashboard = () => {
 						{/* {!showForm && ( */}
 						<Grid container justifyContent="space-between" alignItems="center">
 							<Typography variant="h5">Investor Dashboard</Typography>
-							{userRole === "admin" && (
+							{userRole === "superadmin" && (
 								<Button onClick={() => navigate("/" + branch + "/branch/investor/new-entry")} variant="contained" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: colors.primary } }}>
 									{showForm ? "Close Form" : "New Investment"}
 								</Button>

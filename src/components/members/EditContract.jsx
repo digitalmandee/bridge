@@ -1,8 +1,9 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Typography, Button, IconButton, Modal, Box, TextField, Select, MenuItem, FormControl, InputLabel, Checkbox, FormControlLabel, Stepper, Step, StepLabel, ToggleButton, ToggleButtonGroup, CircularProgress, Snackbar, Alert, Autocomplete } from "@mui/material";
+import { Typography, Button, IconButton, Modal, Box, TextField, Select, MenuItem, FormControl, InputLabel, Checkbox, FormControlLabel, Stepper, Step, StepLabel, ToggleButton, ToggleButtonGroup, CircularProgress, Snackbar, Alert, Autocomplete, Grid } from "@mui/material";
 import { Add as AddIcon, Remove as RemoveIcon, Close as CloseIcon } from "@mui/icons-material";
 import axiosInstance from "@/utils/axiosInstance";
 import { AuthContext } from "@/contexts/AuthContext";
+import { objectToFormData } from "@/helpers/objectToFormData";
 
 const EditContract = ({ contract, open, onClose }) => {
 	const { user } = useContext(AuthContext);
@@ -29,6 +30,7 @@ const EditContract = ({ contract, open, onClose }) => {
 		deposit: contract.deposit || "",
 		contract: contract.contract || "",
 		agreement: contract.agreement || false,
+		documents: contract.documents || [], // store both strings (old docs) + File (new uploads)
 		status: "",
 		signature: contract.signature || "",
 	});
@@ -48,6 +50,7 @@ const EditContract = ({ contract, open, onClose }) => {
 			amount: contract.amount || "",
 			contract: contract.contract || "",
 			agreement: contract.agreement || false,
+			documents: contract.documents || [],
 			status: "",
 			signature: contract.signature || "",
 		});
@@ -114,10 +117,11 @@ const EditContract = ({ contract, open, onClose }) => {
 		setLoading(true);
 		const updatedFormData = { ...formData, contractId: contract.id };
 
-		console.log(updatedFormData);
-
 		try {
-			const res = await axiosInstance.put("member/contract/update", updatedFormData);
+			const payload = objectToFormData({ ...updatedFormData, _method: "PUT" });
+			const res = await axiosInstance.post("member/contract/update", payload, {
+				headers: { "Content-Type": "multipart/form-data" },
+			});
 
 			if (res.data.success) {
 				setAlertOpen(true);
@@ -230,6 +234,61 @@ const EditContract = ({ contract, open, onClose }) => {
 				return (
 					<Box sx={{ mt: 2 }}>
 						<TextField fullWidth label="Contract" value={formData.contract} onChange={handleInputChange("contract")} sx={{ mb: 2 }} required disabled={isReadOnly} />
+						{/* Upload new documents */}
+						<Button variant="contained" component="label" disabled={isReadOnly} sx={{ mb: 2 }}>
+							Upload Documents
+							<input
+								type="file"
+								hidden
+								multiple
+								onChange={(e) => {
+									const files = Array.from(e.target.files);
+									setFormData((prev) => ({
+										...prev,
+										documents: [...(prev.documents || []), ...files],
+									}));
+								}}
+							/>
+						</Button>
+
+						{/* Preview uploaded + existing documents */}
+						<Grid container spacing={1}>
+							{(formData.documents || []).map((file, idx) => {
+								const fileName = typeof file === "string" ? file.split("/").pop() : file?.name ?? "";
+
+								return (
+									<Grid item key={idx}>
+										<Box
+											sx={{
+												display: "flex",
+												alignItems: "center",
+												border: "1px solid #ccc",
+												borderRadius: 1,
+												px: 1,
+												py: 0.5,
+												backgroundColor: "#f9f9f9",
+											}}>
+											<Typography variant="body2" sx={{ mr: 1 }}>
+												{fileName}
+											</Typography>
+											<IconButton
+												size="small"
+												disabled={isReadOnly}
+												onClick={() => {
+													setFormData((prev) => {
+														const newPreview = [...prev.documents];
+														newPreview.splice(idx, 1);
+														return { ...prev, documents: newPreview };
+													});
+												}}>
+												<CloseIcon fontSize="small" />
+											</IconButton>
+										</Box>
+									</Grid>
+								);
+							})}
+						</Grid>
+
 						<FormControlLabel control={<Checkbox checked={formData.agreement} onChange={handleInputChange("agreement")} disabled={isReadOnly} />} label="Agree to Terms & Conditions" />
 						<br />
 						{user.type === "admin" && (

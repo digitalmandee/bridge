@@ -15,7 +15,6 @@ import { MdPeopleOutline } from "react-icons/md";
 import { MdOutlinePeople } from "react-icons/md";
 import { FaUserCheck } from "react-icons/fa";
 import { GiPowerButton } from "react-icons/gi";
-import InvestorIcon from "../../assets/investor.svg"
 ("react-icons/all");
 import "./style.css";
 import { AuthContext } from "@/contexts/AuthContext";
@@ -58,17 +57,6 @@ const menuItems = [
 			{ to: "/branch/invoice/create", label: "New Invoice", permission: "new-invoice" },
 			{ to: "/branch/invoice/management", label: "Invoice Management", permission: "invoice-management" },
 			{ to: "/branch/invoice/types", label: "Invocie Types", permission: "invoice-dashboard" },
-		],
-	},
-	{
-		label: "Investor Management",
-		icon: <img src={InvestorIcon} alt="Investor" style={{ width: 20, height: 20 }} />,
-		hasDropdown: true,
-		dropdown: [
-			{ to: "/branch/investor/dashboard", label: "Dashboard", permission: "invoice-dashboard" },
-			{ to: "/branch/investor/management", label: "Management", permission: "invoice-dashboard" },
-			{ to: "/branch/investor/new-entry", label: "New Entry", permission: "invoice-dashboard" },
-			{ to: "/branch/investor/investment-types", label: "Investment Types", permission: "invoice-dashboard" },
 		],
 	},
 	{

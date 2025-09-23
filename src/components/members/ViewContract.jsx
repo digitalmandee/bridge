@@ -341,6 +341,28 @@ const ViewContract = ({ contract, open, onClose }) => {
 									</Typography>
 								</CardContent>
 
+								{/* Documents Section */}
+								{Array.isArray(contract?.documents) && contract.documents.length > 0 && (
+									<>
+										<Divider />
+										<CardContent>
+											<Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+												Uploaded Documents
+											</Typography>
+											{contract.documents.map((doc, index) => (
+												<Box key={index} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+													<Typography variant="body2" sx={{ flex: 1 }}>
+														Document {index + 1}
+													</Typography>
+													<Button variant="outlined" size="small" color="primary" startIcon={<DownloadIcon />} component="a" href={`${import.meta.env.VITE_ASSET_API}${doc}`} target="_blank" rel="noopener noreferrer">
+														View / Download
+													</Button>
+												</Box>
+											))}
+										</CardContent>
+									</>
+								)}
+
 								{/* Signature Section */}
 								<Divider />
 								<CardContent>

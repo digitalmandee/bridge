@@ -8,6 +8,11 @@ import CreateBranch from "./pages/dashboard/branch";
 import BranchManagement from "./pages/branch";
 import SuperAdminLogin from "./pages/auth/login/superadminlogin";
 
+import InvestorDashboard from "@/pages/investor/dashboard";
+import NewInvestment from "@/pages/investor/NewEntry";
+import InvestmentTypes from "@/pages/investor/InvestmentTypes";
+import InvestorManagement from "@/pages/investor/management";
+
 function SuperAdminRoutes() {
 	return (
 		<Routes>
@@ -34,6 +39,41 @@ function SuperAdminRoutes() {
 				element={
 					<ProtectedSuperRoute role="superadmin">
 						<BranchManagement />
+					</ProtectedSuperRoute>
+				}
+			/>
+
+			{/* Investor Dashboard */}
+
+			<Route
+				path="investor/dashboard"
+				element={
+					<ProtectedSuperRoute role="superadmin">
+						<InvestorDashboard />
+					</ProtectedSuperRoute>
+				}
+			/>
+			<Route
+				path="investor/new-entry"
+				element={
+					<ProtectedSuperRoute role="superadmin">
+						<NewInvestment />
+					</ProtectedSuperRoute>
+				}
+			/>
+			<Route
+				path="investor/investment-types"
+				element={
+					<ProtectedSuperRoute role="superadmin">
+						<InvestmentTypes />
+					</ProtectedSuperRoute>
+				}
+			/>
+			<Route
+				path="investor/management"
+				element={
+					<ProtectedSuperRoute role="superadmin">
+						<InvestorManagement />
 					</ProtectedSuperRoute>
 				}
 			/>

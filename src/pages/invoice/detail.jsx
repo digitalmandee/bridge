@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate, useParams } from "react-router-dom";
-import profile from "@/assets/profile.png";
 import { MdArrowBackIos } from "react-icons/md";
 import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Select, MenuItem, styled, CircularProgress } from "@mui/material";
 import { ArrowBack as ArrowBackIcon, Download as DownloadIcon, FilterAlt as FilterIcon, Notifications as NotificationsIcon } from "@mui/icons-material";
@@ -11,8 +10,6 @@ import axiosInstance from "@/utils/axiosInstance";
 
 const InvoiceDetail = () => {
 	const navigate = useNavigate();
-
-	const [month, setMonth] = useState("Month");
 
 	const { customerId } = useParams(); // Get invoice ID from URL
 	const [customer, setCustomer] = useState({});
@@ -95,7 +92,6 @@ const InvoiceDetail = () => {
 		document.body.removeChild(link);
 		URL.revokeObjectURL(url);
 	};
-
 
 	return (
 		<>

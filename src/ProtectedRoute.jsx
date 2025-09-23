@@ -49,13 +49,6 @@ const ProtectedRoute = ({ children, role, permission }) => {
 		return <Navigate to={`/${branch}/no-permission`} replace />;
 	}
 
-	// --- Investor dashboard check ---
-	if (location.pathname.includes("/investor/dashboard")) {
-		if (!user.is_investor) {
-			return <Navigate to={`/${branch}/no-permission`} replace />;
-		}
-	}
-
 	// --- Normal feature pages check (profile must be completed) ---
 	if (!location.pathname.includes("/investor/dashboard") && !user.is_profile_completed && location.pathname !== `/${branch}/no-permission` && userRole !== "admin") {
 		return <Navigate to={`/${branch}/no-permission`} replace />;

@@ -26,6 +26,7 @@ const SuperAdminLogin = () => {
 			// setRole(response.data.data.role);
 			// setPermissions(response.data.data.permissions);
 			if (response.data.data.type === "superadmin") window.location.href = "/super-admin/dashboard";
+			if (response.data.data.type === "investor") window.location.href = "/investor/dashboard";
 		} catch (error) {
 			console.log(error.response.data);
 			alert("Login failed. Check credentials.");

@@ -11,7 +11,6 @@ import "./style.css";
 
 const menuItems = [
 	// Example Investor-only menu
-	{ to: "/company/investor/dashboard", label: "Investor Dashboard", icon: <RxDashboard />, requiresInvestor: true },
 	{ to: "/company/dashboard", label: "Dashboard", icon: <RxDashboard /> },
 	{ to: "/company/booking-request", label: "Seats Booking Request", icon: <RxDashboard /> },
 	{
@@ -38,7 +37,6 @@ const Company = () => {
 
 	// ✅ get auth context
 	const { user } = useContext(AuthContext);
-	const isInvestor = user?.is_investor; // from investors table
 	const hasProfile = user?.is_profile_completed; // true/false from backend
 
 	const toggleDropdown = (label) => {
@@ -49,7 +47,6 @@ const Company = () => {
 		<ul>
 			{menuItems.map((item, index) => {
 				// 🔒 access rules
-				if (item.requiresInvestor && !isInvestor) return null;
 				if (!item.requiresInvestor && !hasProfile) return null;
 
 				return (

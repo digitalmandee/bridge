@@ -15,6 +15,7 @@ import SuperAdminRoutes from "./SuperAdminRoutes";
 import AuthProvider from "./contexts/AuthContext";
 import SuperAuthProvider from "./contexts/SuperContext";
 import AuthRoutes from "./AuthRoutes";
+import InvestorRoutes from "./InvestorRoutes";
 
 function App() {
 	// const [isToggleSideBar, setIsToggleSidebar] = useState(false);
@@ -36,6 +37,14 @@ function App() {
 					element={
 						<SuperAuthProvider>
 							<SuperAdminRoutes />
+						</SuperAuthProvider>
+					}
+				/>
+				<Route
+					path="/investor/*"
+					element={
+						<SuperAuthProvider>
+							<InvestorRoutes />
 						</SuperAuthProvider>
 					}
 				/>

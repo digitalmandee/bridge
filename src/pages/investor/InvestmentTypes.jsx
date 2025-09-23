@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import TopNavbar from "@/components/topNavbar";
-import Sidebar from "@/components/leftSideBar";
+import TopNavbar from "@/components/superadmin/topNavbar";
+import Sidebar from "@/components/superadmin/leftSideBar";
 import { useNavigate } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress, Pagination, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Snackbar, Alert } from "@mui/material";
