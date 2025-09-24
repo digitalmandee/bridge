@@ -9,6 +9,7 @@ use App\Models\Booking;
 use App\Models\Chair;
 use App\Models\Invoice;
 use App\Models\User;
+use App\Models\UserAddon;
 use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -353,36 +354,60 @@ class InvoicesController extends Controller
      */
     private function updateUserQuotaByInvoice($invoice)
     {
-        $user = User::find($invoice->user_id);
-
-        if (!$user)
-            return;
-
         if (in_array($invoice->status, ['paid', 'overdue'])) {
             if ($invoice->invoice_type === 'Printing Papers') {
-                $user->increment('printing_quota', $invoice->quantity);
-                $user->increment('total_printing_quota', $invoice->quantity);
+                UserAddon::create([
+                    'user_package_id' => null,  // standalone purchase
+                    'user_id' => $invoice->user_id,
+                    'addon_type' => 'printing_papers',
+                    'total' => $invoice->quantity,
+                    'remaining' => $invoice->quantity,
+                    'price' => $invoice->amount,  // if applicable
+                    'purchased_at' => now(),
+                ]);
             } elseif ($invoice->invoice_type === 'Meeting Rooms') {
-                $user->increment('booking_quota', $invoice->hours);
-                $user->increment('total_booking_quota', $invoice->hours);
+                UserAddon::create([
+                    'user_package_id' => null,
+                    'user_id' => $invoice->user_id,
+                    'addon_type' => 'booking_hours',
+                    'total' => $invoice->hours,
+                    'remaining' => $invoice->hours,
+                    'price' => $invoice->amount,
+                    'purchased_at' => now(),
+                ]);
             }
         }
-        $user->save();
     }
 
     /**
-     * Update user quota based on confirmed monthly invoice
+     * Update user quota based on confirmed monthly booking
      */
     private function updateUserQuota($booking)
     {
         $totalChairs = count($booking->chair_ids);
-        $user = User::find($booking->user_id);
 
-        if ($booking->duration == 'monthly') {
-            $user->increment('booking_quota', $totalChairs * $booking->plan['booking_hours']);
-            $user->increment('total_booking_quota', $totalChairs * $booking->plan['booking_hours']);
-            $user->increment('printing_quota', $totalChairs * $booking->plan['printing_hours']);
-            $user->increment('total_printing_quota', $totalChairs * $booking->plan['printing_hours']);
+        if ($booking->duration === 'monthly') {
+            // booking_hours addon
+            UserAddon::create([
+                'user_package_id' => $booking->user_package_id,
+                'user_id' => $booking->user_id,
+                'addon_type' => 'booking_hours',
+                'total' => $totalChairs * $booking->plan['booking_hours'],
+                'remaining' => $totalChairs * $booking->plan['booking_hours'],
+                'price' => 0,
+                'purchased_at' => now(),
+            ]);
+
+            // printing_papers addon
+            UserAddon::create([
+                'user_package_id' => $booking->user_package_id,
+                'user_id' => $booking->user_id,
+                'addon_type' => 'printing_papers',
+                'total' => $totalChairs * $booking->plan['printing_hours'],
+                'remaining' => $totalChairs * $booking->plan['printing_hours'],
+                'price' => 0,
+                'purchased_at' => now(),
+            ]);
         }
     }
 
