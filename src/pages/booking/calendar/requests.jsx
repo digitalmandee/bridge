@@ -12,10 +12,12 @@ import colors from "@/assets/styles/color";
 import { AuthContext } from "@/contexts/AuthContext";
 import { Grid } from "@mui/system";
 import axiosInstance from "@/utils/axiosInstance";
+import { MdArrowBackIos } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const Requests = () => {
+	const navigate = useNavigate();
 	const { user } = useContext(AuthContext);
-
 	const [bookings, setBookings] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -107,9 +109,12 @@ const Requests = () => {
 					<Sidebar />
 				</div>
 				<div className="content">
-					<Box className="page-content" p={2}>
-						<Box className="d-flex justify-content-between align-items-center flex-wrap" mb={3}>
-							<Typography variant="h5">Room Booking Requests</Typography>
+					<Box className="page-content" py={3} px={1}>
+						<Box className="d-flex justify-content-flex-start align-items-center flex-wrap">
+							<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
+								<MdArrowBackIos style={{ fontSize: "20px", marginRight: "0.8rem", marginBottom:'4px' }} />
+							</div>
+							<Typography variant="h6">Room Booking Requests</Typography>
 						</Box>
 
 						{/* Filter and Search */}

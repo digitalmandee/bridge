@@ -123,16 +123,21 @@ const Management = () => {
 					<Sidebar />
 				</div>
 				<div className="content">
-					<div className="container-fluid py-4">
+					<div className="container-fluid">
 						{/* Header */}
-						<div className="row mb-4 align-items-center">
-							<div className="col-auto d-flex align-items-center">
-								<div onClick={() => navigate(-1)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
-									<MdArrowBackIos style={{ fontSize: "20px" }} />
+						<div
+							style={{
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "space-between",
+								marginBottom: "20px",
+							}}
+						>
+							<div style={{ paddingTop: "1rem", display: "flex", alignItems: "center", marginBottom: "20px" }}>
+								<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
+									<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
 								</div>
-								<Typography variant="h5" className="mb-0 ms-2" style={{ fontSize: "30px", color: "#202224" }}>
-									Invoice Types
-								</Typography>
+								<h4 style={{ margin: 0 }}>Invoice Type</h4>
 							</div>
 							<div className="col-auto ms-auto">
 								<Button variant="contained" sx={{ bgcolor: colors.primary, borderRadius: "10px", "&:hover": { bgcolor: colors.primary } }} onClick={() => handleOpen()}>

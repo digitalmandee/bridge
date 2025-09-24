@@ -6,6 +6,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { Button, Snackbar, Alert } from "@mui/material";
 import colors from "@/assets/styles/color";
 import axiosInstance from "@/utils/axiosInstance";
+import { MdArrowBackIos } from "react-icons/md";
 
 const PlanCreate = () => {
 	const { branch } = useParams();
@@ -93,10 +94,14 @@ const PlanCreate = () => {
 					<Sidebar />
 				</div>
 				<div className="content">
-					<div className="d-flex justify-content-between align-items-center flex-wrap grid-margin py-4">
-						<Link to={`/${branch}/branch/booking/plans`} className="d-flex align-items-center gap-2" style={{ textDecoration: "none", color: "black" }}>
-							<ChevronLeftIcon fontSize="large" />
-							<h3 className="mb-3 mb-md-0">Branch Plan Create</h3>
+					<div className="d-flex justify-content-between align-items-center flex-wrap grid-margin py-2">
+						<Link to={`/${branch}/branch/booking/plans`} style={{ textDecoration: "none", color: "black" }}>
+							<div style={{ paddingTop: "1rem", display: "flex", alignItems: "center", marginBottom: "20px" }}>
+								<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
+									<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
+								</div>
+								<h4 style={{ margin: 0 }}>Branch Plan Create</h4>
+							</div>
 						</Link>
 					</div>
 					<div className="card shadow-sm mx-auto">

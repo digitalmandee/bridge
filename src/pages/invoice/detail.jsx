@@ -101,12 +101,12 @@ const InvoiceDetail = () => {
 					<Sidebar />
 				</div>
 				<div className="content">
-					<div className="container-fluid p-4">
+					<div className="container-fluid">
 						{/* Header */}
 						<div className="row mb-4 align-items-center">
 							<div className="col">
 								<Box display="flex" alignItems="center" gap={2}>
-									<div onClick={() => navigate(-1)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
+									<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
 										<MdArrowBackIos style={{ fontSize: "20px" }} />
 									</div>
 									<Typography variant="h5">Detail</Typography>
