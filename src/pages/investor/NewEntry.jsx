@@ -141,8 +141,8 @@ const NewInvestorEntry = () => {
 				<div className="sideBarWrapper">
 					<Sidebar />
 				</div>
-				<div className="content">
-					<div style={{ paddingTop: "1rem", display: "flex", alignItems: "center", justifyContent:'center', marginBottom: "20px" }}>
+				<div className="content" style={{padding:'1rem'}}>
+					<div style={{ paddingTop: "1rem", display: "flex", alignItems: "center", marginBottom: "20px" }}>
 						<div onClick={() => navigate(-1)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
 							<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
 						</div>

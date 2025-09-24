@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Menu, MenuItem, IconButton, Modal, Box, TextField, Button, Select, Snackbar, Alert, Typography, Pagination } from "@mui/material";
@@ -9,8 +9,10 @@ import Sidebar from "@/components/leftSideBar";
 import Loader from "@/components/Loader";
 import colors from "@/assets/styles/color";
 import axiosInstance from "@/utils/axiosInstance";
+import { MdArrowBackIos } from "react-icons/md";
 
 const Requests = () => {
+	const navigate = useNavigate();
 	const [bookings, setBookings] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -85,14 +87,14 @@ const Requests = () => {
 					prev.map((booking) =>
 						booking.id === selectedBooking.id
 							? {
-									...booking,
-									total_price: newPrice,
-									status: newStatus,
-									start_date: startDate,
-									start_time: startTime,
-									end_date: finalEndDate,
-									end_time: finalEndTime,
-							  }
+								...booking,
+								total_price: newPrice,
+								status: newStatus,
+								start_date: startDate,
+								start_time: startTime,
+								end_date: finalEndDate,
+								end_time: finalEndTime,
+							}
 							: booking
 					)
 				);
@@ -155,64 +157,75 @@ const Requests = () => {
 					<Sidebar />
 				</div>
 				<div className="content">
-					<Box className="page-content" p={2}>
-						<Box className="d-flex justify-content-between align-items-center flex-wrap" mb={3}>
-							<Typography variant="h5">Booking Request</Typography>
-						</Box>
-
-						{/* Filter and Search */}
-						<Box
-							className="mt-2 ms-2 me-2 d-flex justify-content-between align-items-center"
-							p={2}
-							sx={{
+					<Box className="page-content">
+						<div
+							style={{
 								display: "flex",
-								gap: "16px",
-							}}>
-							{/* Filter and Search Box */}
-							<Box sx={{ display: "flex", justifyContent: "end", gap: "16px", flex: 1 }}>
-								{/* Filter Button */}
-								<Button
-									variant="outlined"
-									startIcon={<FilterAltOutlinedIcon />}
-									onClick={() => setFilterOpen(true)}
-									sx={{
-										borderRadius: "20px",
-										color: "#000",
-										borderColor: "#dcdcdc",
-										backgroundColor: "#fff",
-										"&:hover": { backgroundColor: "#f1f1f1" },
-									}}>
-									Filter
-								</Button>
+								alignItems: "center",
+								justifyContent: "space-between",
+								marginBottom: "20px",
+							}}
+						>
+							<div className="d-flex align-items-center flex-wrap grid-margin py-4 mb-4">
+								<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
+									<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
+								</div>
+								<h4 style={{ margin: 0 }}>Booking Request</h4>
+							</div>
+							{/* Filter and Search */}
+							<Box
+								className="mt-2 ms-2 me-2 d-flex justify-content-between align-items-center"
+								p={2}
+								sx={{
+									display: "flex",
+									gap: "16px",
+								}}>
+								{/* Filter and Search Box */}
+								<Box sx={{ display: "flex", justifyContent: "end", gap: "16px", flex: 1 }}>
+									{/* Filter Button */}
+									<Button
+										variant="outlined"
+										startIcon={<FilterAltOutlinedIcon />}
+										onClick={() => setFilterOpen(true)}
+										sx={{
+											borderRadius: "20px",
+											color: "#000",
+											borderColor: "#dcdcdc",
+											backgroundColor: "#fff",
+											"&:hover": { backgroundColor: "#f1f1f1" },
+										}}>
+										Filter
+									</Button>
 
-								{/* Search Box */}
-								<Box
-									sx={{
-										display: "flex",
-										alignItems: "center",
-										backgroundColor: "#fff",
-										border: "1px solid #dcdcdc",
-										borderRadius: "20px",
-										padding: "4px 10px",
-										flexGrow: 1,
-										maxWidth: "400px",
-									}}>
-									<SearchOutlinedIcon style={{ marginRight: "8px", color: "#000" }} />
-									<TextField
-										placeholder="Search by booking ID or name"
-										size="small"
-										variant="standard"
-										value={searchQuery}
-										onChange={(e) => setSearchQuery(e.target.value)}
-										onKeyDown={(e) => {
-											if (e.key === "Enter") fetchBookings(1);
-										}}
-										InputProps={{ disableUnderline: true }}
-										sx={{ flex: 1, "& input::placeholder": { color: "#6c757d" } }}
-									/>
+									{/* Search Box */}
+									<Box
+										sx={{
+											display: "flex",
+											alignItems: "center",
+											backgroundColor: "#fff",
+											border: "1px solid #dcdcdc",
+											borderRadius: "20px",
+											padding: "4px 10px",
+											flexGrow: 1,
+											maxWidth: "400px",
+										}}>
+										<SearchOutlinedIcon style={{ marginRight: "8px", color: "#000" }} />
+										<TextField
+											placeholder="Search by booking ID or name"
+											size="small"
+											variant="standard"
+											value={searchQuery}
+											onChange={(e) => setSearchQuery(e.target.value)}
+											onKeyDown={(e) => {
+												if (e.key === "Enter") fetchBookings(1);
+											}}
+											InputProps={{ disableUnderline: true }}
+											sx={{ flex: 1, "& input::placeholder": { color: "#6c757d" } }}
+										/>
+									</Box>
 								</Box>
 							</Box>
-						</Box>
+						</div>
 						<Modal open={filterOpen} onClose={() => setFilterOpen(false)}>
 							<Box
 								sx={{

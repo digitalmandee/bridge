@@ -71,9 +71,9 @@ const InvestorManagement = () => {
 								display: "flex",
 								alignItems: "center",
 							}}>
-							<MdArrowBackIos style={{ fontSize: "20px" }} />
+							<MdArrowBackIos style={{ fontSize: "20px", marginRight:'1rem' }} />
 						</div>
-						<h3 style={{ margin: 0 }}>Investments</h3>
+						<h4 style={{ margin: 0 }}>Investments</h4>
 					</div>
 
 					{/* Table wrapper with scroll */}
