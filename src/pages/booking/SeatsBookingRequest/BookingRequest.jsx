@@ -15,10 +15,12 @@ import axiosInstance from "@/utils/axiosInstance";
 import SeatBooking from "@/components/SeatBooking";
 import dayjs from "dayjs";
 import { AuthContext } from "@/contexts/AuthContext";
+import { MdArrowBackIos } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const BookingRequest = () => {
+	const navigate = useNavigate();
 	const { user } = useContext(AuthContext);
-
 	const [bookings, setBookings] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -59,7 +61,12 @@ const BookingRequest = () => {
 				</div>
 				<div className="content">
 					<div className="d-flex justify-content-between align-items-center flex-wrap grid-margin py-4 mb-4">
-						<h3 className="mb-3 mb-md-0">Booking Seat Requests</h3>
+						<div style={{ paddingTop: "1rem", display: "flex", alignItems: "center", marginBottom: "20px" }}>
+							<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
+								<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
+							</div>
+							<h4 style={{ margin: 0 }}>Seat Booking Request</h4>
+						</div>
 						{(user?.type === "user" || user?.type === "company") && (
 							<SeatBooking onBookingSuccess={fetchBookings} />
 						)}

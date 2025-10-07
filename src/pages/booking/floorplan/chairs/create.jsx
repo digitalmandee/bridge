@@ -91,7 +91,7 @@ const CreateChair = () => {
 					<Sidebar />
 				</div>
 				<div className="content">
-					<Box className="page-content" p={2}>
+					<Box className="page-content" p={1}>
 						<Box className="d-flex justify-content-between align-items-center flex-wrap" mb={3}>
 							<div
 								style={{
@@ -108,7 +108,7 @@ const CreateChair = () => {
 										display: "flex",
 										alignItems: "center",
 									}}>
-									<MdArrowBackIos style={{ fontSize: "20px" }} />
+									<MdArrowBackIos style={{ fontSize: "20px", marginRight:'1rem' }} />
 								</div>
 								<h3 style={{ margin: 0 }}>Create Chair</h3>
 							</div>

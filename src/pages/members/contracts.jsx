@@ -11,9 +11,12 @@ import "./contract.css";
 import { AuthContext } from "@/contexts/AuthContext";
 import EditContract from "@/components/members/EditContract";
 import colors from "@/assets/styles/color";
-const MemberContract = () => {
-	const { user } = useContext(AuthContext);
+import { MdArrowBackIos } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
+const MemberContract = () => {
+	const navigate = useNavigate();
+	const { user } = useContext(AuthContext);
 	const [contracts, setContracts] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -70,15 +73,22 @@ const MemberContract = () => {
 					<Sidebar />
 				</div>
 				<div className="content">
-					<Container maxWidth="lg">
+					<Container maxWidth="lg" style={{paddingTop:'1.5rem'}}>
 						{/* Header */}
-						<Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-							<IconButton sx={{ mr: 2, color: "primary.main" }}>
-								<ArrowBack />
-							</IconButton>
-							<Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
-								Contracts
-							</Typography>
+						<div
+							style={{
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "space-between",
+								marginBottom: "20px",
+							}}
+						>
+							<Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+								<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
+									<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
+								</div>
+								<h4 style={{ margin: 0 }}>Contracts</h4>
+							</Box>
 							<Box sx={{ display: "flex", gap: 1 }}>
 								{/* Add Contract */}
 								{user.type === "admin" && <AddContract getContracts={getContracts} />}
@@ -96,7 +106,7 @@ const MemberContract = () => {
 									}}
 								/>
 							</Box>
-						</Box>
+						</div>
 
 						<Paper sx={{ mt: 3, boxShadow: 3 }}>
 							{/* Contracts Table */}
@@ -153,14 +163,15 @@ const MemberContract = () => {
 																<>
 																	<Chip label="New" size="small" sx={{ bgcolor: "#faefc9", color: "#ffcc17" }} />
 																	<Button variant="contained" size="small" color="#ffcc17" sx={{
-																		":hover":"ffcc17"
+																		":hover": "ffcc17"
 																	}} onClick={() => handleEditContract(contract)}>
 																		Edit
 																	</Button>
 																</>
 															)}
 															<Button variant="contained" size="small" color="#ffcc17" sx={{
-																		":hover":"ffcc17"}} onClick={() => handleViewContract(contract)}>
+																":hover": "ffcc17"
+															}} onClick={() => handleViewContract(contract)}>
 																View
 															</Button>
 														</Box>
@@ -198,8 +209,8 @@ const MemberContract = () => {
 							</Box>
 						</Paper>
 					</Container>
-				</div>
-			</div>
+				</div >
+			</div >
 
 			{/* Edit Contract Modal */}
 			{viewModalOpen && <ViewContract contract={selectedContract} open={viewModalOpen} onClose={handleCloseViewModal} />}

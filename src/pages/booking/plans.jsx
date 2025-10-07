@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "@/utils/axiosInstance";
 import { IconButton, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Select, Snackbar, Alert, InputLabel, FormControl } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Loader from "@/components/Loader";
 import colors from "@/assets/styles/color";
+import { MdArrowBackIos } from "react-icons/md";
 
 const BookingPlans = () => {
+	const navigate = useNavigate();
 	const { branch } = useParams();
-
 	const [bookingPlans, setBookingPlans] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -143,9 +144,14 @@ const BookingPlans = () => {
 				<div className="sidebarWrapper">
 					<Sidebar />
 				</div>
-				<div className="content">
-					<div className="d-flex justify-content-between align-items-center flex-wrap grid-margin py-4">
-						<h3>Price Plan</h3>
+				<div className="content" style={{padding:"0.5rem"}}>
+					<div className="d-flex justify-content-between align-items-center">
+						<div style={{ paddingTop: "1rem", display: "flex", alignItems: "center", marginBottom: "20px" }}>
+							<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
+								<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
+							</div>
+							<h4 style={{ margin: 0 }}>Price Plan</h4>
+						</div>
 						<Link
 							to={`/${branch}/branch/booking/plans/create`}
 							style={{
@@ -161,7 +167,7 @@ const BookingPlans = () => {
 							Add Plan
 						</Link>
 					</div>
-					<div className="row card col-md-12">
+					<div className="row card">
 						<table className="table table-responsive">
 							<thead>
 								<tr>

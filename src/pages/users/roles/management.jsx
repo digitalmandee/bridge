@@ -55,11 +55,11 @@ const RoleManagement = () => {
 						<div className="row mb-4 align-items-center">
 							<div className="col-auto d-flex align-items-center">
 								<div onClick={() => navigate(-1)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
-									<MdArrowBackIos style={{ fontSize: "20px" }} />
+									<MdArrowBackIos style={{ fontSize: "20px", marginRight:'1rem' }} />
 								</div>
-								<Typography variant="h6" className="mb-0 ms-2">
+								<h3>
 									Roles
-								</Typography>
+								</h3>
 							</div>
 							<div className="col-auto ms-auto">
 								<Button

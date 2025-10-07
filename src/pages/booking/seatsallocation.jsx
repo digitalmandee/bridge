@@ -6,6 +6,8 @@ import ChairIcon from "@mui/icons-material/Chair";
 import { Box } from "@mui/material";
 import colors from "../../assets/styles/color";
 import axiosInstance from "@/utils/axiosInstance";
+import { MdArrowBackIos } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const SeatCard = ({ seatNumber, userName, planName, status, location, floor, profile_image }) => {
 	return (
@@ -78,6 +80,7 @@ const SeatCard = ({ seatNumber, userName, planName, status, location, floor, pro
 };
 
 const SeatsAllocation = () => {
+	const navigate = useNavigate();
 	const [seatData2, setSeatData2] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -110,8 +113,11 @@ const SeatsAllocation = () => {
 				</div>
 				<div className="content">
 					<div style={{ display: "flex", flexDirection: "column" }}>
-						<div className="d-flex justify-content-between align-items-center mt-4 mb-2">
-							<h3>Seats Allocation</h3>
+						<div className="d-flex align-items-center mt-4 mb-4">
+							<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
+								<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
+							</div>
+							<h4 style={{ margin: 0 }}>Seat Allocation</h4>
 						</div>
 						<div className="row">
 							{seatData2.length > 0 ? (

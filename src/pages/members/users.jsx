@@ -1,15 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
 import { TextField, Typography, Avatar, Chip, Box, IconButton, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, createTheme, InputAdornment, CircularProgress } from "@mui/material";
-import { ArrowBack, Search } from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import axiosInstance from "@/utils/axiosInstance";
 import { AuthContext } from "@/contexts/AuthContext";
 import colors from "@/assets/styles/color";
-const MemberUser = () => {
-	const { user: userData } = useContext(AuthContext);
+import { MdArrowBackIos } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
+const MemberUser = () => {
+	const navigate = useNavigate();
+	const { user: userData } = useContext(AuthContext);
 	const [users, setUsers] = useState([]);
 	const [search, setSearch] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
@@ -55,49 +58,55 @@ const MemberUser = () => {
 					<ThemeProvider theme={theme}>
 						<div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
 							{/* Header */}
-							<Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-								<IconButton sx={{ mr: 1 }} size="small">
-									<ArrowBack />
-								</IconButton>
-								<Typography variant="h6" component="h1">
-									User
-								</Typography>
-							</Box>
+							<div
+								style={{
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "space-between",
+									marginBottom: "20px",
+								}}
+							>
+								<Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+									<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
+										<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
+									</div>
+									<h4 style={{ margin: 0 }}>Users</h4>
+								</Box>
 
-							{/* Search */}
-							<Box sx={{ mb: 3 }}>
-								<TextField
-									placeholder="Search"
-									size="small"
-									fullWidth
-									value={search}
-									onChange={(e) => setSearch(e.target.value)}
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position="start">
-												<Search sx={{ color: "#6C757D", fontSize: "1.25rem" }} />
-											</InputAdornment>
-										),
-									}}
-									sx={{
-										maxWidth: "300px",
-										"& .MuiOutlinedInput-root": {
-											borderRadius: "4px",
-											backgroundColor: "#fff",
-											"& fieldset": {
-												borderColor: "#dee2e6",
+								{/* Search */}
+								<Box sx={{ mb: 3 }}>
+									<TextField
+										placeholder="Search"
+										size="small"
+										fullWidth
+										value={search}
+										onChange={(e) => setSearch(e.target.value)}
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position="start">
+													<Search sx={{ color: "#6C757D", fontSize: "1.25rem" }} />
+												</InputAdornment>
+											),
+										}}
+										sx={{
+											maxWidth: "300px",
+											"& .MuiOutlinedInput-root": {
+												borderRadius: "4px",
+												backgroundColor: "#fff",
+												"& fieldset": {
+													borderColor: "#dee2e6",
+												},
+												"&:hover fieldset": {
+													borderColor: "#dee2e6",
+												},
+												"&.Mui-focused fieldset": {
+													borderColor: "#FFCC16",
+												},
 											},
-											"&:hover fieldset": {
-												borderColor: "#dee2e6",
-											},
-											"&.Mui-focused fieldset": {
-												borderColor: "#FFCC16",
-											},
-										},
-									}}
-								/>
-							</Box>
-
+										}}
+									/>
+								</Box>
+							</div>
 							{/* User List */}
 							<TableContainer component={Paper} sx={{ mb: 3 }}>
 								{isLoading ? (

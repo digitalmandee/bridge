@@ -170,13 +170,13 @@ const EditContract = ({ contract, open, onClose }) => {
 						<div style={{ display: "flex", alignItems: "center", border: "1px solid #ccc", borderRadius: "8px" }}>
 							<Typography style={{ padding: "8px 12px", fontWeight: "bold" }}>Notice Period</Typography>
 
-							<IconButton onClick={() => setFormData({ ...formData, notice_period: Math.max(1, formData.notice_period - 1) })} style={{ backgroundColor: "#0c2c51", color: "white", borderRadius: 0, padding: "8px", "&:hover": { backgroundColor: "#0a2443" } }}>
+							<IconButton onClick={() => setFormData({ ...formData, notice_period: Math.max(1, formData.notice_period - 1) })} style={{ backgroundColor: "#FFCC16", color: "white", borderRadius: 0, padding: "8px", "&:hover": { backgroundColor: "#0a2443" } }}>
 								<RemoveIcon />
 							</IconButton>
 
 							<Typography style={{ backgroundColor: "#f5f7fb", padding: "8px 20px", minWidth: "300px", textAlign: "center", fontWeight: "bold" }}>{formData.notice_period}</Typography>
 
-							<IconButton onClick={() => setFormData({ ...formData, notice_period: formData.notice_period + 1 })} style={{ backgroundColor: "#0c2c51", color: "white", borderRadius: 0, padding: "8px", "&:hover": { backgroundColor: "#0a2443" } }}>
+							<IconButton onClick={() => setFormData({ ...formData, notice_period: formData.notice_period + 1 })} style={{ backgroundColor: "#FFCC16", color: "white", borderRadius: 0, padding: "8px", "&:hover": { backgroundColor: "#0a2443" } }}>
 								<AddIcon />
 							</IconButton>
 

@@ -7,6 +7,7 @@ import { Download } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./invoiceView.css";
 import axiosInstance from "@/utils/axiosInstance";
+import { MdArrowBackIos } from "react-icons/md";
 
 const ViewInvoice = () => {
 	const navigate = useNavigate();
@@ -79,11 +80,20 @@ const ViewInvoice = () => {
 					<Sidebar />
 				</div>
 				<div className="content">
-					<div className="container-fluid p-4">
+					<div className="container-fluid">
 						{/* Header */}
 						<CardHeader
 							title={
-								<div className="d-flex justify-content-between align-items-center">
+								<div
+									style={{
+										display: "flex",
+										alignItems: "center",
+										marginBottom: "20px",
+									}}
+								>
+									<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
+										<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem", marginBottom:'4px' }} />
+									</div>
 									<Typography variant="h5" className="fw-bold custom-primary">
 										Invoice #{id}
 									</Typography>

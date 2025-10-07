@@ -107,7 +107,7 @@ const Management = () => {
 					<Sidebar />
 				</div>
 
-				<div className="content">
+				<div className="content" style={{padding:10}}>
 					<div className="row mb-4 align-items-center">
 						<div className="col">
 							<div
@@ -117,22 +117,20 @@ const Management = () => {
 									alignItems: "center",
 									marginBottom: "20px",
 								}}>
-								<div
-									onClick={() => navigate(-1)}
-									style={{
-										cursor: "pointer",
-										marginTop: "5px",
-										display: "flex",
-										alignItems: "center",
-									}}>
-									<MdArrowBackIos style={{ fontSize: "20px" }} />
+								<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
+									<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
 								</div>
 								<h3 style={{ margin: 0 }}>Chairs</h3>
 							</div>
 						</div>
 						<div className="col-auto">
 							<Box display="flex" gap={2}>
-								<FormControl fullWidth sx={{ minWidth: 150 }}>
+								<FormControl fullWidth sx={{
+									minWidth: 150,
+									"& .MuiInputBase-root": {
+										height: 40,
+									},
+								}}>
 									<InputLabel>Select Floor</InputLabel>
 									<Select value={selectedOption} label="Select Floor" onChange={(e) => setSelectedOption(e.target.value)}>
 										{loadingFloors ? (

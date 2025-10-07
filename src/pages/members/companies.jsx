@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { TextField, Select, MenuItem, Typography, Avatar, Chip, Box, IconButton, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, createTheme, InputAdornment, CircularProgress } from "@mui/material";
-import { ArrowBack, Search } from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
@@ -8,13 +8,13 @@ import axiosInstance from "@/utils/axiosInstance";
 import dayjs from "dayjs";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "@/contexts/AuthContext";
+import { MdArrowBackIos } from "react-icons/md";
 
 const Company = () => {
 	const { user: userData } = useContext(AuthContext);
 	const { branch } = useParams();
 
 	const navigate = useNavigate();
-
 	const [companies, setCompanies] = useState([]);
 	const [simpleCompanies, setSimpleCompanies] = useState([]);
 	const [selectedCompany, setSelectedCompany] = useState(null);
@@ -77,63 +77,70 @@ const Company = () => {
 					<ThemeProvider theme={theme}>
 						<div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
 							{/* Header */}
-							<Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-								<IconButton sx={{ mr: 1 }} size="small">
-									<ArrowBack />
-								</IconButton>
-								<Typography variant="h6" component="h1">
-									Companies
-								</Typography>
-							</Box>
+							<div
+								style={{
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "space-between",
+									marginBottom: "20px",
+								}}
+							>
+								<Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+									<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
+										<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
+									</div>
+									<h4 style={{ margin: 0 }}>Companies</h4>
+								</Box>
 
-							{/* Search and Filter */}
-							<Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-								<TextField
-									placeholder="Search"
-									size="small"
-									value={search}
-									onChange={(e) => {
-										setSearch(e.target.value);
-										setCurrentPage(1); // reset to first page when searching
-									}}
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position="start">
-												<Search sx={{ color: "#6C757D" }} />
-											</InputAdornment>
-										),
-									}}
-									sx={{
-										width: "200px",
-										"& .MuiOutlinedInput-root": {
-											borderRadius: "4px",
+								{/* Search and Filter */}
+								<Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+									<TextField
+										placeholder="Search"
+										size="small"
+										value={search}
+										onChange={(e) => {
+											setSearch(e.target.value);
+											setCurrentPage(1); // reset to first page when searching
+										}}
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position="start">
+													<Search sx={{ color: "#6C757D" }} />
+												</InputAdornment>
+											),
+										}}
+										sx={{
+											width: "200px",
+											"& .MuiOutlinedInput-root": {
+												borderRadius: "4px",
+												backgroundColor: "#fff",
+											},
+										}}
+									/>
+
+									<Select
+										value={selectedCompany ? selectedCompany.id : ""}
+										displayEmpty
+										size="small"
+										sx={{
+											width: "200px",
 											backgroundColor: "#fff",
-										},
-									}}
-								/>
-
-								<Select
-									value={selectedCompany ? selectedCompany.id : ""}
-									displayEmpty
-									size="small"
-									sx={{
-										width: "200px",
-										backgroundColor: "#fff",
-										"& .MuiOutlinedInput-notchedOutline": {
-											borderColor: "#dee2e6",
-										},
-									}}>
-									<MenuItem value="" onClick={() => setSelectedCompany(null)}>
-										Select Company
-									</MenuItem>
-									{simpleCompanies.length > 0 &&
-										simpleCompanies.map((item) => (
-											<MenuItem key={item.id} value={item.id} onClick={() => setSelectedCompany(item)}>
-												{item.name}
-											</MenuItem>
-										))}
-								</Select>
-							</Box>
+											"& .MuiOutlinedInput-notchedOutline": {
+												borderColor: "#dee2e6",
+											},
+										}}>
+										<MenuItem value="" onClick={() => setSelectedCompany(null)}>
+											Select Company
+										</MenuItem>
+										{simpleCompanies.length > 0 &&
+											simpleCompanies.map((item) => (
+												<MenuItem key={item.id} value={item.id} onClick={() => setSelectedCompany(item)}>
+													{item.name}
+												</MenuItem>
+											))}
+									</Select>
+								</Box>
+							</div>
 
 							{/* Company List */}
 							<TableContainer component={Paper} sx={{ mb: 3 }}>

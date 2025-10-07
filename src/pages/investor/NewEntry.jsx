@@ -141,12 +141,12 @@ const NewInvestorEntry = () => {
 				<div className="sideBarWrapper">
 					<Sidebar />
 				</div>
-				<div className="content">
-					<div style={{ paddingTop: "1rem", display: "flex", alignItems: "center", marginBottom: "20px", cursor: "pointer" }}>
+				<div className="content" style={{padding:'1rem'}}>
+					<div style={{ paddingTop: "1rem", display: "flex", alignItems: "center", marginBottom: "20px" }}>
 						<div onClick={() => navigate(-1)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
-							<MdArrowBackIos style={{ fontSize: "20px", marginRight: "10px" }} />
+							<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
 						</div>
-						<h4 style={{ margin: 0 }}>New Invoice</h4>
+						<h4 style={{ margin: 0 }}>New Investor</h4>
 					</div>
 					<div className="container-fluid p-3 border rounded shadow-sm" style={{ maxWidth: 1000, backgroundColor: "white" }}>
 						<h4>New Investor Entry</h4>
