@@ -36,7 +36,6 @@ class BookingController extends Controller
             ]);
 
             // Parse JSON fields
-            // Parse JSON fields
             $bookingDetails = json_decode($validated['bookingdetails'], true);
             $selectedPlan = json_decode($validated['selectedPlan'], true);
             $selectedChairs = json_decode($validated['selectedChairs'], true);
@@ -46,11 +45,24 @@ class BookingController extends Controller
 
             $type = $bookingDetails['type'] === 'individual' ? 'user' : 'company';
 
-            // Check if user exists
+            // Check if CNIC is already in use by another user
+            $existingCnicUser = User::where('cnic_number', $bookingDetails['cnic'])->first();
+            
+            // Check if user exists by email
             $user = User::where('email', $bookingDetails['email'])->first();
 
             if (!$user) {
-                // New user
+                // Check if CNIC is already used by another user
+                if ($existingCnicUser) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false, 
+                        'message' => 'CNIC number already in use. Please use a different CNIC number.',
+                        'error_type' => 'cnic_duplicate'
+                    ], 422);
+                }
+
+                // New user - create with validated CNIC
                 $user = User::create([
                     'name' => $bookingDetails['name'],
                     'email' => $bookingDetails['email'],
@@ -62,6 +74,16 @@ class BookingController extends Controller
                     'cnic_number' => $bookingDetails['cnic'],
                 ]);
                 $user->assignRole('user');
+            } else {
+                // User exists - check if trying to update CNIC to one that's already in use by another user
+                if ($existingCnicUser && $existingCnicUser->id !== $user->id) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false, 
+                        'message' => 'CNIC number already in use by another user. Please use a different CNIC number.',
+                        'error_type' => 'cnic_duplicate'
+                    ], 422);
+                }
             }
 
             if ($request->hasFile('kyb_file')) {
