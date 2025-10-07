@@ -7,13 +7,20 @@ import { FloorPlanContext } from "@/contexts/floorplan.context";
 import colors from "@/assets/styles/color";
 import axiosInstance from "@/utils/axiosInstance";
 import Loader from "@/components/Loader";
-import { TextareaAutosize } from "@mui/material";
+import { TextareaAutosize, Snackbar, Alert } from "@mui/material";
 
 const Payment = () => {
 	const { selectedChairs, selectedFloor, bookingPlans, bookingdetails, setBookingDetails } = useContext(FloorPlanContext);
 	const [showModal, setShowModal] = useState(false);
 	const [receiptFile, setReceiptFile] = useState(null); // uploaded file
 	const [isLoading, setIsLoading] = useState(false);
+
+	// Snackbar
+	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+
+	const handleCloseSnackbar = () => {
+		setSnackbar({ ...snackbar, open: false });
+	};
 
 	const handleFileUpload = (e) => {
 		const file = e.target.files[0];
@@ -80,8 +87,12 @@ const Payment = () => {
 					company_address: "",
 				});
 				setShowModal(true); // Show the modal
+				setSnackbar({ open: true, message: "Booking created successfully", severity: "success" });
+			} else {
+				setSnackbar({ open: true, message: res.data.message, severity: "warning" });
 			}
 		} catch (error) {
+			setSnackbar({ open: true, message: error.response.data.message || "Error creating booking", severity: "error" });
 			console.error("Error creating booking:", error.response.data);
 		} finally {
 			setIsLoading(false);
@@ -367,6 +378,13 @@ const Payment = () => {
 					)}
 				</div>
 			</div>
+
+			{/* Snackbar for success/failure message */}
+			<Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+				<Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+					{snackbar.message}
+				</Alert>
+			</Snackbar>
 		</>
 	);
 };
