@@ -294,14 +294,12 @@ class BookingScheduleController extends Controller
     public function getRequests()
     {
         $user = auth()->user();
-        if ($user->type === 'user') {
+        if ($user->type === 'user' || $user->type === 'company') {
             $bookingSchedules = BookingSchedule::where('user_id', $user->id)->orderBy('created_at', 'desc')->with(['room:id,name', 'floor:id,name', 'user:id,name,email'])->get();
         } else if ($user->type === 'admin') {
             {
                 $bookingSchedules = BookingSchedule::orderBy('created_at', 'desc')->with(['room:id,name', 'floor:id,name', 'user:id,name,email'])->get();
             }
-        } else if ($user->type === 'company') {
-            $bookingSchedules = BookingSchedule::where('company_id', $user->id)->orderBy('created_at', 'desc')->with(['room:id,name', 'floor:id,name', 'user:id,name,email'])->get();
         }
 
         return response()->json(['success' => true, 'schedules' => $bookingSchedules], 200);

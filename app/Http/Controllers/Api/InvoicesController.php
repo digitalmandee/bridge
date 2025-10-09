@@ -129,12 +129,19 @@ class InvoicesController extends Controller
 
     public function viewInvoice($id)
     {
+        $user = auth()->user();
+        
         $invoice = Invoice::with([
             'user:id,name,email,phone_no,address',  // adjust according to your user table
             'booking:id,package_detail,start_date,end_date',  // adjust if booking relation exists
         ])->find($id);
 
         if (!$invoice) {
+            return response()->json(['message' => 'Invoice not found'], 404);
+        }
+
+        // Authorization check: Admin can view all invoices, users/companies can only view their own
+        if ($user->type !== 'admin' && $invoice->user_id !== $user->id) {
             return response()->json(['message' => 'Invoice not found'], 404);
         }
 
