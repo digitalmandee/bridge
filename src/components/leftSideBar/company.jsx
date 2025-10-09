@@ -6,6 +6,7 @@ import { FaAngleRight } from "react-icons/fa6";
 import { MdOutlineDateRange, MdOutlinePeople } from "react-icons/md";
 import { TbContract } from "react-icons/tb";
 import { RiBillLine } from "react-icons/ri";
+import { SlCalender } from "react-icons/sl";
 import { AuthContext } from "@/contexts/AuthContext"; // ✅ get investor/profile flags
 import "./style.css";
 
@@ -22,11 +23,18 @@ const menuItems = [
 		],
 	},
 	{
+		label: "Booking Management",
+		icon: <SlCalender />,
+		dropdown: [
+			{ to: "/company/booking-schedule", label: "Room Booking" },
+			{ to: "/company/booking-schedule/requests", label: "Booking Requests" },
+		],
+	},
+	{
 		to: "/company/invoices/management",
 		label: "Biling Management",
 		icon: <RiBillLine />,
 	},
-	{ to: "/company/booking-schedule/requests", label: "Booking Requests", icon: <MdOutlineDateRange /> },
 	{ to: "/company/contracts", label: "Contracts", icon: <TbContract /> },
 ];
 

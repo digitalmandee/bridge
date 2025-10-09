@@ -227,7 +227,7 @@ const BookingCalender = () => {
 
 	useEffect(() => {
 		// Update Default User according Type
-		if (user.type === "user") {
+		if (user.type === "user" || user.type === "company") {
 			setSelectedMember(user);
 		} else {
 			const fetchMembers = async () => {
@@ -593,7 +593,7 @@ const BookingCalender = () => {
 										{userLimitError}
 									</p>
 								)}
-								{user.type !== "user" && (
+								{user.type === "admin" && (
 									<Autocomplete
 										className="mb-3"
 										options={members} // Array of members
@@ -723,7 +723,7 @@ const BookingCalender = () => {
 										Cancel
 									</Button>
 									<Button loading={saveLoading} variant="contained" sx={{ backgroundColor: colors.primary, color: "white" }} onClick={handleSaveEvent} disabled={getTimeDifference(newEvent.startTime, newEvent.endTime) == "Invalid time range"}>
-										Save Event
+										Save Booking
 									</Button>
 								</div>
 							</Box>

@@ -215,7 +215,7 @@ const Requests = () => {
 												<td>
 													<span className={`status ${booking.status}`}>{booking.status}</span>
 												</td>
-												{user.type === "user" && (
+												{(user.type === "user" || user.type === "company") && (
 													<td>
 														<IconButton onClick={() => handleEditClick(booking)}>
 															<VisibilityIcon />{" "}
@@ -264,7 +264,7 @@ const Requests = () => {
 						maxWidth: "90%", // Responsive design for smaller screens
 					}}>
 					<Typography variant="h5" sx={{ marginBottom: 2, fontWeight: 600 }}>
-						{user.type === "user" ? "Booking Details" : "Edit Booking"}
+						{(user.type === "user" || user.type === "company") ? "Booking Details" : "Edit Booking"}
 					</Typography>
 
 					{timeExist != "" && (
@@ -327,7 +327,7 @@ const Requests = () => {
 									<strong>User:</strong> {selectedBooking?.user?.name} ({selectedBooking?.user?.email})
 								</Typography>
 							</Grid>
-							{user.type === "user" && (
+							{(user.type === "user" || user.type === "company") && (
 								<Grid item xs={12} sm={6}>
 									<Typography variant="body1">
 										<strong>Status:</strong> <span className={`status ${selectedBooking.status}`}>{selectedBooking.status}</span>

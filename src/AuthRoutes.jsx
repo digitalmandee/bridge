@@ -150,6 +150,14 @@ function AuthRoutes() {
 				}
 			/>
 			<Route
+				path="user/invoice/view/:invoiceId"
+				element={
+					<ProtectedRoute role="company">
+						<ViewInvoice />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
 				path="user/notifications"
 				element={
 					<ProtectedRoute role="user">
@@ -196,6 +204,22 @@ function AuthRoutes() {
 				element={
 					<ProtectedRoute role="company">
 						<InvoiceManagement />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="company/invoice/view/:invoiceId"
+				element={
+					<ProtectedRoute role="company">
+						<ViewInvoice />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="company/booking-schedule"
+				element={
+					<ProtectedRoute role="company">
+						<BookingCalendar />
 					</ProtectedRoute>
 				}
 			/>

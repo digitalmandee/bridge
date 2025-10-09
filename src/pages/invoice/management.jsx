@@ -201,8 +201,7 @@ const InvoiceManagement = () => {
 								alignItems: "center",
 								justifyContent: "space-between",
 								marginBottom: "20px",
-							}}
-						>
+							}}>
 							<div style={{ paddingTop: "1rem", display: "flex", alignItems: "center", marginBottom: "20px" }}>
 								<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
 									<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
@@ -296,7 +295,7 @@ const InvoiceManagement = () => {
 											const isDisabled = isNotifiedToday || loadingInvoiceId === invoice.id;
 											return (
 												<TableRow key={invoice.id}>
-													<TableCell style={{ cursor: "pointer" }} onClick={() => navigate(`/${branch}/branch/invoice/view/${invoice.id}`)}>
+													<TableCell style={{ cursor: "pointer" }} onClick={() => navigate(`/${branch}/${user.type == "admin" ? "branch" : user.type}/invoice/view/${invoice.id}`)}>
 														#BRIDGE-{invoice.id}
 													</TableCell>
 													<TableCell style={{ textTransform: "capitalize" }}>{invoice.invoice_type}</TableCell>
