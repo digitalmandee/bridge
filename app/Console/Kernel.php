@@ -13,22 +13,30 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('invoices:check')->monthlyOn(Carbon::now()->endOfMonth()->day, '23:59');
+        // 🎯 CORE MONTHLY BILLING CYCLE
+        
+        // End of Month: Generate next month's invoices
+        $schedule->command('invoice:generate-monthly')->monthlyOn(Carbon::now()->endOfMonth()->day, '23:59');
+        
+        // Start of Month: Manage packages and quotas  
+        $schedule->command('packages:manage-monthly')->monthlyOn(1, '00:30');
+        $schedule->command('packages:manage-monthly')->monthlyOn(2, '00:30'); // Safety
+        $schedule->command('packages:manage-monthly')->monthlyOn(3, '00:30'); // Safety
+        
+        // Mid Month: Check overdue invoices
         $schedule->command('invoices:check')->monthlyOn(3, '23:59');
         $schedule->command('invoices:check')->monthlyOn(4, '23:59');
 
-        // Monthly invoice: Runs at the end & start of the month
-        // $schedule->command('invoice:generate-monthly')->monthlyOn(Carbon::now()->endOfMonth()->day, '23:59');
-        // $schedule->command('invoice:generate-monthly')->monthlyOn(1, '00:05');
-
-        // Full-day invoice: Runs every hour
+        // 🎯 OTHER OPERATIONS
+        
+        // Full-day bookings: Every hour
         $schedule->command('invoice:generate-fullday')->hourly();
-
-        // Monthly attendance: Runs at the end of the month
-        $schedule->command('sync:attendance')->cron('*/5 9-21 * * *');  // Every 5 minutes from 9 AM to 9 PM
-        // */5: Every 5 minutes.
-        // 9-21: From 9 AM (9) to 9 PM (21).
-        // * * *: Every day of the month, every month, and every day of the week.
+        
+        // Attendance sync: Business hours
+        $schedule->command('sync:attendance')->cron('*/5 9-21 * * *');
+        
+        // 📧 OPTIONAL: Invoice reminders (uncomment if needed)
+        $schedule->command('invoices:send-reminders')->daily();
     }
 
     /**

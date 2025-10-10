@@ -10,6 +10,7 @@ use App\Models\Chair;
 use App\Models\Invoice;
 use App\Models\User;
 use App\Models\UserAddon;
+use App\Models\UserPackage;
 use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -160,8 +161,9 @@ class InvoicesController extends Controller
             'amount' => 'required_unless:invoiceType,Monthly|nullable|numeric',
             'status' => 'required|string',
             'paymentType' => 'nullable|required_unless:status,pending|string',
-            // 'paidMonth' => 'required_if:invoiceType,Monthly|array',
-            // 'paidYear' => 'required_if:invoiceType,Monthly|numeric',
+            'booking_id' => 'required_if:invoiceType,Monthly|integer|exists:bookings,id',
+            'paidMonth' => 'required_if:invoiceType,Monthly|array',
+            'paidYear' => 'required_if:invoiceType,Monthly|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -175,6 +177,7 @@ class InvoicesController extends Controller
             // Check if any of the months were already paid
             if ($request->invoiceType === 'Monthly') {
                 $alreadyPaid = Invoice::where('user_id', $userId)
+                    ->where('booking_id', $request->booking_id)
                     ->where('invoice_type', 'Monthly')
                     ->where('paid_year', $request->paidYear)
                     ->where(function ($query) use ($request) {
@@ -186,7 +189,7 @@ class InvoicesController extends Controller
                     ->exists();
 
                 if ($alreadyPaid) {
-                    return response()->json(['success' => false, 'message' => 'One or more months already have paid invoices.'], 422);
+                    return response()->json(['success' => false, 'message' => 'This month invoice already paid'], 422);
                 }
             }
 
@@ -199,14 +202,14 @@ class InvoicesController extends Controller
             $bookingPlan = null;
 
             if ($request->invoiceType === 'Monthly') {
-                $booking = Booking::where('user_id', $userId)
+                $booking = Booking::where('id', $request->booking_id)
+                    ->where('user_id', $userId)
                     ->where('duration', 'monthly')
                     ->whereNotIn('status', ['pending', 'rejected', 'upcoming'])
-                    ->latest()
                     ->first();
 
                 if (!$booking) {
-                    return response()->json(['success' => false, 'message' => 'Booking not found.'], 400);
+                    return response()->json(['success' => false, 'message' => 'Selected booking not found or invalid.'], 400);
                 }
 
                 $bookingId = $booking->id;
@@ -223,33 +226,74 @@ class InvoicesController extends Controller
 
                 $packageEndTime = Carbon::createFromDate($request->paidYear, date('m', strtotime($lastMonth)), 1)->endOfMonth();
 
+                $admin = auth()->user();
+                $user = User::find($userId);
+
                 if ($booking->status !== 'confirmed') {
-                    $newBookingData = $booking->only(['user_id', 'floor_id', 'plan_id', 'chair_ids', 'name', 'phone_no', 'type', 'duration', 'time_slot', 'plan']);
-                    $newBookingData += [
-                        'start_date' => Carbon::createFromDate($request->paidYear, date('m', strtotime($request->paidMonth[0])), 1)->format('Y-m-d'),
-                        'start_time' => Carbon::createFromDate($request->paidYear, date('m', strtotime($request->paidMonth[0])), 1)->format('H:i:s'),
-                        'end_date' => null,
-                        'end_time' => null,
-                        'status' => (
-                            in_array($request->status, ['paid', 'overdue']) && $isCurrentMonth
-                                ? 'confirmed'
-                                : ($request->status === 'pending' ? 'pending' : 'upcoming')
-                        ),
+                    // Update booking status and details
+                    $newStatus = in_array($request->status, ['paid', 'overdue']) && $isCurrentMonth
+                        ? 'confirmed'
+                        : ($request->status === 'pending' ? 'pending' : 'upcoming');
+
+                    $booking->update([
+                        'status' => $newStatus,
                         'total_price' => $request->amount,
                         'package_detail' => $request->packageDetail,
                         'package_end_time' => $packageEndTime,
                         'payment_method' => $request->paymentType,
                         'reciept' => $InvoiceReciept
-                    ];
+                    ]);
 
-                    $newBooking = Booking::create($newBookingData);
-                    $bookingId = $newBooking->id;
+                    // If booking is confirmed for the first time, create UserPackage and UserAddons
+                    if ($newStatus === 'confirmed' && $booking->duration == 'monthly') {
+                        $totalChairs = $booking->bookingChairs()->count();
 
-                    if (in_array($request->status, ['paid', 'overdue']) && $isCurrentMonth) {
-                        $this->updateChairBooking($newBooking);
-                        $this->updateUserQuota($newBooking);
+                        // Create UserPackage
+                        $userPackage = UserPackage::create([
+                            'user_id' => $user->id,
+                            'booking_plan_id' => $booking->plan_id,
+                            'valid_from' => Carbon::parse($booking->start_date),
+                            'valid_to' => Carbon::parse($packageEndTime),
+                            'status' => 'active',
+                            'created_by' => $admin->id,
+                        ]);
+
+                        // Attach package to booking
+                        $booking->user_package_id = $userPackage->id;
+                        $booking->save();
+
+                        // Create Addons (booking hours)
+                        UserAddon::create([
+                            'user_package_id' => $userPackage->id,
+                            'user_id' => $user->id,
+                            'addon_type' => 'booking_hours',
+                            'total' => $totalChairs * $booking->plan['booking_hours'],
+                            'remaining' => $totalChairs * $booking->plan['booking_hours'],
+                            'price' => 0,
+                            'purchased_at' => Carbon::now(),
+                            'created_by' => $admin->id,
+                        ]);
+
+                        // Create Addons (printing papers)
+                        UserAddon::create([
+                            'user_package_id' => $userPackage->id,
+                            'user_id' => $user->id,
+                            'addon_type' => 'printing_papers',
+                            'total' => $totalChairs * $booking->plan['printing_papers'],
+                            'remaining' => $totalChairs * $booking->plan['printing_papers'],
+                            'price' => 0,
+                            'purchased_at' => Carbon::now(),
+                            'created_by' => $admin->id,
+                        ]);
+
+                        // Update user status to active
+                        $user->status = 'active';
+                        $user->save();
                     }
-                } elseif ($booking->status === 'confirmed' && in_array($request->status, ['paid', 'overdue']) && $isCurrentMonth) {
+
+                    $bookingId = $booking->id;
+                } else {
+                    // Booking is already confirmed, just update details
                     $bookingId = $booking->id;
                     $booking->update([
                         'total_price' => $request->amount,
@@ -258,8 +302,6 @@ class InvoicesController extends Controller
                         'payment_method' => $request->paymentType,
                         'reciept' => $InvoiceReciept
                     ]);
-
-                    $this->updateUserQuota($booking);
                 }
             }
 
@@ -284,15 +326,15 @@ class InvoicesController extends Controller
             $user = User::find($invoice->user_id);
             // send invoice email by usama
 
-            MailHelper::sendInvoiceMail($user->email, [
-                'user' => $user,
-                'invoice_id' => $invoice->id,
-                'invoice' => $invoice,
-                'invoiceType' => $request->invoiceType,
-                'amount' => $request->amount,
-                'dueDate' => $request->dueDate,
-                'status' => $request->status,
-            ]);
+            // MailHelper::sendInvoiceMail($user->email, [
+            //     'user' => $user,
+            //     'invoice_id' => $invoice->id,
+            //     'invoice' => $invoice,
+            //     'invoiceType' => $request->invoiceType,
+            //     'amount' => $request->amount,
+            //     'dueDate' => $request->dueDate,
+            //     'status' => $request->status,
+            // ]);
 
             if (in_array($request->invoiceType, ['Meeting Rooms', 'Printing Papers'])) {
                 $this->updateUserQuotaByInvoice($invoice);
@@ -386,69 +428,6 @@ class InvoicesController extends Controller
         }
     }
 
-    /**
-     * Update user quota based on confirmed monthly booking
-     */
-    private function updateUserQuota($booking)
-    {
-        $totalChairs = count($booking->chair_ids);
-
-        if ($booking->duration === 'monthly') {
-            // booking_hours addon
-            UserAddon::create([
-                'user_package_id' => $booking->user_package_id,
-                'user_id' => $booking->user_id,
-                'addon_type' => 'booking_hours',
-                'total' => $totalChairs * $booking->plan['booking_hours'],
-                'remaining' => $totalChairs * $booking->plan['booking_hours'],
-                'price' => 0,
-                'purchased_at' => now(),
-            ]);
-
-            // printing_papers addon
-            UserAddon::create([
-                'user_package_id' => $booking->user_package_id,
-                'user_id' => $booking->user_id,
-                'addon_type' => 'printing_papers',
-                'total' => $totalChairs * $booking->plan['printing_hours'],
-                'remaining' => $totalChairs * $booking->plan['printing_hours'],
-                'price' => 0,
-                'purchased_at' => now(),
-            ]);
-        }
-    }
-
-    /**
-     * Update chair booking for a new confirmed monthly invoice
-     */
-    private function updateChairBooking($booking)
-    {
-        foreach ($booking->chair_ids as $chairId) {
-            $chair = Chair::find($chairId);
-
-            if (!$chair)
-                continue;
-
-            if ($chair->time_slot === $booking->time_slot) {
-                return response()->json([
-                    'success' => false,
-                    'message' => "Floor {$booking->floor->name} Chair {$chair->table->name}{$chair->id} is already assigned to the same time slot"
-                ], 400);
-            }
-
-            if ($chair->time_slot === 'available') {
-                $chair->time_slot = $booking->time_slot;
-            } elseif (
-                ($chair->time_slot === 'day' && $booking->time_slot === 'night') ||
-                ($chair->time_slot === 'night' && $booking->time_slot === 'day')
-            ) {
-                $chair->time_slot = 'full_day';
-            }
-
-            $chair->color = $this->getColorBasedOnDuration($chair->time_slot);
-            $chair->save();
-        }
-    }
 
     /**
      * Send invoice notifications to user & admin
@@ -500,9 +479,40 @@ class InvoicesController extends Controller
     public function userBooking(Request $request)
     {
         $userId = $request->user_id;
+        $bookingId = $request->booking_id; // Optional parameter to get specific booking
 
-        // Retrieve the latest booking for the user
-        $latestBooking = Booking::where(['user_id' => $userId, 'duration' => 'monthly'])->whereNotIn('status', ['pending', 'rejected', 'upcoming'])->latest()->first();
+        if ($bookingId) {
+            // Get specific booking if booking_id is provided
+            $latestBooking = Booking::where(['id' => $bookingId, 'user_id' => $userId, 'duration' => 'monthly'])
+                ->whereNotIn('status', ['pending', 'rejected', 'upcoming'])
+                ->first();
+        } else {
+            // Get all active bookings for the user
+            $activeBookings = Booking::where(['user_id' => $userId, 'duration' => 'monthly'])
+                ->whereNotIn('status', ['pending', 'rejected', 'upcoming'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            if ($activeBookings->isEmpty()) {
+                return response()->json(['success' => false, 'message' => 'No booking found'], 400);
+            }
+
+            // Return list of active bookings for selection
+            return response()->json([
+                'success' => true,
+                'message' => 'Active bookings found',
+                'bookings' => $activeBookings->map(function($booking) {
+                    return [
+                        'id' => $booking->id,
+                        'start_date' => $booking->start_date,
+                        'plan_name' => $booking->plan['name'] ?? 'N/A',
+                        'total_price' => $booking->total_price,
+                        'status' => $booking->status,
+                        'package_end_time' => $booking->package_end_time
+                    ];
+                })
+            ]);
+        }
 
         if (!$latestBooking) {
             return response()->json(['success' => false, 'message' => 'No booking found'], 400);
@@ -522,7 +532,14 @@ class InvoicesController extends Controller
         $chairs = [];
 
         // Fetch all chairs related to the latest booking
-        foreach ($latestBooking->chair_ids as $chairId) {
+        // Get chair IDs from the booking_chairs relationship (new system) or chair_ids field (legacy)
+        $chairIds = $latestBooking->bookingChairs()->pluck('chair_id')->toArray();
+        if (empty($chairIds) && $latestBooking->chair_ids) {
+            // Fallback to legacy chair_ids field if no booking chairs found
+            $chairIds = $latestBooking->chair_ids;
+        }
+
+        foreach ($chairIds as $chairId) {
             $chair = Chair::find($chairId);
 
             if (!$chair) {

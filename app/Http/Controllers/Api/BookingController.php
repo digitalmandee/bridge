@@ -235,10 +235,10 @@ class BookingController extends Controller
             ]);
 
             // send seat booking email
-            MailHelper::sendBookingMail($user->email, [
-                'user_id' => $userId,
-                'client' => $user,
-            ]);
+            // MailHelper::sendBookingMail($user->email, [
+            //     'user_id' => $userId,
+            //     'client' => $user,
+            // ]);
 
             $admin = User::find(1);  // Get the authenticated admin
 

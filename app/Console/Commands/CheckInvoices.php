@@ -6,6 +6,8 @@ use App\Models\Booking;
 use App\Models\Invoice;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Models\UserPackage;
+use App\Models\UserAddon;
 use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -30,22 +32,45 @@ class CheckInvoices extends Command
             tenant()->initialize($branch);
             Log::info("Checking invoices for branch: {$branch->id}");
 
-            // Get all active monthly bookings
-            $bookings = Booking::where('duration', 'monthly')->where('package_end_time', '<=', $today)->where('status', 'confirmed')->get();
+            // Get all active monthly bookings with packages
+            $bookings = Booking::where('duration', 'monthly')
+                ->where('status', 'confirmed')
+                ->whereHas('userPackage', function($query) use ($today) {
+                    $query->where('status', 'active')
+                          ->where('valid_to', '<=', $today);
+                })
+                ->get();
 
             foreach ($bookings as $booking) {
                 $userId = $booking->user_id;
                 $bookingId = $booking->id;
-                $dueDate = Carbon::parse($booking->package_end_time);  // End of the current package
+                $userPackage = $booking->userPackage;
+                $dueDate = Carbon::parse($userPackage->valid_to);
 
-                // If today is the due date, generate a new invoice
+                // If today is the due date, check for payment and handle accordingly
                 if ($today->isSameDay($dueDate)) {
-                    $booking->user->update([
-                        'booking_quota' => 0,
-                        // 'total_booking_quota' => 0,
-                        'printing_quota' => 0,
-                        // 'total_printing_quota' => 0,
-                    ]);
+                    $currentMonth = $today->format('F');
+                    $currentYear = $today->year;
+
+                    // Check if there's a paid invoice for current month
+                    $paidInvoice = Invoice::where('booking_id', $booking->id)
+                        ->where('invoice_type', 'Monthly')
+                        ->where('status', 'paid')
+                        ->where('paid_year', $currentYear)
+                        ->whereJsonContains('paid_month', $currentMonth)
+                        ->first();
+
+                    if (!$paidInvoice) {
+                        // No payment found - suspend package
+                        $userPackage->update(['status' => 'suspended']);
+                        
+                        // Delete current month's addons (since UserAddon doesn't have status field)
+                        $deletedAddons = UserAddon::where('user_package_id', $userPackage->id)
+                            ->where('created_at', '>=', $today->startOfMonth())
+                            ->delete();
+                        
+                        Log::info("Suspended package and deleted {$deletedAddons} addons for booking ID: {$booking->id}");
+                    }
 
                     $admin = User::where('email', $branch->email)->first();
 
