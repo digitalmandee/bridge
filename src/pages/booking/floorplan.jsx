@@ -92,17 +92,13 @@ const Floorplan = () => {
 	const { tables, selectedChairs, selectedFloor, setIsLoading, setTables, setSelectedChairs, setSelectedFloor, totalAvailableChairs, totalOccupiedChairs, setTotalAvailableChairs, setTotalOccupiedChairs, setBookingDetails } = useContext(FloorPlanContext);
 
 	const navigate = useNavigate();
-
 	const [fromDate, setFromDate] = useState("");
 	const [toDate, setToDate] = useState("");
-
 	const handleClear = () => {
 		setFromDate("");
 		setToDate("");
 	};
-
 	const { branch } = useParams();
-
 	const totalSelectedChairs = Object.values(selectedChairs).flat().length;
 
 	const handleNextClick = () => {
@@ -349,11 +345,9 @@ const Floorplan = () => {
 							<div
 								style={{
 									width: "20.5%",
-									// height: '10%',
 									backgroundColor: "white",
 									borderRadius: "10px",
 									padding: "20px",
-									// flex: '1',
 									boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
 									textAlign: "center",
 									position: "relative",
@@ -361,7 +355,6 @@ const Floorplan = () => {
 									flexDirection: "column",
 									justifyContent: "flex-start",
 									height: "110px",
-									// overflow:'hidden'
 								}}>
 								{/* Image Section */}
 								<img
@@ -370,8 +363,6 @@ const Floorplan = () => {
 									style={{
 										alignSelf: "center",
 										marginBottom: "auto",
-										// height:'45px',
-										// width:'45px'
 									}}
 								/>
 
@@ -381,7 +372,6 @@ const Floorplan = () => {
 									style={{
 										backgroundColor: "transparent",
 										width: "100%",
-										// marginTop: '15px', // Add margin between image and button
 										color: "#000",
 										border: "none",
 										marginTop: "15px",
@@ -392,9 +382,10 @@ const Floorplan = () => {
 										display: "flex",
 										alignItems: "center",
 										justifyContent: "space-between", // Add space between text and icon
-										// padding: '10px 15px', // Add padding for better look
 									}}>
-									{selectedFloor == 1 ? "G Floor" : "1st Floor"} <span style={{ fontSize: "16px" }}>▼</span>
+									{selectedFloor === 1 ? "G Floor" : selectedFloor === 2 ? "1st Floor" : "Select Floor"}
+									<span style={{ fontSize: "16px" }}>▼</span>
+									{/* {selectedFloor == 1 ? "G Floor" : "1st Floor"} <span style={{ fontSize: "16px" }}>▼</span> */}
 								</button>
 
 								{/* Dropdown Section */}
@@ -420,15 +411,28 @@ const Floorplan = () => {
 												padding: "8px 10px",
 												cursor: "pointer",
 												borderBottom: "1px solid #eee",
+												backgroundColor: selectedFloor === 1 ? "#f0f0f0" : "white",
 											}}>
 											G Floor
+										</div>
+										<div
+											onClick={() => handleFloorSelection(2)}
+											style={{
+												padding: "8px 10px",
+												cursor: "pointer",
+												backgroundColor: selectedFloor === 2 ? "#f0f0f0" : "white",
+											}}
+										>
+											1st Floor
 										</div>
 									</div>
 								)}
 							</div>
 						</div>
 					</div>
-					{selectedFloor === 1 ? <GFloorPlan /> : <FFloorPlan />}
+					{selectedFloor === 1 && <GFloorPlan />}
+					{selectedFloor === 2 && <FFloorPlan />}
+					{/* {selectedFloor === 1 ? <GFloorPlan /> : <FFloorPlan />} */}
 				</div>
 			</div>
 		</>
