@@ -33,45 +33,84 @@ const FFloorPlan = () => {
 
 	// Toggle chair and selection
 	// Toggle chair and selection
+	// const toggleChairColor = (tableId, chairId) => {
+	// 	// Find the selected table and chair
+	// 	const chairData = tables.find((table) => table.id === tableId)?.chairs.find((chair) => chair.id === chairId);
+	// 	if (!chairData) return; // If no chair found, return
+
+	// 	// Clone the previous state to avoid mutation
+	// 	const newSelected = { ...selectedChairs };
+
+	// 	// Initialize the array for this tableId if it doesn't exist
+	// 	if (!newSelected[tableId]) {
+	// 		newSelected[tableId] = [];
+	// 	}
+
+	// 	const tableSelectedChairs = newSelected[tableId];
+
+	// 	// Check if the chair is already selected
+	// 	const chairIndex = tableSelectedChairs.findIndex((chair) => chair.id === chairId);
+
+	// 	if (chairIndex > -1) {
+	// 		// If the chair is found, remove it
+	// 		tableSelectedChairs.splice(chairIndex, 1);
+	// 	} else {
+	// 		// Otherwise, add the chair
+	// 		tableSelectedChairs.push(chairData);
+	// 	}
+
+	// 	// Return a new object for state with the updated chairs for the specific tableId
+	// 	setSelectedChairs({ ...newSelected });
+
+	// 	// Update chair color
+	// 	tables.forEach((table) => {
+	// 		if (table.id === tableId) {
+	// 			table.chairs.forEach((chair) => {
+	// 				if (chair.id === chairId) {
+	// 					chair.activeColor = chair.activeColor ? "" : "#ffb700";
+	// 				}
+	// 			});
+	// 		}
+	// 	});
+	// };
+
 	const toggleChairColor = (tableId, chairId) => {
-		// Find the selected table and chair
-		const chairData = tables.find((table) => table.id === tableId)?.chairs.find((chair) => chair.id === chairId);
-		if (!chairData) return; // If no chair found, return
+		const chairData = tables
+			.find((table) => table.id === tableId)
+			?.chairs.find((chair) => chair.id === chairId);
 
-		// Clone the previous state to avoid mutation
+		if (!chairData) return;
+
+		// Clone selected chairs to avoid mutation
 		const newSelected = { ...selectedChairs };
-
-		// Initialize the array for this tableId if it doesn't exist
-		if (!newSelected[tableId]) {
-			newSelected[tableId] = [];
-		}
+		if (!newSelected[tableId]) newSelected[tableId] = [];
 
 		const tableSelectedChairs = newSelected[tableId];
-
-		// Check if the chair is already selected
 		const chairIndex = tableSelectedChairs.findIndex((chair) => chair.id === chairId);
 
 		if (chairIndex > -1) {
-			// If the chair is found, remove it
 			tableSelectedChairs.splice(chairIndex, 1);
 		} else {
-			// Otherwise, add the chair
 			tableSelectedChairs.push(chairData);
 		}
 
-		// Return a new object for state with the updated chairs for the specific tableId
 		setSelectedChairs({ ...newSelected });
 
-		// Update chair color
-		tables.forEach((table) => {
-			if (table.id === tableId) {
-				table.chairs.forEach((chair) => {
-					if (chair.id === chairId) {
-						chair.activeColor = chair.activeColor ? "" : "#ffb700";
+		// ✅ Correct way: Update tables immutably
+		setTables((prevTables) =>
+			prevTables.map((table) =>
+				table.id === tableId
+					? {
+						...table,
+						chairs: table.chairs.map((chair) =>
+							chair.id === chairId
+								? { ...chair, activeColor: chair.activeColor ? "" : "#ffb700" }
+								: chair
+						),
 					}
-				});
-			}
-		});
+					: table
+			)
+		);
 	};
 
 	return (
