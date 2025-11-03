@@ -94,6 +94,8 @@ const Floorplan = () => {
 	const navigate = useNavigate();
 	const [fromDate, setFromDate] = useState("");
 	const [toDate, setToDate] = useState("");
+	const [floors, setFloors] = useState([]);
+	const [selectedFloorData, setSelectedFloorData] = useState(null);
 	const handleClear = () => {
 		setFromDate("");
 		setToDate("");
@@ -103,18 +105,46 @@ const Floorplan = () => {
 
 	const handleNextClick = () => {
 		navigate(`/${branch}/branch/booking`); // Navigate to the Booking screen
-		setBookingDetails((prevDetails) => ({ ...prevDetails, type: totalSelectedChairs > 1 ? "company" : "individual" })), [totalSelectedChairs];
+		setBookingDetails((prevDetails) => ({ ...prevDetails, type: totalSelectedChairs > 1 ? "company" : "individual" }));
 	};
 
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+	// Fetch floors on component mount
+	useEffect(() => {
+		const fetchFloors = async () => {
+			try {
+				const response = await axiosInstance.get(`floor-plan/floors`);
+				if (response.data.success) {
+					setFloors(response.data.floors);
+					// Set first floor as default if none selected
+					if (!selectedFloor && response.data.floors.length > 0) {
+						setSelectedFloor(response.data.floors[0].id);
+						setSelectedFloorData(response.data.floors[0]);
+					} else if (selectedFloor && response.data.floors.length > 0) {
+						// Update selectedFloorData if selectedFloor is already set
+						const floor = response.data.floors.find(f => f.id === selectedFloor);
+						if (floor) {
+							setSelectedFloorData(floor);
+						}
+					}
+				}
+			} catch (error) {
+				console.error("Error fetching floors", error);
+			}
+		};
+		fetchFloors();
+	}, []);
 
 	const toggleDropdown = () => {
 		setIsDropdownOpen(!isDropdownOpen);
 	};
 
-	const handleFloorSelection = (floor) => {
-		setSelectedFloor(floor); // Update the selected floor
-		setIsDropdownOpen(false); // Close the dropdown
+	const handleFloorSelection = (floorId) => {
+		const floor = floors.find(f => f.id === floorId);
+		setSelectedFloor(floorId);
+		setSelectedFloorData(floor);
+		setIsDropdownOpen(false);
 	};
 
 	// Fetch floor and rooms data
@@ -130,727 +160,6 @@ const Floorplan = () => {
 					setTables(response.data.tables);
 				}
 			} catch (error) {
-				if (selectedFloor === 2) {
-					setTables([
-						{
-							id: "A",
-							name: "Table A",
-							chairs: [
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 1,
-									chair_id: 1,
-									id: 1,
-									position: {
-										x: 15,
-										y: 6.5,
-									},
-									rotation: 0,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 1,
-									chair_id: 2,
-									id: 2,
-									position: {
-										x: 19,
-										y: 6.5,
-									},
-									rotation: 0,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 1,
-									chair_id: 3,
-									id: 3,
-									position: {
-										x: 23,
-										y: 6.5,
-									},
-									rotation: 0,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 1,
-									chair_id: 4,
-									id: 4,
-									position: {
-										x: 15,
-										y: 11.2,
-									},
-									rotation: 180,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 1,
-									chair_id: 5,
-									id: 5,
-									position: {
-										x: 19,
-										y: 11.2,
-									},
-									rotation: 180,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 1,
-									chair_id: 6,
-									id: 6,
-									position: {
-										x: 23,
-										y: 11.2,
-									},
-									rotation: 180,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 1,
-									chair_id: 7,
-									id: 7,
-									position: {
-										x: 31,
-										y: 8.8,
-									},
-									rotation: 90,
-									color: "gray",
-									time_slot: "available",
-								},
-							],
-						},
-						{
-							id: "B",
-							name: "Table B",
-							chairs: [
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 2,
-									chair_id: 1,
-									id: 1,
-									position: {
-										x: 17,
-										y: 15.5,
-									},
-									rotation: 0,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 2,
-									chair_id: 2,
-									id: 2,
-									position: {
-										x: 21,
-										y: 15.5,
-									},
-									rotation: 0,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 2,
-									chair_id: 3,
-									id: 3,
-									position: {
-										x: 25,
-										y: 15.5,
-									},
-									rotation: 0,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 2,
-									chair_id: 4,
-									id: 4,
-									position: {
-										x: 17,
-										y: 20.2,
-									},
-									rotation: 180,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 2,
-									chair_id: 5,
-									id: 5,
-									position: {
-										x: 21,
-										y: 20.2,
-									},
-									rotation: 180,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 2,
-									chair_id: 6,
-									id: 6,
-									position: {
-										x: 25,
-										y: 20.2,
-									},
-									rotation: 180,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 2,
-									chair_id: 7,
-									id: 7,
-									position: {
-										x: 33,
-										y: 18,
-									},
-									rotation: 90,
-									color: "gray",
-									time_slot: "available",
-								},
-							],
-						},
-						{
-							id: "C",
-							name: "Table C",
-							chairs: [
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 3,
-									chair_id: 1,
-									id: 1,
-									position: {
-										x: 51.5,
-										y: 9.8,
-									},
-									rotation: -150,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 3,
-									chair_id: 2,
-									id: 2,
-									position: {
-										x: 50.5,
-										y: 6,
-									},
-									rotation: -50,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 3,
-									chair_id: 3,
-									id: 3,
-									position: {
-										x: 58.5,
-										y: 6,
-									},
-									rotation: 50,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 3,
-									chair_id: 4,
-									id: 4,
-									position: {
-										x: 58.5,
-										y: 9.8,
-									},
-									rotation: 120,
-									color: "gray",
-									time_slot: "available",
-								},
-							],
-						},
-						{
-							id: "D",
-							name: "Table D",
-							chairs: [
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 1,
-									id: 1,
-									position: {
-										x: 70,
-										y: 9,
-									},
-									rotation: -90,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 2,
-									id: 2,
-									position: {
-										x: 70,
-										y: 11.5,
-									},
-									rotation: -90,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 3,
-									id: 3,
-									position: {
-										x: 70,
-										y: 14,
-									},
-									rotation: -90,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 4,
-									id: 4,
-									position: {
-										x: 70,
-										y: 16.3,
-									},
-									rotation: -90,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 5,
-									id: 5,
-									position: {
-										x: 70,
-										y: 18.8,
-									},
-									rotation: -90,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 6,
-									id: 6,
-									position: {
-										x: 80,
-										y: 9,
-									},
-									rotation: 90,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 7,
-									id: 7,
-									position: {
-										x: 80,
-										y: 11.5,
-									},
-									rotation: 90,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 8,
-									id: 8,
-									position: {
-										x: 80,
-										y: 14,
-									},
-									rotation: 90,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 9,
-									id: 9,
-									position: {
-										x: 80,
-										y: 16.5,
-									},
-									rotation: 90,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 10,
-									id: 10,
-									position: {
-										x: 80,
-										y: 19,
-									},
-									rotation: 90,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 11,
-									id: 11,
-									position: {
-										x: 75,
-										y: 20.5,
-									},
-									rotation: 180,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 13,
-									id: 12,
-									position: {
-										x: 69,
-										y: 32.8,
-									},
-									rotation: -45,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 14,
-									id: 13,
-									position: {
-										x: 69,
-										y: 35.5,
-									},
-									rotation: -135,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 16,
-									id: 14,
-									position: {
-										x: 75,
-										y: 32.5,
-									},
-									rotation: 45,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 17,
-									id: 15,
-									position: {
-										x: 74.5,
-										y: 35.5,
-									},
-									rotation: 130,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 20,
-									id: 16,
-									position: {
-										x: 74.5,
-										y: 42.8,
-									},
-									rotation: 130,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 21,
-									id: 17,
-									position: {
-										x: 69,
-										y: 39.5,
-									},
-									rotation: -45,
-									color: "gray",
-									time_slot: "available",
-								},
-								
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 24,
-									id: 18,
-									position: {
-										x: 75,
-										y: 39.5,
-									},
-									rotation: 45,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 23,
-									id: 19,
-									position: {
-										x: 68.5,
-										y: 42.5,
-									},
-									rotation: 225,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 26,
-									id: 20,
-									position: {
-										x: 62,
-										y: 38,
-									},
-									rotation: 180,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 4,
-									chair_id: 25,
-									id: 21,
-									position: {
-										x: 62,
-										y: 33.5,
-									},
-									rotation: 0,
-									color: "gray",
-									time_slot: "available",
-								},
-							],
-						},
-						{
-							id: "E",
-							name: "Table E",
-							chairs: [
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 5,
-									chair_id: 1,
-									id: 1,
-									position: {
-										x: 30,
-										y: 55.8,
-									},
-									rotation: 82,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 5,
-									chair_id: 2,
-									id: 2,
-									position: {
-										x: 31,
-										y: 59,
-									},
-									rotation: 82,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 5,
-									chair_id: 3,
-									id: 3,
-									position: {
-										x: 32,
-										y: 62.5,
-									},
-									rotation: 82,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 5,
-									chair_id: 4,
-									id: 4,
-									position: {
-										x: 33,
-										y: 66.1,
-									},
-									rotation: 82,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 5,
-									chair_id: 5,
-									id: 5,
-									position: {
-										x: 34,
-										y: 69,
-									},
-									rotation: 82,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 5,
-									chair_id: 6,
-									id: 6,
-									position: {
-										x: 35,
-										y: 74,
-									},
-									rotation: 82,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 5,
-									chair_id: 7,
-									id: 7,
-									position: {
-										x: 36,
-										y: 77.4,
-									},
-									rotation: 82,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 5,
-									chair_id: 8,
-									id: 8,
-									position: {
-										x: 37,
-										y: 80.9,
-									},
-									rotation: 82,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 5,
-									chair_id: 9,
-									id: 9,
-									position: {
-										x: 38,
-										y: 85,
-									},
-									rotation: 82,
-									color: "gray",
-									time_slot: "available",
-								},
-								{
-									floor_id: 2,
-									room_id: 2,
-									table_id: 5,
-									chair_id: 10,
-									id: 10,
-									position: {
-										x: 43,
-										y: 86.3,
-									},
-									rotation: 0,
-									color: "gray",
-									time_slot: "available",
-								},
-							],
-						},
-					]);
-				}
 				console.error("Error fetching floor plan data", error);
 			} finally {
 				setTimeout(() => setIsLoading(false), 500);
@@ -1101,12 +410,11 @@ const Floorplan = () => {
 										cursor: "pointer",
 										display: "flex",
 										alignItems: "center",
-										justifyContent: "space-between", // Add space between text and icon
-									}}>
-									{selectedFloor === 1 ? "G Floor" : selectedFloor === 2 ? "1st Floor" : "Select Floor"}
-									<span style={{ fontSize: "16px" }}>▼</span>
-									{/* {selectedFloor == 1 ? "G Floor" : "1st Floor"} <span style={{ fontSize: "16px" }}>▼</span> */}
-								</button>
+											justifyContent: "space-between", // Add space between text and icon
+										}}>
+											{selectedFloorData ? selectedFloorData.name : "Select Floor"}
+											<span style={{ fontSize: "16px" }}>▼</span>
+										</button>
 
 								{/* Dropdown Section */}
 								{isDropdownOpen && (
@@ -1125,37 +433,30 @@ const Floorplan = () => {
 											left: "0",
 											width: "100%",
 										}}>
-										<div
-											onClick={() => handleFloorSelection(1)} // Handle ground floor selection
-											style={{
-												padding: "8px 10px",
-												cursor: "pointer",
-												borderBottom: "1px solid #eee",
-												backgroundColor: selectedFloor === 1 ? "#f0f0f0" : "white",
-											}}>
-											G Floor
-										</div>
-										<div
-											onClick={() => handleFloorSelection(2)}
-											style={{
-												padding: "8px 10px",
-												cursor: "pointer",
-												backgroundColor: selectedFloor === 2 ? "#f0f0f0" : "white",
-											}}>
-											1st Floor
-										</div>
+										{floors.map((floor, index) => (
+											<div
+												key={floor.id}
+												onClick={() => handleFloorSelection(floor.id)}
+												style={{
+													padding: "8px 10px",
+													cursor: "pointer",
+													borderBottom: index < floors.length - 1 ? "1px solid #eee" : "none",
+													backgroundColor: selectedFloor === floor.id ? "#f0f0f0" : "white",
+												}}>
+												{floor.name}
+											</div>
+										))}
 									</div>
 								)}
 							</div>
 						</div>
 					</div>
-					{selectedFloor === 1 && <GFloorPlan />}
-					{selectedFloor === 2 && <FFloorPlan />}
-					{/* {selectedFloor === 1 ? <GFloorPlan /> : <FFloorPlan />} */}
+					{/* Render floor plan based on floor name */}
+					{selectedFloorData && selectedFloorData.name === "Ground Floor" && <GFloorPlan />}
+					{selectedFloorData && selectedFloorData.name === "1st Floor" && <FFloorPlan />}
 				</div>
 			</div>
 		</>
 	);
-};
-
+}
 export default Floorplan;
