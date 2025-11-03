@@ -25,7 +25,7 @@ class MemberController extends Controller
             });
         }
 
-        $users = $query->paginate($limit);
+        $users = $query->orderByDesc('created_at')->paginate($limit);
 
         return response()->json(['success' => true, 'users' => $users]);
     }

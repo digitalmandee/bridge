@@ -391,7 +391,6 @@ class FloorPlanController extends Controller
 
         // Increment the chair count to set the new chair_id
         $newChairId = $chairsCount + 1;
-        Log::info($newChairId);
 
         Chair::create([
             'floor_id' => $request->floor_id,
