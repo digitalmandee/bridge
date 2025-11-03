@@ -30,7 +30,6 @@ const CreateRoom = () => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingData, setIsLoadingData] = useState(false);
-    const [isCheckingName, setIsCheckingName] = useState(false);
 
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
@@ -69,32 +68,9 @@ const CreateRoom = () => {
             return;
         }
 
-        setIsCheckingName(true);
+        setIsLoading(true);
         setRoomNameError("");
 
-        try {
-            const response = await axiosInstance.get(
-                `floor-plan/floors/${selectedFloor}/rooms/check-name`,
-                { params: { name: roomName } }
-            );
-
-            if (response.data.exists) {
-                setRoomNameError("Room name already exists on this floor");
-                return;
-            }
-        } catch (error) {
-            console.error("❌ Error checking room name:", {
-                message: error.message,
-                response: error.response,
-                data: error.response?.data,
-            });
-            setRoomNameError("Error checking room name");
-            return;
-        } finally {
-            setIsCheckingName(false);
-        }
-
-        setIsLoading(true);
         axiosInstance
             .post("floor-plan/rooms", {
                 floor_id: selectedFloor,
@@ -113,13 +89,16 @@ const CreateRoom = () => {
 
                 const errorMessage =
                     error.response?.data?.errors?.name?.[0] || "Failed to create room";
+                
+                // Show error in both snackbar and field
+                setRoomNameError(errorMessage);
                 setSnackbar({ open: true, message: errorMessage, severity: "error" });
             })
             .finally(() => setIsLoading(false));
     };
 
     const isCreateDisabled =
-        !selectedFloor || !roomName || isLoading || isLoadingData || isCheckingName;
+        !selectedFloor || !roomName || isLoading || isLoadingData;
 
     return (
         <>

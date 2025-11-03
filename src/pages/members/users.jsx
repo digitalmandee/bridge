@@ -47,6 +47,10 @@ const MemberUser = () => {
 		return () => clearTimeout(delayDebounce);
 	}, [search, limit]);
 
+	useEffect(() => {
+		getUsers(currentPage);
+	}, [currentPage]);
+
 	return (
 		<>
 			<TopNavbar />

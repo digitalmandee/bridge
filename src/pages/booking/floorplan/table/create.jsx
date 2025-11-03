@@ -30,7 +30,6 @@ const CreateTable = () => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingData, setIsLoadingData] = useState(false);
-    const [isCheckingName, setIsCheckingName] = useState(false);
 
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
     const navigate = useNavigate();
@@ -71,30 +70,9 @@ const CreateTable = () => {
             return;
         }
 
-        setIsCheckingName(true);
+        setIsLoading(true);
         setTableNameError("");
 
-        try {
-            const response = await axiosInstance.get(
-                `floor-plan/rooms/${selectedRoom}/tables/check-name`,
-                { params: { name: tableName } }
-            );
-
-            if (response.data.exists) {
-                setTableNameError("Table name already exists in this room");
-                return;
-            }
-        } catch (error) {
-            console.log(error);
-
-            setTableNameError("Error checking table name", error);
-            return;
-        } finally {
-            setIsCheckingName(false);
-        }
-
-        // Only create table if name is valid
-        setIsLoading(true);
         axiosInstance
             .post("floor-plan/tables", {
                 floor_id: selectedFloor,
@@ -103,20 +81,22 @@ const CreateTable = () => {
             })
             .then(() => {
                 setSnackbar({ open: true, message: "Table created successfully", severity: "success" });
-                // Optionally navigate away
                 setTimeout(() => navigate(`/${branch}/branch/floorplan/tables`), 1200);
             })
             .catch((error) => {
                 console.log(error);
                 const errorMessage =
                     error.response?.data?.errors?.name?.[0] || "Failed to create table";
+                
+                // Show error in both snackbar and field
+                setTableNameError(errorMessage);
                 setSnackbar({ open: true, message: errorMessage, severity: "error" });
             })
             .finally(() => setIsLoading(false));
     };
 
     const isCreateDisabled =
-        !selectedRoom || !tableName || isLoading || isLoadingData || isCheckingName;
+        !selectedRoom || !tableName || isLoading || isLoadingData;
 
     return (
         <>

@@ -152,7 +152,7 @@ function AuthRoutes() {
 			<Route
 				path="user/invoice/view/:invoiceId"
 				element={
-					<ProtectedRoute role="company">
+					<ProtectedRoute role="user">
 						<ViewInvoice />
 					</ProtectedRoute>
 				}
