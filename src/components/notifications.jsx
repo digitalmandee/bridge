@@ -74,7 +74,7 @@ const notificationsStyle = {
 	border: "1px solid #E5E7EB",
 	overflowY: "auto",
 	// height: "20rem",
-	width: "30%",
+	// width: "30%",
 	padding: "1rem",
 	transition: "width 0.3s ease-in-out",
 	scrollbarWidth: "none",

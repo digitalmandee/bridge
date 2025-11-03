@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { NavLink, useLocation, useParams } from "react-router-dom";
 import { Button } from "@mui/material";
 import { RxDashboard } from "react-icons/rx";
 import { FaAngleRight } from "react-icons/fa6";
@@ -56,35 +56,79 @@ const Company = () => {
 			{menuItems.map((item, index) => {
 				// 🔒 access rules
 				if (!item.requiresInvestor && !hasProfile) return null;
-
+				const isParentActive =
+					item.dropdown &&
+					item.dropdown.some((subItem) =>
+						location.pathname.startsWith(`/${branch}${subItem.to}`)
+					);
 				return (
 					<li key={index} style={{ marginBottom: "0.1rem" }}>
 						{item.dropdown ? (
 							<>
-								<Button className={`w-100 ${openDropdown === item.label ? "active-button" : ""}`} onClick={() => toggleDropdown(item.label)}>
+								<Button
+									className={`w-100 ${openDropdown === item.label || isParentActive ? "active-button" : ""}`}
+									onClick={() => toggleDropdown(item.label)}
+									style={{
+										justifyContent: "flex-start",
+										backgroundColor: "transparent",
+										color: "black",
+										textAlign: "left",
+									}}
+								>
 									<span className="icon">{item.icon}</span>
 									{item.label}
-									<span className={`arrow ${openDropdown === item.label ? "rotate" : ""}`}>
+									<span
+										className={`arrow ${openDropdown === item.label || isParentActive ? "rotate" : ""
+											}`}
+									>
 										<FaAngleRight />
 									</span>
 								</Button>
-								{openDropdown === item.label && (
-									<ul className="submenu">
+								{(openDropdown === item.label || isParentActive) && (
+									<ul style={{ listStyle: "none", paddingLeft: "1.5rem", margin: 0 }}>
 										{item.dropdown.map((subItem, subIndex) => (
 											<li key={subIndex}>
-												<Link to={`/${branch}${subItem.to}`}>{subItem.label}</Link>
+												<NavLink
+													to={`/${branch}${subItem.to}`}
+													end
+													style={({ isActive }) => ({
+														display: "block",
+														padding: "0.5rem 1rem",
+														borderRadius: "6px",
+														textDecoration: "none",
+														color: isActive ? "white" : "black",
+														backgroundColor: isActive ? "#FFCC16" : "transparent",
+													})}
+												>
+													{subItem.label}
+												</NavLink>
 											</li>
 										))}
 									</ul>
 								)}
 							</>
 						) : (
-							<Link to={`/${branch}${item.to}`}>
-								<Button className={`w-100 ${location.pathname === item.to ? "active-button" : ""}`}>
+							<NavLink
+								to={`/${branch}${item.to}`}
+								style={({ isActive }) => ({
+									width: "100%",
+									backgroundColor: isActive ? "#FFCC16" : "transparent",
+									color: isActive ? "white" : "black",
+									textDecoration: "none",
+								})}
+							>
+								<Button
+									className="w-100"
+									style={{
+										justifyContent: "flex-start",
+										backgroundColor: "inherit",
+										color: "inherit",
+									}}
+								>
 									<span className="icon">{item.icon}</span>
 									{item.label}
 								</Button>
-							</Link>
+							</NavLink>
 						)}
 					</li>
 				);

@@ -35,9 +35,9 @@ const CompanyDashboard = () => {
 					<Sidebar />
 				</div>
 				<div className="content">
-					<div style={{ paddingTop: "1rem", backgroundColor: "transparent" }}>
+					<div style={{ padding: "1rem", backgroundColor: "transparent" }}>
 						{/* Header */}
-						<div style={{ display: "flex", width: "98%", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+						<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
 							<Typography variant="h5" style={{ fontWeight: "bold" }}>
 								Dashboard
 							</Typography>
@@ -47,14 +47,14 @@ const CompanyDashboard = () => {
 						</div>
 
 						{/* Metric Cards */}
-						<div style={{ display: "flex", justifyContent: "space-between", marginBottom: "24px" }}>
+						<div style={{ display: "flex", gap: "1rem", justifyContent: "space-between", marginBottom: "24px" }}>
 							{[
 								{ title: "Available Seats", value: data.availableSeats ?? 0, icon: EventSeatIcon, color: colors.primary },
 								{ title: "Occupied Seats", value: data.occupiedSeats ?? 0, icon: PeopleIcon, color: colors.primary },
 								{ title: "Booking", value: data.meetingQuota?.remaining ?? 0, icon: AssignmentIcon, color: colors.primary },
 								{ title: "Printing Papers", value: data.printingQuota?.remaining ?? 0, icon: PrintIcon, color: colors.primary },
 							].map((item, index) => (
-								<div key={index} style={{ flex: 1, margin: "0 10px" }}>
+								<div key={index} style={{ flex: 1, gap:'1rem' }}>
 									<Card style={{ boxShadow: "none", border: "1px solid #ccc", borderRadius: "8px", height: "100%", backgroundColor: "white" }}>
 										<CardContent>
 											<Typography variant="body2" color="text.secondary" gutterBottom>
@@ -73,9 +73,9 @@ const CompanyDashboard = () => {
 								</div>
 							))}
 						</div>
-						<div style={{ display: "flex", marginBottom: "1rem" }}>
+						<div style={{ display: "flex", gap: "1.5rem", marginBottom: "1rem" }}>
 							{/* Booking Table */}
-							<TableContainer component={Paper} style={{ width: "65%", backgroundColor: "#FFFFFF", borderRadius: "1rem", boxShadow: "none", border: "1px solid #ccc", marginBottom: "24px" }}>
+							<TableContainer component={Paper} style={{ backgroundColor: "#FFFFFF", borderRadius: "1rem", boxShadow: "none", border: "1px solid #ccc", marginBottom: "24px" }}>
 								<Table>
 									<TableHead style={{ backgroundColor: "#FFF2C6" }}>
 										<TableRow>
