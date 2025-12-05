@@ -51,10 +51,10 @@ const CompanyDashboard = () => {
 							{[
 								{ title: "Available Seats", value: data.availableSeats ?? 0, icon: EventSeatIcon, color: colors.primary },
 								{ title: "Occupied Seats", value: data.occupiedSeats ?? 0, icon: PeopleIcon, color: colors.primary },
-								{ title: "Booking", value: data.meetingQuota?.remaining ?? 0, icon: AssignmentIcon, color: colors.primary },
+								{ title: "Booking Hours", value: data.meetingQuota?.remaining ?? 0, icon: AssignmentIcon, color: colors.primary },
 								{ title: "Printing Papers", value: data.printingQuota?.remaining ?? 0, icon: PrintIcon, color: colors.primary },
 							].map((item, index) => (
-								<div key={index} style={{ flex: 1, gap:'1rem' }}>
+								<div key={index} style={{ flex: 1, gap: "1rem" }}>
 									<Card style={{ boxShadow: "none", border: "1px solid #ccc", borderRadius: "8px", height: "100%", backgroundColor: "white" }}>
 										<CardContent>
 											<Typography variant="body2" color="text.secondary" gutterBottom>
