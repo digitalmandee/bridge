@@ -191,10 +191,14 @@ class User extends Authenticatable
             'unlimited' => false,
         ];
 
+        $today = now()->startOfDay();
+
         // 1️⃣ Active packages + their addons
         $activePackages = $this
             ->packages()
             ->where('status', 'active')
+            ->where('valid_from', '<=', $today)
+            ->where('valid_to', '>=', $today)
             ->with('addons')
             ->get();
 
