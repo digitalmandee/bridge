@@ -117,9 +117,7 @@ const menuItems = [
 
 const Admin = () => {
 	const { permissions } = useContext(AuthContext);
-
 	const { branch } = useParams();
-
 	const location = useLocation();
 	const [selectedButton, setSelectedButton] = useState("");
 	const [openDropdown, setOpenDropdown] = useState("");

@@ -42,11 +42,11 @@ const User = () => {
 
 	return (
 		<>
-			{user?.is_profile_completed && (
+			{/* {user?.is_profile_completed && (
 				<div style={{ display: "flex", justifyContent: "center", width: "100%", marginBottom: "16px" }}>
 					<SeatBooking />
 				</div>
-			)}
+			)} */}
 
 			<ul>
 				{menuItems.map((item, index) => {

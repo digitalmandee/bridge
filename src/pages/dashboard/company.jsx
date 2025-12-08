@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { Button, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper } from "@mui/material";
@@ -10,10 +10,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import DashboardNotifications from "@/components/notifications";
 import colors from "@/assets/styles/color";
+import { SidebarContext } from "../../contexts/sidebar.context";
 const CompanyDashboard = () => {
 	const navigate = useNavigate();
 	const { branch } = useParams();
-
+	const context = useContext(SidebarContext);
 	const [isLoading, setIsLoading] = useState(true);
 	const [data, setData] = useState({});
 
@@ -30,11 +31,11 @@ const CompanyDashboard = () => {
 	return (
 		<>
 			<TopNavbar />
-			<div className="main d-flex">
-				<div className="sideBarWrapper">
+			<div className="main">
+				<div className={`sideBarWrapper ${context.isToggleSidebar === true ? "toggle" : ""}`}>
 					<Sidebar />
 				</div>
-				<div className="content">
+				<div className={`content ${context.isToggleSidebar === true ? "toggle" : ""}`}>
 					<div style={{ padding: "1rem", backgroundColor: "transparent" }}>
 						{/* Header */}
 						<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>

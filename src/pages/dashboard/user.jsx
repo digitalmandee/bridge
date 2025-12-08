@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import colors from "../../assets/styles/color";
@@ -10,9 +10,11 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 import { Link, useParams } from "react-router-dom";
 import axiosInstance from "@/utils/axiosInstance";
 import DashboardNotifications from "@/components/notifications";
+import { SidebarContext } from "../../contexts/sidebar.context";
 // import colors from "../../assets/styles/color";
 
 const UserDashboard = () => {
+	const context = useContext(SidebarContext);
 	const [isLoading, setIsLoading] = useState(true);
 	const [data, setData] = useState([]);
 	const { branch } = useParams();
@@ -31,11 +33,11 @@ const UserDashboard = () => {
 	return (
 		<>
 			<TopNavbar />
-			<div className="main d-flex">
-				<div className="sideBarWrapper">
+			<div className="main">
+				<div className={`sideBarWrapper ${context.isToggleSidebar === true ? "toggle" : ""}`}>
 					<Sidebar />
 				</div>
-				<div className="content">
+				<div className={`content ${context.isToggleSidebar === true ? "toggle" : ""}`}>
 					<Box
 						sx={{
 							pt: 2,
@@ -66,7 +68,6 @@ const UserDashboard = () => {
 								{ title: "Available Booking", value: data.meetingQuota?.total ?? 0, icon: DirectionsCarIcon, color: colors.primary },
 								{ title: "Remaing Booking", value: data.meetingQuota?.remaining ?? 0, icon: GroupsIcon, color: colors.primary },
 								{ title: "Available Printing Papers", value: data.printingQuota?.total ?? 0, icon: AccountBalanceWalletIcon, color: colors.primary },
-								{ title: "Available Printing Papers", value: data.printingQuota?.remaining ?? 0, icon: GroupsIcon, color: colors.primary },
 								{ title: "Over Due Amount", value: data.overDueAmount ?? 0, icon: PaymentsIcon, color: colors.primary },
 							].map((item, index) => (
 								<Grid item xs={12} sm={6} md={3} key={index}>
