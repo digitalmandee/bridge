@@ -5,21 +5,30 @@ import Loader from "../../../../components/Loader";
 import axios from "axios";
 import { FloorPlanContext } from "../../../../contexts/floorplan.context";
 import colors from "@/assets/styles/color";
-const GFloorPlan = () => {
+const GFloorPlan = ({ tables: propTables, onChairClick }) => {
 	const floorRef = useRef(null); // Reference for the floor container
 	const [prevChairDuration, setPrevChairDuration] = useState("");
 	// Define tables with chairs
+	const [localFloorSize, setLocalFloorSize] = useState({ width: 0, height: 0 });
 
-	const { isLoading, tables, selectedChairs, floorSize, setIsLoading, setTables, setSelectedChairs, setFloorSize } = useContext(FloorPlanContext);
+	const context = useContext(FloorPlanContext);
+	const { isLoading = false, tables: contextTables = [], selectedChairs = {}, floorSize: contextFloorSize, setIsLoading, setTables, setSelectedChairs, setFloorSize } = context || {};
+
+	const tables = propTables || contextTables;
+	const floorSize = contextFloorSize || localFloorSize;
 
 	// Update floor size on resize
 	useEffect(() => {
 		const updateFloorSize = () => {
 			if (floorRef.current) {
-				setFloorSize({
+				const size = {
 					width: floorRef.current.offsetWidth,
 					height: floorRef.current.offsetHeight,
-				});
+				};
+				setLocalFloorSize(size);
+				if (setFloorSize) {
+					setFloorSize(size);
+				}
 			}
 		};
 
@@ -92,15 +101,23 @@ const GFloorPlan = () => {
 												className="chair"
 												key={`${table.id}${chair.id}`}
 												sx={{
-													color: `${chair.activeColor ? chair.activeColor : chair.color} !important`,
+													color: `${chair.status === "inactive" && chair.time_slot === "available" ? "red" : chair.activeColor ? chair.activeColor : chair.color} !important`,
 													position: `${chair.position.y && chair.position.x ? "absolute" : "static"}`,
 													top: `${(chair.position.y / 100) * floorSize.height}px`,
 													left: `${(chair.position.x / 100) * floorSize.width}px`,
 													transform: `rotate(${chair.rotation}deg)`,
-													cursor: chair.time_slot === "full_day" ? "not-allowed" : "pointer",
+													cursor: onChairClick ? "pointer" : chair.status === "inactive" || chair.time_slot === "full_day" ? "not-allowed" : "pointer",
 													fontSize: "30px",
 												}}
-												onClick={() => chair.time_slot !== "full_day" && toggleChairColor(table.id, chair.id)}
+												onClick={() => {
+													if (onChairClick) {
+														onChairClick(chair);
+													} else {
+														// User Interaction Rules
+														if (chair.status === "inactive") return; // Unselectable
+														chair.time_slot !== "full_day" && toggleChairColor(table.id, chair.id);
+													}
+												}}
 											/>
 									  ))
 									: null

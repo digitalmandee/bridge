@@ -95,9 +95,39 @@ const Management = () => {
 		}
 	};
 
+	const handleChairClick = async (chair) => {
+		try {
+			const newStatus = chair.status === "active" ? "inactive" : "active";
+
+			// Update the flat list for table view
+			// Actually, applications is a list of chairs in this view, not tables (based on fetchChairs logic: setApplications(res.data.chairs))
+			// Wait, previous logic: setApplications(res.data.chairs)
+			// So applications is an array of CHAIRS.
+
+			const updatedChairs = applications.map((c) => (c.id === chair.id ? { ...c, status: newStatus } : c));
+			setApplications(updatedChairs);
+
+			const res = await axiosInstance.put(`floor-plan/chairs/${chair.id}`, {
+				status: newStatus,
+			});
+
+			if (res.data.success) {
+				setSnackbar({ open: true, message: `Chair marked as ${newStatus}`, severity: "success" });
+			} else {
+				throw new Error("Failed to update");
+			}
+		} catch (error) {
+			console.error("Error updating chair status:", error);
+			setSnackbar({ open: true, message: "Failed to update chair status.", severity: "error" });
+			fetchChairs(); // Revert
+		}
+	};
+
 	useEffect(() => {
 		fetchChairs();
 	}, [selectedOption]);
+
+	const selectedFloorName = floors.find((f) => f.id === selectedOption)?.name;
 
 	return (
 		<>
@@ -107,7 +137,7 @@ const Management = () => {
 					<Sidebar />
 				</div>
 
-				<div className="content" style={{padding:10}}>
+				<div className="content" style={{ padding: 10 }}>
 					<div className="row mb-4 align-items-center">
 						<div className="col">
 							<div
@@ -125,12 +155,14 @@ const Management = () => {
 						</div>
 						<div className="col-auto">
 							<Box display="flex" gap={2}>
-								<FormControl fullWidth sx={{
-									minWidth: 150,
-									"& .MuiInputBase-root": {
-										height: 40,
-									},
-								}}>
+								<FormControl
+									fullWidth
+									sx={{
+										minWidth: 150,
+										"& .MuiInputBase-root": {
+											height: 40,
+										},
+									}}>
 									<InputLabel>Select Floor</InputLabel>
 									<Select value={selectedOption} label="Select Floor" onChange={(e) => setSelectedOption(e.target.value)}>
 										{loadingFloors ? (
@@ -158,6 +190,7 @@ const Management = () => {
 									<TableCell sx={{ fontWeight: "bold" }}>#</TableCell>
 									<TableCell sx={{ fontWeight: "bold" }}>Floor</TableCell>
 									<TableCell sx={{ fontWeight: "bold" }}>Chair</TableCell>
+									<TableCell sx={{ fontWeight: "bold" }}>Time Slot</TableCell>
 									<TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
 									<TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
 								</TableRow>
@@ -165,7 +198,7 @@ const Management = () => {
 							<TableBody>
 								{isLoading ? (
 									<TableRow>
-										<TableCell colSpan={4} align="center">
+										<TableCell colSpan={6} align="center">
 											<CircularProgress sx={{ color: "#FFCC16" }} />
 										</TableCell>
 									</TableRow>
@@ -175,7 +208,7 @@ const Management = () => {
 											<TableCell>{(currentPage - 1) * itemsPerPage + index + 1}</TableCell>
 											<TableCell>{application.floor.name}</TableCell>
 											<TableCell>
-												{application.table.table_id}-{application.chair_id}
+												{application.table?.table_id}-{application.chair_id}
 											</TableCell>
 											<TableCell>
 												<span
@@ -185,7 +218,7 @@ const Management = () => {
 														fontSize: "12px",
 														fontWeight: "600",
 														color: "#fff",
-														backgroundColor: application.time_slot === "available" ? "green" : application.time_slot === "day" ? application.color : application.time_slot === "night" ? application.color : application.time_slot === "full_day" ? application.color : application.color || "#999",
+														backgroundColor: application.time_slot === "available" ? "green" : application.time_slot === "day" || application.time_slot === "night" ? "#FFB800" : "#6A5ACD", // Placeholder colors
 														borderRadius: "9999px",
 														textTransform: "capitalize",
 														textDecoration: "none",
@@ -197,6 +230,19 @@ const Management = () => {
 												</span>
 											</TableCell>
 											<TableCell>
+												<span
+													style={{
+														color: application.status === "active" ? "green" : "red",
+														fontWeight: "bold",
+														textTransform: "capitalize",
+													}}>
+													{application.status}
+												</span>
+											</TableCell>
+											<TableCell>
+												<Button variant="outlined" size="small" onClick={() => handleChairClick(application)} sx={{ marginRight: 1 }}>
+													{application.status === "active" ? "Deactivate" : "Activate"}
+												</Button>
 												<Button variant="outlined" color="error" size="small" onClick={() => handleDeleteChair(application.id)}>
 													Delete
 												</Button>
@@ -205,7 +251,7 @@ const Management = () => {
 									))
 								) : (
 									<TableRow>
-										<TableCell colSpan={4} align="center">
+										<TableCell colSpan={6} align="center">
 											No chairs found.
 										</TableCell>
 									</TableRow>
