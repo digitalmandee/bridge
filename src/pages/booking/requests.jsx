@@ -31,6 +31,7 @@ const Requests = () => {
 	const [filterEndDate, setFilterEndDate] = useState("");
 	const [filterStatus, setFilterStatus] = useState("");
 	const [filterFloor, setFilterFloor] = useState("");
+	const [floors, setFloors] = useState([]);
 
 	const [startDate, setStartDate] = useState("");
 	const [startTime, setStartTime] = useState("");
@@ -87,14 +88,14 @@ const Requests = () => {
 					prev.map((booking) =>
 						booking.id === selectedBooking.id
 							? {
-								...booking,
-								total_price: newPrice,
-								status: newStatus,
-								start_date: startDate,
-								start_time: startTime,
-								end_date: finalEndDate,
-								end_time: finalEndTime,
-							}
+									...booking,
+									total_price: newPrice,
+									status: newStatus,
+									start_date: startDate,
+									start_time: startTime,
+									end_date: finalEndDate,
+									end_time: finalEndTime,
+							  }
 							: booking
 					)
 				);
@@ -144,6 +145,20 @@ const Requests = () => {
 	};
 
 	useEffect(() => {
+		const fetchFloors = async () => {
+			try {
+				const response = await axiosInstance.get(`floor-plan/floors`);
+				if (response.data.success) {
+					setFloors(response.data.floors);
+				}
+			} catch (error) {
+				console.error("Error fetching floors", error);
+			}
+		};
+		fetchFloors();
+	}, []);
+
+	useEffect(() => {
 		fetchBookings(currentPage);
 	}, [currentPage]);
 
@@ -164,8 +179,7 @@ const Requests = () => {
 								alignItems: "center",
 								justifyContent: "space-between",
 								marginBottom: "20px",
-							}}
-						>
+							}}>
 							<div className="d-flex align-items-center flex-wrap grid-margin py-4 mb-4">
 								<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
 									<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem" }} />
@@ -257,7 +271,11 @@ const Requests = () => {
 								{/* Floor */}
 								<Select fullWidth value={filterFloor} onChange={(e) => setFilterFloor(e.target.value)} displayEmpty sx={{ mb: 2 }}>
 									<MenuItem value="">Select Floor</MenuItem>
-									<MenuItem value="1">G Floor</MenuItem>
+									{floors.map((floor) => (
+										<MenuItem key={floor.id} value={floor.id}>
+											{floor.name}
+										</MenuItem>
+									))}
 								</Select>
 
 								<Button

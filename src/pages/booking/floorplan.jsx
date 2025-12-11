@@ -123,7 +123,7 @@ const Floorplan = () => {
 						setSelectedFloorData(response.data.floors[0]);
 					} else if (selectedFloor && response.data.floors.length > 0) {
 						// Update selectedFloorData if selectedFloor is already set
-						const floor = response.data.floors.find(f => f.id === selectedFloor);
+						const floor = response.data.floors.find((f) => f.id === selectedFloor);
 						if (floor) {
 							setSelectedFloorData(floor);
 						}
@@ -141,7 +141,7 @@ const Floorplan = () => {
 	};
 
 	const handleFloorSelection = (floorId) => {
-		const floor = floors.find(f => f.id === floorId);
+		const floor = floors.find((f) => f.id === floorId);
 		setSelectedFloor(floorId);
 		setSelectedFloorData(floor);
 		setIsDropdownOpen(false);
@@ -410,11 +410,11 @@ const Floorplan = () => {
 										cursor: "pointer",
 										display: "flex",
 										alignItems: "center",
-											justifyContent: "space-between", // Add space between text and icon
-										}}>
-											{selectedFloorData ? selectedFloorData.name : "Select Floor"}
-											<span style={{ fontSize: "16px" }}>▼</span>
-										</button>
+										justifyContent: "space-between", // Add space between text and icon
+									}}>
+									{selectedFloorData ? selectedFloorData.name : "Select Floor"}
+									<span style={{ fontSize: "16px" }}>▼</span>
+								</button>
 
 								{/* Dropdown Section */}
 								{isDropdownOpen && (
@@ -452,11 +452,11 @@ const Floorplan = () => {
 						</div>
 					</div>
 					{/* Render floor plan based on floor name */}
-					{selectedFloorData && selectedFloorData.name === "Ground Floor" && <GFloorPlan />}
-					{selectedFloorData && selectedFloorData.name === "1st Floor" && <FFloorPlan />}
+					{selectedFloorData && selectedFloorData.name === "6th Floor" && <GFloorPlan />}
+					{selectedFloorData && selectedFloorData.name === "5th Floor" && <FFloorPlan />}
 				</div>
 			</div>
 		</>
 	);
-}
+};
 export default Floorplan;
