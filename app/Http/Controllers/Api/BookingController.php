@@ -47,7 +47,7 @@ class BookingController extends Controller
 
             // Check if CNIC is already in use by another user
             $existingCnicUser = User::where('cnic_number', $bookingDetails['cnic'])->first();
-            
+
             // Check if user exists by email
             $user = User::where('email', $bookingDetails['email'])->first();
 
@@ -56,7 +56,7 @@ class BookingController extends Controller
                 if ($existingCnicUser) {
                     DB::rollBack();
                     return response()->json([
-                        'success' => false, 
+                        'success' => false,
                         'message' => 'CNIC number already in use. Please use a different CNIC number.',
                         'error_type' => 'cnic_duplicate'
                     ], 422);
@@ -79,7 +79,7 @@ class BookingController extends Controller
                 if ($existingCnicUser && $existingCnicUser->id !== $user->id) {
                     DB::rollBack();
                     return response()->json([
-                        'success' => false, 
+                        'success' => false,
                         'message' => 'CNIC number already in use by another user. Please use a different CNIC number.',
                         'error_type' => 'cnic_duplicate'
                     ], 422);
@@ -235,10 +235,10 @@ class BookingController extends Controller
             ]);
 
             // send seat booking email
-            // MailHelper::sendBookingMail($user->email, [
-            //     'user_id' => $userId,
-            //     'client' => $user,
-            // ]);
+            MailHelper::sendBookingMail($user->email, [
+                'user_id' => $userId,
+                'client' => $user,
+            ]);
 
             $admin = User::find(1);  // Get the authenticated admin
 

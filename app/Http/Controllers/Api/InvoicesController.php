@@ -131,7 +131,7 @@ class InvoicesController extends Controller
     public function viewInvoice($id)
     {
         $user = auth()->user();
-        
+
         $invoice = Invoice::with([
             'user:id,name,email,phone_no,address',  // adjust according to your user table
             'booking:id,package_detail,start_date,end_date',  // adjust if booking relation exists
@@ -326,15 +326,15 @@ class InvoicesController extends Controller
             $user = User::find($invoice->user_id);
             // send invoice email by usama
 
-            // MailHelper::sendInvoiceMail($user->email, [
-            //     'user' => $user,
-            //     'invoice_id' => $invoice->id,
-            //     'invoice' => $invoice,
-            //     'invoiceType' => $request->invoiceType,
-            //     'amount' => $request->amount,
-            //     'dueDate' => $request->dueDate,
-            //     'status' => $request->status,
-            // ]);
+            MailHelper::sendInvoiceMail($user->email, [
+                'user' => $user,
+                'invoice_id' => $invoice->id,
+                'invoice' => $invoice,
+                'invoiceType' => $request->invoiceType,
+                'amount' => $request->amount,
+                'dueDate' => $request->dueDate,
+                'status' => $request->status,
+            ]);
 
             if (in_array($request->invoiceType, ['Meeting Rooms', 'Printing Papers'])) {
                 $this->updateUserQuotaByInvoice($invoice);
@@ -428,7 +428,6 @@ class InvoicesController extends Controller
         }
     }
 
-
     /**
      * Send invoice notifications to user & admin
      */
@@ -479,7 +478,7 @@ class InvoicesController extends Controller
     public function userBooking(Request $request)
     {
         $userId = $request->user_id;
-        $bookingId = $request->booking_id; // Optional parameter to get specific booking
+        $bookingId = $request->booking_id;  // Optional parameter to get specific booking
 
         if ($bookingId) {
             // Get specific booking if booking_id is provided
@@ -501,7 +500,7 @@ class InvoicesController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Active bookings found',
-                'bookings' => $activeBookings->map(function($booking) {
+                'bookings' => $activeBookings->map(function ($booking) {
                     return [
                         'id' => $booking->id,
                         'start_date' => $booking->start_date,

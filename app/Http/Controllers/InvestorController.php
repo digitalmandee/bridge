@@ -98,7 +98,7 @@ class InvestorController extends Controller
             // 3️⃣ Handle invoice upload
             $invoicePath = null;
             if ($request->hasFile('invoice')) {
-                $invoicePath = $request->file('invoice')->store('investment_invoices', 'public');
+                $invoicePath = FileHelper::saveImage($request->file('invoice'), 'investment_invoices');
             }
 
             // 4️⃣ Create investment

@@ -11,8 +11,8 @@ class FloorsTableSeeder extends Seeder
 {
     public function run()
     {
-        Floor::firstOrCreate(['name' => 'Ground Floor']);
-        Floor::firstOrCreate(['name' => '1st Floor']);
+        Floor::firstOrCreate(['name' => '6th Floor']);
+        Floor::firstOrCreate(['name' => '5th Floor']);
 
         ScheduleFloor::firstOrCreate(['name' => 'G Floor']);
         ScheduleFloor::firstOrCreate(['name' => '1st Floor']);
