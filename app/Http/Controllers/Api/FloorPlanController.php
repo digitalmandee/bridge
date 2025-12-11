@@ -158,8 +158,9 @@ class FloorPlanController extends Controller
                                 'y' => $chair->positiony,
                             ],
                             'rotation' => $chair->rotation,
-                            'color' => $color,
                             'time_slot' => $timeSlot,
+                            'status' => $chair->status,
+                            'color' => $color,
                         ];
                     });
 
@@ -460,6 +461,7 @@ class FloorPlanController extends Controller
                     'floor' => $chair->floor,
                     'table' => $chair->table,
                     'time_slot' => $status,
+                    'status' => $chair->status,
                     'color' => $color,
                 ];
             });
@@ -501,6 +503,22 @@ class FloorPlanController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Chair deleted successfully'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
+        }
+    }
+
+    public function updateChair(Request $request, $id)
+    {
+        try {
+            $chair = Chair::findOrFail($id);
+            $chair->update($request->only('status'));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Chair updated successfully',
+                'chair' => $chair
             ]);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);

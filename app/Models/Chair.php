@@ -20,7 +20,8 @@ class Chair extends Model
         'rotation',
         'color',
         'activeColor',
-        'time_slot'
+        'time_slot',
+        'status'
     ];
 
     public function floor()
