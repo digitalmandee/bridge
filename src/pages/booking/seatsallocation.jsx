@@ -162,14 +162,12 @@ const SeatsAllocation = () => {
 													</div>
 												</div>
 
-												{/* Display seats in this booking */}
-												<ul className="list-group mt-2">
-													{booking.chairs?.map((chair) => (
-														<li key={chair.id} className="list-group-item">
-															{`${chair.room_name}-${chair.table_name}${chair.chair_id}`}
-														</li>
-													))}
-												</ul>
+												{/* Display total chairs count */}
+												<div className="mt-3">
+													<h6 style={{ color: "#555" }}>
+														Total Chairs: <span className="text-primary">{booking.chairs?.length || 0}</span>
+													</h6>
+												</div>
 											</div>
 										</div>
 									</div>
