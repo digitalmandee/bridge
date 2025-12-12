@@ -114,6 +114,9 @@ class BookingController extends Controller
                         'address' => $bookingDetails['company_address'] ?? null,
                         'kyb_file' => $kybFilePath,
                     ]);
+                } else if ($kybFilePath) {
+                    // Update kyb_file if new file is uploaded
+                    CompanyProfile::where('user_id', $user->id)->update(['kyb_file' => $kybFilePath]);
                 }
             } else {
                 $userProfileExists = UserProfile::where('user_id', $user->id)->exists();
@@ -136,6 +139,9 @@ class BookingController extends Controller
                         'freelance_site' => $bookingDetails['freelance_site'] ?? null,
                         'kyb_file' => $kybFilePath,
                     ]);
+                } else if ($kybFilePath) {
+                    // Update kyb_file if new file is uploaded
+                    UserProfile::where('user_id', $user->id)->update(['kyb_file' => $kybFilePath]);
                 }
             }
 

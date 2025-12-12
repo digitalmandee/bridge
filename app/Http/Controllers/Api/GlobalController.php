@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BookingPlan;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class GlobalController extends Controller
 {
@@ -34,22 +35,22 @@ class GlobalController extends Controller
 
         if ($type === 'user') {
             $conditions['company_id'] = null;
-            $queryBuilder->with('userProfile:id,user_id,linkedin,facebook,freelance_site');
+            $queryBuilder->with('userProfile:id,user_id,linkedin,facebook,freelance_site,kyb_file');
         } elseif ($type === 'company') {
-            $queryBuilder->with('companyProfile:id,user_id,name,website,industry,employees,address');
+            $queryBuilder->with('companyProfile:id,user_id,name,website,industry,employees,address,kyb_file');
         }
 
         if (empty($query)) {
             $results = $queryBuilder
                 ->latest()
-                ->select('id', 'name', 'email', 'phone_no', 'secondary_phone_no', 'designation', 'cnic_number', 'cnic_image')
+                ->select('id', 'name', 'email', 'phone_no', 'secondary_phone_no', 'designation', 'cnic_number', 'cnic_image', 'profile_image')
                 ->take(5)
                 ->get();
         } else {
             $results = $queryBuilder
                 ->where($conditions)
                 ->where('name', 'like', "%$query%")
-                ->select('id', 'name', 'email', 'phone_no', 'secondary_phone_no', 'designation', 'cnic_number', 'cnic_image')
+                ->select('id', 'name', 'email', 'phone_no', 'secondary_phone_no', 'designation', 'cnic_number', 'cnic_image', 'profile_image', 'company_id')
                 ->get();
         }
 

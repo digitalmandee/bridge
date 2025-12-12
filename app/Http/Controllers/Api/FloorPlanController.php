@@ -144,7 +144,9 @@ class FloorPlanController extends Controller
 
                             $totalOccupiedChairs++;
                         } else {
-                            $totalAvailableChairs++;
+                            if ($chair->status !== 'inactive') {
+                                $totalAvailableChairs++;
+                            }
                         }
 
                         return [
