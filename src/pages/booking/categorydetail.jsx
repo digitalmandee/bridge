@@ -7,7 +7,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import "./style.css";
 import { Autocomplete, TextField } from "@mui/material";
 
-const CategoryDetail = ({ handleNext,handlePrevious }) => {
+const CategoryDetail = ({ handleNext, handlePrevious }) => {
 	const { bookingdetails, setBookingDetails, formErrors, validateCategoryDetails } = useContext(FloorPlanContext);
 
 	const industryOptions = ["IT", "Finance", "Healthcare", "Education"];
@@ -273,6 +273,19 @@ const CategoryDetail = ({ handleNext,handlePrevious }) => {
 			)}
 			<div className="form-group">
 				<label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>KYB (File upload - PDF or Image)</label>
+				{typeof bookingdetails.kyb_file === "string" && bookingdetails.kyb_file !== "" && (
+					<div style={{ marginBottom: "10px" }}>
+						{/* Check if file is image based on extension */}
+						{/\.(jpg|jpeg|png|gif)$/i.test(bookingdetails.kyb_file) && (
+							<div style={{ marginBottom: "5px" }}>
+								<img src={import.meta.env.VITE_ASSET_API + bookingdetails.kyb_file} alt="KYB Preview" style={{ width: "100px", height: "auto", borderRadius: "5px", border: "1px solid #ddd" }} />
+							</div>
+						)}
+						<a href={import.meta.env.VITE_ASSET_API + bookingdetails.kyb_file} target="_blank" rel="noopener noreferrer" style={{ color: colors.primary, textDecoration: "underline" }}>
+							View Uploaded File
+						</a>
+					</div>
+				)}
 				<input style={{ width: "100%", marginLeft: 0, padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }} type="file" name="kyb_file" accept=".png,.jpg,.jpeg,.gif,.pdf" onChange={handleChange} />
 				{formErrors.kyb_file && <span className="error-text">{formErrors.kyb_file}</span>}
 			</div>

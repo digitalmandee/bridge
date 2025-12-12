@@ -37,6 +37,8 @@ const MemberDetail = ({ handleNext }) => {
 				const response = await axiosInstance.get("search", {
 					params: { query, type: bookingdetails.type === "individual" ? "user" : "company" },
 				});
+
+				console.log(response.data);
 				setSearchResults(response.data.success ? response.data.results : []);
 			} catch (error) {
 				console.error("Search error:", error);
@@ -72,9 +74,19 @@ const MemberDetail = ({ handleNext }) => {
 			industry: user?.company_profile?.industry || "",
 			employees: user?.company_profile?.employees || "",
 			company_address: user?.company_profile?.address || "",
+			// Docs
+			profile_image: user?.profile_image || "",
+			kyb_file: user?.company_profile?.kyb_file || user?.user_profile?.kyb_file || "",
 		});
 		setSearchQuery(user.name);
 		setSearchResults([]);
+
+		// Set image preview if cnic_image exists
+		if (user.cnic_image) {
+			setImagePreview(import.meta.env.VITE_ASSET_API + user.cnic_image);
+		} else {
+			setImagePreview(null);
+		}
 	};
 
 	const handleImageChange = (e) => {

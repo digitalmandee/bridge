@@ -171,13 +171,6 @@ const Floorplan = () => {
 		}
 	}, [selectedFloor, fromDate, toDate]);
 
-	const data = [
-		{ name: "Available", value: 40, color: "#B0B0B0" }, // Grey
-		{ name: "24 HOUR", value: 15, color: "#FFD700" }, // Yellow
-		{ name: "Day", value: 20, color: "#FFA500" }, // Orange
-		{ name: "Night", value: 25, color: "#6A5ACD" }, // Blue
-	];
-
 	return (
 		<>
 			<TopNavbar />

@@ -27,6 +27,8 @@ const GFloorPlan = ({ tables: propTables, onChairClick }) => {
 				};
 				setLocalFloorSize(size);
 				if (setFloorSize) {
+					console.log("size", size);
+
 					setFloorSize(size);
 				}
 			}
