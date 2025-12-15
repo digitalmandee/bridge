@@ -222,7 +222,9 @@ const InvoiceManagement = () => {
 												bgcolor: colors.primary,
 											},
 										}}
-										onClick={() => navigate(`/${branch}/branch/invoice/create`)}>
+										onClick=
+										{() => navigate(`/${branch}/branch/invoice/create`)}
+										>
 										New Invoice
 									</Button>
 								)}
@@ -295,7 +297,9 @@ const InvoiceManagement = () => {
 											const isDisabled = isNotifiedToday || loadingInvoiceId === invoice.id;
 											return (
 												<TableRow key={invoice.id}>
-													<TableCell style={{ cursor: "pointer" }} onClick={() => navigate(`/${branch}/${user.type == "admin" ? "branch" : user.type}/invoice/view/${invoice.id}`)}>
+													<TableCell style={{ cursor: "pointer" }} onClick={
+														() => navigate
+														(`/${branch}/${user.type == "admin" ? "branch" : user.type}/invoice/view/${invoice.id}`)}>
 														#BRIDGE-{invoice.id}
 													</TableCell>
 													<TableCell style={{ textTransform: "capitalize" }}>{invoice.invoice_type}</TableCell>
