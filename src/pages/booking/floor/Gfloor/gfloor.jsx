@@ -151,7 +151,7 @@ const GFloorPlan = ({ tables: propTables, onChairClick }) => {
 							borderTopRightRadius: "0.5rem",
 							textAlign: "center",
 						}}>
-						Selected Items:
+						Selected Items: {Object.values(selectedChairs).reduce((acc, chairs) => acc + chairs.length, 0)}
 					</h4>
 
 					{Object.entries(selectedChairs).length > 0 && (
