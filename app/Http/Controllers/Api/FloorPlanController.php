@@ -410,13 +410,22 @@ class FloorPlanController extends Controller
     public function getChairs(Request $request)
     {
         $floorId = $request->query('floor_id');
+        $roomId = $request->query('room_id');
+
         try {
             $today = Carbon::today();
 
             // Get all chairs for this floor
-            $chairs = Chair::where('floor_id', $floorId)
-                ->with('floor:id,name', 'table:id,table_id')
-                ->get();
+            $query = Chair::query()->with('floor:id,name', 'table:id,table_id');
+
+            if ($floorId) {
+                $query->where('floor_id', $floorId);
+            }
+            if ($roomId) {
+                $query->where('room_id', $roomId);
+            }
+
+            $chairs = $query->get();
 
             // Get today's confirmed bookings with chairs
             $bookings = Booking::where('floor_id', $floorId)

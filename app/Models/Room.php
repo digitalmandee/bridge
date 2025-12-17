@@ -3,9 +3,8 @@
 namespace App\Models;
 
 use App\Models\Floor;
-
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Room extends Model
 {
@@ -23,6 +22,7 @@ class Room extends Model
     {
         return $this->hasMany(BookingSchedule::class);
     }
+
     public function floor()
     {
         return $this->belongsTo(Floor::class);
@@ -34,6 +34,11 @@ class Room extends Model
     public function tables()
     {
         return $this->hasMany(Table::class);
+    }
+
+    public function chairs()
+    {
+        return $this->hasMany(Chair::class);
     }
 
     // public function floor()
