@@ -62,6 +62,50 @@ class TableController extends Controller
         }
     }
 
+    public function update(Request $request, $id)
+    {
+        $table = Table::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'table_id' => [
+                'required',
+                'string',
+                'max:10',  // enforcing short code constraint
+                Rule::unique('tables')->where(function ($query) use ($table) {
+                    return $query->where('floor_id', $table->floor_id);
+                })->ignore($table->id),
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $table->update([
+                'name' => $request->name,
+                'table_id' => $request->table_id,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Table updated successfully',
+                'table' => $table,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update table',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function createTable(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -75,6 +119,14 @@ class TableController extends Controller
                     return $query->where('room_id', $request->room_id);
                 }),
             ],
+            'table_id' => [
+                'required',
+                'string',
+                'max:10',  // enforcing short code constraint
+                Rule::unique('tables')->where(function ($query) use ($request) {
+                    return $query->where('floor_id', $request->floor_id);
+                }),
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -84,23 +136,14 @@ class TableController extends Controller
             ], 422);
         }
 
-        // Check if table name already exists for the given room
-        $existingTable = Table::where('room_id', $request->room_id)
-            ->where('name', $request->name)
-            ->first();
-
-        if ($existingTable) {
-            return response()->json([
-                'success' => false,
-                'errors' => ['name' => ['Table name already exists in this room']],
-            ], 422);
-        }
+        // Check if table name already exists for the given room (redundant with validation rule? keeping logical check if specific message needed but cleaning up)
+        // Redundant with Rule::unique above for name, so safe to rely on validator.
 
         $table = Table::create([
             'floor_id' => $request->floor_id,
             'room_id' => $request->room_id,
             'name' => $request->name,
-            'table_id' => $request->name,  // Save name as table_id
+            'table_id' => $request->table_id,
         ]);
 
         return response()->json([

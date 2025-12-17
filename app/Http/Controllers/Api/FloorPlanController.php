@@ -474,6 +474,9 @@ class FloorPlanController extends Controller
                     'time_slot' => $status,
                     'status' => $chair->status,
                     'color' => $color,
+                    'positionx' => $chair->positionx,
+                    'positiony' => $chair->positiony,
+                    'rotation' => $chair->rotation,
                 ];
             });
 
@@ -524,7 +527,8 @@ class FloorPlanController extends Controller
     {
         try {
             $chair = Chair::findOrFail($id);
-            $chair->update($request->only('status'));
+            // Allow updating status AND positional data
+            $chair->update($request->only(['status', 'positionx', 'positiony', 'rotation']));
 
             return response()->json([
                 'success' => true,

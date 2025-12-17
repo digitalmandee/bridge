@@ -262,31 +262,16 @@ class RoomController extends Controller
         try {
             $room = Room::findOrFail($id);
 
-            // Check if room has associated chairs or tables
-            if ($room->chairs()->count() > 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Cannot delete room because it contains chairs. Please move or delete them first.'
-                ], 400);
-            }
-
-            if ($room->tables()->count() > 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Cannot delete room because it contains tables. Please move or delete them first.'
-                ], 400);
-            }
-
-            // Optional: Check for future bookings?
-            // Usually if there are no chairs/tables, bookings might be corrupt or irrelevant,
-            // but checking for related data is always safe.
-            // Assuming simplified logic where chair/table removal handles booking consistency or bookings are attached to chairs/tables.
+            // Cascade delete: Delete all chairs and tables in the room
+            // Chairs and Tables are assumed to be exclusively owned by the room in this context
+            $room->chairs()->delete();
+            $room->tables()->delete();
 
             $room->delete();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Room deleted successfully'
+                'message' => 'Room and all its contents deleted successfully'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

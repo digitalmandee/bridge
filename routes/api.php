@@ -105,6 +105,7 @@ Route::group(['middleware' => ['set_tenant']], function () {
     // tables
     Route::get('floor-plan/tables', [TableController::class, 'getTables']);
     Route::post('floor-plan/tables', [TableController::class, 'createTable']);
+    Route::put('floor-plan/tables/{id}', [TableController::class, 'update']);
     Route::delete('floor-plan/tables/{id}', [TableController::class, 'destroy']);
     // tables
     Route::get('floor-plan/rooms', [RoomController::class, 'index']);
