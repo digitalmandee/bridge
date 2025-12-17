@@ -1,57 +1,52 @@
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, FormControl, InputLabel, Select, MenuItem, Alert, Box, CircularProgress } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, FormControl, InputLabel, Select, MenuItem, Alert, Box, CircularProgress, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
 
 const DeleteRoomModal = ({ open, onClose, room, floors, onSuccess }) => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState(null);
-	const [step, setStep] = useState("confirm"); // 'confirm', 'move', 'delete'
+	const [action, setAction] = useState("move"); // 'move' or 'delete_all'
 
 	// Move logic state
 	const [targetFloorId, setTargetFloorId] = useState("");
 	const [targetRooms, setTargetRooms] = useState([]);
 	const [targetRoomId, setTargetRoomId] = useState("");
 
-	// Target Tables state
+	// Target Tables state (for moving chairs only)
 	const [targetTables, setTargetTables] = useState([]);
 	const [targetTableId, setTargetTableId] = useState("");
 	const [loadingTargetTables, setLoadingTargetTables] = useState(false);
-
 	const [loadingTargetRooms, setLoadingTargetRooms] = useState(false);
 
 	const hasTables = room?.tables_count > 0;
 	const hasChairs = room?.chairs_count > 0;
+	const hasContents = hasTables || hasChairs;
 
 	useEffect(() => {
 		if (open && room) {
 			// Reset state
 			setError(null);
-			setTargetFloorId(room.floor_id); // Default to current floor
+			setAction("move");
+			setTargetFloorId(room.floor_id);
 			setTargetRoomId("");
 			setTargetRooms([]);
 			setTargetTableId("");
 			setTargetTables([]);
 
-			// Determine initial step
-			if (hasTables || hasChairs) {
-				setStep("move");
-				// Fetch rooms for default floor immediately
+			if (hasContents) {
 				fetchTargetRooms(room.floor_id);
-			} else {
-				setStep("confirm");
 			}
 		}
 	}, [open, room]);
 
 	useEffect(() => {
-		if (targetFloorId && step === "move") {
+		if (targetFloorId && open && hasContents) {
 			fetchTargetRooms(targetFloorId);
 		}
 	}, [targetFloorId]);
 
 	useEffect(() => {
-		if (targetRoomId && step === "move" && !hasTables && hasChairs) {
-			// Only fetch tables if we are moving chairs explicitly
+		if (targetRoomId && action === "move" && !hasTables && hasChairs) {
 			fetchTargetTables(targetRoomId);
 		} else {
 			setTargetTables([]);
@@ -65,7 +60,6 @@ const DeleteRoomModal = ({ open, onClose, room, floors, onSuccess }) => {
 				params: { floor_id: floorId },
 			});
 			if (res.data.success) {
-				// Filter out the room being deleted
 				const filteredRooms = (res.data.rooms || []).filter((r) => r.id !== room.id);
 				setTargetRooms(filteredRooms);
 			}
@@ -79,14 +73,11 @@ const DeleteRoomModal = ({ open, onClose, room, floors, onSuccess }) => {
 	const fetchTargetTables = async (roomId) => {
 		setLoadingTargetTables(true);
 		try {
-			// Fetch tables for the specific floor and filter by room client-side if needed
-			// Assuming getTables endpoint is typically 'floor-plan/tables'
 			const res = await axiosInstance.get("floor-plan/tables", {
 				params: { floor_id: targetFloorId },
 			});
 
 			if (res.data.success) {
-				// Filter by room_id
 				const tables = (res.data.tables || []).filter((t) => t.room_id == roomId);
 				setTargetTables(tables);
 			}
@@ -126,7 +117,7 @@ const DeleteRoomModal = ({ open, onClose, room, floors, onSuccess }) => {
 
 		try {
 			if (hasTables) {
-				// Move Tables (and their chairs implicitly)
+				// Move Tables
 				const movePayload = {
 					source_room_id: room.id,
 					target_room_id: targetRoomId,
@@ -135,7 +126,7 @@ const DeleteRoomModal = ({ open, onClose, room, floors, onSuccess }) => {
 				const moveRes = await axiosInstance.post("floor-plan/rooms/move-tables", movePayload);
 				if (!moveRes.data.success) throw new Error(moveRes.data.message || "Failed to move tables.");
 			} else if (hasChairs) {
-				// Move Chairs only
+				// Move Chairs
 				const movePayload = {
 					source_room_id: room.id,
 					target_room_id: targetRoomId,
@@ -149,18 +140,11 @@ const DeleteRoomModal = ({ open, onClose, room, floors, onSuccess }) => {
 				if (!moveRes.data.success) throw new Error(moveRes.data.message || "Failed to move chairs.");
 			}
 
-			// 2. Delete Room
-			const deleteRes = await axiosInstance.delete(`floor-plan/rooms/${room.id}`);
-			if (deleteRes.data.success) {
-				onSuccess("Contents moved and room deleted successfully.");
-				onClose();
-			} else {
-				throw new Error(deleteRes.data.message || "Contents moved, but failed to delete room.");
-			}
+			// After moving, call delete.
+			await handleDeleteOnly();
 		} catch (err) {
 			console.error(err);
 			setError(err.message || "An error occurred during the process.");
-		} finally {
 			setIsSubmitting(false);
 		}
 	};
@@ -169,7 +153,7 @@ const DeleteRoomModal = ({ open, onClose, room, floors, onSuccess }) => {
 
 	return (
 		<Dialog open={open} onClose={() => !isSubmitting && onClose()} maxWidth="sm" fullWidth>
-			<DialogTitle>{step === "move" ? (hasTables ? "Room has Tables" : "Room has Chairs") : "Confirm Deletion"}</DialogTitle>
+			<DialogTitle>{hasContents ? (hasTables ? "Room has Tables" : "Room has Chairs") : "Confirm Deletion"}</DialogTitle>
 			<DialogContent dividers>
 				{error && (
 					<Alert severity="error" sx={{ mb: 2 }}>
@@ -177,70 +161,84 @@ const DeleteRoomModal = ({ open, onClose, room, floors, onSuccess }) => {
 					</Alert>
 				)}
 
-				{step === "confirm" && (
+				{!hasContents ? (
 					<Typography>
 						Are you sure you want to delete <strong>{room.name}</strong>? This action cannot be undone.
 					</Typography>
-				)}
-
-				{step === "move" && (
+				) : (
 					<Box>
 						<Alert severity="warning" sx={{ mb: 2 }}>
-							This room contains <strong>{hasTables ? `${room.tables_count} tables` : `${room.chairs_count} chairs`}</strong>. You must move them to another room before deleting.
+							This room contains <strong>{hasTables ? `${room.tables_count} tables` : `${room.chairs_count} chairs`}</strong>.
 						</Alert>
-						<Typography variant="subtitle1" gutterBottom>
-							Select a destination:
-						</Typography>
 
-						<FormControl fullWidth margin="normal">
-							<InputLabel>Destination Floor</InputLabel>
-							<Select value={targetFloorId} label="Destination Floor" onChange={(e) => setTargetFloorId(e.target.value)}>
-								{floors.map((floor) => (
-									<MenuItem key={floor.id} value={floor.id}>
-										{floor.name}
-									</MenuItem>
-								))}
-							</Select>
-						</FormControl>
+						<Typography gutterBottom>What would you like to do with the contents?</Typography>
 
-						<FormControl fullWidth margin="normal" disabled={!targetFloorId || loadingTargetRooms}>
-							<InputLabel>Destination Room</InputLabel>
-							<Select value={targetRoomId} label="Destination Room" onChange={(e) => setTargetRoomId(e.target.value)}>
-								{loadingTargetRooms ? (
-									<MenuItem disabled>Loading...</MenuItem>
-								) : targetRooms.length === 0 ? (
-									<MenuItem disabled>No available rooms</MenuItem>
-								) : (
-									targetRooms.map((r) => (
-										<MenuItem key={r.id} value={r.id}>
-											{r.name}
-										</MenuItem>
-									))
-								)}
-							</Select>
-						</FormControl>
+						<RadioGroup value={action} onChange={(e) => setAction(e.target.value)} sx={{ mb: 2 }}>
+							<FormControlLabel value="move" control={<Radio />} label="Move contents to another room" />
+							<FormControlLabel value="delete_all" control={<Radio color="error" />} label={<Typography color="error">Delete room AND contents</Typography>} />
+						</RadioGroup>
 
-						{/* Only show Table selection if we are moving CHAIRS (not tables) and targetRoom is selected */}
-						{!hasTables && hasChairs && targetRoomId && (
-							<FormControl fullWidth margin="normal" disabled={loadingTargetTables}>
-								<InputLabel>Assign to Table (Optional)</InputLabel>
-								<Select value={targetTableId} label="Assign to Table (Optional)" onChange={(e) => setTargetTableId(e.target.value)}>
-									<MenuItem value="">
-										<em>None (Unassigned)</em>
-									</MenuItem>
-									{loadingTargetTables ? (
-										<MenuItem disabled>Loading...</MenuItem>
-									) : targetTables.length === 0 ? (
-										<MenuItem disabled>No tables in this room</MenuItem>
-									) : (
-										targetTables.map((t) => (
-											<MenuItem key={t.id} value={t.id}>
-												{t.name}
+						{action === "move" && (
+							<Box sx={{ mt: 2, p: 2, bgcolor: "#f5f5f5", borderRadius: 1 }}>
+								<Typography variant="subtitle2" gutterBottom>
+									Move to:
+								</Typography>
+								<FormControl fullWidth margin="dense">
+									<InputLabel>Destination Floor</InputLabel>
+									<Select value={targetFloorId} label="Destination Floor" onChange={(e) => setTargetFloorId(e.target.value)}>
+										{floors.map((floor) => (
+											<MenuItem key={floor.id} value={floor.id}>
+												{floor.name}
 											</MenuItem>
-										))
-									)}
-								</Select>
-							</FormControl>
+										))}
+									</Select>
+								</FormControl>
+
+								<FormControl fullWidth margin="dense" disabled={!targetFloorId || loadingTargetRooms}>
+									<InputLabel>Destination Room</InputLabel>
+									<Select value={targetRoomId} label="Destination Room" onChange={(e) => setTargetRoomId(e.target.value)}>
+										{loadingTargetRooms ? (
+											<MenuItem disabled>Loading...</MenuItem>
+										) : targetRooms.length === 0 ? (
+											<MenuItem disabled>No available rooms</MenuItem>
+										) : (
+											targetRooms.map((r) => (
+												<MenuItem key={r.id} value={r.id}>
+													{r.name}
+												</MenuItem>
+											))
+										)}
+									</Select>
+								</FormControl>
+
+								{!hasTables && hasChairs && targetRoomId && (
+									<FormControl fullWidth margin="dense" disabled={loadingTargetTables}>
+										<InputLabel>Assign to Table (Optional)</InputLabel>
+										<Select value={targetTableId} label="Assign to Table (Optional)" onChange={(e) => setTargetTableId(e.target.value)}>
+											<MenuItem value="">
+												<em>None (Unassigned)</em>
+											</MenuItem>
+											{loadingTargetTables ? (
+												<MenuItem disabled>Loading...</MenuItem>
+											) : targetTables.length === 0 ? (
+												<MenuItem disabled>No tables in this room</MenuItem>
+											) : (
+												targetTables.map((t) => (
+													<MenuItem key={t.id} value={t.id}>
+														{t.name}
+													</MenuItem>
+												))
+											)}
+										</Select>
+									</FormControl>
+								)}
+							</Box>
+						)}
+
+						{action === "delete_all" && (
+							<Alert severity="error">
+								Warning: <strong>{hasTables ? `${room.tables_count} tables` : `${room.chairs_count} chairs`}</strong> will also be permanently deleted.
+							</Alert>
 						)}
 					</Box>
 				)}
@@ -250,13 +248,13 @@ const DeleteRoomModal = ({ open, onClose, room, floors, onSuccess }) => {
 					Cancel
 				</Button>
 
-				{step === "confirm" ? (
+				{!hasContents ? (
 					<Button onClick={handleDeleteOnly} color="error" variant="contained" disabled={isSubmitting}>
 						{isSubmitting ? <CircularProgress size={24} color="inherit" /> : "Delete Room"}
 					</Button>
 				) : (
-					<Button onClick={handleMoveAndDelete} color="primary" variant="contained" disabled={isSubmitting || !targetRoomId}>
-						{isSubmitting ? <CircularProgress size={24} color="inherit" /> : hasTables ? "Move Tables & Delete" : "Move Chairs & Delete"}
+					<Button onClick={action === "delete_all" ? handleDeleteOnly : handleMoveAndDelete} color={action === "delete_all" ? "error" : "primary"} variant="contained" disabled={isSubmitting || (action === "move" && !targetRoomId)}>
+						{isSubmitting ? <CircularProgress size={24} color="inherit" /> : action === "delete_all" ? "Delete All" : "Move & Delete"}
 					</Button>
 				)}
 			</DialogActions>

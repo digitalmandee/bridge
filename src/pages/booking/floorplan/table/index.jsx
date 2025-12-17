@@ -8,6 +8,7 @@ import { Box } from "@mui/system";
 import axiosInstance from "@/utils/axiosInstance";
 import "bootstrap/dist/css/bootstrap.min.css";
 import DeleteTableModal from "./DeleteTableModal";
+import EditTableModal from "./EditTableModal";
 
 import MoveChairsModal from "../rooms/MoveChairsModal"; // Assuming similar structure if needed, but not used here
 import colors from "@/assets/styles/color";
@@ -34,6 +35,10 @@ const TableManagement = () => {
 	// Delete Modal State
 	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 	const [tableToDelete, setTableToDelete] = useState(null);
+
+	// Edit Modal State
+	const [editModalOpen, setEditModalOpen] = useState(false);
+	const [tableToEdit, setTableToEdit] = useState(null);
 
 	const handlePageChange = (event, value) => {
 		setCurrentPage(value);
@@ -100,6 +105,25 @@ const TableManagement = () => {
 	const handleCloseDeleteModal = () => {
 		setDeleteModalOpen(false);
 		setTableToDelete(null);
+	};
+
+	const handleOpenEditModal = (table) => {
+		setTableToEdit(table);
+		setEditModalOpen(true);
+	};
+
+	const handleCloseEditModal = () => {
+		setEditModalOpen(false);
+		setTableToEdit(null);
+	};
+
+	const handleEditSuccess = (message) => {
+		fetchTables();
+		setSnackbar({
+			open: true,
+			message: message || "Table updated successfully!",
+			severity: "success",
+		});
 	};
 
 	const handleDeleteSuccess = (message) => {
@@ -201,9 +225,14 @@ const TableManagement = () => {
 											<TableCell>{table.name}</TableCell>
 											<TableCell>{table.chairs_count || 0}</TableCell>
 											<TableCell>
-												<Button variant="outlined" size="small" color="error" onClick={() => handleOpenDeleteModal(table)}>
-													Delete
-												</Button>
+												<Box display="flex" gap={1}>
+													<Button variant="outlined" size="small" color="primary" onClick={() => handleOpenEditModal(table)}>
+														Edit
+													</Button>
+													<Button variant="outlined" size="small" color="error" onClick={() => handleOpenDeleteModal(table)}>
+														Delete
+													</Button>
+												</Box>
 											</TableCell>
 										</TableRow>
 									))
@@ -238,6 +267,7 @@ const TableManagement = () => {
 			</Snackbar>
 
 			<DeleteTableModal open={deleteModalOpen} onClose={handleCloseDeleteModal} table={tableToDelete} floors={floors} onSuccess={handleDeleteSuccess} />
+			<EditTableModal open={editModalOpen} onClose={handleCloseEditModal} table={tableToEdit} onSuccess={handleEditSuccess} />
 		</>
 	);
 };

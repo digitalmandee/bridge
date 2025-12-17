@@ -8,6 +8,7 @@ import { Box } from "@mui/system";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "@/utils/axiosInstance";
 import colors from "@/assets/styles/color";
+import EditChairModal from "./EditChairModal";
 
 const Management = () => {
 	const navigate = useNavigate();
@@ -25,6 +26,15 @@ const Management = () => {
 	const [error, setError] = useState("");
 	const [loadingFloors, setLoadingFloors] = useState(true);
 
+	// Filter by Table
+	const [tables, setTables] = useState([]);
+	const [selectedTable, setSelectedTable] = useState("all");
+	const [loadingTables, setLoadingTables] = useState(false);
+
+	// Edit Modal
+	const [editModalOpen, setEditModalOpen] = useState(false);
+	const [chairToEdit, setChairToEdit] = useState(null);
+
 	// Pagination
 	const [currentPage, setCurrentPage] = useState(1);
 	const itemsPerPage = 10;
@@ -40,7 +50,13 @@ const Management = () => {
 		const fetchFloors = async () => {
 			try {
 				const response = await axiosInstance.get("floor-plan/floor-plan-list");
-				setFloors(response.data.floors || []);
+				const floorsData = response.data.floors || [];
+				setFloors(floorsData);
+
+				// Auto-select first floor
+				if (floorsData.length > 0) {
+					setSelectedOption(floorsData[0].id);
+				}
 			} catch (err) {
 				setError("An error occurred while fetching floors.");
 				console.error(err);
@@ -51,6 +67,24 @@ const Management = () => {
 
 		fetchFloors();
 	}, []);
+
+	// Fetch tables when floor changes
+	useEffect(() => {
+		if (!selectedOption) {
+			setTables([]);
+			return;
+		}
+
+		setLoadingTables(true);
+		axiosInstance
+			.get("floor-plan/tables", { params: { floor_id: selectedOption } })
+			.then((res) => {
+				setTables(res.data.tables || []);
+				setSelectedTable("all"); // Reset table filter
+			})
+			.catch((err) => console.error("Failed to fetch tables", err))
+			.finally(() => setLoadingTables(false));
+	}, [selectedOption]);
 
 	const fetchChairs = async () => {
 		if (!selectedOption) return;
@@ -127,6 +161,19 @@ const Management = () => {
 		fetchChairs();
 	}, [selectedOption]);
 
+	const handleOpenEditModal = (chair) => {
+		setChairToEdit(chair);
+		setEditModalOpen(true);
+	};
+
+	const handleEditSuccess = (msg) => {
+		setSnackbar({ open: true, message: msg, severity: "success" });
+		fetchChairs();
+	};
+
+	// Filtered chairs based on table selection
+	const filteredChairs = selectedTable === "all" ? applications : applications.filter((chair) => chair.table?.id === selectedTable);
+
 	const selectedFloorName = floors.find((f) => f.id === selectedOption)?.name;
 
 	return (
@@ -176,6 +223,27 @@ const Management = () => {
 										)}
 									</Select>
 								</FormControl>
+
+								{/* Table Filter */}
+								<FormControl
+									fullWidth
+									sx={{
+										minWidth: 150,
+										"& .MuiInputBase-root": {
+											height: 40,
+										},
+									}}>
+									<InputLabel>Filter Table</InputLabel>
+									<Select value={selectedTable} label="Filter Table" onChange={(e) => setSelectedTable(e.target.value)} disabled={!selectedOption || loadingTables}>
+										<MenuItem value="all">All Tables</MenuItem>
+										{tables.map((table) => (
+											<MenuItem key={table.id} value={table.id}>
+												{table.name} ({table.table_id})
+											</MenuItem>
+										))}
+									</Select>
+								</FormControl>
+
 								<Button variant="contained" sx={{ whiteSpace: "nowrap", px: 6, bgcolor: colors.primary, "&:hover": { bgcolor: colors.primary } }} onClick={() => navigate(`/${branch}/branch/floorplan/chairs/create`)}>
 									Create Chair
 								</Button>
@@ -202,11 +270,11 @@ const Management = () => {
 											<CircularProgress sx={{ color: "#FFCC16" }} />
 										</TableCell>
 									</TableRow>
-								) : applications.length > 0 ? (
-									applications.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((application, index) => (
+								) : filteredChairs.length > 0 ? (
+									filteredChairs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((application, index) => (
 										<TableRow key={application.id}>
 											<TableCell>{(currentPage - 1) * itemsPerPage + index + 1}</TableCell>
-											<TableCell>{application.floor.name}</TableCell>
+											<TableCell>{application.floor?.name}</TableCell>
 											<TableCell>
 												{application.table?.table_id}-{application.chair_id}
 											</TableCell>
@@ -240,6 +308,9 @@ const Management = () => {
 												</span>
 											</TableCell>
 											<TableCell>
+												<Button variant="outlined" size="small" onClick={() => handleOpenEditModal(application)} sx={{ marginRight: 1 }}>
+													Edit
+												</Button>
 												<Button variant="outlined" size="small" onClick={() => handleChairClick(application)} sx={{ marginRight: 1 }}>
 													{application.status === "active" ? "Deactivate" : "Activate"}
 												</Button>
@@ -261,13 +332,15 @@ const Management = () => {
 					</TableContainer>
 
 					{/* Pagination */}
-					{applications.length > itemsPerPage && (
+					{filteredChairs.length > itemsPerPage && (
 						<div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-							<Pagination count={Math.ceil(applications.length / itemsPerPage)} page={currentPage} onChange={handlePageChange} color="primary" />
+							<Pagination count={Math.ceil(filteredChairs.length / itemsPerPage)} page={currentPage} onChange={handlePageChange} color="primary" />
 						</div>
 					)}
 				</div>
 			</div>
+
+			<EditChairModal open={editModalOpen} onClose={() => setEditModalOpen(false)} chair={chairToEdit} onSuccess={handleEditSuccess} />
 
 			<Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
 				<Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
