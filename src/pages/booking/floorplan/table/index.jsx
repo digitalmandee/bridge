@@ -7,7 +7,11 @@ import { Select, MenuItem, FormControl, InputLabel, Snackbar, Alert, TableCell, 
 import { Box } from "@mui/system";
 import axiosInstance from "@/utils/axiosInstance";
 import "bootstrap/dist/css/bootstrap.min.css";
+import DeleteTableModal from "./DeleteTableModal";
+
+import MoveChairsModal from "../rooms/MoveChairsModal"; // Assuming similar structure if needed, but not used here
 import colors from "@/assets/styles/color";
+// Import other necessary components if missing
 
 const TableManagement = () => {
 	const navigate = useNavigate();
@@ -26,6 +30,10 @@ const TableManagement = () => {
 	const [selectedOption, setSelectedOption] = useState("");
 	const [currentPage, setCurrentPage] = useState(1);
 	const itemsPerPage = 10;
+
+	// Delete Modal State
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+	const [tableToDelete, setTableToDelete] = useState(null);
 
 	const handlePageChange = (event, value) => {
 		setCurrentPage(value);
@@ -83,6 +91,25 @@ const TableManagement = () => {
 	useEffect(() => {
 		fetchTables();
 	}, [selectedOption]);
+
+	const handleOpenDeleteModal = (table) => {
+		setTableToDelete(table);
+		setDeleteModalOpen(true);
+	};
+
+	const handleCloseDeleteModal = () => {
+		setDeleteModalOpen(false);
+		setTableToDelete(null);
+	};
+
+	const handleDeleteSuccess = (message) => {
+		fetchTables();
+		setSnackbar({
+			open: true,
+			message: message || "Table deleted successfully!",
+			severity: "success",
+		});
+	};
 
 	return (
 		<>
@@ -154,6 +181,8 @@ const TableManagement = () => {
 									<TableCell sx={{ fontWeight: "bold" }}>Table ID</TableCell>
 									<TableCell sx={{ fontWeight: "bold" }}>Room Name</TableCell>
 									<TableCell sx={{ fontWeight: "bold" }}>Table Name</TableCell>
+									<TableCell sx={{ fontWeight: "bold" }}>Chairs</TableCell>
+									<TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
 								</TableRow>
 							</TableHead>
 							<TableBody>
@@ -170,11 +199,17 @@ const TableManagement = () => {
 											<TableCell>{table.table_id}</TableCell>
 											<TableCell>{table.room?.name || "N/A"}</TableCell>
 											<TableCell>{table.name}</TableCell>
+											<TableCell>{table.chairs_count || 0}</TableCell>
+											<TableCell>
+												<Button variant="outlined" size="small" color="error" onClick={() => handleOpenDeleteModal(table)}>
+													Delete
+												</Button>
+											</TableCell>
 										</TableRow>
 									))
 								) : (
 									<TableRow>
-										<TableCell colSpan={4} align="center">
+										<TableCell colSpan={7} align="center">
 											No tables found.
 										</TableCell>
 									</TableRow>
@@ -201,6 +236,8 @@ const TableManagement = () => {
 					{snackbar.message}
 				</Alert>
 			</Snackbar>
+
+			<DeleteTableModal open={deleteModalOpen} onClose={handleCloseDeleteModal} table={tableToDelete} floors={floors} onSuccess={handleDeleteSuccess} />
 		</>
 	);
 };
