@@ -1,21 +1,260 @@
-.custom-primary {
-    color: #0d6efd !important;
-    /* Custom Blue */
+/* Invoice View Styles - Matching Bridge Design */
+
+/* Container for the entire invoice */
+.invoice-container {
+	max-width: 800px;
+	margin: 0 auto;
+	background: #fff;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-.custom-accent {
-    background: #FFCC16 !important;
-    /* Custom Yellow */
+/* Header Image */
+.invoice-header-img {
+	width: 100%;
+	height: auto;
+	display: block;
 }
 
-.custom-danger {
-    color: #dc3545 !important;
-    /* Custom Red */
+/* Invoice Title */
+.invoice-title {
+	text-align: center;
+	font-size: 24px;
+	font-weight: bold;
+	padding: 15px 0;
+	border-bottom: 3px solid #ffcc16;
+	margin: 0;
 }
 
-.custom-btn {
-    background: #0d6efd !important;
-    color: #fff !important;
-    text-transform: none !important;
-    border-radius: 10px !important;
+/* Invoice Meta Info Section */
+.invoice-meta {
+	padding: 15px 30px;
+}
+
+.invoice-meta-row {
+	display: flex;
+	align-items: center;
+	margin-bottom: 5px;
+}
+
+.invoice-meta-label {
+	font-weight: 600;
+	color: #000;
+	min-width: 120px;
+}
+
+.invoice-meta-label.yellow {
+	background: #ffcc16;
+	padding: 2px 8px;
+	display: inline-block;
+}
+
+.invoice-meta-value {
+	font-weight: 500;
+	color: #333;
+}
+
+/* Billing Section */
+.billing-section {
+	display: flex;
+	gap: 20px;
+	padding: 15px 30px;
+	margin: 10px 30px;
+	border: 1px solid #ddd;
+}
+
+.billing-column {
+	flex: 1;
+}
+
+.billing-title {
+	font-weight: bold;
+	font-size: 16px;
+	margin-bottom: 10px;
+	color: #000;
+}
+
+.billing-company {
+	font-weight: 600;
+	font-size: 14px;
+	margin-bottom: 5px;
+}
+
+.billing-detail {
+	font-size: 13px;
+	color: #555;
+	margin-bottom: 3px;
+}
+
+/* Items Table */
+.invoice-table-container {
+	padding: 20px 30px;
+}
+
+.invoice-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 10px;
+}
+
+.invoice-table thead {
+	background: #ffcc16;
+}
+
+.invoice-table thead th {
+	padding: 12px 15px;
+	text-align: left;
+	font-weight: bold;
+	color: #000;
+	border: none;
+}
+
+.invoice-table thead th:last-child {
+	text-align: right;
+}
+
+.invoice-table tbody td {
+	padding: 15px;
+	border-bottom: 1px solid #eee;
+	color: #333;
+	vertical-align: top;
+}
+
+.invoice-table tbody td:last-child {
+	text-align: right;
+	font-weight: 600;
+}
+
+.invoice-table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+/* Amount in yellow highlight */
+.amount-highlight {
+	background: #ffcc16;
+	padding: 3px 10px;
+	font-weight: bold;
+	display: inline-block;
+}
+
+/* Total Amount Row */
+.total-row td {
+	font-weight: bold !important;
+	border-top: 2px solid #333 !important;
+	padding-top: 15px !important;
+}
+
+/* Total Summary Box */
+.total-summary {
+	display: flex;
+	justify-content: flex-end;
+	padding: 10px 30px 20px;
+}
+
+.total-box {
+	text-align: right;
+	border: 2px solid #333;
+	padding: 15px 25px;
+	min-width: 180px;
+}
+
+.total-label {
+	font-weight: bold;
+	font-size: 14px;
+	margin-bottom: 5px;
+}
+
+.total-amount {
+	font-size: 24px;
+	font-weight: bold;
+	color: #000;
+}
+
+.total-note {
+	font-size: 11px;
+	color: #666;
+	margin-top: 3px;
+}
+
+/* Bank Details Section */
+.bank-details {
+	background: #1a1a1a;
+	color: #fff;
+	padding: 20px 30px;
+	margin: 0;
+}
+
+.bank-title {
+	font-weight: bold;
+	font-size: 16px;
+	margin-bottom: 15px;
+	color: #fff;
+}
+
+.bank-row {
+	display: flex;
+	margin-bottom: 8px;
+}
+
+.bank-label {
+	width: 180px;
+	font-weight: 500;
+	color: #ccc;
+}
+
+.bank-value {
+	color: #fff;
+}
+
+/* Contact Info */
+.contact-info {
+	text-align: center;
+	padding: 15px 30px;
+	font-size: 14px;
+	color: #333;
+	border-top: 1px solid #eee;
+}
+
+.contact-phone {
+	font-weight: bold;
+	color: #000;
+}
+
+/* Footer Image */
+.invoice-footer-img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+/* Print Styles */
+@media print {
+	.invoice-container {
+		box-shadow: none;
+		max-width: 100%;
+	}
+
+	.no-print {
+		display: none !important;
+	}
+}
+
+/* Back Button Area */
+.invoice-back-header {
+	display: flex;
+	align-items: center;
+	padding: 20px;
+	background: #f8f9fa;
+}
+
+.invoice-back-btn {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	font-weight: 600;
+	color: #333;
+}
+
+.invoice-back-btn:hover {
+	color: #ffcc16;
 }

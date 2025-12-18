@@ -2,16 +2,19 @@ import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
 import { useNavigate, useParams } from "react-router-dom";
-import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Card, CardContent, CardHeader, CircularProgress } from "@mui/material";
-import { Download } from "lucide-react";
+import { CircularProgress, Typography } from "@mui/material";
+import { MdArrowBackIos } from "react-icons/md";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./invoiceView.css";
 import axiosInstance from "@/utils/axiosInstance";
-import { MdArrowBackIos } from "react-icons/md";
+
+// Import header and footer images
+import invoiceHeader from "@/assets/invoice/invoice-header.png";
+import invoiceFooter from "@/assets/invoice/invoice-footer.png";
 
 const ViewInvoice = () => {
 	const navigate = useNavigate();
-	const { invoiceId } = useParams(); // invoiceId from route param
+	const { invoiceId } = useParams();
 
 	const [invoice, setInvoice] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
@@ -47,30 +50,33 @@ const ViewInvoice = () => {
 		);
 	}
 
-	// Related fields from backend
-	const {
-		id,
-		booking_id,
-		user_id,
-		invoice_type,
-		quantity,
-		hours,
-		discount,
-		amount,
-		status,
-		due_date,
-		paid_date,
-		paid_month,
-		paid_year,
-		plan,
-		payment_type,
-		receipt,
-		items = [], // optional items array if you store line items
-	} = invoice;
+	// Extract invoice fields
+	const { id, booking_id, user_id, invoice_type, quantity, hours, discount, amount, status, due_date, paid_date, plan, user, booking } = invoice;
 
-	const totalAmount = amount;
-	const paidAmount = status === "paid" ? amount : 0;
-	const payableAmount = totalAmount - paidAmount;
+	// Format dates
+	const formatDate = (dateStr) => {
+		if (!dateStr) return "-";
+		const date = new Date(dateStr);
+		return date.toLocaleDateString("en-GB", {
+			day: "2-digit",
+			month: "long",
+			year: "numeric",
+		});
+	};
+
+	// Calculate amounts
+	const rate = amount || 0;
+	const qty = quantity || 1;
+	const discountPercent = discount || 0;
+	const subtotal = rate * qty;
+	const discountAmount = (subtotal * discountPercent) / 100;
+	const totalAmount = subtotal - discountAmount;
+
+	// Get user/company details
+	const billedToName = user?.name || booking?.company_name || "N/A";
+	const billedToPhone = user?.phone || booking?.phone || "";
+	const billedToNTN = user?.ntn || booking?.ntn || "";
+	const billedToAddress = user?.address || booking?.address || "";
 
 	return (
 		<>
@@ -80,115 +86,149 @@ const ViewInvoice = () => {
 					<Sidebar />
 				</div>
 				<div className="content">
-					<div className="container-fluid">
-						{/* Header */}
-						<CardHeader
-							title={
-								<div
-									style={{
-										display: "flex",
-										alignItems: "center",
-										marginBottom: "20px",
-									}}
-								>
-									<div onClick={() => navigate(-1)} style={{ cursor: "pointer" }}>
-										<MdArrowBackIos style={{ fontSize: "20px", marginRight: "1rem", marginBottom:'4px' }} />
-									</div>
-									<Typography variant="h5" className="fw-bold custom-primary">
-										Invoice #{id}
-									</Typography>
-									{/* <Button variant="contained" size="small" startIcon={<Download size={18} />} className="custom-btn">
-										PDF
-									</Button> */}
-								</div>
-							}
-						/>
+					<div className="container-fluid py-4">
+						{/* Back Button */}
+						<div className="invoice-back-header no-print">
+							<div className="invoice-back-btn" onClick={() => navigate(-1)}>
+								<MdArrowBackIos style={{ fontSize: "18px", marginRight: "8px" }} />
+								<span>Back to Invoices</span>
+							</div>
+						</div>
 
-						{/* Client Info + Paid Amount */}
-						<Card className="shadow-lg w-100" style={{ borderRadius: "20px" }}>
-							<CardContent className="p-4">
-								<div className="row g-3">
-									<div className="col-md-8">
-										<div className="p-3 rounded-4 bg-light border">
-											<Typography variant="h6" className="fw-bold">
-												User ID: {user_id}
-											</Typography>
-											{plan && <Typography className="text-muted small">Plan: {plan?.name}</Typography>}
-											<Typography className="text-muted small">Invoice Type: {invoice_type}</Typography>
-										</div>
-									</div>
-									<div className="col-md-4">
-										<div className="p-4 rounded-4 text-center text-white custom-accent">
-											<Typography variant="subtitle2">Paid Amount</Typography>
-											<Typography variant="h5" className="fw-bold">
-												{paidAmount.toLocaleString()} Pkr
-											</Typography>
-											<Typography className="small">{paid_date ? new Date(paid_date).toLocaleDateString() : "-"}</Typography>
-										</div>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
+						{/* Invoice Container */}
+						<div className="invoice-container">
+							{/* Header Image */}
+							<img src={invoiceHeader} alt="Bridge Co-Working Space" className="invoice-header-img" />
 
-						{/* Invoice Info */}
-						<Card className="shadow-lg w-100 my-3" style={{ borderRadius: "20px" }}>
-							<CardContent className="p-4">
-								<div className="row g-3">
-									<div className="col-md-4">
-										<div className="p-3 rounded-3 bg-light border">
-											<Typography className="text-muted small">Booking ID :</Typography>
-											<Typography className="fw-bold">{booking_id}</Typography>
-										</div>
-									</div>
-									<div className="col-md-4">
-										<div className="p-3 rounded-3 bg-light border">
-											<Typography className="text-muted small">Issued :</Typography>
-											<Typography className="fw-bold">{invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : "-"}</Typography>
-										</div>
-									</div>
-									<div className="col-md-4">
-										<div className="p-3 rounded-3 bg-light border">
-											<Typography className="text-muted small">Due Date :</Typography>
-											<Typography className="fw-bold">{due_date ? new Date(due_date).toLocaleDateString() : "-"}</Typography>
-										</div>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
+							{/* Invoice Title */}
+							<h1 className="invoice-title">Invoice</h1>
 
-						{/* Table */}
-						<Card className="shadow-lg w-100" style={{ borderRadius: "20px" }}>
-							<CardContent className="p-4">
-								<TableContainer className="border rounded-4 mb-4">
-									<Table>
-										<TableHead>
-											<TableRow className="bg-light">
-												<TableCell className="fw-bold">Description</TableCell>
-												<TableCell className="fw-bold">Qty</TableCell>
-												<TableCell className="fw-bold">Hours</TableCell>
-												<TableCell className="fw-bold">Discount</TableCell>
-												<TableCell className="fw-bold">Amount</TableCell>
-											</TableRow>
-										</TableHead>
-										<TableBody>
-											<TableRow>
-												<TableCell>{invoice_type}</TableCell>
-												<TableCell>{quantity}</TableCell>
-												<TableCell>{hours || "-"}</TableCell>
-												<TableCell>{discount || 0} %</TableCell>
-												<TableCell>{amount?.toLocaleString()} Pkr</TableCell>
-											</TableRow>
-										</TableBody>
-									</Table>
-								</TableContainer>
-
-								{/* Amount Summary */}
-								<div className="d-flex justify-content-between align-items-center p-3 rounded-3 bg-light border">
-									<Typography className="fw-bold custom-danger">Payable Amount: {payableAmount.toLocaleString()} Pkr</Typography>
-									<Typography className="fw-bold custom-primary">Total Amount: {totalAmount.toLocaleString()} Pkr</Typography>
+							{/* Invoice Meta Info */}
+							<div className="invoice-meta">
+								<div className="invoice-meta-row">
+									<span className="invoice-meta-label yellow">Invoice Number:</span>
+									<span className="invoice-meta-value">&nbsp;#{id || "01111-1111"}</span>
 								</div>
-							</CardContent>
-						</Card>
+								<div className="invoice-meta-row">
+									<span className="invoice-meta-label yellow">Invoice Date:</span>
+									<span className="invoice-meta-value">&nbsp;{formatDate(invoice.created_at)}</span>
+								</div>
+								<div className="invoice-meta-row">
+									<span className="invoice-meta-label yellow">Due Date:</span>
+									<span className="invoice-meta-value">&nbsp;{formatDate(due_date)}</span>
+								</div>
+							</div>
+
+							{/* Billing Section */}
+							<div className="billing-section">
+								{/* Billed By */}
+								<div className="billing-column">
+									<div className="billing-title">Billed By</div>
+									<div className="billing-company">Bridge</div>
+									<div className="billing-detail">82 J1, Johar Town, Near Al-Fatah, Lahore.</div>
+									<div className="billing-detail">Lahore.</div>
+									<div className="billing-detail">Pakistan - 54000</div>
+								</div>
+
+								{/* Billed To */}
+								<div className="billing-column">
+									<div className="billing-title">Billed To</div>
+									<div className="billing-company">{billedToName}</div>
+									{billedToPhone && <div className="billing-detail">{billedToPhone}</div>}
+									{billedToNTN && <div className="billing-detail">NTN {billedToNTN}</div>}
+									{billedToAddress && <div className="billing-detail">{billedToAddress}</div>}
+								</div>
+							</div>
+
+							{/* Items Table */}
+							<div className="invoice-table-container">
+								<table className="invoice-table">
+									<thead>
+										<tr>
+											<th style={{ width: "50%" }}>Item</th>
+											<th style={{ width: "15%" }}>Quantity</th>
+											<th style={{ width: "15%" }}>Rate</th>
+											<th style={{ width: "20%" }}>Amount</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>
+												1. {invoice_type || "Service Charges"} {plan?.name ? `- ${plan.name}` : ""}
+												<br />
+												<small style={{ color: "#666" }}>
+													{hours ? `${hours} Hours` : ""} {discount ? `(${discount}% discount applied)` : ""}
+												</small>
+											</td>
+											<td>{qty}</td>
+											<td>{rate.toLocaleString()}/-</td>
+											<td>
+												<span className="amount-highlight">Rs. {(rate * qty).toLocaleString()}/-</span>
+											</td>
+										</tr>
+
+										{/* If there are additional items, show them */}
+										{invoice.items &&
+											invoice.items.map((item, index) => (
+												<tr key={index}>
+													<td>
+														{index + 2}. {item.description}
+													</td>
+													<td>{item.quantity}</td>
+													<td>{item.rate?.toLocaleString()}/-</td>
+													<td>
+														<span className="amount-highlight">Rs. {item.amount?.toLocaleString()}/-</span>
+													</td>
+												</tr>
+											))}
+
+										{/* Total Row */}
+										<tr className="total-row">
+											<td colSpan="3">
+												<strong>{invoice.items ? invoice.items.length + 2 : 2}. Total Amount</strong>
+											</td>
+											<td>
+												<strong>Rs. {totalAmount.toLocaleString()}/-</strong>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+							{/* Total Summary Box */}
+							<div className="total-summary">
+								<div className="total-box">
+									<div className="total-label">Total (PKR)</div>
+									<div className="total-amount">{totalAmount.toLocaleString()}/-</div>
+									<div className="total-note">Exclusive of Tax</div>
+								</div>
+							</div>
+
+							{/* Bank Details Section */}
+							<div className="bank-details">
+								<div className="bank-title">Bank Details</div>
+								<div className="bank-row">
+									<span className="bank-label">Account Holder Name</span>
+									<span className="bank-value">BRIDGE</span>
+								</div>
+								<div className="bank-row">
+									<span className="bank-label">Account Number</span>
+									<span className="bank-value">PK56ALFH5952005002320929</span>
+								</div>
+								<div className="bank-row">
+									<span className="bank-label">Bank</span>
+									<span className="bank-value">Bank Al-Falah</span>
+								</div>
+							</div>
+
+							{/* Contact Info */}
+							<div className="contact-info">
+								For any enquiry, reach out via call on <span className="contact-phone">+92 336 1312345</span>
+							</div>
+
+							{/* Footer Image */}
+							<img src={invoiceFooter} alt="Bridge Contact Info" className="invoice-footer-img" />
+						</div>
 					</div>
 				</div>
 			</div>
