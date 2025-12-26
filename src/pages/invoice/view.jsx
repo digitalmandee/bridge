@@ -106,15 +106,15 @@ const ViewInvoice = () => {
 							{/* Invoice Meta Info */}
 							<div className="invoice-meta">
 								<div className="invoice-meta-row">
-									<span className="invoice-meta-label yellow">Invoice Number:</span>
+									<span className="invoice-meta-label">Invoice Number:</span>
 									<span className="invoice-meta-value">&nbsp;#{id || "01111-1111"}</span>
 								</div>
 								<div className="invoice-meta-row">
-									<span className="invoice-meta-label yellow">Invoice Date:</span>
+									<span className="invoice-meta-label">Invoice Date:</span>
 									<span className="invoice-meta-value">&nbsp;{formatDate(invoice.created_at)}</span>
 								</div>
 								<div className="invoice-meta-row">
-									<span className="invoice-meta-label yellow">Due Date:</span>
+									<span className="invoice-meta-label">Due Date:</span>
 									<span className="invoice-meta-value">&nbsp;{formatDate(due_date)}</span>
 								</div>
 							</div>

@@ -38,9 +38,8 @@
 }
 
 .invoice-meta-label {
-	font-weight: 600;
-	color: #000;
-	min-width: 120px;
+	font-weight: 700;
+	color: #626262;
 }
 
 .invoice-meta-label.yellow {
