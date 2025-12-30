@@ -1,30 +1,35 @@
 import React, { useEffect, useState } from "react";
 import TopNavbar from "@/components/topNavbar";
 import Sidebar from "@/components/leftSideBar";
-import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Select, MenuItem, InputLabel, FormControl, Snackbar, Alert, Modal, IconButton, Typography, Pagination } from "@mui/material";
+import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Select, MenuItem, InputLabel, FormControl, Snackbar, Alert, Modal, IconButton, Typography, Pagination, Autocomplete } from "@mui/material";
 import axiosInstance from "@/utils/axiosInstance";
 import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import CloseIcon from "@mui/icons-material/Close";
 import { Grid } from "@mui/system";
+import colors from "@/assets/styles/color";
 
 const FinanceReport = () => {
 	const navigate = useNavigate();
 	const { categoryid } = useParams();
 
 	const [previewUrl, setPreviewUrl] = useState(null);
-	const [timeFilter, setTimeFilter] = useState("weekly");
+
+	// Core Data State
 	const [category, setCategory] = useState("");
 	const [financeData, setFinanceData] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
 	const [limit, setLimit] = useState(10);
-	const [openModal, setOpenModal] = useState(false);
-
-	const [modalData, setModalData] = useState(null); // Holds data to show in modal
-	const [status, setStatus] = useState(""); // Track current status to show update or view
 	const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+
+	// Filter State
+	const [fromDate, setFromDate] = useState("");
+	const [toDate, setToDate] = useState("");
+	const [searchQuery, setSearchQuery] = useState("");
+	const [filterCategory, setFilterCategory] = useState("");
+	const [categories, setCategories] = useState([]);
 
 	const [open, setOpen] = React.useState(false);
 	const [selectedItem, setSelectedItem] = useState(null);
@@ -33,6 +38,17 @@ const FinanceReport = () => {
 	const [openDialog, setOpenDialog] = useState(false);
 	const [dialogType, setDialogType] = useState(""); // 'view' or 'edit'
 	const [dialogData, setDialogData] = useState(null);
+
+	// Fetch Categories for Filter
+	useEffect(() => {
+		if (!categoryid) {
+			axiosInstance.get("finance/categories?limit=100").then((res) => {
+				if (res.data.success) {
+					setCategories(res.data.categories.data);
+				}
+			});
+		}
+	}, [categoryid]);
 
 	const handleFileChange1 = (e) => {
 		const file = e.target.files[0];
@@ -78,14 +94,30 @@ const FinanceReport = () => {
 	const getFinances = async (page) => {
 		setIsLoading(true);
 		try {
-			const res = await axiosInstance.get(`finance/category/${categoryid}`, {
-				params: {
-					page,
-					limit,
-				},
-			});
+			let url = `finances`; // Default All Mode
+			const params = {
+				page,
+				limit,
+				from_date: fromDate,
+				to_date: toDate,
+				search: searchQuery,
+				category_id: filterCategory,
+			};
+
+			if (categoryid) {
+				url = `finance/category/${categoryid}`;
+				// finance/category endpoint might NOT support filters if using getFinanceByCategory logic
+				// But we pas them just in case or for consistency.
+				// NOTE: Currently backend getFinanceByCategory uses: Finance::where('category_id', $categoryId)
+				// It does NOT look at from/to/search.
+				// However, if we want full consistency, we should update backend there too.
+				// But primarily these filters are for the Management view.
+			}
+
+			const res = await axiosInstance.get(url, { params });
+
 			if (res.data.success) {
-				setCategory(res.data.category);
+				setCategory(res.data.category || null); // null if All Mode
 				setFinanceData(res.data.finances.data);
 				setTotalPages(res.data.finances.last_page);
 				setCurrentPage(res.data.finances.current_page);
@@ -97,8 +129,27 @@ const FinanceReport = () => {
 		}
 	};
 
+	const handleResetFilters = () => {
+		setFromDate("");
+		setToDate("");
+		setSearchQuery("");
+		setFilterCategory("");
+		// getFinances will be triggered by useEffect dependency on state changes?
+		// Wait, useEffect depends on [categoryid, currentPage, limit].
+		// I need to add filter dependencies or manually call getFinances.
+		// Let's rely on manual search click for Fetch, avoiding too many auto-fetches.
+		// But "Reset" should probably trigger fetch.
+		// Actually, I'll add `fromDate` etc to dependency array?
+		// User might want to type dates without spamming requests.
+		// BUT the previous useEffect had [limit].
+		// Let's trigger fetch explicitly in Reset.
+		setTimeout(() => getFinances(1), 0);
+	};
+
 	useEffect(() => {
 		getFinances(currentPage);
+		// Note: removed [toDate, etc] to avoid auto-fetch on every keystroke.
+		// Search button handles fetch. Pagination handles fetch.
 	}, [categoryid, currentPage, limit]);
 
 	// Handle form field changes
@@ -116,23 +167,33 @@ const FinanceReport = () => {
 			const formData = new FormData();
 
 			formData.append("name", dialogData.name);
-			formData.append("description", dialogData.description);
+			formData.append("description", dialogData.description || ""); // Handle null description
 			formData.append("quantity", dialogData.quantity);
 			formData.append("amount", dialogData.amount);
 			formData.append("status", dialogData.status);
-			formData.append("receipt", dialogData.receipt || null);
 
-			const res = await axiosInstance.put(`finances/${dialogData.id}?_method=PUT`, formData, {
+			// Only append receipt if it's a File object (new upload)
+			// If it's a string (existing URL), don't send it, backend keeps existing.
+			// If status is unpaid, backend handles clearing it.
+			if (dialogData.receipt instanceof File) {
+				formData.append("receipt", dialogData.receipt);
+			}
+
+			// Note: We used `_method=PUT` in query string, which is Laravel way to handle PUT with FormData
+			const res = await axiosInstance.post(`finances/${dialogData.id}?_method=PUT`, formData, {
 				headers: {
 					"Content-Type": "multipart/form-data",
 				},
 			});
 			console.log("Update response:", res.data);
-			"Update response:", res.data;
+
+			// Refresh data and close dialog
+			getFinances(currentPage);
+			handleCloseDialog();
+			setSnackbar({ open: true, message: "Finance updated successfully", severity: "success" });
 		} catch (error) {
 			console.log("Error updating finance:", error);
-
-			setSnackbar({ open: true, message: error.response.data.message, severity: "error" });
+			setSnackbar({ open: true, message: error.response?.data?.message || "Update failed", severity: "error" });
 		}
 	};
 
@@ -171,63 +232,50 @@ const FinanceReport = () => {
 					<div style={{ paddingTop: "1rem", display: "flex", alignItems: "center", marginBottom: "20px" }}>
 						<div onClick={() => navigate(-1)} style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
 							<MdArrowBackIos style={{ fontSize: "20px", marginRight: "10px" }} />
-							<h4 style={{ margin: 0 }}>{category?.name}</h4>
+							<h4 style={{ margin: 0 }}>{category?.name || "Finance Management"}</h4>
 						</div>
 					</div>
 					<Box sx={{ p: 3 }}>
-						<Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2, gap: 2 }}>
-							<Button
-								variant="contained"
-								onClick={() => setTimeFilter("weekly")}
-								sx={{
-									px: 3,
-									bgcolor: timeFilter === "weekly" ? "#0c4a6e" : "white",
-									color: timeFilter === "weekly" ? "white" : "#64748b",
-									"&:hover": {
-										bgcolor: timeFilter === "weekly" ? "#0c4a6e" : "#f1f5f9",
-									},
-									textTransform: "none",
-									fontWeight: 500,
-									border: "1px solid #e2e8f0",
-									borderRadius: "10px",
-									boxShadow: timeFilter === "weekly" ? "0px 2px 4px rgba(0, 0, 0, 0.2)" : "none",
-								}}>
-								Weekly
+						{/* Filter Bar */}
+						<Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 3, alignItems: "center", bgcolor: "white", p: 2, borderRadius: 2 }}>
+							<TextField label="From Date" type="date" size="small" value={fromDate} onChange={(e) => setFromDate(e.target.value)} InputLabelProps={{ shrink: true }} sx={{ width: 150 }} />
+							<TextField label="To Date" type="date" size="small" value={toDate} onChange={(e) => setToDate(e.target.value)} InputLabelProps={{ shrink: true }} sx={{ width: 150 }} />
+							{/* Show Category Filter only in Management Mode (no categoryid in URL) */}
+							{!categoryid && (
+								<Autocomplete
+									sx={{ width: 250 }}
+									size="small"
+									options={categories}
+									getOptionLabel={(option) => option.name || ""}
+									value={categories.find((c) => c.id === filterCategory) || null}
+									onChange={(event, newValue) => {
+										setFilterCategory(newValue ? newValue.id : "");
+									}}
+									renderInput={(params) => <TextField {...params} label="Category" />}
+								/>
+							)}
+							<TextField label="Search" size="small" placeholder="Name or Description" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} sx={{ width: 200 }} />
+							<Button variant="contained" onClick={() => getFinances(1)} sx={{ bgcolor: "#0c4a6e" }}>
+								Search
 							</Button>
-
-							<Button
-								variant="contained"
-								onClick={() => setTimeFilter("daily")}
-								sx={{
-									px: 3,
-									bgcolor: timeFilter === "daily" ? "#0c4a6e" : "white",
-									color: timeFilter === "daily" ? "white" : "#64748b",
-									"&:hover": {
-										bgcolor: timeFilter === "daily" ? "#0c4a6e" : "#f1f5f9",
-									},
-									textTransform: "none",
-									fontWeight: 500,
-									border: "1px solid #e2e8f0",
-									borderRadius: "10px",
-									boxShadow: timeFilter === "daily" ? "0px 2px 4px rgba(0, 0, 0, 0.2)" : "none",
-								}}>
-								Daily
+							<Button variant="outlined" onClick={handleResetFilters}>
+								Reset
 							</Button>
 						</Box>
 						<TableContainer component={Paper} sx={{ boxShadow: "none", borderRadius: 2, overflow: "hidden" }}>
 							<Table sx={{ minWidth: 650 }}>
-								<TableHead>
-									<TableRow sx={{ bgcolor: "#dbeafe" }}>
-										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>SL No</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Name</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Description</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Qty</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Amount</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Issue Date</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Due Date</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Status</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Actions</TableCell>
-										<TableCell sx={{ fontWeight: "bold", color: "#FFCC16", py: 2 }}>Receipt</TableCell>
+								<TableHead sx={{ bgcolor: "#F8FAFC" }}>
+									<TableRow>
+										<TableCell sx={{ fontWeight: "bold", color: "#64748B", py: 2 }}>SL No</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#64748B", py: 2 }}>Name</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#64748B", py: 2 }}>Description</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#64748B", py: 2 }}>Qty</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#64748B", py: 2 }}>Amount</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#64748B", py: 2 }}>Issue Date</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#64748B", py: 2 }}>Due Date</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#64748B", py: 2 }}>Status</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#64748B", py: 2 }}>Actions</TableCell>
+										<TableCell sx={{ fontWeight: "bold", color: "#64748B", py: 2 }}>Receipt</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
@@ -367,6 +415,25 @@ const FinanceReport = () => {
 							</Table>
 						</TableContainer>
 					</Box>
+
+					<Box display="flex" fullWidth justifyContent="center" mt={3} gap={1} mb={3}>
+						<Button variant="outlined" disabled={currentPage === 1} onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}>
+							Previous
+						</Button>
+						{[...Array(totalPages)].map((_, index) => (
+							<Button key={index} variant={currentPage === index + 1 ? "contained" : "outlined"} sx={currentPage === index + 1 ? { bgcolor: colors.primary } : {}} onClick={() => setCurrentPage(index + 1)}>
+								{index + 1}
+							</Button>
+						))}
+						<Button variant="outlined" disabled={currentPage === totalPages} onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}>
+							Next
+						</Button>
+						<Select value={limit} onChange={(e) => setLimit(e.target.value)} size="small" sx={{ minWidth: 80 }}>
+							<MenuItem value={5}>5</MenuItem>
+							<MenuItem value={10}>10</MenuItem>
+							<MenuItem value={20}>20</MenuItem>
+						</Select>
+					</Box>
 				</div>
 			</div>
 
@@ -471,9 +538,6 @@ const FinanceReport = () => {
 					<Button onClick={handleSaveUpdate}>Save/Update</Button>
 				</DialogActions>
 			</Dialog>
-			<Box mt={2} display="flex" justifyContent="center">
-				<Pagination count={totalPages} page={currentPage} onChange={(e, value) => setCurrentPage(value)} color="primary" />
-			</Box>
 
 			<Snackbar open={snackbar.open} autoHideDuration={3000} onClose={handleCloseSnackbar}>
 				<Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">

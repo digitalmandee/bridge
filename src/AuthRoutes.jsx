@@ -754,6 +754,14 @@ function AuthRoutes() {
 					</ProtectedRoute>
 				}
 			/>
+			<Route
+				path="branch/finance/management"
+				element={
+					<ProtectedRoute role="admin" permission="employee-dashboard">
+						<FinanceReport />
+					</ProtectedRoute>
+				}
+			/>
 
 			<Route
 				path="branch/groceries/supplies"

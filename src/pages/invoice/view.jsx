@@ -74,7 +74,7 @@ const ViewInvoice = () => {
 
 	// Get user/company details
 	const billedToName = user?.name || booking?.company_name || "N/A";
-	const billedToPhone = user?.phone || booking?.phone || "";
+	const billedToPhone = user?.phone_no || booking?.phone || "";
 	const billedToNTN = user?.ntn || booking?.ntn || "";
 	const billedToAddress = user?.address || booking?.address || "";
 

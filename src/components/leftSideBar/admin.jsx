@@ -94,6 +94,7 @@ const menuItems = [
 		hasDropdown: true,
 		dropdown: [
 			{ to: "/branch/finance/dashboard", label: "Dashboard", permission: "employee-dashboard" },
+			{ to: "/branch/finance/management", label: "Management", permission: "employee-dashboard" },
 			{ to: "/branch/finance/category", label: "Category", permission: "employee-dashboard" },
 			// { to: "/branch/groceries/supplies", label: "Groceries & Supplies", permission: "employee-dashboard" },
 		],
