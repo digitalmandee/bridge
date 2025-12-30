@@ -68,6 +68,12 @@ class NotificationController extends Controller
         $user = User::findOrFail($request->user_id);
         $invoiceStatus = $request->invoice_status;
 
+        $invoice = Invoice::with(['user'])->find($request->invoice_id);
+
+        if (!$invoice) {
+            return response()->json(['success' => false, 'message' => 'Invoice not found.'], 404);
+        }
+
         $notificationData = [
             'paid' => [
                 'title' => 'Invoice Paid - ' . tenant('name'),
@@ -91,30 +97,27 @@ class NotificationController extends Controller
         // Send Database Notification first
         $user->notify(new GeneralNotification($userNotificationData));
 
-        // Send Email using MailHelper
-        MailHelper::sendInvoiceStatusMail($user->email, [
+        // Prepare data for email
+        $emailData = [
             'username' => $user->name,
             'title' => $userNotificationData['title'],
             'message' => $userNotificationData['message'],
             'invoice_id' => $request->invoice_id,
             'status' => $invoiceStatus,
-        ]);
-
-        // Send notification to Admin
-        $adminNotificationData = [
-            'title' => "Invoice {$invoiceStatus} - User: {$user->name}",
-            'message' => "Invoice #{$request->invoice_id} for User ID {$user->id} is {$invoiceStatus}.",
-            'type' => "invoice_{$invoiceStatus}",
+            // Map data to match invoice.blade.php expectation ($data['invoice']['items'], etc)
+            'invoice' => $invoice->toArray(),
+            'user' => $user->toArray(),
+            'amount' => $invoice->amount,
+            'invoiceType' => $invoice->invoice_type,
+            'dueDate' => $invoice->due_date,
         ];
 
-        $admin->notify(new GeneralNotification($adminNotificationData));
+        // Send Email using MailHelper
+        MailHelper::sendInvoiceStatusMail($user->email, $emailData);
 
-        $invoice = Invoice::find($request->invoice_id);
-
-        if ($invoice) {
-            $invoice->notify = Carbon::now();
-            $invoice->save();
-        }
+        // Update notify timestamp
+        $invoice->notify = Carbon::now();
+        $invoice->save();
 
         return response()->json(['success' => true, 'message' => 'Notification and email sent successfully.', 'notify_date' => $invoice->notify]);
     }

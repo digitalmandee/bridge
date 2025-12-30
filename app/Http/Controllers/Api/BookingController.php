@@ -246,6 +246,17 @@ class BookingController extends Controller
                 'client' => $user,
             ]);
 
+            // send invoice email
+            MailHelper::sendInvoiceMail($user->email, [
+                'user' => $user,
+                'invoice_id' => $invoice->id,
+                'invoice' => $invoice,
+                'invoiceType' => $bookingDetails['duration'],
+                'amount' => $booking->total_price,
+                'dueDate' => $invoice->due_date,
+                'status' => $invoice->status ?? 'pending',
+            ]);
+
             $admin = User::find(1);  // Get the authenticated admin
 
             // User Notifications for Booking and Invoice
