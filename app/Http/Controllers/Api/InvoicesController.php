@@ -194,8 +194,8 @@ class InvoicesController extends Controller
             }
 
             // Handle receipt upload
-            $InvoiceReciept = $request->hasFile('reciept') && in_array($request->status, ['paid', 'overdue'])
-                ? FileHelper::saveImage($request->file('reciept'), 'invoices')
+            $InvoiceReciept = $request->hasFile('receipt') && in_array($request->status, ['paid', 'overdue'])
+                ? FileHelper::saveImage($request->file('receipt'), 'invoices')
                 : null;
 
             $bookingId = null;
