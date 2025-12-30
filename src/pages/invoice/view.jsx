@@ -80,7 +80,9 @@ const ViewInvoice = () => {
 
 	return (
 		<>
-			<TopNavbar />
+			<div className="no-print">
+				<TopNavbar />
+			</div>
 			<div className="main d-flex">
 				<div className="sideBarWrapper">
 					<Sidebar />
@@ -88,11 +90,14 @@ const ViewInvoice = () => {
 				<div className="content">
 					<div className="container-fluid py-4">
 						{/* Back Button */}
-						<div className="invoice-back-header no-print">
+						<div className="invoice-back-header no-print" style={{ justifyContent: "space-between" }}>
 							<div className="invoice-back-btn" onClick={() => navigate(-1)}>
 								<MdArrowBackIos style={{ fontSize: "18px", marginRight: "8px" }} />
 								<span>Back to Invoices</span>
 							</div>
+							<button className="btn btn-dark btn-sm" onClick={() => window.print()}>
+								Print Invoice
+							</button>
 						</div>
 
 						{/* Invoice Container */}

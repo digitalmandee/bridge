@@ -103,9 +103,9 @@ const InvoiceCreate = () => {
 		const fetchBookingDetails = async () => {
 			try {
 				const res = await axiosInstance.get("invoices/user-booking", {
-					params: { 
+					params: {
 						user_id: selectedTab == "individual" ? formData.member.id : formData.company.id,
-						booking_id: selectedBooking.id
+						booking_id: selectedBooking.id,
 					},
 				});
 				if (res.data.success) {
@@ -195,6 +195,8 @@ const InvoiceCreate = () => {
 			}
 
 			setFormData((prev) => ({ ...prev, [name]: selected }));
+		} else if (name === "paidYear") {
+			setFormData((prev) => ({ ...prev, [name]: value, paidMonth: [] }));
 		} else {
 			setFormData((prev) => ({ ...prev, [name]: value }));
 		}
@@ -411,10 +413,9 @@ const InvoiceCreate = () => {
 	// Get all months
 	const allMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 	const currentMonthIndex = new Date().getMonth();
-	
+
 	// Flatten and normalize paid months array to handle nested arrays
-	const paidMonths = userBooking?.payed_months ? 
-		userBooking.payed_months.flat().filter(month => month && typeof month === 'string') : [];
+	const paidMonths = userBooking?.payed_months ? userBooking.payed_months.flat().filter((month) => month && typeof month === "string") : [];
 
 	return (
 		<>
@@ -524,11 +525,10 @@ const InvoiceCreate = () => {
 														labelId="booking-select-label"
 														value={selectedBooking?.id || ""}
 														onChange={(e) => {
-															const booking = activeBookings.find(b => b.id === e.target.value);
+															const booking = activeBookings.find((b) => b.id === e.target.value);
 															setSelectedBooking(booking);
 														}}
-														label="Select Booking"
-													>
+														label="Select Booking">
 														{activeBookings.map((booking) => (
 															<MenuItem key={booking.id} value={booking.id}>
 																Booking #{booking.id} - {booking.plan_name} - Started: {new Date(booking.start_date).toLocaleDateString()} - Rs. {booking.total_price}
@@ -542,9 +542,7 @@ const InvoiceCreate = () => {
 										{/* Show error if no bookings found */}
 										{formData.invoiceType === "Monthly" && userBookingError.message && (
 											<Grid item xs={12}>
-												<div style={{ color: 'red', padding: '10px', backgroundColor: '#ffebee', borderRadius: '4px' }}>
-													{userBookingError.message}
-												</div>
+												<div style={{ color: "red", padding: "10px", backgroundColor: "#ffebee", borderRadius: "4px" }}>{userBookingError.message}</div>
 											</Grid>
 										)}
 
@@ -589,16 +587,27 @@ const InvoiceCreate = () => {
 																// Get booking start month index
 																const bookingStartDate = userBooking?.booking?.start_date ? new Date(userBooking.booking.start_date) : new Date();
 																const bookingStartMonthIndex = bookingStartDate.getMonth();
-																
+																const bookingStartYear = bookingStartDate.getFullYear();
+																const currentPaidYear = Number(formData.paidYear);
+
 																// Check if this month is before the booking start month
-																const isBeforeBookingStart = index < bookingStartMonthIndex;
+																let isBeforeBookingStart = false;
+
+																if (currentPaidYear < bookingStartYear) {
+																	isBeforeBookingStart = true;
+																} else if (currentPaidYear === bookingStartYear) {
+																	isBeforeBookingStart = index < bookingStartMonthIndex;
+																} else {
+																	isBeforeBookingStart = false;
+																}
+
 																const isPaid = paidMonths.includes(month);
-																
+
 																// Debug logging
 																if (userBooking && paidMonths.length > 0) {
-																	console.log(`Month: ${month}, Index: ${index}, BookingStart: ${bookingStartMonthIndex}, IsBeforeStart: ${isBeforeBookingStart}, IsPaid: ${isPaid}, PaidMonths:`, paidMonths);
+																	console.log(`Month: ${month}, Index: ${index}, StartYear: ${bookingStartYear}, PaidYear: ${currentPaidYear}, IsBefore: ${isBeforeBookingStart}, IsPaid: ${isPaid}, PaidMonths:`, paidMonths);
 																}
-																
+
 																// Show months from booking start date onwards, excluding paid months
 																return !isBeforeBookingStart && !isPaid;
 															})
@@ -617,6 +626,23 @@ const InvoiceCreate = () => {
 															})}
 													</Select>
 													{errors.paidMonth && <FormHelperText>{errors.paidMonth}</FormHelperText>}
+												</FormControl>
+											</Grid>
+										)}
+
+										{/* Paid Year Selection */}
+										{formData.invoiceType === "Monthly" && (
+											<Grid item xs={12}>
+												<FormControl fullWidth error={Boolean(errors.paidYear)}>
+													<InputLabel id="paidYear-label">Invoice Year</InputLabel>
+													<Select labelId="paidYear-label" name="paidYear" value={formData.paidYear} onChange={handleChange} label="Invoice Year">
+														{Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((year) => (
+															<MenuItem key={year} value={year}>
+																{year}
+															</MenuItem>
+														))}
+													</Select>
+													<FormHelperText>{errors.paidYear || "Year for the selected month(s)"}</FormHelperText>
 												</FormControl>
 											</Grid>
 										)}
@@ -691,16 +717,7 @@ const InvoiceCreate = () => {
 
 									{/* Save Button */}
 									<div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-										<Button 
-											disabled={
-												formData.invoiceType === "Monthly" 
-													? (selectedBooking && userBooking && userBooking.success === true ? false : true) 
-													: loading
-											} 
-											variant="contained" 
-											type="submit" 
-											sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: colors.primary } }}
-										>
+										<Button disabled={formData.invoiceType === "Monthly" ? (selectedBooking && userBooking && userBooking.success === true ? false : true) : loading} variant="contained" type="submit" sx={{ bgcolor: colors.primary, "&:hover": { bgcolor: colors.primary } }}>
 											Save Invoice
 										</Button>
 									</div>

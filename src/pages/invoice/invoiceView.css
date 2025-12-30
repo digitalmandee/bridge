@@ -21,14 +21,14 @@
 	text-align: center;
 	font-size: 24px;
 	font-weight: bold;
-	padding: 15px 0;
+	padding: 8px 0;
 	border-bottom: 3px solid #ffcc16;
 	margin: 0;
 }
 
 /* Invoice Meta Info Section */
 .invoice-meta {
-	padding: 15px 30px;
+	padding: 8px 30px;
 }
 
 .invoice-meta-row {
@@ -58,7 +58,7 @@
 	display: flex;
 	gap: 20px;
 	padding: 0 30px;
-	margin: 20px 0;
+	margin: 10px 0;
 	border: none;
 }
 
@@ -66,7 +66,7 @@
 	flex: 1;
 	background-color: #ffcc16; /* Light yellow background for the whole box */
 	border: 1px solid #ffcc16; /* Optional: Yellow border to match */
-	padding-bottom: 20px;
+	padding-bottom: 10px;
 }
 
 .billing-title {
@@ -74,7 +74,7 @@
 	padding: 10px 15px;
 	font-weight: bold;
 	font-size: 18px;
-	margin-bottom: 15px;
+	margin-bottom: 0px;
 	color: #000;
 }
 
@@ -126,7 +126,7 @@
 }
 
 .invoice-table tbody td {
-	padding: 15px;
+	padding: 4px;
 	border: 1px solid #000;
 	color: #333;
 	vertical-align: top;
@@ -156,10 +156,15 @@
 }
 
 /* Total Amount Row */
+
+.total-row {
+	border-bottom: 1px solid #000;
+}
+
 .total-row td {
 	font-weight: bold !important;
 	border-top: 2px solid #000 !important;
-	padding-top: 15px !important;
+	padding-top: 4px !important;
 }
 
 /* Total Summary Box */
@@ -246,14 +251,62 @@
 }
 
 /* Print Styles */
+/* Print Styles */
 @media print {
+	@page {
+		size: auto;
+		margin: 0mm;
+	}
+
+	body {
+		-webkit-print-color-adjust: exact !important;
+		print-color-adjust: exact !important;
+		background: #fff;
+		margin: 0;
+	}
+
+	/* Hide everything by default or specific areas */
+	.top-navbar,
+	.sideBarWrapper,
+	.invoice-back-header,
+	.no-print {
+		display: none !important;
+	}
+
+	.main {
+		margin: 0 !important;
+		padding: 0 !important;
+		width: 100% !important;
+	}
+
+	.content {
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+
 	.invoice-container {
 		box-shadow: none;
 		max-width: 100%;
+		margin: 0;
+		padding: 0;
+		border: none;
 	}
 
-	.no-print {
-		display: none !important;
+	/* Adjust font size for print to fit one page if necessary */
+	.invoice-container {
+		font-size: 12px;
+	}
+
+	.billing-title {
+		font-size: 16px; /* Slightly smaller for print */
+	}
+
+	/* Force background colors */
+	.billing-title,
+	.invoice-table thead,
+	.billing-column {
+		-webkit-print-color-adjust: exact !important;
+		print-color-adjust: exact !important;
 	}
 }
 
