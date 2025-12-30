@@ -23,20 +23,31 @@ class FinanceController extends Controller
         $from = $request->query('from_date');
         $to = $request->query('to_date');
 
-        if (!$from) {
-            return response()->json([
-                'success' => false,
-                'message' => 'from_date is required.'
-            ], 422);
+        $query = Finance::with('category:id,name');
+
+        if ($from && $to) {
+            $fromDate = Carbon::parse($from)->startOfDay();
+            $toDate = Carbon::parse($to)->endOfDay();
+            $query->whereBetween('due_date', [$fromDate, $toDate]);
         }
 
-        $from = Carbon::parse($from)->startOfDay();
-        $to = $to ? Carbon::parse($to)->endOfDay() : $from->copy()->endOfDay();
+        // Search Filter
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q
+                    ->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%");
+            });
+        }
 
-        $finances = Finance::with('category:id,name')
-            ->whereBetween('due_date', [$from, $to])
-            ->orderByDesc('created_at')
-            ->paginate($limit);
+        // Category Filter
+        if ($request->has('category_id') && $request->category_id != '') {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // "Latest to bottom" implies Ascending order (Oldest first, Newest last)
+        $finances = $query->orderBy('created_at', 'asc')->paginate($limit);
 
         return response()->json([
             'success' => true,
@@ -325,14 +336,24 @@ class FinanceController extends Controller
             return response()->json(['success' => false, 'message' => 'Finance entry not found'], 404);
         }
 
-        $finance->update([
+        $data = [
             'name' => $request->name,
             'description' => $request->description,
             'amount' => $request->amount,
             'quantity' => $request->quantity,
             'status' => $request->status,
-            'receipt' => $financeReciept,
-        ]);
+        ];
+
+        // If status is paid and new file uploaded -> update receipt
+        if ($financeReciept) {
+            $data['receipt'] = $financeReciept;
+        }
+        // If status changed to unpaid -> remove receipt
+        elseif ($request->status === 'unpaid') {
+            $data['receipt'] = null;
+        }
+
+        $finance->update($data);
 
         return response()->json(['success' => true, 'message' => 'Finance entry updated successfully!']);
     }
