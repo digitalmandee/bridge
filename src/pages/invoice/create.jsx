@@ -307,7 +307,7 @@ const InvoiceCreate = () => {
 
 		// Append file if selected
 		if (file) {
-			formDataToSend.append("reciept", file);
+			formDataToSend.append("receipt", file);
 		}
 
 		// ==== Submit ====

@@ -51,7 +51,7 @@ const ViewInvoice = () => {
 	}
 
 	// Extract invoice fields
-	const { id, booking_id, user_id, invoice_type, quantity, hours, discount, amount, status, due_date, paid_date, plan, user, booking } = invoice;
+	const { id, booking_id, user_id, invoice_type, quantity, hours, discount, amount, status, due_date, paid_date, plan, user, booking, receipt } = invoice;
 
 	// Format dates
 	const formatDate = (dateStr) => {
@@ -95,6 +95,11 @@ const ViewInvoice = () => {
 								<MdArrowBackIos style={{ fontSize: "18px", marginRight: "8px" }} />
 								<span>Back to Invoices</span>
 							</div>
+							{receipt && (
+								<button className="btn btn-outline-dark btn-sm" style={{ marginRight: "10px" }} onClick={() => window.open(import.meta.env.VITE_ASSET_API + receipt, "_blank")}>
+									View Receipt
+								</button>
+							)}
 							<button className="btn btn-dark btn-sm" onClick={() => window.print()}>
 								Print Invoice
 							</button>

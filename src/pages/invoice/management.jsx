@@ -4,7 +4,7 @@ import Sidebar from "@/components/leftSideBar";
 import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, MenuItem, Avatar, Select, CircularProgress, Snackbar, Dialog, DialogTitle, DialogContent, FormControl, InputLabel, RadioGroup, FormControlLabel, DialogActions, Radio, Alert, Tooltip } from "@mui/material";
-import { Search as SearchIcon, Download as DownloadIcon, Notifications as NotificationsIcon } from "@mui/icons-material";
+import { Search as SearchIcon, Download as DownloadIcon, Notifications as NotificationsIcon, Visibility as VisibilityIcon } from "@mui/icons-material";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "@/utils/axiosInstance";
 import { AuthContext } from "@/contexts/AuthContext";
@@ -59,6 +59,7 @@ const InvoiceManagement = () => {
 				...prevData,
 				id: invoice.id,
 				due_date: formattedDueDate,
+				existing_receipt: invoice.receipt,
 			}));
 
 			setSelectedStatus(invoice.status);
@@ -222,9 +223,7 @@ const InvoiceManagement = () => {
 												bgcolor: colors.primary,
 											},
 										}}
-										onClick=
-										{() => navigate(`/${branch}/branch/invoice/create`)}
-										>
+										onClick={() => navigate(`/${branch}/branch/invoice/create`)}>
 										New Invoice
 									</Button>
 								)}
@@ -281,6 +280,7 @@ const InvoiceManagement = () => {
 										<TableCell>Payment Date</TableCell>
 										<TableCell>Status</TableCell>
 										<TableCell>Amount</TableCell>
+										<TableCell>Receipt</TableCell>
 										{user.type === "admin" && <TableCell>Action</TableCell>}
 									</TableRow>
 								</TableHead>
@@ -297,9 +297,7 @@ const InvoiceManagement = () => {
 											const isDisabled = isNotifiedToday || loadingInvoiceId === invoice.id;
 											return (
 												<TableRow key={invoice.id}>
-													<TableCell style={{ cursor: "pointer" }} onClick={
-														() => navigate
-														(`/${branch}/${user.type == "admin" ? "branch" : user.type}/invoice/view/${invoice.id}`)}>
+													<TableCell style={{ cursor: "pointer" }} onClick={() => navigate(`/${branch}/${user.type == "admin" ? "branch" : user.type}/invoice/view/${invoice.id}`)}>
 														#BRIDGE-{invoice.id}
 													</TableCell>
 													<TableCell style={{ textTransform: "capitalize" }}>{invoice.invoice_type}</TableCell>
@@ -336,6 +334,30 @@ const InvoiceManagement = () => {
 													</TableCell>
 
 													<TableCell>Rs. {invoice.discount > 0 ? Math.round(invoice.amount - invoice.amount * (invoice.discount / 100)) : invoice.amount}</TableCell>
+													<TableCell>
+														{invoice.receipt ? (
+															<Tooltip title="View Receipt">
+																<Button
+																	size="small"
+																	variant="outlined"
+																	sx={{
+																		borderColor: "#e0e0e0",
+																		color: "text.secondary",
+																		minWidth: "32px",
+																		width: "32px",
+																		height: "32px",
+																		p: 0,
+																		mr: 1,
+																		"&:hover": { backgroundColor: "#f5f5f5" },
+																	}}
+																	onClick={() => window.open(import.meta.env.VITE_ASSET_API + invoice.receipt, "_blank")}>
+																	<VisibilityIcon fontSize="small" />
+																</Button>
+															</Tooltip>
+														) : (
+															"-"
+														)}
+													</TableCell>
 													{user.type === "admin" && (
 														<TableCell>
 															<Tooltip title={isNotifiedToday ? `Already notified today` : "Click to notify this customer"}>
@@ -442,6 +464,16 @@ const InvoiceManagement = () => {
 									<Typography variant="body2" style={{ marginTop: 10 }}>
 										{dialogData.receipt.name}
 									</Typography>
+								)}
+								{dialogData.existing_receipt && !dialogData.receipt && (
+									<div style={{ marginTop: 10 }}>
+										<Typography variant="caption" display="block">
+											Current Receipt:
+										</Typography>
+										<Button size="small" variant="text" onClick={() => window.open(import.meta.env.VITE_ASSET_API + dialogData.existing_receipt, "_blank")} style={{ textTransform: "none", padding: 0 }}>
+											View Attached Receipt
+										</Button>
+									</div>
 								)}
 								{errors.receipt && <Typography color="error">{errors.receipt}</Typography>}
 							</div>
